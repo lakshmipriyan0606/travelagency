@@ -1,0 +1,52 @@
+.company-logo {
+  @apply w-16 h-16;
+}
+
+.navbar-main {
+  @apply text-white bg-custom-black flex items-center justify-between px-4 relative;
+}
+
+.navbar-list {
+  @apply hidden md:flex items-center gap-6 text-[14px];
+  transition: all 1s;
+}
+
+.navbar-list.mobile {
+  @apply flex flex-col items-start gap-4 text-[14px] absolute top-full left-0 right-0 bg-white text-gray-900 p-4 shadow-lg z-50 lg:hidden;
+}
+
+.navbar-list.mobile .navbar-list-item {
+  @apply w-full py-2 border-b border-gray-200 last:border-b-0;
+}
+
+.navbar-list.mobile .navbar-list-item.active {
+  @apply bg-orange-100 text-orange-600 px-3 rounded;
+}
+
+.profile-section {
+  @apply flex items-center gap-4 text-[14px];
+}
+
+.profile-section-item {
+  @apply relative cursor-pointer;
+}
+
+.profile-section-item .heart-icon {
+  @apply absolute -top-1.5 -right-1 bg-white text-gray-800 rounded-full w-3.5 h-3.5 text-xs flex items-center justify-center transition-all duration-900;
+}
+
+.mobile-menu-toggle {
+  @apply md:hidden cursor-pointer;
+}
+
+.desktop-nav {
+  @apply hidden md:flex items-center gap-6;
+}
+
+.mobile-nav {
+  @apply md:hidden;
+}
+
+.navbar-rightside {
+  @apply flex gap-6
+}

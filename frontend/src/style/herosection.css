@@ -1,0 +1,15 @@
+.hero-container {
+  @apply relative w-full h-screen overflow-hidden;
+}
+
+.hero-video {
+  @apply w-full h-full object-cover;
+}
+
+.hero-overlay {
+  @apply absolute inset-0 flex flex-col gap-6 items-center justify-center bg-black/40 z-10;
+}
+
+.hero-content {
+  @apply flex flex-col items-center justify-center text-center space-y-6;
+}

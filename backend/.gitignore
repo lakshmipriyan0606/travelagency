@@ -1,0 +1,46 @@
+# Logs
+logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# Dependency directories
+node_modules/
+
+# Build outputs
+dist/
+build/
+*.local
+
+# Environment files
+.env
+.env.*        # Ignore all env files
+!.env.example # Keep example env for reference
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# IDE / Editor files
+.vscode/
+.idea/
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+
+# Yarn Integrity
+.yarn-integrity
+
+# Optional npm lock
+package-lock.json
+
+# Coverage reports (if using testing)
+coverage/
+
+# Temporary files
+tmp/
+temp/
