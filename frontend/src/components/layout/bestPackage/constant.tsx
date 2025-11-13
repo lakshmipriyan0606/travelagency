@@ -1,8 +1,9 @@
 
+
 export const bestPackageOfferList = [
     {
         id: 1,
-        title: "Explore Paris",
+        location: "Explore Paris",
         packageType: "Family",
         days: "7 Days, 6 Nights",
         price: 4500,
@@ -16,7 +17,7 @@ export const bestPackageOfferList = [
     },
     {
         id: 2,
-        title: "Discover Bali",
+        location: "Discover Bali",
         packageType: "Honeymoon",
         days: "5 Days, 4 Nights",
         price: 2200,
@@ -30,7 +31,7 @@ export const bestPackageOfferList = [
     },
     {
         id: 3,
-        title: "Swiss Adventure",
+        location: "Swiss Adventure",
         packageType: "Friends",
         days: "8 Days, 7 Nights",
         price: 2000,
@@ -44,7 +45,7 @@ export const bestPackageOfferList = [
     },
     {
         id: 4,
-        title: "Tokyo Experience",
+        location: "Tokyo Experience",
         packageType: "Family",
         days: "6 Days, 5 Nights",
         price: 5800,
@@ -58,7 +59,7 @@ export const bestPackageOfferList = [
     },
     {
         id: 5,
-        title: "Dubai Luxury Tour",
+        location: "Dubai Luxury Tour",
         packageType: "Friends",
         days: "4 Days, 3 Nights",
         price: 3000,
@@ -80,3 +81,16 @@ export const filterConfig = {
     daysAndNights: ["2 Days, 2 Nights", "4 Days, 3 Nights", "7 Days, 6 Nights"],
     ratings: ["5 Star", "4 Star", "3 Star"]
 };
+
+
+
+export function calculateDiscountPercentage(originalPrice:number, offerPrice:number) {
+    if (originalPrice <= 0) {
+        throw new Error("Original price must be greater than 0");
+    }
+
+    const discount = originalPrice - offerPrice;
+    const discountPercentage = (discount / originalPrice) * 100;
+
+    return Math.round(discountPercentage)
+}

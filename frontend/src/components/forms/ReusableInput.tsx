@@ -59,7 +59,7 @@ export const ReusableInput = ({
                  transition-all duration-300 ease-out
 
                  /* Default resting */
-                 top-[45%] -translate-y-1/2 text-[15px] text-gray-500
+                 top-[38%] -translate-y-1/2 text-[15px] text-gray-500
 
                  /* When focused */
                  peer-focus:top-0

@@ -1,0 +1,6 @@
+import axiosClient from "../axiosClient";
+
+export const GetBestBackageList = async () => {
+  const { data } = await axiosClient.get("packages/bestpackages");
+  return data;
+}

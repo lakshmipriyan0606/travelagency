@@ -6,10 +6,16 @@ import { ReusableInput } from "@/components/forms/ReusableInput";
 import { LoginFormData, loginSchema } from "@/ZodSchema/schema";
 import { useNavigate } from "react-router-dom";
 import { useLogin } from "@/Hook/Admin/useAuth";
+import { useMutationAPIQuery } from "@/Hook/useMutationAPIQuery";
+import { loginAPI } from "@/api/admin/auth.api";
 
 const LoginForm = () => {
     const navigate = useNavigate()
-    const { mutate, isPending, error } = useLogin();
+    const { mutate} = useMutationAPIQuery(loginAPI,{
+        onSuccess(data, variables, context) {
+            console.log('data: ', data);
+        },
+    })
 
     const { control, handleSubmit } = useForm<LoginFormData>({
         resolver: zodResolver(loginSchema),

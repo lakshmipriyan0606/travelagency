@@ -1,9 +1,11 @@
+import AdminPanel from "@/pages/Admin/AdminPanel/AdminPanel";
 import LoginForm from "@/pages/Admin/login/Login";
 import RegisterForm from "@/pages/Admin/register/Register";
 import AllPackage from "@/pages/AllPackage/AllPackage";
 import PackageDetail from "@/pages/PackageDetail/PackageDetail";
 import { AppRoute } from "@/types/types";
 import { lazy } from "react";
+import ProtectedRoute from "./ProtectedRoute";
 
 const Home = lazy(() => import('@/pages/Home/Home'));
 
@@ -35,6 +37,14 @@ const routes: AppRoute[] = [
         path: '/admin/login',
         element: <LoginForm />,
         isProtectRoute: false,
+    },
+    {
+        path: '/admin/adminpanel',
+        element:  <ProtectedRoute isAuthenticated={true} allowedRoles={["admin"]} userRole={"admin"}  />,
+        isProtectRoute: false,
+        children: [
+      { path: "", element: <AdminPanel /> },
+    ],
     },
 ];
 

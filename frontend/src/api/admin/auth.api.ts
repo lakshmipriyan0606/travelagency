@@ -19,3 +19,8 @@ export const currentUserAPI = async () => {
   const { data } = await axiosClient.get("admin/auth/me");
   return data;
 };
+
+export const CreatePackage = async (payload:object) => {
+  const { data } = await axiosClient.post("/packages/create",payload);
+  return data;
+}

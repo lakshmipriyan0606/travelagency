@@ -2,7 +2,7 @@
 import { Swiper, SwiperSlide } from "swiper/react";
 import { Navigation, Pagination } from "swiper/modules";
 import InnerCarousel from "./InnerCarousel";
-import { bestPackageOfferList } from "../constant";
+import { bestPackageOfferList, calculateDiscountPercentage } from "../constant";
 import customArrowLeft from '@/assets/icons/arrowLeft.svg'
 import customArrowRight from '@/assets/icons/arrowright.svg'
 import arrowLeft from '@/assets/icons/leftarrow.svg'
@@ -13,9 +13,52 @@ import location from '@/assets/icons/location.svg';
 import star from '@/assets/icons/Star.svg';
 import heartgray from '@/assets/icons/heartgray.svg';
 import dateIcon from '@/assets/icons/date.svg';
+import { UseFetchAPIQuery } from "@/Hook/UseFetchAPIQuery";
+import { GetBestBackageList } from "@/api/user/api";
+import { useEffect, useMemo, useState } from "react";
 
 
 export default function OuterCarousel() {
+
+
+    const [bestPackageList, setBestPackageList] = useState([])
+    console.log('bestPackageList: ', bestPackageList);
+    const { refetch, data, isFetching } = UseFetchAPIQuery(
+        ['bestPackage'],
+        GetBestBackageList,
+        {
+            enabled: false,
+            retry: false,
+            onSuccess: (data: any) => {
+                console.log('data: ', data);
+                setBestPackageList(data);
+            },
+            onError: () => {
+            },
+        }
+    );
+
+
+
+    useEffect(() => {
+        handleFetchPackageAPI()
+    }, [])
+
+    useEffect(() => {
+        if (data) {
+            setBestPackageList(data?.data)
+        } else {
+            setBestPackageList([])
+        }
+    }, [JSON.stringify(data)])
+
+    const handleFetchPackageAPI = () => {
+        refetch()
+    }
+
+    
+
+
     return (
         <div className="max-w-7xl mx-auto">
             <Swiper
@@ -39,17 +82,17 @@ export default function OuterCarousel() {
                 }}
                 className="outer-swiper pb-12 p-20"
             >
-                {bestPackageOfferList.map((offer) => (
-                    <SwiperSlide key={offer.id}>
+                {bestPackageList?.map((offer: any) => (
+                    <SwiperSlide key={offer._id}>
                         <div className="bg-white rounded-2xl overflow-hidden shadow-xl text-gray-900 flex flex-col">
                             {/* Inner Carousel */}
-                            <InnerCarousel images={offer.images} offerId={offer.id} />
+                            <InnerCarousel images={offer.images} offerId={offer._id} />
 
                             <div className="absolute top-0 right-0">
                                 <div
                                     className="absolute top-5 font-roboto -right-3 z-20 bg-red-500 text-white font-bold px-4 py-0 w-max"
                                 >
-                                    50 % OFF
+                                   { calculateDiscountPercentage(offer?.price,offer?.offerPrice) } % OFF
                                 </div>
 
                                 <div
@@ -64,7 +107,7 @@ export default function OuterCarousel() {
                                         <span>
                                             <img src={location} alt="" />
                                         </span>
-                                        <h3 className="">{offer.title}</h3>
+                                        <h3 className="">{offer.location}</h3>
                                     </div>
                                     <div className="cursor-pointer">
                                         <img src={heartgray} alt="" width={20} />
