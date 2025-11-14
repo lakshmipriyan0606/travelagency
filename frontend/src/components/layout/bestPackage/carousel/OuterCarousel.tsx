@@ -92,7 +92,7 @@ export default function OuterCarousel() {
                                 <div
                                     className="absolute top-5 font-roboto -right-3 z-20 bg-red-500 text-white font-bold px-4 py-0 w-max"
                                 >
-                                   { calculateDiscountPercentage(offer?.price,offer?.offerPrice) } % OFF
+                                   { calculateDiscountPercentage(offer?.price,offer?.offerPrice) }% OFF
                                 </div>
 
                                 <div
@@ -115,7 +115,7 @@ export default function OuterCarousel() {
                                 </div>
                                 <div className="flex items-center gap-3">
                                     {<img src={dateIcon} alt="" />}
-                                    <h3 className="">   {offer.days}</h3>
+                                    <h3 className="">   {offer?.daysAndNights ||''}</h3>
                                 </div>
                                 <div className="flex items-center gap-3">
                                     {<img src={star} alt="" />}

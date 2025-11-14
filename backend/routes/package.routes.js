@@ -9,10 +9,9 @@ router.post(
   "/create",
   protectRoute,
   adminOnly,
-  upload.array("images", 3),
+  upload.any(),         // receive all files
   createPackage
 );
-
 router.get("/bestpackages", async (req, res) => {
   try {
     const bestPackages = await PackageModel.find({ isBestPackage: true });

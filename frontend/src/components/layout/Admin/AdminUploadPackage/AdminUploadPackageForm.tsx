@@ -24,6 +24,7 @@ const slotSchema = z.object({
   slotType: z.string(),
   title: z.string(),
   description: z.string(),
+  imageUrl: z.object()
 });
 
 const daySchema = z.object({
@@ -88,37 +89,49 @@ export default function AdminUploadPackageForm() {
   const removeMainImage = (file: File) => {
     setMainImages((prev) => prev.filter((f) => f !== file));
   };
-  const onSubmit = async (data: any) => {
+  const onSubmit = async () => {
+    const data = watch()
     try {
       setIsSubmitting(true);
 
-      // ✅ Build FormData for multer
       const formData = new FormData();
 
-      // Append text fields correctly
+      // Normal Fields
       Object.entries(data).forEach(([key, value]) => {
-        if (Array.isArray(value) || typeof value === "object") {
-          formData.append(key, JSON.stringify(value));
-        } else {
+        if (key !== "days") {
           formData.append(key, value.toString());
         }
       });
 
-      // Append images (files)
-      mainImages.forEach((file) => {
-        formData.append("images", file);
+      // Append MAIN IMAGES
+      mainImages.forEach((img) => {
+        formData.append("images", img);
       });
 
-      // ✅ Send multipart/form-data request
-      const res = await mutate(formData);
-      console.log("✅ Response:", res);
+      // DAYS + SLOT FILES
+      formData.append("days", JSON.stringify(data.days));
 
-    } catch (error) {
-      console.error("❌ Error submitting package:", error);
+      data.days.forEach((day, dayIndex) => {
+        day.slots.forEach((slot, slotIndex) => {
+          if (slot.imageUrl instanceof File) {
+            formData.append(
+              `slotImage_${dayIndex}_${slotIndex}`,
+              slot.imageUrl
+            );
+          }
+        });
+      });
+
+      const res = await mutate(formData);
+      console.log("Response:", res);
+
+    } catch (err) {
+      console.error(err);
     } finally {
       setIsSubmitting(false);
     }
   };
+
 
 
   return (
@@ -190,7 +203,7 @@ export default function AdminUploadPackageForm() {
 
           <Button
             type="button"
-            onClick={() => addDay({ dayTitle: "", slots: [{ slotType: "", title: "", description: "" }] })}
+            onClick={() => addDay({ dayTitle: "", slots: [{ slotType: "", title: "", description: "",imageUrl: '' }] })}
             className="text-blue-600"
           >
             + Add New Day

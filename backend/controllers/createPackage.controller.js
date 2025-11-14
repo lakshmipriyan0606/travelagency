@@ -6,51 +6,71 @@ export const createPackage = async (req, res) => {
     const {
       packageType,
       location,
-      days,
+      daysAndNights,
+      rating,
       price,
       offerPrice,
       isBestPackage,
       bestRank,
-      rating,
-      daysAndNights,
     } = req.body;
 
-    const imageUrls = req.files.map((file) => file.path);
+    // Parse days JSON
+    const days = JSON.parse(req.body.days);
 
-    const parsedDays = typeof days === "string" ? JSON.parse(days) : days;
+    // Cloudinary Upload Helper
+    const uploadFile = (file) => {
+      return new Promise((resolve, reject) => {
+        cloudinary.uploader.upload_stream(
+          { folder: "travel_packages" },
+          (err, result) => {
+            if (err) reject(err);
+            else resolve(result.secure_url);
+          }
+        ).end(file.buffer);
+      });
+    };
 
-    const finalDaysData = await Promise.all(
-      parsedDays.map(async (day) => {
-        const finalSlots = await Promise.all(
-          (day.slots || []).map(async (slot) => {
-            let slotImageUrl = slot.imageUrl;
+    // MAIN IMAGES
+    const mainImages = [];
+    for (const file of req.files.filter(f => f.fieldname === "images")) {
+      const url = await uploadFile(file);
+      mainImages.push(url);
+    }
 
-            if (slot.imageUrl && slot.imageUrl.path) {
-              const result = await cloudinary.uploader.upload(
-                slot.imageUrl.path,
-                {
-                  folder: "travel_packages/slots",
-                }
-              );
-              slotImageUrl = result.secure_url;
-            } else if (
-              slot.imageUrl &&
-              slot.imageUrl.startsWith("data:image")
-            ) {
-              const result = await cloudinary.uploader.upload(slot.imageUrl, {
-                folder: "travel_packages/slots",
-              });
-              slotImageUrl = result.secure_url;
-            }
+    // SLOT IMAGES
+    const transformedDays = [];
 
-            return { ...slot, imageUrl: slotImageUrl };
-          })
+    for (let d = 0; d < days.length; d++) {
+      const day = days[d];
+      const newSlots = [];
+
+      for (let s = 0; s < day.slots.length; s++) {
+        const slot = day.slots[s];
+
+        // fieldname = slotImage_0_0
+        const slotFile = req.files.find(
+          f => f.fieldname === `slotImage_${d}_${s}`
         );
 
-        return { ...day, slots: finalSlots };
-      })
-    );
+        let slotImageUrl = slot.image || "";
 
+        if (slotFile) {
+          slotImageUrl = await uploadFile(slotFile);
+        }
+
+        newSlots.push({
+          ...slot,
+          imageUrl: slotImageUrl
+        });
+      }
+
+      transformedDays.push({
+        ...day,
+        slots: newSlots
+      });
+    }
+
+    // CREATE PACKAGE
     const pkg = await Package.create({
       packageType,
       location,
@@ -60,14 +80,18 @@ export const createPackage = async (req, res) => {
       offerPrice,
       isBestPackage,
       bestRank,
-      images: imageUrls,
-      days: finalDaysData,
-      createdBy: req.user._id,
+      images: mainImages,
+      days: transformedDays,
+      createdBy: req.user._id
     });
 
-    res.status(201).json({ message: "Package created successfully", pkg });
+    res.status(201).json({
+      message: "Package created successfully",
+      data: pkg
+    });
+
   } catch (error) {
-    console.error(error);
+    console.error("Create package error:", error.message);
     res.status(500).json({ error: error.message });
   }
 };
