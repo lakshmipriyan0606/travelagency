@@ -11,9 +11,10 @@ import { loginAPI } from "@/api/admin/auth.api";
 
 const LoginForm = () => {
     const navigate = useNavigate()
-    const { mutate} = useMutationAPIQuery(loginAPI,{
-        onSuccess(data, variables, context) {
-            console.log('data: ', data);
+    const { mutate } = useMutationAPIQuery(loginAPI, {
+        onSuccess(data) {
+            localStorage.setItem('adminSession', btoa(JSON.stringify(data)))
+            navigate('/admin/adminpanel')
         },
     })
 
@@ -21,9 +22,8 @@ const LoginForm = () => {
         resolver: zodResolver(loginSchema),
     });
 
-    const onSubmit = (data: LoginFormData) => {
-        console.log("Login Data:", data);
-        mutate(data);
+    const onSubmit = async (data: LoginFormData) => {
+        const response = await mutate(data);
     };
 
 

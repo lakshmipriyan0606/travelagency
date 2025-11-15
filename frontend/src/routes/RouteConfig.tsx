@@ -19,12 +19,12 @@ const routes: AppRoute[] = [
         isProtectRoute: false,
     },
     {
-        path: '/packages',
+        path: '/package/:id',
         element: <PackageDetail />,
         isProtectRoute: false,
     },
     {
-        path: '/destination',
+        path: '/allpackage',
         element: <AllPackage />,
         isProtectRoute: false,
     },

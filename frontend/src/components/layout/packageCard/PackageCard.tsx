@@ -20,10 +20,9 @@ export default function PackageCard({ filterList = [] }) {
             <AnimatePresence mode="popLayout">
                 {filterList.map((offer: any) => {
                     const details = getOfferDetailsConfig(offer);
-
                     return (
                         <motion.div
-                            key={offer.id}
+                            key={offer._id}
                             layout
                             initial={{ opacity: 0, scale: 0.9, y: 30 }}
                             animate={{ opacity: 1, scale: 1, y: 0 }}
@@ -38,7 +37,7 @@ export default function PackageCard({ filterList = [] }) {
 
                                     {/* Carousel */}
                                     <div className="w-full sm:relative sm:w-[55%]">
-                                        <InnerCarousel images={offer.images} offerId={offer.id} />
+                                        <InnerCarousel images={offer.images} offerId={offer._id} />
 
                                         {/* Discount Ribbon */}
                                         <div className="absolute top-0 right-0">

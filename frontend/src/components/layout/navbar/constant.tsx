@@ -7,15 +7,15 @@ export const navbarList: NavbarConfigList[] = [
         key: 'Home'
     },
     {
-        name: 'Destination',
-        path: '/destination',
-        key: 'Destination',
+        name: 'Package',
+        path: '/allpackage',
+        key: 'allPackage',
     },
-    {
-        name: 'Packages',
-        path: '/packages',
-        key: 'Packages',
-    },
+    // {
+    //     name: 'Packages',
+    //     path: '/packages',
+    //     key: 'Packages',
+    // },
     {
         name: 'Services',
         path: '/services',

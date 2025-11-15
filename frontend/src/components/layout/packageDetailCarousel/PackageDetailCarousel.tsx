@@ -6,16 +6,17 @@ import "swiper/css/navigation";
 import { useDeviceSize } from "@/Hook/UseDevice";
 import type { Swiper as SwiperType } from 'swiper';
 
-const images = [
-    'https://picsum.photos/1200/800?random=2',
-    'https://picsum.photos/1200/800?random=9',
-    'https://picsum.photos/1200/800?random=8',
-    'https://picsum.photos/1200/800?random=7',
-    'https://picsum.photos/1200/800?random=86',
-];
+// const images = [
+//     'https://picsum.photos/1200/800?random=2',
+//     'https://picsum.photos/1200/800?random=9',
+//     'https://picsum.photos/1200/800?random=8',
+//     'https://picsum.photos/1200/800?random=7',
+//     'https://picsum.photos/1200/800?random=86',
+// ];
 
 
-export default function PackageDetailCarousel() {
+export default function PackageDetailCarousel({currentPackage}) {
+    const  images = currentPackage?.images || []
     const [activeIndex, setActiveIndex] = useState(0);
     const [renderImages, setRenderImages] = useState(images);
     const mainSwiperRef = useRef<SwiperType | null>(null);

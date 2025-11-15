@@ -1,11 +1,24 @@
 import { AppRoute } from "@/types/types";
 import { Route, Routes } from "react-router-dom";
-import { ReactNode, Suspense, isValidElement } from "react";
+import { ReactNode, Suspense, isValidElement, useEffect } from "react";
 import routes from "./RouteConfig";
 import { ErrorBoundary } from "react-error-boundary";
 import ErrorFallback from "@/components/error/FallbackErrorBoundary";
+import { UseFetchAPIQuery } from "@/Hook/UseFetchAPIQuery";
+import { currentUserAPI } from "@/api/admin/auth.api";
+import { setUser } from "@/store/authSlice";
 
 const renderAppRoute = (routesList: AppRoute[]): ReactNode => {
+    const { data: user, isLoading } = UseFetchAPIQuery({
+        key: ["me"],
+        queryFn: currentUserAPI,
+    });
+
+
+    useEffect(() => {
+        setUser(user)
+    }, [user])
+
     return routesList.map(({ path, element, children }) => {
         const RouteElement = isValidElement(element) ? element : <></>
         return (

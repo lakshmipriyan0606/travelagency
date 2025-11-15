@@ -4,3 +4,7 @@ export const GetBestBackageList = async () => {
   const { data } = await axiosClient.get("packages/bestpackages");
   return data;
 }
+export const GetAllPackageList = async () => {
+  const { data } = await axiosClient.get("packages");
+  return data;
+}

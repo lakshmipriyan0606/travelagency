@@ -21,7 +21,7 @@ export const generateDefaultValues = () => {
 
 
 export const filterConfig = {
-    packageTypes: ["Honeymoon", "Family", "Friends"],
+    packageTypes: ["Honeymoon", "Family", "Adventure"],
     budgets: ["Below $1K", "$1K - $3K", "$3K - $5K", "Above $5K"],
     daysAndNights: ["2 Days, 2 Nights", "4 Days, 3 Nights", "7 Days, 6 Nights"],
     ratings: ["5 Star", "4 Star", "3 Star"]
@@ -30,27 +30,35 @@ export const filterConfig = {
 
 
 
-export const filterPackages = (packages:any, filters:any) => {
-    return packages.filter((pkg:any) => {
+export const filterPackages = (packages: any[], filters: any) => {
+    return packages.filter((pkg: any) => {
 
-        // ✅ PACKAGE TYPES
+        // ----------------------------------------
+        // 1. PACKAGE TYPES
+        // ----------------------------------------
         const selectedTypes = Object.keys(filters.packageTypes || {}).filter(
-            (t) => filters.packageTypes?.[t]
+            (t) => filters.packageTypes[t]
         );
 
         if (selectedTypes.length) {
-            if (!selectedTypes.includes(pkg.packageType)) {
-                return false;
-            }
+            const normalizedType = pkg.packageType?.toLowerCase();
+
+            const match = selectedTypes.some(
+                (t) => t.toLowerCase() === normalizedType
+            );
+
+            if (!match) return false;
         }
 
-        // ✅ BUDGETS
+        // ----------------------------------------
+        // 2. BUDGET FILTER
+        // ----------------------------------------
         const selectedBudgets = Object.keys(filters.budgets || {}).filter(
-            (b) => filters.budgets?.[b]
+            (b) => filters.budgets[b]
         );
 
         if (selectedBudgets.length) {
-            const price = pkg?.price;
+            const price = pkg.price;
 
             const match = selectedBudgets.some((range) => {
                 if (range === "Below $1K") return price < 1000;
@@ -63,25 +71,30 @@ export const filterPackages = (packages:any, filters:any) => {
             if (!match) return false;
         }
 
-        // ✅ DAYS & NIGHTS
+        // ----------------------------------------
+        // 3. DAYS & NIGHTS (SKIPPED IF NO pkg.days)
+        // ----------------------------------------
         const selectedDays = Object.keys(filters.daysAndNights || {}).filter(
-            (d) => filters.daysAndNights?.[d]
+            (d) => filters.daysAndNights[d]
         );
 
-        if (selectedDays.length) {
+        if (selectedDays.length && pkg.days) {
             if (!selectedDays.includes(pkg.days)) return false;
         }
 
-        // ✅ RATINGS
+        // ----------------------------------------
+        // 4. RATINGS
+        // ----------------------------------------
         const selectedRatings = Object.keys(filters.ratings || {}).filter(
-            (r) => filters.ratings?.[r]
+            (r) => filters.ratings[r]
         );
 
         if (selectedRatings.length) {
             const pkgRating = Math.floor(pkg.rating);
-            const match = selectedRatings.some((rate) => {
-                const r = parseInt(rate);
-                return r === pkgRating;
+
+            const match = selectedRatings.some((r) => {
+                const clean = parseInt(r.replace(" Star", ""));
+                return clean === pkgRating;
             });
 
             if (!match) return false;

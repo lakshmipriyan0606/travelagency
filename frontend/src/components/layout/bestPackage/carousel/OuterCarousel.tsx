@@ -15,48 +15,28 @@ import heartgray from '@/assets/icons/heartgray.svg';
 import dateIcon from '@/assets/icons/date.svg';
 import { UseFetchAPIQuery } from "@/Hook/UseFetchAPIQuery";
 import { GetBestBackageList } from "@/api/user/api";
-import { useEffect, useMemo, useState } from "react";
+import { useNavigate } from "react-router-dom";
 
 
 export default function OuterCarousel() {
 
-
-    const [bestPackageList, setBestPackageList] = useState([])
-    console.log('bestPackageList: ', bestPackageList);
-    const { refetch, data, isFetching } = UseFetchAPIQuery(
-        ['bestPackage'],
-        GetBestBackageList,
-        {
-            enabled: false,
-            retry: false,
-            onSuccess: (data: any) => {
-                console.log('data: ', data);
-                setBestPackageList(data);
-            },
-            onError: () => {
-            },
-        }
-    );
+    const navigate = useNavigate()
 
 
+    const { data, isLoading, isError } = UseFetchAPIQuery({
+        key: ["bestPackage"],
+        queryFn: GetBestBackageList,
+    });
 
-    useEffect(() => {
-        handleFetchPackageAPI()
-    }, [])
+    if (isLoading) return <p>Loading packages...</p>;
+    if (isError) return <p>Error loading packages</p>;
 
-    useEffect(() => {
-        if (data) {
-            setBestPackageList(data?.data)
-        } else {
-            setBestPackageList([])
-        }
-    }, [JSON.stringify(data)])
+    const bestPackageList = data?.data || [];
 
-    const handleFetchPackageAPI = () => {
-        refetch()
+
+    const handleNavigation = (id: number) => {
+        navigate(`/package/${id}`)
     }
-
-    
 
 
     return (
@@ -92,7 +72,7 @@ export default function OuterCarousel() {
                                 <div
                                     className="absolute top-5 font-roboto -right-3 z-20 bg-red-500 text-white font-bold px-4 py-0 w-max"
                                 >
-                                   { calculateDiscountPercentage(offer?.price,offer?.offerPrice) }% OFF
+                                    {calculateDiscountPercentage(offer?.price, offer?.offerPrice)}% OFF
                                 </div>
 
                                 <div
@@ -101,7 +81,7 @@ export default function OuterCarousel() {
                             </div>
 
                             {/* Offer Details */}
-                            <div className="flex flex-col font-roboto gap-3 justify-center p-8">
+                            <div className="flex flex-col font-roboto gap-3 justify-center p-8" onClick={() => handleNavigation(offer._id)}>
                                 <div className="flex items-center gap-2 justify-between">
                                     <div className="flex items-center gap-3 ">
                                         <span>
@@ -115,7 +95,7 @@ export default function OuterCarousel() {
                                 </div>
                                 <div className="flex items-center gap-3">
                                     {<img src={dateIcon} alt="" />}
-                                    <h3 className="">   {offer?.daysAndNights ||''}</h3>
+                                    <h3 className="">   {offer?.daysAndNights || ''}</h3>
                                 </div>
                                 <div className="flex items-center gap-3">
                                     {<img src={star} alt="" />}

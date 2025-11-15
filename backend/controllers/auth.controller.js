@@ -5,6 +5,7 @@ import {
   generateRefreshToken,
 } from "../utils/generateTokens.js";
 import jwt from "jsonwebtoken";
+import userModel from "../models/user.model.js";
 
 export const register = async (req, res) => {
   try {
@@ -33,7 +34,7 @@ export const register = async (req, res) => {
 export const login = async (req, res) => {
   try {
     const { email, password } = req.body;
-    console.log(' req.body: ',  req.body);
+    console.log(" req.body: ", req.body);
 
     const user = await User.findOne({ email });
     if (!user) return res.status(404).json({ msg: "No user found" });
@@ -63,20 +64,13 @@ export const login = async (req, res) => {
   }
 };
 
-
-
-
 export const refresh = (req, res) => {
   const refreshToken = req.cookies.refresh_token;
 
-  if (!refreshToken)
-    return res.status(401).json({ msg: "No refresh token" });
+  if (!refreshToken) return res.status(401).json({ msg: "No refresh token" });
 
   try {
-    const decoded = jwt.verify(
-      refreshToken,
-      process.env.JWT_REFRESH_SECRET
-    );
+    const decoded = jwt.verify(refreshToken, process.env.JWT_REFRESH_SECRET);
 
     const newAccessToken = jwt.sign(
       { id: decoded.id, role: decoded.role },
@@ -96,10 +90,43 @@ export const refresh = (req, res) => {
   }
 };
 
-
-
 export const logout = (req, res) => {
   res.clearCookie("access_token");
   res.clearCookie("refresh_token");
   res.json({ msg: "Logged out" });
+};
+
+export const getSession = async (req, res) => {
+  try {
+    const token = req.cookies.access_token;
+    console.log("token:", token);
+
+    if (!token) {
+      return res.json({ isLoggedIn: false });
+    }
+
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+
+    // MUST use await
+    const currentUser = await userModel
+      .findById(decoded.id)
+      .select("role name email");
+
+    if (!currentUser) {
+      return res.json({ isLoggedIn: false });
+    }
+
+    return res.json({
+      isLoggedIn: true,
+      id: decoded.id,
+      role: currentUser.role || "user",
+      user: {
+        name: currentUser.name || "",
+        email: currentUser.email || "",
+      },
+    });
+  } catch (err) {
+    console.log("Session Error:", err);
+    return res.json({ isLoggedIn: false });
+  }
 };

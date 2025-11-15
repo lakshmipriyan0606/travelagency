@@ -41,20 +41,20 @@ export const itinerariesExpandCardDetails = [
             {
                 time: "Morning",
                 detail: "Visit Universal Studios and enjoy the themed rides.",
-                 image:
+                image:
                     'https://picsum.photos/1200/800?random=5',
             },
             {
                 time: "Noon",
                 detail: "Relax at Siloso Beach and enjoy local dining options.",
-                  image:
-                    'https://picsum.photos/1200/800?random=21',
+                image:
+                    'https://picsum.photos/1200/800?random=5',
             },
             {
                 time: "Evening",
                 detail: "Witness the Wings of Time show by the sea.",
-                 image:
-                    'https://picsum.photos/1200/800?random=10',
+                image:
+                    'https://picsum.photos/1200/800?random=5',
             },
         ],
     },
@@ -107,3 +107,127 @@ export const itinerariesCardDetails = [
         },
     },
 ];
+
+// ----------------------------------------------------
+// TYPES
+// ----------------------------------------------------
+export interface Slot {
+  slotType: string;
+  title?: string;        // <- backend has title, so make it optional here
+  description: string;
+  imageUrl?: string;
+}
+
+export interface DayData {
+  dayTitle: string;
+  slots: Slot[];
+}
+
+/** Existing timeline types kept as-is */
+export interface TimeSlot {
+  time: string;
+  description?: string;
+  icon?: string;
+  onlyDuration?: boolean;
+}
+
+export interface DayFormatted {
+  day: {
+    duration: string;
+    title: string;
+    timeSlots: TimeSlot[];
+  };
+}
+
+export interface IntervalItem {
+  interval: true;
+  backgroundImage: string;
+}
+
+export type FinalTimelineItem = DayFormatted | IntervalItem;
+
+/** ----- New types for front-end itinerary format ----- */
+
+export interface ScheduleItem {
+  time: string;
+  detail: string;
+  image: string;
+}
+
+export interface ItineraryDay {
+  id: number;
+  title: string;
+  description: string;
+  schedule: ScheduleItem[];
+}
+
+// ----------------------------------------------------
+// SLOT FORMATTER
+// ----------------------------------------------------
+export const handleSlotFormat = (
+  slotList: Slot[] = [],
+  dayIndex: number
+): TimeSlot[] => {
+  const formattedSlots = slotList.map((item) => ({
+    time: item.slotType,
+    description: item.description,
+    icon: item.imageUrl || "",
+  }));
+
+  // Add onlyDuration object ONLY ONCE at top
+  return [{ time: `Day -${dayIndex + 1}`, onlyDuration: true }, ...formattedSlots];
+};
+
+// ----------------------------------------------------
+// DAYS FORMATTER (FULL LOGIC)
+// ----------------------------------------------------
+export const handleDayListFormat = (daysData: DayData[] = []): FinalTimelineItem[] => {
+  const dayList: DayFormatted[] = daysData.map((day, index) => ({
+    day: {
+      duration: `Day -${index + 1}`,
+      title: day.dayTitle,
+      timeSlots: handleSlotFormat(day.slots, index),
+    },
+  }));
+
+  const finalList: FinalTimelineItem[] = [];
+
+  dayList.forEach((day, index) => {
+    const isLast = index === dayList.length - 1;
+
+    finalList.push(day);
+
+    if (!isLast) {
+      finalList.push({
+        interval: true,
+        backgroundImage: index % 2 === 0 ? dotLineRightPng : dotLineLeftPng,
+      });
+    }
+  });
+
+  return finalList;
+};
+
+// ----------------------------------------------------
+// ITINERARY EXPAND FORMATTER (TYPED)
+// ----------------------------------------------------
+export const formatItineraryExpandData = (daysList: DayData[] = []): ItineraryDay[] => {
+  return daysList.map((day, dayIndex) => {
+    const firstSlotDescription = day?.slots?.[0]?.description || "No description available for this day.";
+
+    const schedule: ScheduleItem[] = day.slots.map((slot) => ({
+      time: slot.slotType
+        ? slot.slotType.charAt(0).toUpperCase() + slot.slotType.slice(1)
+        : "N/A",
+      detail: slot.title || slot.description || "No details available.",
+      image: slot.imageUrl || "",
+    }));
+
+    return {
+      id: dayIndex + 1,
+      title: day.dayTitle || `Day ${dayIndex + 1}`,
+      description: firstSlotDescription,
+      schedule,
+    };
+  });
+};
