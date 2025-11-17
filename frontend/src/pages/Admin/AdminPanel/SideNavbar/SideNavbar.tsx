@@ -1,8 +1,8 @@
 import { adminMenu } from "../constant";
 
-export default function Sidebar({ active, onChange }) {
+export default function Sidebar({ active, onChange }:{avtive:any, onChange: (component:string) => void}) {
     return (
-        <aside className="w-64 h-screen bg-neutral-900 text-white p-4 border-r border-neutral-800">
+        <aside className="w-64  bg-neutral-900 text-white p-4 border-r border-neutral-800">
             <div className="text-2xl font-bold mb-8">Admin Panel</div>
 
             <nav className="flex flex-col gap-2">

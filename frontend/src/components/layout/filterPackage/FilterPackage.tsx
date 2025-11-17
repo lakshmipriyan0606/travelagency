@@ -15,7 +15,7 @@ type FilterConfigForm = {
     };
 };
 
-const FilterPackage = () => {
+const FilterPackage = ({ isAdmin }: { isAdmin: Boolean }) => {
     const defaultValues = useMemo(() => generateDefaultValues(), []);
 
     const { data, isLoading, isError } = UseFetchAPIQuery({
@@ -62,7 +62,7 @@ const FilterPackage = () => {
                         Packages ({filteredPackages.length})
                     </h2>
 
-                    <PackageCard filterList={filteredPackages} />
+                    <PackageCard filterList={filteredPackages} isAdmin={isAdmin} />
 
                     {!filteredPackages.length && (
                         <p className="text-red-500 font-semibold mt-3">

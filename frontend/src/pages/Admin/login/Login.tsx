@@ -5,15 +5,26 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { ReusableInput } from "@/components/forms/ReusableInput";
 import { LoginFormData, loginSchema } from "@/ZodSchema/schema";
 import { useNavigate } from "react-router-dom";
-import { useLogin } from "@/Hook/Admin/useAuth";
 import { useMutationAPIQuery } from "@/Hook/useMutationAPIQuery";
 import { loginAPI } from "@/api/admin/auth.api";
+import { setUser } from "@/store/authSlice";
+import { useDispatch } from "react-redux";
+import { id } from "zod/v4/locales";
 
 const LoginForm = () => {
     const navigate = useNavigate()
+    const dispatch = useDispatch()
     const { mutate } = useMutationAPIQuery(loginAPI, {
         onSuccess(data) {
-            localStorage.setItem('adminSession', btoa(JSON.stringify(data)))
+            dispatch(setUser({
+                id: data.user._id,
+                user: {
+                    name: data.user.name,
+                    email: data.user.email,
+                },
+                role: data.user.role,
+                isLoggedIn: true,
+            }))
             navigate('/admin/adminpanel')
         },
     })

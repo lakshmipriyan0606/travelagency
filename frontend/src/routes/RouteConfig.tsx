@@ -6,6 +6,7 @@ import PackageDetail from "@/pages/PackageDetail/PackageDetail";
 import { AppRoute } from "@/types/types";
 import { lazy } from "react";
 import ProtectedRoute from "./ProtectedRoute";
+import NonProtectedRoute from "./NonProtectRoute";
 
 const Home = lazy(() => import('@/pages/Home/Home'));
 
@@ -28,23 +29,24 @@ const routes: AppRoute[] = [
         element: <AllPackage />,
         isProtectRoute: false,
     },
-    {
-        path: '/admin/register',
-        element: <RegisterForm />,
-        isProtectRoute: false,
-    },
+    // {
+    //     path: '/admin/register',
+    //     element: <RegisterForm />,
+    //     isProtectRoute: false,
+    // },
     {
         path: '/admin/login',
-        element: <LoginForm />,
+        element: <NonProtectedRoute />,
+        children: [{ path: '', element: <LoginForm /> }],
         isProtectRoute: false,
     },
     {
         path: '/admin/adminpanel',
-        element:  <ProtectedRoute isAuthenticated={true} allowedRoles={["admin"]} userRole={"admin"}  />,
+        element: <ProtectedRoute allowedRoles={["admin"]} />,
         isProtectRoute: false,
         children: [
-      { path: "", element: <AdminPanel /> },
-    ],
+            { path: "", element: <AdminPanel /> },
+        ],
     },
 ];
 

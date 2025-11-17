@@ -7,16 +7,17 @@ import ErrorFallback from "@/components/error/FallbackErrorBoundary";
 import { UseFetchAPIQuery } from "@/Hook/UseFetchAPIQuery";
 import { currentUserAPI } from "@/api/admin/auth.api";
 import { setUser } from "@/store/authSlice";
+import { useDispatch } from "react-redux";
 
 const renderAppRoute = (routesList: AppRoute[]): ReactNode => {
-    const { data: user, isLoading } = UseFetchAPIQuery({
+    const dispatch = useDispatch()
+    const { data: user, } = UseFetchAPIQuery({
         key: ["me"],
         queryFn: currentUserAPI,
     });
 
-
     useEffect(() => {
-        setUser(user)
+        dispatch(setUser(user || null))
     }, [user])
 
     return routesList.map(({ path, element, children }) => {

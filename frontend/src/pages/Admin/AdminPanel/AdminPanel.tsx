@@ -5,16 +5,18 @@ import React, { useState } from 'react'
 import Sidebar from './SideNavbar/SideNavbar'
 import AllPackage from '@/pages/AllPackage/AllPackage'
 import FilterPackage from '@/components/layout/filterPackage/FilterPackage'
+import { useSelector } from 'react-redux'
 
 const AdminPanel = () => {
 
-
+    const { user } = useSelector((state: any) => state?.auth);
+    const isAdmin = user?.role === "admin" || false;
     const [active, setActive] = useState("AllPackages");
 
     const renderPage = () => {
         switch (active) {
             case "CreatePackage": return <AdminUploadPackageForm />;
-            case "AllPackages": return <FilterPackage />;
+            case "AllPackages": return <FilterPackage  isAdmin={isAdmin}/>;
         }
     };
 

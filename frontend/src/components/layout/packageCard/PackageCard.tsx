@@ -11,9 +11,12 @@ import heartgray from "@/assets/icons/heartgray.svg";
 import dateIcon from "@/assets/icons/date.svg";
 
 import { AnimatePresence, motion } from "framer-motion";
+import { Delete, Pencil, Trash2 } from "lucide-react";
+import { useSelector } from "react-redux";
 
-export default function PackageCard({ filterList = [] }) {
+export default function PackageCard({ filterList = [], isAdmin }: { filterList: any[]; isAdmin: Boolean }) {
     useDeviceSize();
+
 
     return (
         <div className="flex flex-col gap-6 items-center justify-center max-w-7xl mx-auto p-2 sm:p-5 w-full">
@@ -28,67 +31,80 @@ export default function PackageCard({ filterList = [] }) {
                             animate={{ opacity: 1, scale: 1, y: 0 }}
                             exit={{ opacity: 0, scale: 0.85, y: -25 }}
                             transition={{ duration: 0.35, ease: "easeOut" }}
-                            // whileHover={{ scale: 1.03 }}
                             whileTap={{ scale: 0.97 }}
                             className="flex flex-col w-full"
                         >
-                            <SwiperSlide className="msm:p-2">
-                                <div className="flex flex-col md:flex-row bg-white rounded-2xl overflow-hidden shadow-xl text-gray-900">
+                            {/* GROUP FIX: Use real div, not SwiperSlide */}
+                            <div className={`msm:p-2  ${isAdmin ? "group" : ""}`}>
+                                <SwiperSlide>
+                                    <div className="relative flex flex-col md:flex-row bg-white rounded-2xl overflow-hidden shadow-xl text-gray-900">
 
-                                    {/* Carousel */}
-                                    <div className="w-full sm:relative sm:w-[55%]">
-                                        <InnerCarousel images={offer.images} offerId={offer._id} />
-
-                                        {/* Discount Ribbon */}
-                                        <div className="absolute top-0 right-0">
-                                            <div
-                                                className="absolute top-5 font-roboto -right-3 z-20 bg-red-500 text-white font-bold px-4 py-0 w-max"
+                                        {/* --- FIXED HOVER ICON --- */}
+                                        {
+                                            isAdmin && <div
+                                                className="
+                                                absolute top-0 right-4
+                                                opacity-0 scale-90 translate-y-3
+                                                transition-all duration-300
+                                                group-hover:opacity-100 group-hover:scale-100 group-hover:translate-y-0
+                                                flex gap-4 z-30
+                                            "
                                             >
-                                                50 % OFF
+                                                <Pencil className="w-6 h-6 text-gray-700 cursor-pointer hover:text-blue-600" />
+                                                <Trash2 className="w-6 h-6 text-red-700 cursor-pointer hover:text-red-600" />
                                             </div>
-                                            <div
-                                                className="absolute top-9 -right-1 h-5 w-2 bg-red-500 brightness-90 rotate-[60deg]"
-                                            ></div>
+                                        }
+
+
+                                        {/* Carousel */}
+                                        <div className="w-full sm:relative sm:w-[55%]">
+                                            <InnerCarousel images={offer.images} offerId={offer._id} />
+
+                                            {/* Discount Ribbon */}
+                                            <div className="absolute top-0 right-0">
+                                                <div className="absolute top-5 font-roboto -right-3 z-20 bg-red-500 text-white font-bold px-4 py-0 w-max">
+                                                    50 % OFF
+                                                </div>
+                                                <div className="absolute top-9 -right-1 h-5 w-2 bg-red-500 brightness-90 rotate-[60deg]"></div>
+                                            </div>
                                         </div>
-                                    </div>
 
-                                    {/* Details */}
-                                    <div className="flex flex-col justify-center gap-3 p-8 md:w-[45%] font-roboto">
-
-                                        {/* Header */}
-                                        <Row>
-                                            <IconText icon={location} text={offer.title} />
-                                            <img src={heartgray} alt="" width={22} className="cursor-pointer" />
-                                        </Row>
-
-                                        {/* Dynamic details */}
-                                        {details.map((d, i) => (
-                                            <IconText key={i} icon={d.icon} text={d.label} />
-                                        ))}
-
-                                        {/* Price */}
-                                        <div className="mt-2 flex flex-col gap-3">
-                                            <Row>
-                                                <span className="font-semibold">From</span>
-                                                <PriceStrike original={Number(offer?.price)} final={offer.offerPrice} />
-                                            </Row>
-
-                                            <Divider />
+                                        {/* Details */}
+                                        <div className="flex flex-col justify-center gap-3 p-8 md:w-[45%] font-roboto">
 
                                             <Row>
-                                                <img src={whatsappIcon} alt="whatsapp" className="w-12 h-12" />
-                                                <AnimatedButton
-                                                    buttonText="Contact us"
-                                                    className="w-3/4 hover:bg-custom-black"
-                                                    borderButtonColor="bg-white"
-                                                    textColor="text-white"
-                                                    bgColor="bg-custom-black"
-                                                />
+                                                <IconText icon={location} text={offer.title} />
+                                                <img src={heartgray} alt="" width={22} className="cursor-pointer" />
                                             </Row>
+
+                                            {details.map((d, i) => (
+                                                <IconText key={i} icon={d.icon} text={d.label} />
+                                            ))}
+
+                                            {/* Pricing */}
+                                            <div className="mt-2 flex flex-col gap-3">
+                                                <Row>
+                                                    <span className="font-semibold">From</span>
+                                                    <PriceStrike original={Number(offer?.price)} final={offer.offerPrice} />
+                                                </Row>
+
+                                                <Divider />
+
+                                                <Row>
+                                                    <img src={whatsappIcon} alt="whatsapp" className="w-12 h-12" />
+                                                    <AnimatedButton
+                                                        buttonText="Contact us"
+                                                        className="w-3/4 hover:bg-custom-black"
+                                                        borderButtonColor="bg-white"
+                                                        textColor="text-white"
+                                                        bgColor="bg-custom-black"
+                                                    />
+                                                </Row>
+                                            </div>
                                         </div>
                                     </div>
-                                </div>
-                            </SwiperSlide>
+                                </SwiperSlide>
+                            </div>
                         </motion.div>
                     );
                 })}
