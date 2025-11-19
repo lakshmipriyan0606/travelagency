@@ -80,6 +80,17 @@ export const createPackage = async (req, res) => {
     }
 
     // SAVE PACKAGE
+    if (isBestPackage && bestRank) {
+      const existingPackage = await Package.findOne({ bestRank });
+
+      if (existingPackage) {
+        existingPackage.bestRank = null;
+        existingPackage.isBestPackage = false;
+        await existingPackage.save();
+      }
+    }
+
+    // Step 4: Create new package
     const pkg = await Package.create({
       packageType,
       location,
@@ -87,13 +98,12 @@ export const createPackage = async (req, res) => {
       rating,
       price,
       offerPrice,
-      isBestPackage,
-      bestRank,
+      isBestPackage: isBestPackage || false,
+      bestRank: bestRank || null,
       images: mainImages,
       days: transformedDays,
       createdBy: req.user._id,
     });
-
     res.status(201).json({
       message: "Package created successfully",
       data: pkg,

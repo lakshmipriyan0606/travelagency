@@ -25,15 +25,23 @@ export const CreatePackage = async (payload: object) => {
   const { data } = await axiosClient.post("/packages/create", payload);
   return data;
 };
-export const UpdatePackage = async (payload:Object,id:string) => {
-  const { data } = await axiosClient.post(`/packages/updatePackage/${id}`,payload);
+export const UpdatePackage = async (payload: Object | any, id: string | any) => {
+  const { data } = await axiosClient.post(
+    `/packages/updatePackage/${id}`,
+    payload
+  );
   return data;
 };
-export const GetCurrentPackageDetail = async (id:string) => {
+export const GetCurrentPackageDetail = async (id: string | any) => {
   const { data } = await axiosClient.get(`/packages/${id}`);
   return data;
 };
-export const DeleteCurrentPackage = async (id:string) => {
+export const DeleteCurrentPackage = async (id: string) => {
   const { data } = await axiosClient.delete(`/packages/deletePackage/${id}`);
+  return data;
+};
+
+export const GetAllBookings = async () => {
+  const { data } = await axiosClient.get("/booking/all");
   return data;
 };

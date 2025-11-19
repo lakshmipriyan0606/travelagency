@@ -3,14 +3,20 @@ import { Swiper, SwiperSlide } from 'swiper/react';
 import { Navigation } from 'swiper/modules';
 import arrowLeft from '@/assets/icons/leftarrow.svg'
 import arrowRight from '@/assets/icons/rightarrow.svg'
+import { useNavigate } from 'react-router-dom';
 
 
 interface InnerCarouselProps {
     images: string[];
-    offerId: number;
+    offerId: number | string;
 }
 
 export default function InnerCarousel({ images, offerId }: InnerCarouselProps) {
+    const navigate = useNavigate()
+
+    const handleNavigation = (id: number | string) => {
+        navigate(`/package/${id}`)
+    }
     return (
         <div className="relative">
             <div>
@@ -27,8 +33,9 @@ export default function InnerCarousel({ images, offerId }: InnerCarouselProps) {
                     {images.map((img, idx) => (
                         <SwiperSlide key={idx}>
                             <div
-                                className="h-full bg-cover bg-center relative flex"
+                                className="h-full bg-cover bg-center relative flex cursor-pointer"
                                 style={{ backgroundImage: `url(${img})` }}
+                                onClick={() => handleNavigation(offerId)}
                             >
 
                                 {/* ---------- EXCLUSIVE OFFER BAR (bottom) ---------- */}

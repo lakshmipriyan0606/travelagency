@@ -80,7 +80,7 @@ export default function ItineraryDay({ currentPackage }) {
   };
 
   return (
-    <div className="max-w-4xl mx-auto py-10 px-4">
+    <div className="max-w-4xl mx-auto py-10 px-4 mr-[30%] w-[70%]">
       {daysListData.map((day) => (
         <div
           key={day.id}
@@ -90,9 +90,8 @@ export default function ItineraryDay({ currentPackage }) {
           <div className="relative flex items-stretch">
             {/* LEFT TIMELINE */}
             <div
-              className={`flex-shrink-0 w-16 relative bg-[#FFF3DB] overflow-hidden ${
-                expandedDay !== day.id ? "rounded-tl-lg rounded-bl-lg" : ""
-              }`}
+              className={`flex-shrink-0 w-16 relative bg-[#FFF3DB] overflow-hidden ${expandedDay !== day.id ? "rounded-tl-lg rounded-bl-lg" : ""
+                }`}
             >
               {/* Vertical Line */}
               {expandedDay === day.id && (
@@ -134,11 +133,10 @@ export default function ItineraryDay({ currentPackage }) {
             {/* RIGHT CONTENT */}
             <div className="flex-1">
               <div
-                className={`shadow-sm overflow-hidden border-none ${
-                  expandedDay !== day.id
+                className={`shadow-sm overflow-hidden border-none ${expandedDay !== day.id
                     ? "rounded-tr-xl rounded-br-xl"
                     : ""
-                }`}
+                  }`}
               >
                 {/* HEADER */}
                 <div
@@ -166,9 +164,10 @@ export default function ItineraryDay({ currentPackage }) {
                     >
                       <CardContent className="bg-white p-6 space-y-6">
                         {/* Description */}
-                        <p className="text-gray-600 text-sm leading-relaxed">
+                        <p className="text-sm text-gray-700 break-words sm:max-w-sm md:max-w-md">
                           {day.description}
                         </p>
+
 
                         {/* Schedule */}
                         <div className="space-y-6">

@@ -2,7 +2,7 @@
 import { Swiper, SwiperSlide } from "swiper/react";
 import { Navigation, Pagination } from "swiper/modules";
 import InnerCarousel from "./InnerCarousel";
-import { bestPackageOfferList, calculateDiscountPercentage } from "../constant";
+import {calculateDiscountPercentage } from "../constant";
 import customArrowLeft from '@/assets/icons/arrowLeft.svg'
 import customArrowRight from '@/assets/icons/arrowright.svg'
 import arrowLeft from '@/assets/icons/leftarrow.svg'
@@ -15,13 +15,9 @@ import heartgray from '@/assets/icons/heartgray.svg';
 import dateIcon from '@/assets/icons/date.svg';
 import { UseFetchAPIQuery } from "@/Hook/UseFetchAPIQuery";
 import { GetBestBackageList } from "@/api/user/api";
-import { useNavigate } from "react-router-dom";
 
 
 export default function OuterCarousel() {
-
-    const navigate = useNavigate()
-
 
     const { data, isLoading, isError } = UseFetchAPIQuery({
         key: ["bestPackage"],
@@ -32,12 +28,6 @@ export default function OuterCarousel() {
     if (isError) return <p>Error loading packages</p>;
 
     const bestPackageList = data?.data || [];
-
-
-    const handleNavigation = (id: number) => {
-        navigate(`/package/${id}`)
-    }
-
 
     return (
         <div className="max-w-7xl mx-auto">
@@ -81,7 +71,7 @@ export default function OuterCarousel() {
                             </div>
 
                             {/* Offer Details */}
-                            <div className="flex flex-col font-roboto gap-3 justify-center p-8" onClick={() => handleNavigation(offer._id)}>
+                            <div className="flex flex-col font-roboto gap-3 justify-center p-8">
                                 <div className="flex items-center gap-2 justify-between">
                                     <div className="flex items-center gap-3 ">
                                         <span>

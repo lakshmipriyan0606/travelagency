@@ -17,29 +17,54 @@ import { useState } from "react";
 import { useMutationAPIQuery } from "@/Hook/useMutationAPIQuery";
 import { DeleteCurrentPackage } from "@/api/admin/auth.api";
 
-interface PackageCardProps { filterList: any[]; isAdmin: Boolean, setEditPackageId: () => void, setActive: () => void, refetch: () => void }
+interface Package {
+    _id: string;
+    images: string[];
+    location: string;
+    daysAndNights: string;
+    rating: string | number;
+    price: number;
+    offerPrice: number;
+}
 
-export default function PackageCard({ filterList = [], isAdmin, setEditPackageId, setActive, refetch }: PackageCardProps) {
+interface PackageCardProps {
+    filterList: Package[];
+    isAdmin: boolean;
+    setEditPackageId: (id: string) => void;
+    setActive: (active: string) => void;
+    refetch?: () => void | any;
+}
+
+export default function PackageCard({
+    filterList = [],
+    isAdmin,
+    setEditPackageId,
+    setActive,
+    refetch
+}: PackageCardProps) {
     useDeviceSize();
 
     const [open, setOpen] = useState(false);
-    const [deleteId, setDeleteId] = useState(null);
+    const [deleteId, setDeleteId] = useState<string | null>(null);
+
     const { mutate: DeleteMutate } = useMutationAPIQuery(DeleteCurrentPackage, {
-        onSuccess: (data) => {
-            console.log("create/update success", data);
+        onSuccess: () => {
+            refetch?.();
         },
     });
+
     const handleDelete = () => {
-        DeleteMutate(deleteId);
-        setOpen(false);
-        setDeleteId(null);
-        refetch()
+        if (deleteId) {
+            DeleteMutate(deleteId);
+            setOpen(false);
+            setDeleteId(null);
+        }
     };
 
     return (
         <div className="flex flex-col gap-6 items-center justify-center max-w-7xl mx-auto p-2 sm:p-5 w-full">
             <AnimatePresence mode="popLayout">
-                {filterList.map((offer: any) => {
+                {filterList.map((offer) => {
                     const details = getOfferDetailsConfig(offer);
                     return (
                         <motion.div
@@ -52,35 +77,27 @@ export default function PackageCard({ filterList = [], isAdmin, setEditPackageId
                             whileTap={{ scale: 0.97 }}
                             className="flex flex-col w-full"
                         >
-                            {/* GROUP FIX: Use real div, not SwiperSlide */}
-                            <div className={`msm:p-2  ${isAdmin ? "group" : ""}`}>
+                            <div className={`msm:p-2 ${isAdmin ? "group" : ""}`}>
                                 <SwiperSlide>
                                     <div className="relative flex flex-col md:flex-row bg-white rounded-2xl overflow-hidden shadow-xl text-gray-900">
-
-                                        {/* --- FIXED HOVER ICON --- */}
-                                        {
-                                            isAdmin && <div
-                                                className="
-                                                absolute top-0 right-4
-                                                opacity-0 scale-90 translate-y-3
-                                                transition-all duration-300
-                                                group-hover:opacity-100 group-hover:scale-100 group-hover:translate-y-0
-                                                flex gap-4 z-30
-                                            "
-                                            >
-                                                <Pencil className="w-6 h-6 text-gray-700 cursor-pointer hover:text-blue-600" onClick={
-                                                    () => {
+                                        {isAdmin && (
+                                            <div className="absolute top-0 right-4 opacity-0 scale-90 translate-y-3 transition-all duration-300 group-hover:opacity-100 group-hover:scale-100 group-hover:translate-y-0 flex gap-4 z-30">
+                                                <Pencil
+                                                    className="w-6 h-6 text-gray-700 cursor-pointer hover:text-blue-600"
+                                                    onClick={() => {
                                                         setEditPackageId(offer._id);
                                                         setActive("CreatePackage");
-                                                    }
-                                                } />
-                                                <Trash2 className="w-6 h-6 text-gray-700 cursor-pointer hover:text-red-600" onClick={() => {
-                                                    setOpen(true)
-                                                    setDeleteId(offer._id)
-                                                }} />
+                                                    }}
+                                                />
+                                                <Trash2
+                                                    className="w-6 h-6 text-gray-700 cursor-pointer hover:text-red-600"
+                                                    onClick={() => {
+                                                        setOpen(true);
+                                                        setDeleteId(offer._id);
+                                                    }}
+                                                />
                                             </div>
-                                        }
-
+                                        )}
 
                                         {/* Carousel */}
                                         <div className="w-full sm:relative sm:w-[55%]">
@@ -97,7 +114,6 @@ export default function PackageCard({ filterList = [], isAdmin, setEditPackageId
 
                                         {/* Details */}
                                         <div className="flex flex-col justify-center gap-3 p-8 md:w-[45%] font-roboto">
-
                                             <Row>
                                                 <IconText icon={location} text={offer.location} />
                                                 <img src={heartgray} alt="" width={22} className="cursor-pointer" />
@@ -131,17 +147,16 @@ export default function PackageCard({ filterList = [], isAdmin, setEditPackageId
                                     </div>
                                 </SwiperSlide>
                             </div>
-                            {
-                                open && (
-                                    <DeleteConfirmDialog
-                                        open={open}
-                                        onOpenChange={setOpen}
-                                        onConfirm={handleDelete}
-                                        title="Delete Package?"
-                                        description="Are you sure you want to delete this package permanently?"
-                                    />
-                                )
-                            }
+
+                            {open && (
+                                <DeleteConfirmDialog
+                                    open={open}
+                                    onOpenChange={setOpen}
+                                    onConfirm={handleDelete}
+                                    title="Delete Package?"
+                                    description="Are you sure you want to delete this package permanently?"
+                                />
+                            )}
                         </motion.div>
                     );
                 })}
@@ -150,7 +165,7 @@ export default function PackageCard({ filterList = [], isAdmin, setEditPackageId
     );
 }
 
-function getOfferDetailsConfig(offer: any) {
+function getOfferDetailsConfig(offer: Package) {
     return [
         { icon: dateIcon, label: offer.daysAndNights },
         { icon: star, label: offer.rating },
@@ -165,7 +180,7 @@ function Divider() {
     return <div className="w-full h-[2px] bg-gray-300" />;
 }
 
-function IconText({ icon, text }: { icon: string; text: string }) {
+function IconText({ icon, text }: { icon: string; text: string | any }) {
     return (
         <div className="flex items-center gap-3">
             <img src={icon} alt="" />

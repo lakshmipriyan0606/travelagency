@@ -1,11 +1,11 @@
-"use client";
 import { FormProvider, useForm, useWatch } from "react-hook-form";
-import { useMemo } from "react";
+import { useContext, useMemo } from "react";
 import { filterPackages, generateDefaultValues } from "./constant";
 import { UseFetchAPIQuery } from "@/Hook/UseFetchAPIQuery";
 import { GetAllPackageList } from "@/api/user/api";
 import PackageCard from "../packageCard/PackageCard";
 import FilterConfigPage from "./filterConfigPage";
+import { AdminPanelContext } from "@/pages/Admin/AdminPanel/AdminPanel";
 
 type FilterConfigForm = {
     filterConfig: {
@@ -15,10 +15,13 @@ type FilterConfigForm = {
     };
 };
 
-const FilterPackage = ({ isAdmin, setEditPackageId, setActive }: { isAdmin: Boolean, setEditPackageId: () => void, setActive: () => void }) => {
+const FilterPackage = () => {
+    const context = useContext(AdminPanelContext);
+
+
     const defaultValues = useMemo(() => generateDefaultValues(), []);
 
-    const { data, isLoading, isError,refetch } = UseFetchAPIQuery({
+    const { data, isLoading, isError, refetch } = UseFetchAPIQuery({
         key: ["allPackage"],
         queryFn: GetAllPackageList,
     });
@@ -43,10 +46,11 @@ const FilterPackage = ({ isAdmin, setEditPackageId, setActive }: { isAdmin: Bool
     const filteredPackages = useMemo(() => {
         return filterPackages(allPackageList, filters);
     }, [allPackageList, filters]);
-    console.log('filteredPackages: ', filteredPackages);
 
     if (isLoading) return <p>Loading packages...</p>;
     if (isError) return <p>Error loading packages</p>;
+
+
 
     return (
         <FormProvider {...methods}>
@@ -62,7 +66,13 @@ const FilterPackage = ({ isAdmin, setEditPackageId, setActive }: { isAdmin: Bool
                         Packages ({filteredPackages.length})
                     </h2>
 
-                    <PackageCard filterList={filteredPackages} isAdmin={isAdmin} setEditPackageId={setEditPackageId} setActive={setActive} refetch={refetch}/>
+                    <PackageCard
+                        filterList={filteredPackages}
+                        isAdmin={context?.isAdmin || false}
+                        setEditPackageId={context?.setEditPackageId || (() => { })}
+                        setActive={context?.setActive || (() => { })}
+                        refetch={refetch}
+                    />
 
                     {!filteredPackages.length && (
                         <p className="text-red-500 font-semibold mt-3">

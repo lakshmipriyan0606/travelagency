@@ -7,7 +7,7 @@ import Newsletter from '@/components/layout/newsletter/Newsletter'
 import PackageDetailCarousel from '@/components/layout/packageDetailCarousel/PackageDetailCarousel'
 import BookingFomField from '@/components/layout/reachus/BookingFomField'
 import { UseFetchAPIQuery } from '@/Hook/UseFetchAPIQuery'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { useSelector } from 'react-redux'
 import { useParams } from 'react-router-dom'
 
@@ -37,6 +37,10 @@ const PackageDetail = () => {
         },
 
     ]
+
+    useEffect(() => {
+        window.scrollTo(0, 0);
+    }, [id]);
 
     return (
         <div>
