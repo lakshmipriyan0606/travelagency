@@ -12,11 +12,13 @@ const AdminPanel = () => {
     const { user } = useSelector((state: any) => state?.auth);
     const isAdmin = user?.role === "admin" || false;
     const [active, setActive] = useState("AllPackages");
+    const [editPackageId, setEditPackageId] = useState<string | null>(null);
+    console.log('editPackageId: ', editPackageId);
 
     const renderPage = () => {
         switch (active) {
-            case "CreatePackage": return <AdminUploadPackageForm />;
-            case "AllPackages": return <FilterPackage  isAdmin={isAdmin}/>;
+            case "CreatePackage": return <AdminUploadPackageForm id={editPackageId}  />;
+            case "AllPackages": return <FilterPackage  isAdmin={isAdmin} setEditPackageId={setEditPackageId} setActive={setActive} />;
         }
     };
 
@@ -24,12 +26,16 @@ const AdminPanel = () => {
         <div>
             <Navbar />
             <div className='flex '>
-                <Sidebar active={active} onChange={setActive} />
+                <Sidebar active={active} onChange={(data)=>{
+                    setActive(data)
+                    setEditPackageId(null)
+                }} />
                 <main className="flex-1 p-6 bg-neutral-100 min-h-screen">
                     {renderPage()}
                 </main>
             </div>
             <Footer />
+            
         </div>
     )
 }

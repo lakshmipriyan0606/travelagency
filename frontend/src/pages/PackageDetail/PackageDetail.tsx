@@ -1,3 +1,4 @@
+import { GetCurrentPackageDetail } from '@/api/admin/auth.api'
 import Footer from '@/components/layout/footer/Footer'
 import ItineraryCard from '@/components/layout/ItineraryCard/ItineraryCard'
 import ItineraryExpandDay from '@/components/layout/ItineraryCard/ItineraryExpandCard'
@@ -5,30 +6,34 @@ import Navbar from '@/components/layout/navbar/Navbar'
 import Newsletter from '@/components/layout/newsletter/Newsletter'
 import PackageDetailCarousel from '@/components/layout/packageDetailCarousel/PackageDetailCarousel'
 import BookingFomField from '@/components/layout/reachus/BookingFomField'
+import { UseFetchAPIQuery } from '@/Hook/UseFetchAPIQuery'
 import { useState } from 'react'
 import { useSelector } from 'react-redux'
 import { useParams } from 'react-router-dom'
 
 const PackageDetail = () => {
     const { id } = useParams()
-    const { allPackageList } = useSelector((state) => state?.packageList)
-    console.log('allPackageList: ', allPackageList);
-    const currentPackageList = allPackageList?.find((list) => list?._id === id) || {}
-    console.log('currentPackageList: ', currentPackageList);
-    console.log('currentId: ', id);
+
+
+    const { data :currentPackageList} = UseFetchAPIQuery({
+        key: ["currentPackageDetail", { id }],
+        queryFn: async () => GetCurrentPackageDetail(id),
+    });
 
     const [activeTab, setActiveTab] = useState(1);
+            console.log('currentPackageList: ', currentPackageList?.data);
+
 
     const tabberConfig = [
         {
             id: 1,
             text: 'Itineray',
-            component: <ItineraryCard currentPackage={currentPackageList} />
+            component: <ItineraryCard currentPackage={currentPackageList?.data} />
         },
         {
             id: 2,
             text: 'Day to Day',
-            component: <ItineraryExpandDay currentPackage={currentPackageList} />
+            component: <ItineraryExpandDay currentPackage={currentPackageList?.data} />
         },
 
     ]

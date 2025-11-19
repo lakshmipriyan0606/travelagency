@@ -11,12 +11,30 @@ import heartgray from "@/assets/icons/heartgray.svg";
 import dateIcon from "@/assets/icons/date.svg";
 
 import { AnimatePresence, motion } from "framer-motion";
-import { Delete, Pencil, Trash2 } from "lucide-react";
-import { useSelector } from "react-redux";
+import { Pencil, Trash2 } from "lucide-react";
+import { DeleteConfirmDialog } from "../DeleteConfirmDialog/DeleteConfirmDialog";
+import { useState } from "react";
+import { useMutationAPIQuery } from "@/Hook/useMutationAPIQuery";
+import { DeleteCurrentPackage } from "@/api/admin/auth.api";
 
-export default function PackageCard({ filterList = [], isAdmin }: { filterList: any[]; isAdmin: Boolean }) {
+interface PackageCardProps { filterList: any[]; isAdmin: Boolean, setEditPackageId: () => void, setActive: () => void, refetch: () => void }
+
+export default function PackageCard({ filterList = [], isAdmin, setEditPackageId, setActive, refetch }: PackageCardProps) {
     useDeviceSize();
 
+    const [open, setOpen] = useState(false);
+    const [deleteId, setDeleteId] = useState(null);
+    const { mutate: DeleteMutate } = useMutationAPIQuery(DeleteCurrentPackage, {
+        onSuccess: (data) => {
+            console.log("create/update success", data);
+        },
+    });
+    const handleDelete = () => {
+        DeleteMutate(deleteId);
+        setOpen(false);
+        setDeleteId(null);
+        refetch()
+    };
 
     return (
         <div className="flex flex-col gap-6 items-center justify-center max-w-7xl mx-auto p-2 sm:p-5 w-full">
@@ -50,8 +68,16 @@ export default function PackageCard({ filterList = [], isAdmin }: { filterList: 
                                                 flex gap-4 z-30
                                             "
                                             >
-                                                <Pencil className="w-6 h-6 text-gray-700 cursor-pointer hover:text-blue-600" />
-                                                <Trash2 className="w-6 h-6 text-red-700 cursor-pointer hover:text-red-600" />
+                                                <Pencil className="w-6 h-6 text-gray-700 cursor-pointer hover:text-blue-600" onClick={
+                                                    () => {
+                                                        setEditPackageId(offer._id);
+                                                        setActive("CreatePackage");
+                                                    }
+                                                } />
+                                                <Trash2 className="w-6 h-6 text-gray-700 cursor-pointer hover:text-red-600" onClick={() => {
+                                                    setOpen(true)
+                                                    setDeleteId(offer._id)
+                                                }} />
                                             </div>
                                         }
 
@@ -73,7 +99,7 @@ export default function PackageCard({ filterList = [], isAdmin }: { filterList: 
                                         <div className="flex flex-col justify-center gap-3 p-8 md:w-[45%] font-roboto">
 
                                             <Row>
-                                                <IconText icon={location} text={offer.title} />
+                                                <IconText icon={location} text={offer.location} />
                                                 <img src={heartgray} alt="" width={22} className="cursor-pointer" />
                                             </Row>
 
@@ -105,6 +131,17 @@ export default function PackageCard({ filterList = [], isAdmin }: { filterList: 
                                     </div>
                                 </SwiperSlide>
                             </div>
+                            {
+                                open && (
+                                    <DeleteConfirmDialog
+                                        open={open}
+                                        onOpenChange={setOpen}
+                                        onConfirm={handleDelete}
+                                        title="Delete Package?"
+                                        description="Are you sure you want to delete this package permanently?"
+                                    />
+                                )
+                            }
                         </motion.div>
                     );
                 })}
@@ -115,7 +152,7 @@ export default function PackageCard({ filterList = [], isAdmin }: { filterList: 
 
 function getOfferDetailsConfig(offer: any) {
     return [
-        { icon: dateIcon, label: offer.days },
+        { icon: dateIcon, label: offer.daysAndNights },
         { icon: star, label: offer.rating },
     ];
 }

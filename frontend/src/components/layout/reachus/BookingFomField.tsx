@@ -5,6 +5,8 @@ import { PhoneInputField } from '@/components/forms/PhoneInputField';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
+import { CreateBookingForm } from '@/api/user/api';
+import { useMutationAPIQuery } from '@/Hook/useMutationAPIQuery';
 
 const formSchema = z.object({
     name: z.string().min(1, 'Name is required'),
@@ -43,11 +45,27 @@ const BookingFomField = () => {
 
     const { control, handleSubmit } = useForm<FormData>({
         resolver: zodResolver(formSchema),
-        defaultValues: { travelDate: undefined as any },
+        defaultValues: {
+            name: "",
+            city: "",
+            email: "",
+            phone: "",
+            whatsapp: "",
+            destination: "",
+            noOfPeople: "",
+            vacationType: "",
+            travelDate: undefined,
+        }
+    });
+
+    const { mutate } = useMutationAPIQuery(CreateBookingForm, {
+        onSuccess: (data) => {
+            console.log("create/update success", data);
+        },
     });
 
     const onSubmit = (data: FormData) => {
-        console.log(data);
+        mutate(data);
     };
     return (
         <div>

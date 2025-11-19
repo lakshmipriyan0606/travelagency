@@ -1,3 +1,4 @@
+import { QueryFunctionContext } from "@tanstack/react-query";
 import axiosClient from "../axiosClient";
 
 export const loginAPI = async (payload: object) => {
@@ -22,5 +23,17 @@ export const currentUserAPI = async () => {
 
 export const CreatePackage = async (payload: object) => {
   const { data } = await axiosClient.post("/packages/create", payload);
+  return data;
+};
+export const UpdatePackage = async (payload:Object,id:string) => {
+  const { data } = await axiosClient.post(`/packages/updatePackage/${id}`,payload);
+  return data;
+};
+export const GetCurrentPackageDetail = async (id:string) => {
+  const { data } = await axiosClient.get(`/packages/${id}`);
+  return data;
+};
+export const DeleteCurrentPackage = async (id:string) => {
+  const { data } = await axiosClient.delete(`/packages/deletePackage/${id}`);
   return data;
 };

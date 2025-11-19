@@ -15,10 +15,10 @@ type FilterConfigForm = {
     };
 };
 
-const FilterPackage = ({ isAdmin }: { isAdmin: Boolean }) => {
+const FilterPackage = ({ isAdmin, setEditPackageId, setActive }: { isAdmin: Boolean, setEditPackageId: () => void, setActive: () => void }) => {
     const defaultValues = useMemo(() => generateDefaultValues(), []);
 
-    const { data, isLoading, isError } = UseFetchAPIQuery({
+    const { data, isLoading, isError,refetch } = UseFetchAPIQuery({
         key: ["allPackage"],
         queryFn: GetAllPackageList,
     });
@@ -62,7 +62,7 @@ const FilterPackage = ({ isAdmin }: { isAdmin: Boolean }) => {
                         Packages ({filteredPackages.length})
                     </h2>
 
-                    <PackageCard filterList={filteredPackages} isAdmin={isAdmin} />
+                    <PackageCard filterList={filteredPackages} isAdmin={isAdmin} setEditPackageId={setEditPackageId} setActive={setActive} refetch={refetch}/>
 
                     {!filteredPackages.length && (
                         <p className="text-red-500 font-semibold mt-3">

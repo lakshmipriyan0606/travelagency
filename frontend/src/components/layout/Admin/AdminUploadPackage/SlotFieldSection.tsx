@@ -14,20 +14,23 @@ interface SlotFieldProps {
     removeSlot: (index: number) => void;
 }
 
-export const SlotFieldSection = ({
-    control,
-    dayIndex,
-    slotIndex,
-    removeSlot,
-}: SlotFieldProps) => {
-    const [slotImage, setSlotImage] = useState<File | null>(null);
+export const SlotFieldSection = ({ control, dayIndex, slotIndex, removeSlot }: SlotFieldProps) => {
+    const { setValue, watch } = useFormContext();
 
-    const { setValue } = useFormContext()
+    const currentImage = watch(`days.${dayIndex}.slots.${slotIndex}.imageUrl`);
 
-    const onDrop = useCallback((acceptedFiles: File[]) => {
-        if (acceptedFiles.length > 0) setSlotImage(acceptedFiles[0]);
-        setValue(`days.${dayIndex}.slots.${slotIndex}.imageUrl`, acceptedFiles[0])
+    const onDrop = useCallback((files: File[]) => {
+        if (files.length === 0) return;
+
+        setValue(`days.${dayIndex}.slots.${slotIndex}.imageUrl`, files[0]);
     }, []);
+
+    const removeImage = () => {
+        setValue(`days.${dayIndex}.slots.${slotIndex}.imageUrl`, "");
+    };
+
+    const isFile = currentImage instanceof File;
+    const imagePreview = isFile ? URL.createObjectURL(currentImage) : currentImage;
 
     const { getRootProps, getInputProps, isDragActive } = useDropzone({
         accept: { "image/*": [] },
@@ -35,14 +38,11 @@ export const SlotFieldSection = ({
         onDrop,
     });
 
-    const removeImage = () => {
-        setSlotImage(null);
-        setValue(`days.${dayIndex}.slots.${slotIndex}.imageUrl`, '')
-    }
-
     return (
         <div className="border p-4 rounded-md mb-4 bg-white shadow-sm">
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4 items-center justify-center">
+
+            {/* SLOT FIELDS */}
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4 items-center">
                 <Controller
                     name={`days.${dayIndex}.slots.${slotIndex}.slotType`}
                     control={control}
@@ -50,66 +50,41 @@ export const SlotFieldSection = ({
                         <select {...field} className="border rounded-md p-2">
                             <option value="">Select Slot Type</option>
                             {slotTypeOptions.map((s) => (
-                                <option key={s.value} value={s.value}>
-                                    {s.label}
-                                </option>
+                                <option key={s.value} value={s.value}>{s.label}</option>
                             ))}
                         </select>
                     )}
                 />
+
                 <ReusableInput
                     control={control}
                     name={`days.${dayIndex}.slots.${slotIndex}.title`}
                     label="Slot Title"
-                    required
-                    mainContainerClassName="mb-0"
                 />
 
-                <div className="flex justify-end">
-                    <Button
-                        type="button"
-                        onClick={() => removeSlot(slotIndex)}
-                        variant="outline"
-                        className="text-red-500"
-                    >
-                        Remove Slot
-                    </Button>
-                </div>
-
+                <Button type="button" variant="outline" className="text-red-500" onClick={() => removeSlot(slotIndex)}>
+                    Remove Slot
+                </Button>
             </div>
 
-            {/* Image Upload for Slot */}
-            <div className="grid grid-cols-12 items-center gap-5">
-
+            {/* IMAGE UPLOAD + PREVIEW */}
+            <div className="grid grid-cols-12 gap-5 mt-4">
 
                 <div className="col-span-7">
                     <ReusableTextArea
                         control={control}
                         name={`days.${dayIndex}.slots.${slotIndex}.description`}
                         label="Slot Description"
-                        required
-                        mainContainerClassName="mb-0 mt-7"
-                        rows={2}
                     />
                 </div>
 
-                <div
-                    {...getRootProps()}
-                    className="border-2 border-dashed border-gray-300 p-4 rounded-lg mt-3 cursor-pointer hover:border-yellow-500 transition col-span-5"
-                >
+                <div {...getRootProps()} className="border-2 border-dashed p-4 rounded-lg col-span-5 cursor-pointer">
                     <input {...getInputProps()} />
-                    {slotImage ? (
+
+                    {imagePreview ? (
                         <div className="relative">
-                            <img
-                                src={URL.createObjectURL(slotImage)}
-                                alt="Slot"
-                                className="rounded-md object-cover w-full h-40"
-                            />
-                            <button
-                                type="button"
-                                onClick={removeImage}
-                                className="absolute top-2 right-2 bg-black bg-opacity-60 p-1 rounded-full text-white"
-                            >
+                            <img src={imagePreview} className="w-full h-40 object-cover rounded-md" />
+                            <button type="button" onClick={removeImage} className="absolute top-2 right-2 bg-black bg-opacity-70 text-white rounded-full p-1">
                                 <X size={16} />
                             </button>
                         </div>
@@ -120,10 +95,7 @@ export const SlotFieldSection = ({
                     )}
                 </div>
 
-
-
             </div>
-
         </div>
     );
 };

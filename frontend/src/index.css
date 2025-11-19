@@ -131,6 +131,16 @@ body {
 @import "./style/herosection.css";
 
 
+[data-radix-dialog-content],
+[data-radix-popover-content],
+[data-radix-dropdown-menu-content],
+[data-radix-navigation-menu-content],
+[data-radix-menubar-content],
+[data-radix-hover-card-content],
+[data-radix-dialog-overlay] {
+  position: fixed !important;
+  z-index: 999999 !important;
+}
 
 .swiper-pagination-bullet-active {
   background-color: var(--color-primary) !important;
