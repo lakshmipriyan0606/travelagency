@@ -16,7 +16,7 @@ import type { Swiper as SwiperType } from 'swiper';
 
 
 export default function PackageDetailCarousel({currentPackage}) {
-    const  images = currentPackage?.images || []
+    const  images = currentPackage?.data?.images || []
     const [activeIndex, setActiveIndex] = useState(0);
     const [renderImages, setRenderImages] = useState(images);
     const mainSwiperRef = useRef<SwiperType | null>(null);
@@ -32,7 +32,7 @@ export default function PackageDetailCarousel({currentPackage}) {
             setRenderImages(images);
         }
 
-    }, [device]);
+    }, [device,images]);
 
 
 

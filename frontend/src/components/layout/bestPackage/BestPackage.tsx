@@ -2,10 +2,15 @@ import 'swiper/css';
 import 'swiper/css/navigation';
 import 'swiper/css/pagination';
 import OuterCarousel from './carousel/OuterCarousel';
+import { useNavigate } from 'react-router-dom';
 
 export default function BestPackage() {
+
+    const navigate = useNavigate();
+
     return (
-        <div className="min-h-screen bg-custom-black relative text-white py-12 lg:py-5 px-4">
+        <div className="min-h-screen bg-custom-black relative text-white main__container_space">
+            <div className='container mx-auto px-4 py-4'>
             <div className="mb-4">
                 <h1 className="text-3xl sm:text-5xl font-bold mb-2">
                     Welcome to  <span className='
@@ -15,11 +20,10 @@ export default function BestPackage() {
 
             <OuterCarousel />
 
-            <div className="text-center mt-12">
-                <button className="bg-amber-500 hover:bg-amber-600 text-white px-8 py-3 rounded-full font-semibold transition">
-                    VIEW ALL DESTINATIONS
-                </button>
+            <div className="text-center mt-12 text-primary/80 hover:text-primary cursor-pointer font-semibold tracking-[0.35em] uppercase" onClick={()=>navigate('/allpackage')}>
+                    VIEW ALL 
             </div>
+        </div>
         </div>
     );
 }

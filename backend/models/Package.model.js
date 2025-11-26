@@ -16,6 +16,12 @@ const packageSchema = new mongoose.Schema(
       ref: "User",
     },
     days: [Object],
+    likes: [
+      {
+        userId: { type: String, required: true },
+        liked: { type: Boolean, required: true },
+      },
+    ],
   },
   { timestamps: true }
 );

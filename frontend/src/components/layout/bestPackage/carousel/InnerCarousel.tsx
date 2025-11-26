@@ -45,7 +45,7 @@ export default function InnerCarousel({ images, offerId }: InnerCarouselProps) {
                         </SwiperSlide>
                     ))}
                 </Swiper>
-                <div className="bottom-2 left-0 right-0 h-12 bg-gradient-to-r from-[#C59435] via-[#F3E79B] to-[#C59435] border-y border-[#D8C27A] flex items-center justify-center shadow-md">
+                <div className="bottom-2 left-0 right-0 h-6 bg-gradient-to-r from-[#C59435] via-[#F3E79B] to-[#C59435] border-y border-[#D8C27A] flex items-center justify-center shadow-md">
                     <span className="text-black font-semibold tracking-[0.35em] uppercase">
                         Exclusive Offer
                     </span>

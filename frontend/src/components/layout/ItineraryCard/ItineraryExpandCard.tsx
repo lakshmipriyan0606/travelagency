@@ -80,7 +80,7 @@ export default function ItineraryDay({ currentPackage }) {
   };
 
   return (
-    <div className="max-w-4xl mx-auto py-10 px-4 mr-[30%] w-[70%]">
+    <div className="max-w-4xl mx-auto py-10 px-4">
       {daysListData.map((day) => (
         <div
           key={day.id}
@@ -91,7 +91,7 @@ export default function ItineraryDay({ currentPackage }) {
             {/* LEFT TIMELINE */}
             <div
               className={`flex-shrink-0 w-16 relative bg-[#FFF3DB] overflow-hidden ${expandedDay !== day.id ? "rounded-tl-lg rounded-bl-lg" : ""
-                }`}
+              }`}
             >
               {/* Vertical Line */}
               {expandedDay === day.id && (
@@ -136,7 +136,7 @@ export default function ItineraryDay({ currentPackage }) {
                 className={`shadow-sm overflow-hidden border-none ${expandedDay !== day.id
                     ? "rounded-tr-xl rounded-br-xl"
                     : ""
-                  }`}
+                }`}
               >
                 {/* HEADER */}
                 <div

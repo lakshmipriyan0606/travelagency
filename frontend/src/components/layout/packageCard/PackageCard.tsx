@@ -8,6 +8,7 @@ import InnerCarousel from "../bestPackage/carousel/InnerCarousel";
 import location from "@/assets/icons/location.svg";
 import star from "@/assets/icons/Star.svg";
 import heartgray from "@/assets/icons/heartgray.svg";
+import heartRed from "@/assets/icons/heartRed.svg";
 import dateIcon from "@/assets/icons/date.svg";
 
 import { AnimatePresence, motion } from "framer-motion";
@@ -16,6 +17,7 @@ import { DeleteConfirmDialog } from "../DeleteConfirmDialog/DeleteConfirmDialog"
 import { useState } from "react";
 import { useMutationAPIQuery } from "@/Hook/useMutationAPIQuery";
 import { DeleteCurrentPackage } from "@/api/admin/auth.api";
+import { UpdateLikePackage } from "@/api/user/api";
 
 interface Package {
     _id: string;
@@ -25,6 +27,7 @@ interface Package {
     rating: string | number;
     price: number;
     offerPrice: number;
+    userLiked: boolean;
 }
 
 interface PackageCardProps {
@@ -53,6 +56,15 @@ export default function PackageCard({
         },
     });
 
+
+    const { mutate: updateLikeMutate } = useMutationAPIQuery(UpdateLikePackage, {
+        onSuccess: () => {
+            console.log('Like status updated successfully');
+        }
+    });
+
+
+
     const handleDelete = () => {
         if (deleteId) {
             DeleteMutate(deleteId);
@@ -61,10 +73,17 @@ export default function PackageCard({
         }
     };
 
+    const handleLikePackage = (packageId: string, liked: boolean) => {
+        debugger
+        updateLikeMutate({ id: packageId, liked, userId: localStorage.getItem("userId") });
+    }
+
+
     return (
         <div className="flex flex-col gap-6 items-center justify-center max-w-7xl mx-auto p-2 sm:p-5 w-full">
             <AnimatePresence mode="popLayout">
                 {filterList.map((offer) => {
+                    console.log('offer: ', offer);
                     const details = getOfferDetailsConfig(offer);
                     return (
                         <motion.div
@@ -116,7 +135,7 @@ export default function PackageCard({
                                         <div className="flex flex-col justify-center gap-3 p-8 md:w-[45%] font-roboto">
                                             <Row>
                                                 <IconText icon={location} text={offer.location} />
-                                                <img src={heartgray} alt="" width={22} className="cursor-pointer" />
+                                                <img src={offer?.userLiked ? heartRed :heartgray} alt="" width={22} className="cursor-pointer" onClick={()=>handleLikePackage(offer?._id,offer?.userLiked)} />
                                             </Row>
 
                                             {details.map((d, i) => (

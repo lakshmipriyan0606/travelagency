@@ -8,6 +8,7 @@ import { UseFetchAPIQuery } from "@/Hook/UseFetchAPIQuery";
 import { currentUserAPI } from "@/api/admin/auth.api";
 import { setUser } from "@/store/authSlice";
 import { useDispatch } from "react-redux";
+import ScrollToTop from "@/components/layout/AutoScrollTopView/AutoScrolltopView";
 
 const renderAppRoute = (routesList: AppRoute[]): ReactNode => {
     const dispatch = useDispatch()
@@ -15,6 +16,14 @@ const renderAppRoute = (routesList: AppRoute[]): ReactNode => {
         key: ["me"],
         queryFn: currentUserAPI,
     });
+
+    useEffect(() => {
+        const currentUserId = localStorage.getItem("userId");
+        const id = crypto.randomUUID();
+        if (!currentUserId) {
+            localStorage.setItem("userId", id);
+        }
+    }, [])
 
     useEffect(() => {
         dispatch(setUser(user || null))
@@ -35,6 +44,7 @@ const renderAppRoute = (routesList: AppRoute[]): ReactNode => {
 const AppRoutes = () => (
     <ErrorBoundary FallbackComponent={ErrorFallback} onReset={() => window.location.reload()}>
         <Suspense fallback={<></>}>
+            <ScrollToTop />
             <Routes>{renderAppRoute(routes)}</Routes>
         </Suspense>
     </ErrorBoundary>

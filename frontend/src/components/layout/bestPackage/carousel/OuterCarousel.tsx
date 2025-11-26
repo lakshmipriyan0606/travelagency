@@ -2,7 +2,7 @@
 import { Swiper, SwiperSlide } from "swiper/react";
 import { Navigation, Pagination } from "swiper/modules";
 import InnerCarousel from "./InnerCarousel";
-import {calculateDiscountPercentage } from "../constant";
+import { calculateDiscountPercentage } from "../constant";
 import customArrowLeft from '@/assets/icons/arrowLeft.svg'
 import customArrowRight from '@/assets/icons/arrowright.svg'
 import arrowLeft from '@/assets/icons/leftarrow.svg'
@@ -11,23 +11,46 @@ import AnimatedButton from "@/components/Button/AnimatedButton/AnimatedButton";
 import whatsappIcon from '@/assets/icons/whatsapp.svg';
 import location from '@/assets/icons/location.svg';
 import star from '@/assets/icons/Star.svg';
-import heartgray from '@/assets/icons/heartgray.svg';
+import { Heart } from "lucide-react";
+import { motion } from "framer-motion";
 import dateIcon from '@/assets/icons/date.svg';
 import { UseFetchAPIQuery } from "@/Hook/UseFetchAPIQuery";
-import { GetBestBackageList } from "@/api/user/api";
+import { GetBestBackageList, UpdateLikePackage } from "@/api/user/api";
+import { useMutationAPIQuery } from "@/Hook/useMutationAPIQuery";
+import { ref } from "process";
+import { useNavigate } from "react-router-dom";
 
 
 export default function OuterCarousel() {
 
-    const { data, isLoading, isError } = UseFetchAPIQuery({
+    const navigate = useNavigate()
+
+    const { data, isLoading, isError, refetch } = UseFetchAPIQuery({
         key: ["bestPackage"],
         queryFn: GetBestBackageList,
+    });
+
+
+
+
+    const { mutate: updateLikeMutate } = useMutationAPIQuery(UpdateLikePackage, {
+        onSuccess: () => {
+            refetch();
+            console.log('Like status updated successfully');
+        }
     });
 
     if (isLoading) return <p>Loading packages...</p>;
     if (isError) return <p>Error loading packages</p>;
 
     const bestPackageList = data?.data || [];
+
+    const handleToggleLike = (packageId: string, liked: boolean) => {
+        updateLikeMutate({ id: packageId, liked, userId: localStorage.getItem("userId") });
+    }
+    const handleNavigation = (id: number | string) => {
+        navigate(`/package/${id}`)
+    }
 
     return (
         <div className="max-w-7xl mx-auto">
@@ -54,15 +77,15 @@ export default function OuterCarousel() {
             >
                 {bestPackageList?.map((offer: any) => (
                     <SwiperSlide key={offer._id}>
-                        <div className="bg-white rounded-2xl overflow-hidden shadow-xl text-gray-900 flex flex-col">
+                        <div className="bg-white rounded-md overflow-hidden shadow-xl text-gray-900 flex flex-col">
                             {/* Inner Carousel */}
                             <InnerCarousel images={offer.images} offerId={offer._id} />
 
                             <div className="absolute top-0 right-0">
                                 <div
-                                    className="absolute top-5 font-roboto -right-3 z-20 bg-red-500 text-white font-bold px-4 py-0 w-max"
+                                    className="absolute top-5 font-roboto font-normal -right-3 z-20 bg-red-500 text-white font-bold px-4 py-0 w-max"
                                 >
-                                    {calculateDiscountPercentage(offer?.price, offer?.offerPrice)}% OFF
+                                    <em>{calculateDiscountPercentage(offer?.price, offer?.offerPrice)}% OFF</em>
                                 </div>
 
                                 <div
@@ -80,7 +103,25 @@ export default function OuterCarousel() {
                                         <h3 className="">{offer.location}</h3>
                                     </div>
                                     <div className="cursor-pointer">
-                                        <img src={heartgray} alt="" width={20} />
+                                        <motion.button
+                                            onClick={() => handleToggleLike(offer?._id, !offer?.userLiked)}
+                                            whileTap={{ scale: 0.75 }}
+                                            animate={{
+                                                scale: offer?.userLiked ? [1, 1.4, 1] : 1,
+                                                rotate: offer?.userLiked ? [0, -8, 8, -5, 5, 0] : 0,
+                                            }}
+                                            transition={{
+                                                duration: 0.35,
+                                                type: "spring",
+                                            }}
+                                            className="p-2 cursor-pointer"
+                                        >
+                                            <Heart
+                                                className={`${offer?.userLiked ? "fill-red-500 text-red-500" : "text-gray-400"
+                                                    } transition-all duration-300`}
+                                                size={24}
+                                            />
+                                        </motion.button>
                                     </div>
                                 </div>
                                 <div className="flex items-center gap-3">
@@ -109,7 +150,7 @@ export default function OuterCarousel() {
                                     <div className="w-full h-[2px] bg-gray-300"></div>
                                     <div className="flex  gap-4 w-full items-center">
                                         <img src={whatsappIcon} alt="whatsapp" className="w-12 h-12" />
-                                        <AnimatedButton buttonText="Contact us" borderButtonColor={'bg-white'} textColor={'text-white'} bgColor="bg-custom-black" className="hover:bg-custom-black w-3/4" />
+                                        <AnimatedButton buttonText="Contact us" borderButtonColor={'bg-white'} textColor={'text-white'} bgColor="bg-custom-black" className="hover:bg-custom-black w-3/4" onClick={()=>handleNavigation(offer?._id)} />
                                     </div>
                                 </div>
 

@@ -10,20 +10,15 @@ import Welcome from "@/components/layout/welcome/Welcome";
 import { createContext, useMemo, useState } from "react"
 
 export interface HomeContextType {
-  navbarOpen: boolean;
-  setNavbarOpen: (value: boolean) => void;
 }
 
 export const HomeContext = createContext<HomeContextType>({} as HomeContextType)
 
 const Home = () => {
 
-  const [navbarOpen, setNavbarOpen] = useState<boolean>(false);
-
   const contextValue = useMemo(() => ({
-    navbarOpen,
-    setNavbarOpen
-  }), [navbarOpen])
+
+  }), [])
 
 
   return (
@@ -34,10 +29,10 @@ const Home = () => {
         <BestDestination />
         <Welcome />
         <BestPackage />
-        <ReachUs/>
+        <ReachUs />
         <Testimonials />
-        <Newsletter/>
-        <Footer/>
+        <Newsletter />
+        <Footer />
       </div>
     </HomeContext.Provider>
   )

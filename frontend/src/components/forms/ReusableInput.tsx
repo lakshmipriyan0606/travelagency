@@ -40,7 +40,7 @@ export const ReusableInput = ({
               placeholder=" "
               className={cn(
                 `peer w-full pt-6 pb-2 px-3
-               border border-blue-500 rounded-md
+               border border-gray-300 rounded-md
                bg-white
                focus:outline-none focus:ring-1 focus:ring-blue-50/1
                focus:border-blue-500

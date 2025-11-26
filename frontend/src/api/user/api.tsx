@@ -13,3 +13,7 @@ export const CreateBookingForm = async (formData: any) => {
   const { data } = await axiosClient.post("booking/create", formData);
   return data;
 }
+export const UpdateLikePackage = async (payload:object) => {
+  const { data } = await axiosClient.post("packages/like", payload);
+  return data;
+}
