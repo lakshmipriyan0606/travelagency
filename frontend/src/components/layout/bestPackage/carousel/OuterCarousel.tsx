@@ -71,7 +71,7 @@ export default function OuterCarousel() {
                     el: '.outer-custom-pagination',
                 }}
                 style={{
-                    padding: '11px'
+                    padding: '9px'
                 }}
                 className="outer-swiper pb-12 p-20"
             >

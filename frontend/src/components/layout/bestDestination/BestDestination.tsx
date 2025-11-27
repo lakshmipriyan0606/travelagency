@@ -13,7 +13,7 @@ export function BestDestination() {
 
     return (
         <section className="bg-custom-black main__container_space min-h-screen">
-            <div className='container mx-auto px-4 py-4'>
+            <div className='main__container_space_nextContainer'>
                 <h2 className="text-2xl md:text-3xl lg:text-4xl font-bold text-white text-center mb-10 leading-tight">
                     Explore Our <span className="text-yellow-400">Best Packages</span> &amp; Be Amazed
                 </h2>

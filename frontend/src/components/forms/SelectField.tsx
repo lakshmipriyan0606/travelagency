@@ -1,4 +1,11 @@
-import { Controller, Control } from 'react-hook-form';
+import { Controller, Control } from "react-hook-form";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 
 interface Option {
   value: string;
@@ -19,7 +26,7 @@ export const SelectField = ({
   name,
   label,
   options,
-  placeholder,
+  placeholder = "Select",
   required = false,
 }: SelectFieldProps) => {
   return (
@@ -28,24 +35,37 @@ export const SelectField = ({
       name={name}
       rules={required ? { required: `${label} is required` } : {}}
       render={({ field, fieldState: { error } }) => (
-        <div className="mb-4">
-          <label className="block text-sm font-medium text-gray-700 mb-1">
+        <div className="mb-4 font-roboto">
+          <label className="text-sm  text-gray-500 mb-1">
             {label} {required && <span className="text-red-500">*</span>}
           </label>
-          <select
-            {...field}
-            className={` font-roboto w-full px-4 py-2 border rounded-md focus:ring-2 focus:ring-yellow-500 focus:border-transparent outline-none transition ${
-              error ? 'border-red-500' : 'border-gray-300'
-            }`}
+
+          <Select
+            value={field.value}
+            onValueChange={field.onChange}
           >
-            <option value="">{placeholder || 'Select'}</option>
-            {options.map((opt) => (
-              <option key={opt.value} value={opt.value}>
-                {opt.label}
-              </option>
-            ))}
-          </select>
-          {error && <p className="text-red-500 text-xs mt-1">{error.message}</p>}
+            <SelectTrigger
+              className={`w-full ${
+                error ? "border-red-500" : "border-gray-300"
+              }`}
+            >
+              <SelectValue placeholder={placeholder} />
+            </SelectTrigger>
+
+            <SelectContent className="bg-white border-gray-300 font-roboto">
+              {options.map((opt) => (
+                <SelectItem key={opt.value} value={opt.value} className="cursor-pointer text-gray-700">
+                  {opt.label}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+
+          {error && (
+            <p className="text-red-500 text-xs mt-1">
+              {error.message}
+            </p>
+          )}
         </div>
       )}
     />

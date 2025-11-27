@@ -4,6 +4,7 @@ import { useForm } from 'react-hook-form';
 import { ReusableInput } from '@/components/forms/ReusableInput';
 import PrimaryButton from '@/components/Button/PrimaryButton';
 import NotifiationBell from '@/assets/icons/notificationBell.svg'
+import { motion } from 'framer-motion';
 
 export default function Newsletter() {
     const { control } = useForm()
@@ -31,7 +32,12 @@ export default function Newsletter() {
                     {/* Icon + Text */}
                     <div className="flex flex-col sm:flex-row items-center gap-3">
                         <div className="relative">
-                            <img src={NotifiationBell}/>
+                            <motion.img
+                                src={NotifiationBell}
+                                initial={{ rotate: 0 }}
+                                animate={{ rotate: [0, 15, -15, 10, -10, 5, -5, 0] }}
+                                transition={{ duration: 1, repeat: 1 }}
+                            />
                         </div>
                         <p className="font-bold text-lg">
                             Get More Updates
@@ -40,8 +46,8 @@ export default function Newsletter() {
 
                     {/* Input + Button */}
                     <div className="flex items-center">
-                        <ReusableInput control={control} name="email" required inputClassName='py-0  rounded-none rounded-l-sm bg-custom-black text-white h-[34px] border-none' mainContainerClassName='mb-0'/>
-                        <PrimaryButton type="submit" className="whitespace-nowrap rounded-r-sm relative right-[2px] h-[34px]" buttonText='Subscribe' /> 
+                        <ReusableInput control={control} name="email" required inputClassName='py-0  rounded-none rounded-l-sm bg-custom-black text-white h-[34px] border-none' mainContainerClassName='mb-0' />
+                        <PrimaryButton type="submit" className="whitespace-nowrap rounded-r-sm relative right-[2px] h-[34px]" buttonText='Subscribe' />
                     </div>
                 </form>
             </div>

@@ -17,7 +17,7 @@ export default function Testimonials() {
                     Our Testimonials
                 </h2>
 
-                <div className=" w-full p-10 sm:p-16 xl:p-0">
+                <div className=" w-full p-3 sm:p-16 xl:p-0">
                     <Swiper
                         modules={[Navigation, Pagination, Autoplay]}
                         spaceBetween={30}
@@ -71,17 +71,37 @@ export default function Testimonials() {
                     </Swiper>
 
                     <button
-                        className="swiper-button-prev absolute  text-white p-2  z-10 transition"
+                        className="
+                swiper-button-prev 
+                absolute left-0 top-1/2
+                z-10 
+                bg-white sm:bg-transparent 
+                rounded-full 
+                shadow-md sm:shadow-none 
+                p-2 
+                transition
+                "
                     >
-                        <img src={arrowLeft} alt="" />
-                    </button>
-                    <button
-                        className="swiper-button-next text-white p-2  z-10"
-                    >
-                        <img src={arrowRight} alt="" />
+                        <img src={arrowLeft} alt="prev" className="w-8 h-8 sm:w-[300px] sm:h-[300px]" />
                     </button>
 
-                    <div className="custom-pagination mt-6 flex justify-center gap-2"></div>
+                    <button
+                        className="
+                swiper-button-next 
+                absolute right-0 top-1/2
+                z-10 
+                bg-white sm:bg-transparent 
+                rounded-full 
+                shadow-md sm:shadow-none 
+                pl-4 pt-1
+                transition
+                "
+                    >
+                        <img src={arrowRight} alt="next" className="w-8 h-8 sm:w-[300px] sm:h-[300px]" />
+                    </button>
+
+
+                    <div className="custom-pagination mt-6 flex justify-center gap-2 pb-9"></div>
                 </div>
             </div>
         </section>

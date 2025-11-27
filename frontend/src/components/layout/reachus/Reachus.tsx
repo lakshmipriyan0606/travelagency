@@ -8,17 +8,17 @@ export default function ReachUs() {
 
   return (
     <div className="min-h-screen bg-[#F6F9FF] p-10">
-      <div className="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-10 px-6 lg:px-14  p-8 ">
+      <div className="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-10 sm:px-6 lg:px-14  sm:p-8">
 
         {/* LEFT SECTION */}
-        <div className="relative p-10  flex flex-col  p-24 gap-4 items-center">
+        <div className="relative sm:p-10  flex flex-col  sm:p-24 gap-4 items-center">
           <img
             src="/images/india-map.png"
             alt=""
             className="absolute inset-0 opacity-10 object-contain pointer-events-none"
           />
 
-          <h1 className="text-6xl font-serif text-primary mb-6 relative z-10">
+          <h1 className=" text-4xl sm:text-6xl font-serif text-primary mb-6 relative z-10">
             Reach Us!
           </h1>
 

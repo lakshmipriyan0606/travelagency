@@ -10,7 +10,7 @@ export default function BestPackage() {
 
     return (
         <div className="min-h-screen bg-custom-black relative text-white main__container_space">
-            <div className='container mx-auto px-4 py-4'>
+            <div className='main__container_space_nextContainer'>
             <div className="mb-4">
                 <h1 className="text-3xl sm:text-5xl font-bold mb-2">
                     Welcome to  <span className='
