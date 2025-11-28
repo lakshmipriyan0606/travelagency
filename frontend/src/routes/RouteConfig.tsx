@@ -1,6 +1,5 @@
 import AdminPanel from "@/pages/Admin/AdminPanel/AdminPanel";
 import LoginForm from "@/pages/Admin/login/Login";
-import RegisterForm from "@/pages/Admin/register/Register";
 import AllPackage from "@/pages/AllPackage/AllPackage";
 import PackageDetail from "@/pages/PackageDetail/PackageDetail";
 import { AppRoute } from "@/types/types";

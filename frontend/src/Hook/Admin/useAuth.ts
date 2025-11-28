@@ -1,7 +1,7 @@
-import { useMutation, useQuery } from "@tanstack/react-query";
-import { loginAPI, logoutAPI, currentUserAPI } from "../../api/admin/auth.api";
+import { useMutation } from "@tanstack/react-query";
+import { loginAPI } from "../../api/admin/auth.api";
 import { useDispatch } from "react-redux";
-import { clearUser, setUser } from "@/store/authSlice";
+import {setUser } from "@/store/authSlice";
 
 export const useLogin = () => {
   const dispatch = useDispatch();

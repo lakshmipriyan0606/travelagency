@@ -2,7 +2,7 @@ import { Controller, useFormContext } from "react-hook-form";
 import { ReusableInput } from "@/components/forms/ReusableInput";
 import { Button } from "@/components/ui/button";
 import { slotTypeOptions } from "./constant";
-import { useCallback, useState } from "react";
+import { useCallback } from "react";
 import { useDropzone } from "react-dropzone";
 import { X } from "lucide-react";
 import { ReusableTextArea } from "@/components/forms/ReusableTextArea";

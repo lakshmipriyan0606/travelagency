@@ -1,5 +1,5 @@
 
-import { Heart, ShoppingCart, User } from "lucide-react"
+import { Heart, User } from "lucide-react"
 
 const ProfileSection = () => {
 

@@ -7,7 +7,7 @@ import Navbar from "@/components/layout/navbar/Navbar";
 import Newsletter from "@/components/layout/newsletter/Newsletter";
 import Testimonials from "@/components/layout/testimonial/Testmonial";
 import Welcome from "@/components/layout/welcome/Welcome";
-import { createContext, useMemo, useState } from "react"
+import { createContext, useMemo} from "react"
 
 export interface HomeContextType {
 }

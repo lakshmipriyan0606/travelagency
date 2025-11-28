@@ -9,12 +9,11 @@ import { useMutationAPIQuery } from "@/Hook/useMutationAPIQuery";
 import { loginAPI } from "@/api/admin/auth.api";
 import { setUser } from "@/store/authSlice";
 import { useDispatch } from "react-redux";
-import { id } from "zod/v4/locales";
 
 const LoginForm = () => {
     const navigate = useNavigate()
     const dispatch = useDispatch()
-    const { mutate } = useMutationAPIQuery(loginAPI, {
+    const { } = useMutationAPIQuery(loginAPI, {
         onSuccess(data) {
             dispatch(setUser({
                 id: data.user._id,
@@ -33,8 +32,7 @@ const LoginForm = () => {
         resolver: zodResolver(loginSchema),
     });
 
-    const onSubmit = async (data: LoginFormData) => {
-        const response = await mutate(data);
+    const onSubmit = async () => {
     };
 
 

@@ -12,7 +12,6 @@ interface ItineraryDaySectionProps {
 
 export const ItineraryDaySection = ({
   control,
-  day,
   dayIndex,
   removeDay,
 }: ItineraryDaySectionProps) => {

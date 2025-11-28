@@ -8,7 +8,6 @@ import PackageDetailCarousel from '@/components/layout/packageDetailCarousel/Pac
 import BookingFomField from '@/components/layout/reachus/BookingFomField'
 import { UseFetchAPIQuery } from '@/Hook/UseFetchAPIQuery'
 import { useEffect, useState } from 'react'
-import { useSelector } from 'react-redux'
 import { useParams } from 'react-router-dom'
 
 const PackageDetail = () => {

@@ -1,4 +1,3 @@
-import { QueryFunctionContext } from "@tanstack/react-query";
 import axiosClient from "../axiosClient";
 
 export const loginAPI = async (payload: object) => {

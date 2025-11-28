@@ -4,24 +4,30 @@ import { Navigation } from "swiper/modules";
 import "swiper/css";
 import "swiper/css/navigation";
 import { useDeviceSize } from "@/Hook/UseDevice";
-import type { Swiper as SwiperType } from 'swiper';
+import type { Swiper as SwiperType } from "swiper";
 
-// const images = [
-//     'https://picsum.photos/1200/800?random=2',
-//     'https://picsum.photos/1200/800?random=9',
-//     'https://picsum.photos/1200/800?random=8',
-//     'https://picsum.photos/1200/800?random=7',
-//     'https://picsum.photos/1200/800?random=86',
-// ];
+interface PackageData {
+    images?: string[];
+}
 
+interface CurrentPackage {
+    data?: PackageData;
+}
 
-export default function PackageDetailCarousel({currentPackage}) {
-    const  images = currentPackage?.data?.images || []
-    const [activeIndex, setActiveIndex] = useState(0);
-    const [renderImages, setRenderImages] = useState(images);
+interface PackageDetailCarouselProps {
+    currentPackage?: CurrentPackage;
+}
+
+export default function PackageDetailCarousel({
+    currentPackage,
+}: PackageDetailCarouselProps) {
+    const images: string[] = currentPackage?.data?.images || [];
+
+    const [activeIndex, setActiveIndex] = useState<number>(0);
+    const [renderImages, setRenderImages] = useState<string[]>(images);
+
     const mainSwiperRef = useRef<SwiperType | null>(null);
     const device = useDeviceSize();
-
 
     useEffect(() => {
         if (device === "small") {
@@ -31,10 +37,7 @@ export default function PackageDetailCarousel({currentPackage}) {
         } else {
             setRenderImages(images);
         }
-
-    }, [device,images]);
-
-
+    }, [device, images]);
 
     return (
         <div className="w-full max-w-6xl mx-auto swiper-action-white">
@@ -50,6 +53,7 @@ export default function PackageDetailCarousel({currentPackage}) {
                     <SwiperSlide key={index}>
                         <img
                             src={img}
+                            alt=""
                             className="w-full h-[350px] md:h-[500px] object-cover"
                         />
                     </SwiperSlide>
@@ -63,15 +67,16 @@ export default function PackageDetailCarousel({currentPackage}) {
                         key={index}
                         onClick={() => {
                             setActiveIndex(index);
-                            (mainSwiperRef.current as any)?.slideTo(index);
+                            mainSwiperRef.current?.slideTo(index);
                         }}
-                        className={`cursor-pointer transition-all duration-300 rounded-full  relative  overflow-hidden border-4 ${activeIndex === index
-                            ? "border-yellow-400 scale-110 bottom-2 sm:bottom-5"
-                            : "border-transparent border-2 opacity-60 hover:opacity-90 blur-[1px] "
-                            } `}
+                        className={`cursor-pointer transition-all duration-300 rounded-full relative overflow-hidden border-4 ${activeIndex === index
+                                ? "border-yellow-400 scale-110 bottom-2 sm:bottom-5"
+                                : "border-transparent border-2 opacity-60 hover:opacity-90 blur-[1px]"
+                            }`}
                     >
                         <img
                             src={img}
+                            alt=""
                             className="w-12 h-12 sm:w-15 sm:h-15 object-cover rounded-full aspect-square"
                         />
                     </div>

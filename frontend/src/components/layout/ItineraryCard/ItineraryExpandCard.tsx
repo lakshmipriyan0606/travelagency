@@ -4,14 +4,36 @@ import { CardContent } from "@/components/ui/card";
 import { motion, AnimatePresence } from "framer-motion";
 import { formatItineraryExpandData } from "./constant";
 
-export default function ItineraryDay({ currentPackage }) {
+// ✅ Types
+interface ScheduleSlot {
+  time: string;
+  image: string;
+  detail?: string;
+}
+
+interface DayData {
+  id: number;
+  title: string;
+  description: string;
+  schedule: ScheduleSlot[];
+}
+
+interface ItineraryDayProps {
+  currentPackage?: {
+    days?: any[];
+  };
+}
+
+export default function ItineraryDay({ currentPackage }: ItineraryDayProps) {
   const [expandedDay, setExpandedDay] = useState<number | null>(null);
   const [iconPositions, setIconPositions] = useState<Record<string, number>>({});
 
-  const scheduleRefs = useRef<Record<string, HTMLDivElement>>({});
-  const containerRefs = useRef<Record<number, HTMLDivElement>>({});
+  const scheduleRefs = useRef<Record<string, HTMLDivElement | null>>({});
+  const containerRefs = useRef<Record<number, HTMLDivElement | null>>({});
 
-  const daysListData = formatItineraryExpandData(currentPackage?.days || []);
+  const daysListData: DayData[] = formatItineraryExpandData(
+    currentPackage?.days || []
+  );
 
   const toggleExpand = (id: number) => {
     setExpandedDay((prev) => (prev === id ? null : id));
@@ -43,26 +65,23 @@ export default function ItineraryDay({ currentPackage }) {
           const containerRect = container.getBoundingClientRect();
           const elRect = el.getBoundingClientRect();
 
-          // Place icon exactly in middle of slot
-          positions[key] = elRect.top - containerRect.top + elRect.height / 2;
+          positions[key] =
+            elRect.top - containerRect.top + elRect.height / 2;
         }
       });
 
       setIconPositions(positions);
     };
 
-    // Recalculate after expansion animation
     const timer = setTimeout(updatePositions, 350);
 
-    // Recalculate when images inside this day load
     const images =
       containerRefs.current[expandedDay]?.querySelectorAll("img") || [];
 
-    images.forEach((img: HTMLImageElement) => {
+    images.forEach((img) => {
       img.onload = updatePositions;
     });
 
-    // Recalculate on resize
     window.addEventListener("resize", updatePositions);
 
     return () => {
@@ -72,10 +91,10 @@ export default function ItineraryDay({ currentPackage }) {
   }, [expandedDay, daysListData]);
 
   /**
-   * Time-based icon 
+   * Time-based icon
    */
-  const getSunIcon = (time: string) => {
-    const t = time.toLowerCase();
+  const getSunIcon = () => {
+    // const t = time.toLowerCase();
     return <Sun className="w-4 h-4 text-gray-700" />;
   };
 
@@ -84,16 +103,19 @@ export default function ItineraryDay({ currentPackage }) {
       {daysListData.map((day) => (
         <div
           key={day.id}
-          ref={(el) => el && (containerRefs.current[day.id] = el)}
+          ref={(el: HTMLDivElement | null) => {
+            containerRefs.current[day.id] = el;
+          }}
           className="relative mb-12"
         >
           <div className="relative flex items-stretch">
             {/* LEFT TIMELINE */}
             <div
-              className={`flex-shrink-0 w-16 relative bg-[#FFF3DB] overflow-hidden ${expandedDay !== day.id ? "rounded-tl-lg rounded-bl-lg" : ""
-              }`}
+              className={`flex-shrink-0 w-16 relative bg-[#FFF3DB] overflow-hidden ${expandedDay !== day.id
+                ? "rounded-tl-lg rounded-bl-lg"
+                : ""
+                }`}
             >
-              {/* Vertical Line */}
               {expandedDay === day.id && (
                 <div
                   className="absolute left-6 top-0 w-0.5 bg-gray-300 mt-16"
@@ -101,15 +123,13 @@ export default function ItineraryDay({ currentPackage }) {
                 />
               )}
 
-              {/* DAY LABEL */}
               <div className="absolute left-2 top-0 p-1 flex flex-col items-center z-10">
                 <span className="font-medium text-gray-600 mb-1">Day</span>
                 <div className="text-[18px] font-roboto">{day.id}</div>
               </div>
 
-              {/* ICONS — positioned dynamically */}
               {expandedDay === day.id &&
-                day.schedule.map((slot, index) => {
+                day.schedule.map((_, index) => {
                   const key = `${day.id}-${index}`;
                   const top = iconPositions[key] ?? 0;
 
@@ -123,7 +143,7 @@ export default function ItineraryDay({ currentPackage }) {
                       }}
                     >
                       <div className="w-6 h-6 rounded-full bg-white border-2 border-gray-300 flex items-center justify-center shadow-sm">
-                        {getSunIcon(slot.time)}
+                        {getSunIcon()}
                       </div>
                     </div>
                   );
@@ -134,11 +154,10 @@ export default function ItineraryDay({ currentPackage }) {
             <div className="flex-1">
               <div
                 className={`shadow-sm overflow-hidden border-none ${expandedDay !== day.id
-                    ? "rounded-tr-xl rounded-br-xl"
-                    : ""
-                }`}
+                  ? "rounded-tr-xl rounded-br-xl"
+                  : ""
+                  }`}
               >
-                {/* HEADER */}
                 <div
                   className="flex justify-between items-center p-4 cursor-pointer bg-white hover:bg-gray-50"
                   onClick={() => toggleExpand(day.id)}
@@ -153,7 +172,6 @@ export default function ItineraryDay({ currentPackage }) {
                   )}
                 </div>
 
-                {/* EXPAND PANEL */}
                 <AnimatePresence>
                   {expandedDay === day.id && (
                     <motion.div
@@ -163,13 +181,10 @@ export default function ItineraryDay({ currentPackage }) {
                       transition={{ duration: 0.35 }}
                     >
                       <CardContent className="bg-white p-6 space-y-6">
-                        {/* Description */}
                         <p className="text-sm text-gray-700 break-words sm:max-w-sm md:max-w-md">
                           {day.description}
                         </p>
 
-
-                        {/* Schedule */}
                         <div className="space-y-6">
                           {day.schedule.map((slot, index) => {
                             const key = `${day.id}-${index}`;
@@ -177,9 +192,9 @@ export default function ItineraryDay({ currentPackage }) {
                             return (
                               <div
                                 key={index}
-                                ref={(el) =>
-                                  el && (scheduleRefs.current[key] = el)
-                                }
+                                ref={(el: HTMLDivElement | null) => {
+                                  scheduleRefs.current[key] = el;
+                                }}
                                 className="flex items-start gap-4"
                               >
                                 <div className="flex-1 space-y-2">
@@ -190,6 +205,7 @@ export default function ItineraryDay({ currentPackage }) {
                                   <img
                                     src={slot.image}
                                     className="h-[180px] w-full rounded-lg object-cover"
+                                    alt="schedule"
                                   />
 
                                   <p className="text-sm text-gray-600 leading-relaxed">
