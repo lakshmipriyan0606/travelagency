@@ -3,7 +3,7 @@ import { Swiper, SwiperSlide } from "swiper/react";
 import { Navigation, Pagination } from "swiper/modules";
 import InnerCarousel from "./InnerCarousel";
 import { calculateDiscountPercentage } from "../constant";
-import customArrowLeft from '@/assets/icons/arrowLeft.svg'
+import customArrowLeft from '@/assets/icons/arrowleft.svg'
 import customArrowRight from '@/assets/icons/arrowright.svg'
 import arrowLeft from '@/assets/icons/leftarrow.svg'
 import arrowRight from '@/assets/icons/rightarrow.svg'
