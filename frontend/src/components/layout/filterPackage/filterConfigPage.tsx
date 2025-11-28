@@ -59,7 +59,7 @@ const LaptopFilterRender: React.FC<{ control: any; watchFilters: any }> = ({
                                                 type="checkbox"
                                                 checked={field.value || false}
                                                 onChange={(e) => field.onChange(e.target.checked)}
-                                                className="cursor-pointer w-4 h-4 accent-amber-500"
+                                                className="cursor-pointer w-4 h-4 accent-primary"
                                             />
                                         )}
                                     />
@@ -121,7 +121,7 @@ const FilterConfigPage: React.FC<Props> = ({ onApply }) => {
                                 key={group}
                                 onClick={() => setActiveType(group)}
                                 className={`relative w-full text-left p-3 text-sm capitalize transition flex items-center justify-between ${activeType === group
-                                        ? "font-semibold text-amber-600"
+                                        ? "font-semibold text-primary"
                                         : "text-gray-600"
                                     } cursor-pointer`}
                             >
@@ -132,7 +132,7 @@ const FilterConfigPage: React.FC<Props> = ({ onApply }) => {
                                 {activeType === group && (
                                     <motion.span
                                         layoutId="mobile-highlight"
-                                        className="absolute left-0 top-0 w-1 h-full bg-amber-500 rounded-r"
+                                        className="absolute left-0 top-0 w-1 h-full bg-primary rounded-r"
                                         transition={{ type: "spring", stiffness: 200, damping: 20 }}
                                     />
                                 )}
@@ -166,7 +166,7 @@ const FilterConfigPage: React.FC<Props> = ({ onApply }) => {
                                                                 type="checkbox"
                                                                 checked={field.value || false}
                                                                 onChange={(e) => field.onChange(e.target.checked)}
-                                                                className="cursor-pointer w-4 h-4 accent-amber-500"
+                                                                className="cursor-pointer w-4 h-4 accent-primary"
                                                             />
                                                         )}
                                                     />
@@ -199,7 +199,7 @@ const FilterConfigPage: React.FC<Props> = ({ onApply }) => {
                         buttonText={`Apply ${totalApplied > 0 ? `(${totalApplied})` : ""}`}
                         onClick={handleApply}
                         type="button"
-                        className="flex-1 px-3 py-2 rounded bg-amber-500 text-custom-black font-medium text-sm"
+                        className="flex-1 px-3 py-2 rounded bg-primary text-custom-black font-medium text-sm"
                     />
                 </div>
             </div>

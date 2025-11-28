@@ -46,7 +46,7 @@ const FilterPackage = () => {
     const filteredPackages = useMemo(() => {
         return filterPackages(allPackageList, filters);
     }, [allPackageList, filters]);
-
+    
     if (isLoading) return <p>Loading packages...</p>;
     if (isError) return <p>Error loading packages</p>;
 
@@ -74,14 +74,15 @@ const FilterPackage = () => {
                         refetch={refetch}
                     />
 
+
                     {!filteredPackages.length && (
-                        <p className="text-red-500 font-semibold mt-3">
-                            No results found!
+                        <p className="text-red-600 font-roboto  mt-3 text-center text-lg">
+                            No results found! 😣
                         </p>
                     )}
                 </div>
             </div>
-        </FormProvider>
+        </FormProvider >
     );
 };
 

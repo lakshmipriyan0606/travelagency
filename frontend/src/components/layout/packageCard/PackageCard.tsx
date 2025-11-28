@@ -7,8 +7,7 @@ import { useDeviceSize } from "@/Hook/UseDevice";
 import InnerCarousel from "../bestPackage/carousel/InnerCarousel";
 import location from "@/assets/icons/location.svg";
 import star from "@/assets/icons/Star.svg";
-import heartgray from "@/assets/icons/heartgray.svg";
-import heartRed from "@/assets/icons/heartRed.svg";
+import { Heart } from "lucide-react";
 import dateIcon from "@/assets/icons/date.svg";
 
 import { AnimatePresence, motion } from "framer-motion";
@@ -46,6 +45,7 @@ export default function PackageCard({
     refetch
 }: PackageCardProps) {
     useDeviceSize();
+    console.log('filterList: ', filterList);
 
     const [open, setOpen] = useState(false);
     const [deleteId, setDeleteId] = useState<string | null>(null);
@@ -60,6 +60,7 @@ export default function PackageCard({
     const { mutate: updateLikeMutate } = useMutationAPIQuery(UpdateLikePackage, {
         onSuccess: () => {
             console.log('Like status updated successfully');
+        refetch?.();
         }
     });
 
@@ -73,8 +74,7 @@ export default function PackageCard({
         }
     };
 
-    const handleLikePackage = (packageId: string, liked: boolean) => {
-        debugger
+    const handleToggleLike = (packageId: string, liked: boolean) => {
         updateLikeMutate({ id: packageId, liked, userId: localStorage.getItem("userId") });
     }
 
@@ -83,7 +83,6 @@ export default function PackageCard({
         <div className="flex flex-col gap-6 items-center justify-center max-w-7xl mx-auto p-2 sm:p-5 w-full">
             <AnimatePresence mode="popLayout">
                 {filterList.map((offer) => {
-                    console.log('offer: ', offer);
                     const details = getOfferDetailsConfig(offer);
                     return (
                         <motion.div
@@ -135,7 +134,26 @@ export default function PackageCard({
                                         <div className="flex flex-col justify-center gap-3 p-8 md:w-[45%] font-roboto">
                                             <Row>
                                                 <IconText icon={location} text={offer.location} />
-                                                <img src={offer?.userLiked ? heartRed :heartgray} alt="" width={22} className="cursor-pointer" onClick={()=>handleLikePackage(offer?._id,offer?.userLiked)} />
+                                                <motion.button
+                                                    onClick={() => handleToggleLike(offer._id, !offer.userLiked)}
+                                                    whileTap={{ scale: 0.75 }}
+                                                    animate={{
+                                                        scale: offer.userLiked ? [1, 1.4, 1] : 1,
+                                                        rotate: offer.userLiked ? [0, -8, 8, -5, 5, 0] : 0,
+                                                    }}
+                                                    transition={{
+                                                        duration: 0.35,
+                                                        ease: "easeInOut",
+                                                        type: "tween",
+                                                    }}
+                                                    className="p-2 cursor-pointer"
+                                                >
+                                                    <Heart
+                                                        className={`${offer?.userLiked ? "fill-red-500 text-red-500" : "text-gray-400"
+                                                            } transition-all duration-300`}
+                                                        size={24}
+                                                    />
+                                                </motion.button>
                                             </Row>
 
                                             {details.map((d, i) => (
