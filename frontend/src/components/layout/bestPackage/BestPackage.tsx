@@ -3,7 +3,6 @@ import 'swiper/css/navigation';
 import 'swiper/css/pagination';
 import OuterCarousel from './carousel/OuterCarousel';
 import { useNavigate } from 'react-router-dom';
-import aueroplane from '@/assets/icons/Auroplane.svg';
 export default function BestPackage() {
 
     const navigate = useNavigate();
