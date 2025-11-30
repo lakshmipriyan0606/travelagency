@@ -7,7 +7,7 @@ import BookingFomField from './BookingFomField';
 export default function ReachUs() {
 
   return (
-    <div className="min-h-screen bg-[#F6F9FF] p-10">
+    <div className="bg-[#F6F9FF] p-10">
       <div className="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-10 sm:px-6 lg:px-14  sm:p-8">
 
         {/* LEFT SECTION */}
@@ -44,7 +44,7 @@ export default function ReachUs() {
 
         {/* RIGHT SECTION */}
         <div className="">
-          <h2 className="text-2xl font-serif text-center mb-6 text-gray-900">
+          <h2 className="text-2xl md:text-4xl font-serif text-center mb-6 ">
             Book Your Dream Vacation Today!
           </h2>
 

@@ -1,38 +1,37 @@
 import { Button } from "../ui/button";
+import { cn } from "@/lib/utils";
 
 type PrimaryOutlineButtonProps = {
   buttonName: string;
   animated?: boolean;
+  className?: string;
 };
 
-const PrimaryOutlineButton = ({ buttonName, animated = false }: PrimaryOutlineButtonProps) => {
+const PrimaryOutlineButton = ({
+  buttonName,
+  animated = false,
+  className,
+}: PrimaryOutlineButtonProps) => {
   return (
     <Button
-      className="
-        relative overflow-hidden 
-        bg-transparent border border-primary text-primary 
-        hover:bg-primary hover:text-white 
-        rounded px-4 py-2 text-sm font-normal cursor-pointer
-        transition-all duration-300
-      "
+      className={cn(
+        "relative overflow-hidden bg-transparent border border-primary text-primary hover:bg-primary hover:text-white rounded px-4 py-2 text-sm font-normal cursor-pointer transition-all duration-300",
+        className
+      )}
     >
-      {/* 1. Text must be z-10 so the shine goes BEHIND it */}
+      {/* Button Text */}
       <span className="relative z-10">{buttonName}</span>
 
+      {/* ✅ Full Shimmer Layer */}
       {animated && (
         <span
-          className="
-            absolute inset-0 
-            -translate-x-full
-            z-0
-            animate-shimmer-slide
-            
-            /* --- THE FIX --- */
-            /* We use 'via-white/60'. This creates a BRIGHT Silver shine. */
-            /* 60% opacity is strong enough to pop against the black header. */
-            bg-gradient-to-r from-transparent via-white/60 to-transparent
-          "
-        ></span>
+          className={cn(
+            "pointer-events-none absolute inset-0",
+            "w-full h-full",
+            "bg-gradient-to-r from-transparent via-white/25 to-transparent",
+            "animate-shimmer-slide"
+          )}
+        />
       )}
     </Button>
   );

@@ -47,7 +47,7 @@ const Navbar = () => {
             </Link>
           ))}
           <div className="mx-start pl-2">
-                <PrimaryOutlineButton buttonName="For Agencies/ B2B" />
+                <PrimaryOutlineButton buttonName="For Agencies/ B2B" animated />
           </div>
         </div>
       </div>

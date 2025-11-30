@@ -12,9 +12,9 @@ export function BestDestination() {
     };
 
     return (
-        <section className="bg-custom-black main__container_space min-h-screen">
+        <section className="bg-custom-black main__container_space border-b-4 border-primary">
             <div className='main__container_space_nextContainer'>
-                <h2 className="text-2xl md:text-3xl lg:text-4xl font-bold text-white text-center mb-10 leading-tight">
+                <h2 className="text-2xl md:text-3xl lg:text-5xl font-bold text-white text-center mb-10 leading-tight">
                     Explore Our <span className="text-yellow-400">Best Packages</span> &amp; Be Amazed
                 </h2>
 
@@ -28,7 +28,7 @@ export function BestDestination() {
                             cursor-pointer
                         `}
                         >
-                            <img src={src} alt={alt} className="w-full h-48 sm:h-70 object-cover" />
+                            <img src={src} alt={alt} className="w-full h-48 sm:h-64 lg:h-54 xl:h-64 2xl:h-[280px] object-cover" />
 
                             {/* From center → left */}
                             <span
@@ -56,7 +56,7 @@ export function BestDestination() {
                                 className="
                                 absolute inset-0 bg-black/50 flex items-center justify-center p-4 
                                 opacity-0 translate-y-full group-hover:translate-y-0 group-hover:opacity-100 
-                                transition-all duration-700 z-30
+                                transition-all duration-700
                             "
                             >
                                 <h3 className="text-xl sm:text-2xl text-center text-white font-arizonia">

@@ -6,14 +6,30 @@ import packageRoute from "./routes/package.routes.js";
 import bookingRoute from "./routes/bookingForm.route.js";
 
 const app = express();
+
 app.use(express.json());
 app.use(cookieParser());
+
+const allowedOrigins = [
+  "http://localhost:5173",
+  "https://travelagency-1-odma.onrender.com",
+];
+
 app.use(
   cors({
-    origin: "https://travelagency-1-odma.onrender.com",
+    origin: function (origin, callback) {
+      if (!origin || allowedOrigins.includes(origin)) {
+        callback(null, true);
+      } else {
+        callback(new Error("CORS Not Allowed"));
+      }
+    },
     credentials: true,
+    methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+    allowedHeaders: ["Content-Type", "Authorization", "userId"],
   })
 );
+
 
 app.use("/api/admin", authRoutes);
 app.use("/api/packages", packageRoute);

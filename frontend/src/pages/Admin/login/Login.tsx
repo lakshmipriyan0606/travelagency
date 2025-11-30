@@ -13,7 +13,7 @@ import { useDispatch } from "react-redux";
 const LoginForm = () => {
     const navigate = useNavigate()
     const dispatch = useDispatch()
-    const { } = useMutationAPIQuery(loginAPI, {
+    const { mutate} = useMutationAPIQuery(loginAPI, {
         onSuccess(data) {
             dispatch(setUser({
                 id: data.user._id,
@@ -32,7 +32,8 @@ const LoginForm = () => {
         resolver: zodResolver(loginSchema),
     });
 
-    const onSubmit = async () => {
+    const onSubmit = async (data:FormData) => {
+        mutate(data);
     };
 
 

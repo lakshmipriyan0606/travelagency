@@ -10,9 +10,9 @@
   --font-cormorant: "CormorantGaramond", serif;
   --font-roboto: "Roboto", sans-serif;
 
- /* --- THE MISSING LINE --- */
+  /* --- THE MISSING LINE --- */
   /* This creates the class "animate-shimmer-slide" */
-  --animate-shimmer-slide: shimmer-slide 2s infinite linear; 
+  --animate-shimmer-slide: shimmer-slide 2s infinite linear;
 
   @keyframes shimmer-slide {
     0% {
@@ -154,8 +154,6 @@ body {
   z-index: 999999 !important;
 }
 
-
-
 .swiper-pagination-bullet {
   background-color: white !important;
   opacity: 1 !important;
@@ -191,7 +189,7 @@ body {
   }
 }
 
-.scrolldown{
+.scrolldown {
   animation: scroll-down 3s ease-in-out infinite;
 }
 
@@ -210,19 +208,75 @@ body {
   }
 }
 
-
 .main__container_space {
-  @apply py-12 px-4 md:px-8 lg:px-16
+  @apply py-12 px-4 md:px-8 lg:px-16;
 }
 .main__container_space_nextContainer {
-  @apply container mx-auto sm:px-4 sm:py-4
+  @apply container mx-auto sm:px-4 sm:py-4;
 }
 
 .rdp-week {
   opacity: 1 !important;
 }
 
-
-.swiper-button-prev, .swiper-button-next{
+.swiper-button-prev,
+.swiper-button-next {
   color: white !important;
+}
+
+.swiper-button-disabled {
+  opacity: 0.5 !important;
+  cursor: not-allowed !important;
+}
+
+:root {
+  --time: 0.4s ease;
+}
+
+.scroll-indicator {
+  cursor: pointer;
+  z-index: 10;
+  position: absolute;
+  bottom: 120px;
+  left: 50%;
+  transform: translateX(-50%) rotate(90deg) scale(1.5);
+}
+
+/* SVG */
+.scroll-group {
+  display: block;
+}
+
+/* Static Circle - Ensures initial stroke is yellow/gold */
+.circle-static {
+  stroke: var(--color-primary);
+  opacity: 0.4;
+  fill: none; /* Make sure the interior is transparent */
+}
+
+/* Animated Circle - Uses the yellow/orange gradient defined in the SVG */
+.circle-animated {
+  stroke: var(--color-primary);
+  stroke-dasharray: 150;
+  stroke-dashoffset: 150;
+  transition: stroke-dashoffset 1s linear;
+  fill: none; /* Make sure the interior is transparent */
+}
+
+/* Arrow - Uses the solid yellow/gold color */
+.scroll-arrow {
+  fill: var(--color-primary);
+  transition: transform var(--time);
+  transform-origin: center;
+}
+
+/* Hover Effects */
+.scroll-indicator:hover .scroll-arrow {
+  /* Moves the arrow slightly on hover */
+  transform: translateX(7px);
+}
+
+.scroll-indicator:hover .circle-animated {
+  /* Animates the yellow gradient stroke to 0 */
+  stroke-dashoffset: 0;
 }

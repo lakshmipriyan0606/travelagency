@@ -1,4 +1,3 @@
-
 import { Swiper, SwiperSlide } from 'swiper/react';
 import { Navigation, Pagination, Autoplay } from 'swiper/modules';
 import 'swiper/css';
@@ -11,13 +10,14 @@ import arrowRight from '@/assets/icons/rightarrow.svg'
 
 export default function Testimonials() {
     return (
-        <section className="bg-custom-black py-16 relative">
-            <div className="max-w-7xl mx-auto px-4">
+        <section className="bg-custom-black py-16 relative  border-b-4 border-primary">
+            <div className="max-w-7xl mx-auto px-4 relative"> 
                 <h2 className="text-4xl md:text-5xl font-bold text-primary mb-12">
                     Our Testimonials
                 </h2>
 
-                <div className=" w-full p-3 sm:p-16 xl:p-0">
+                {/* Container for Swiper content only */}
+                <div className="w-full p-3 sm:p-16 xl:p-0 ">
                     <Swiper
                         modules={[Navigation, Pagination, Autoplay]}
                         spaceBetween={30}
@@ -28,16 +28,16 @@ export default function Testimonials() {
                             1024: { slidesPerView: 3 },
                         }}
                         loop={true}
-                        autoplay={{ delay: 5000, disableOnInteraction: false }}
+                        autoplay={{ delay: 2000, disableOnInteraction: false }}
                         pagination={{
                             clickable: true,
                             el: '.custom-pagination',
                         }}
                         navigation={{
-                            prevEl: '.swiper-button-prev',
-                            nextEl: '.swiper-button-next',
+                            nextEl: ".outer-next",
+                            prevEl: ".outer-prev",
                         }}
-                        className="pb-12"
+                        className="pb-12 testimonial-swiper-wrapper"
                     >
                         {testimonials.map((testimonial) => (
                             <SwiperSlide key={testimonial.id}>
@@ -51,7 +51,7 @@ export default function Testimonials() {
                                             />
                                             <div>
                                                 <h3 className="font-semibold text-lg">{testimonial.name}</h3>
-                                                <div className="flex gap-1">
+                                                <div className="flex gap-1 text-yellow-500">
                                                     {[...Array(testimonial.rating)].map((_, i) => (
                                                         <span key={i} className="text-primary">★</span>
                                                     ))}
@@ -64,45 +64,42 @@ export default function Testimonials() {
                                     <p className="text-gray-600 text-sm leading-relaxed flex-grow">
                                         {testimonial.text}
                                     </p>
-
                                 </div>
                             </SwiperSlide>
                         ))}
                     </Swiper>
 
-                    <button
-                        className="
-                swiper-button-prev 
-                absolute left-0 top-1/2
-                z-10 
-                bg-white sm:bg-transparent 
-                rounded-full 
-                shadow-md sm:shadow-none 
-                p-2 
-                transition
-                "
-                    >
-                        <img src={arrowLeft} alt="prev" className="w-8 h-8 sm:w-[300px] sm:h-[300px]" />
-                    </button>
-
-                    <button
-                        className="
-                swiper-button-next 
-                absolute right-0 top-1/2
-                z-10 
-                bg-white sm:bg-transparent 
-                rounded-full 
-                shadow-md sm:shadow-none 
-                pl-4 pt-1
-                transition
-                "
-                    >
-                        <img src={arrowRight} alt="next" className="w-8 h-8 sm:w-[300px] sm:h-[300px]" />
-                    </button>
-
-
+                    {/* Pagination Dots */}
                     <div className="custom-pagination mt-6 flex justify-center gap-2 pb-9"></div>
                 </div>
+                <button
+                    className="outer-prev absolute left-10 xl:-left-10 -ml-4 top-1/2 -translate-y-1/2 z-[100] cursor-pointer hidden sm:block"
+                    aria-label="Previous Testimonial"
+                >
+                    <img src={arrowLeft} alt="Previous" className="w-10 h-10 block" />
+                </button>
+
+                <button
+                    className="outer-next absolute right-10 xl:-right-10 -mr-4 top-1/2 -translate-y-1/2 cursor-pointer z-[100] hidden sm:block"
+                    aria-label="Next Testimonial"
+                >
+                    <img src={arrowRight} alt="Next" className="w-10 h-10 block" />
+                </button>
+
+                <button
+                    className="outer-prev absolute left-2 top-1/2 -translate-y-1/2 bg-white cursor-pointer rounded-full p-3 shadow-md z-[100] sm:hidden"
+                    aria-label="Previous Testimonial"
+                >
+                    <img src={arrowLeft} alt="Previous" className="w-6 h-6 block" />
+                </button>
+
+                <button
+                    className="outer-next absolute right-2 top-1/2 -translate-y-1/2 bg-white cursor-pointer rounded-full p-3 shadow-md z-[100] sm:hidden"
+                    aria-label="Next Testimonial"
+                >
+                    <img src={arrowRight} alt="Next" className="w-6 h-6 block" />
+                </button>
+
             </div>
         </section>
     );

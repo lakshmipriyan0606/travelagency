@@ -162,20 +162,20 @@ export default function OuterCarousel() {
             {/* Outer Navigation */}
 
             {/* Mobile */}
-            <button className="outer-prev absolute left-2 top-1/2 -translate-y-1/2 bg-white rounded-full p-3 shadow-md z-50 sm:hidden">
+            <button className="outer-prev absolute left-2 top-1/2 -translate-y-1/2 bg-white cursor-pointer rounded-full p-3 shadow-md z-50 sm:hidden">
                 <img src={arrowLeft} className="w-6 h-6" />
             </button>
 
-            <button className="outer-next absolute right-2 top-1/2 -translate-y-1/2 bg-white rounded-full p-3 shadow-md z-50 sm:hidden">
+            <button className="outer-next absolute right-2 top-1/2 -translate-y-1/2 bg-white cursor-pointer rounded-full p-3 shadow-md z-50 sm:hidden">
                 <img src={arrowRight} className="w-6 h-6" />
             </button>
 
             {/* Desktop */}
-            <button className="outer-prev absolute left-0 top-[53%] -translate-y-1/2 z-50 hidden sm:block">
+            <button className="outer-prev absolute left-0 lg:left-5 xl:left-20 top-[53%] -translate-y-1/2 z-50 cursor-pointer hidden sm:block">
                 <img src={customArrowLeft} className="w-20 h-20" />
             </button>
 
-            <button className="outer-next absolute right-0 top-[53%] -translate-y-1/2 z-50 hidden sm:block">
+            <button className="outer-next absolute right-0 lg:right-5 xl:right-20 top-[53%] -translate-y-1/2 cursor-pointer z-50 hidden sm:block">
                 <img src={customArrowRight} className="w-20 h-20" />
             </button>
 

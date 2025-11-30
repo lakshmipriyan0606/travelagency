@@ -2,8 +2,9 @@
 
 import { Facebook, Twitter, Instagram, Linkedin } from 'lucide-react';
 import { footerData } from './constant';
-import CompanyLogo from '@/components/companyLogo/CompanyLogo';
-
+import companyLogo from '@/assets/image/logo/companyLogo.png'
+import { Link } from 'react-router-dom';
+import { navbarList } from '../navbar/constant';
 type IconComponent = React.FC<React.SVGProps<SVGSVGElement>>;
 
 const iconMap: Record<string, IconComponent> = {
@@ -31,19 +32,19 @@ export default function Footer() {
         {/* ---------- LOGO & ABOUT ---------- */}
         <section>
           <div className='flex gap-2 items-center'>
-            <CompanyLogo />
+            <img src={companyLogo} alt="Company Logo" className='company-logo' />
             <span className="text-white text-2xl font-bold">   <span className='text-4xl'>S</span>ASTIKA <span className='text-4xl'>T</span>RAVELS</span>
           </div>
-          <p className="text-sm md:text-base leading-relaxed max-w-3xl">
+          <p className="text-sm md:text-base text-justify leading-relaxed">
             {footerData.about}
           </p>
         </section>
 
         {/* ---------- CONTACT & SOCIAL ---------- */}
-        <section className="grid grid-cols-1 md:grid-cols-3 gap-8 ">
+        <section className="grid grid-cols-1 md:grid-cols-4 gap-8 ">
 
           {/* WhatsApp */}
-            <h1 className='text-primary text-4xl sm:hidden'>Contact us </h1>
+          <h1 className='text-primary text-4xl sm:hidden'>Contact us </h1>
           <div className=''>
             <h3 className="text-white font-semibold mb-2 uppercase">
               WhatsApp Us
@@ -69,6 +70,23 @@ export default function Footer() {
             >
               {footerData.email}
             </a>
+          </div>
+
+          <div>
+            <h1>Links</h1>
+            <h3 className="text-white flex gap-4 text-lg font-semibold mb-2">
+              {
+                navbarList?.map((item) => {
+                  return (
+                    <Link key={item.name} to={item.path} className="hover:text-primary transition-colors">
+                      {item.name}
+                    </Link>
+                  )
+                })
+              }
+            </h3>
+
+
           </div>
 
           {/* Social */}

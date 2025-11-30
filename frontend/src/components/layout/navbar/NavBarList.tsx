@@ -4,14 +4,14 @@ import PrimaryOutlineButton from "@/components/Button/PrimaryOutlineButton";
 
 const NavbarRenderList = () => {
   const navbarListItems = navbarList.map((item) => (
-    <li key={item.key} className="navbar-list-item">
+    <li key={item.key} className="navbar-list-item font-roboto">
       <NavLink
         to={item.path}
         className={({ isActive }) =>
-          `text-lg transition-colors ${
+          `sm:text-[17px] transition-colors ${
             isActive 
-              ? "text-primary font-bold"
-              : "text-gray-400 hover:text-primary"
+              ? "text-primary"
+              : "text-white/80 hover:text-primary"
           }`
         }
       >
@@ -24,7 +24,7 @@ const NavbarRenderList = () => {
     <ul className="navbar-list">
       {navbarListItems}
       <li>
-        <PrimaryOutlineButton buttonName="For Agencies/ B2B"  />
+        <PrimaryOutlineButton buttonName="For Agencies/ B2B"  className="h-7" animated />
       </li>
     </ul>
   );
