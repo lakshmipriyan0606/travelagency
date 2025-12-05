@@ -1,22 +1,24 @@
 
-import { Swiper, SwiperSlide } from 'swiper/react';
-import { Navigation } from 'swiper/modules';
-import arrowLeft from '@/assets/icons/leftarrow.svg'
-import arrowRight from '@/assets/icons/rightarrow.svg'
-import { useNavigate } from 'react-router-dom';
-
+import { Swiper, SwiperSlide } from "swiper/react";
+import { Navigation } from "swiper/modules";
+import arrowLeft from "@/assets/icons/leftarrow.svg";
+import arrowRight from "@/assets/icons/rightarrow.svg";
+import { useNavigate } from "react-router-dom";
 
 interface InnerCarouselProps {
     images: string[];
     offerId: number | string;
 }
 
-export default function InnerCarousel({ images, offerId }: InnerCarouselProps) {
-    const navigate = useNavigate()
+export default function InnerCarousel({ images = [], offerId }: InnerCarouselProps) {
+    const navigate = useNavigate();
 
     const handleNavigation = (id: number | string) => {
-        navigate(`/package/${id}`)
-    }
+        navigate(`/package/${id}`);
+    };
+
+    const enableLoop = images.length > 1;
+
     return (
         <div className="relative">
             <div>
@@ -26,8 +28,9 @@ export default function InnerCarousel({ images, offerId }: InnerCarouselProps) {
                         nextEl: `.inner-next-${offerId}`,
                         prevEl: `.inner-prev-${offerId}`,
                     }}
-                    loop
-                    autoplay={{ delay: 200 }}
+                    autoplay={enableLoop ? { delay: 2000 } : false}
+                    loop={enableLoop}
+                    slidesPerView={1}
                     className="h-64 md:h-72"
                 >
                     {images.map((img, idx) => (
@@ -54,14 +57,15 @@ export default function InnerCarousel({ images, offerId }: InnerCarouselProps) {
 
             {/* Inner navigation arrows */}
             <button
-                className={`inner-prev-${offerId} cursor-pointer absolute left-2 top-1/2 -translate-y-1/2 bg-black/40 hover:bg-black/70 text-white p-2 rounded-full z-10 transition`}
+                className={`inner-prev-${offerId} cursor-pointer absolute left-2 top-1/2 -translate-y-1/2 bg-black/40 hover:bg-black/70 p-2 rounded-full z-10 transition`}
             >
-                <img src={arrowLeft} alt="" className="w-10 h-10" />
+                <img src={arrowLeft} alt="Prev" className="w-10 h-10" />
             </button>
+
             <button
-                className={`inner-next-${offerId} cursor-pointer absolute right-2 top-1/2 -translate-y-1/2 bg-black/40 hover:bg-black/70 text-white p-2 rounded-full z-10 transition`}
+                className={`inner-next-${offerId} cursor-pointer absolute right-2 top-1/2 -translate-y-1/2 bg-black/40 hover:bg-black/70 p-2 rounded-full z-10 transition`}
             >
-                <img src={arrowRight} className="w-10 h-10" alt="" />
+                <img src={arrowRight} alt="Next" className="w-10 h-10" />
             </button>
         </div>
     );

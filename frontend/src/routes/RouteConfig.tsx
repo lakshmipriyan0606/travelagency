@@ -6,6 +6,7 @@ import { AppRoute } from "@/types/types";
 import { lazy } from "react";
 import ProtectedRoute from "./ProtectedRoute";
 import NonProtectedRoute from "./NonProtectRoute";
+import FavouritePackage from "@/pages/FavouritePackage/FavouritePackage";
 
 const Home = lazy(() => import('@/pages/Home/Home'));
 
@@ -26,6 +27,11 @@ const routes: AppRoute[] = [
     {
         path: '/allpackage',
         element: <AllPackage />,
+        isProtectRoute: false,
+    },
+    {
+        path: '/likepackage',
+        element: <FavouritePackage />,
         isProtectRoute: false,
     },
     // {

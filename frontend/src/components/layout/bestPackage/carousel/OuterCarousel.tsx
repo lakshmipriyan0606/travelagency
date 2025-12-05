@@ -18,23 +18,23 @@ import { UseFetchAPIQuery } from "@/Hook/UseFetchAPIQuery";
 import { GetBestBackageList, UpdateLikePackage } from "@/api/user/api";
 import { useMutationAPIQuery } from "@/Hook/useMutationAPIQuery";
 import { useNavigate } from "react-router-dom";
+import { useQueryClient } from "@tanstack/react-query";
 
 
 export default function OuterCarousel() {
 
     const navigate = useNavigate()
+    const queryClient = useQueryClient();
 
     const { data, isLoading, isError, refetch } = UseFetchAPIQuery({
         key: ["bestPackage"],
         queryFn: GetBestBackageList,
     });
 
-
-
-
     const { mutate: updateLikeMutate } = useMutationAPIQuery(UpdateLikePackage, {
         onSuccess: () => {
             refetch();
+            queryClient.invalidateQueries({ queryKey: ["likePackage"] });
             console.log('Like status updated successfully');
         }
     });
@@ -106,12 +106,13 @@ export default function OuterCarousel() {
                                             onClick={() => handleToggleLike(offer?._id, !offer?.userLiked)}
                                             whileTap={{ scale: 0.75 }}
                                             animate={{
-                                                scale: offer?.userLiked ? [1, 1.4, 1] : 1,
-                                                rotate: offer?.userLiked ? [0, -8, 8, -5, 5, 0] : 0,
+                                                scale: offer.userLiked ? [1, 1.4, 1] : 1,
+                                                rotate: offer.userLiked ? [0, -8, 8, -5, 5, 0] : 0,
                                             }}
                                             transition={{
                                                 duration: 0.35,
-                                                type: "spring",
+                                                ease: "easeInOut",
+                                                type: "tween"
                                             }}
                                             className="p-2 cursor-pointer"
                                         >
@@ -149,7 +150,7 @@ export default function OuterCarousel() {
                                     <div className="w-full h-[2px] bg-gray-300"></div>
                                     <div className="flex  gap-4 w-full items-center">
                                         <img src={whatsappIcon} alt="whatsapp" className="w-12 h-12" />
-                                        <AnimatedButton buttonText="Contact us" borderButtonColor={'bg-white'} textColor={'text-white'} bgColor="bg-custom-black" className="hover:bg-custom-black w-3/4" onClick={()=>handleNavigation(offer?._id)} />
+                                        <AnimatedButton buttonText="Contact us" borderButtonColor={'bg-white'} textColor={'text-white'} bgColor="bg-custom-black" className="hover:bg-custom-black w-3/4" onClick={() => handleNavigation(offer?._id)} />
                                     </div>
                                 </div>
 

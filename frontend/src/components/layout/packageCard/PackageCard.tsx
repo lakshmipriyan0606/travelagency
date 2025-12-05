@@ -17,6 +17,7 @@ import { useState } from "react";
 import { useMutationAPIQuery } from "@/Hook/useMutationAPIQuery";
 import { DeleteCurrentPackage } from "@/api/admin/auth.api";
 import { UpdateLikePackage } from "@/api/user/api";
+import { useQueryClient } from "@tanstack/react-query";
 
 interface Package {
     _id: string;
@@ -35,18 +36,26 @@ interface PackageCardProps {
     setEditPackageId: (id: string) => void;
     setActive: (active: string) => void;
     refetch?: () => void | any;
+    handleLikeUpdate?: (id: string, liked: boolean) => void;
 }
+
+type LikePayload = {
+    id: string;
+    liked: boolean;
+    userId: string | null;
+};
 
 export default function PackageCard({
     filterList = [],
     isAdmin,
     setEditPackageId,
     setActive,
-    refetch
+    refetch,
+    handleLikeUpdate = () => { }
 }: PackageCardProps) {
     useDeviceSize();
-    console.log('filterList: ', filterList);
 
+    const queryClient = useQueryClient();
     const [open, setOpen] = useState(false);
     const [deleteId, setDeleteId] = useState<string | null>(null);
 
@@ -57,12 +66,20 @@ export default function PackageCard({
     });
 
 
-    const { mutate: updateLikeMutate } = useMutationAPIQuery(UpdateLikePackage, {
-        onSuccess: () => {
-            console.log('Like status updated successfully');
-        refetch?.();
+    const { mutate: updateLikeMutate } = useMutationAPIQuery<
+        unknown,
+        any,
+        LikePayload
+    >(
+        UpdateLikePackage,
+        {
+            onSuccess: (_data, variables) => {
+                handleLikeUpdate?.(variables.id, variables.liked);
+                queryClient.invalidateQueries({ queryKey: ["likePackage"] });
+            },
         }
-    });
+    );
+
 
 
 
@@ -144,7 +161,7 @@ export default function PackageCard({
                                                     transition={{
                                                         duration: 0.35,
                                                         ease: "easeInOut",
-                                                        type: "tween",
+                                                        type: "tween"
                                                     }}
                                                     className="p-2 cursor-pointer"
                                                 >

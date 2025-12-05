@@ -44,10 +44,21 @@ router.get("/bestpackages", async (req, res) => {
 router.get("/", async (req, res) => {
   try {
     const userId = req?.headers?.userid;
-    const bestPackages = await PackageModel.find();
+    const limit = parseInt(req.query.limit) || 10;
+    const lastId = req.query.lastId;
+    console.log('lastId: ', lastId);
 
-    const finalAllPackages = bestPackages.map((pkg) => {
-      const userLike = pkg.likes.find((like) => like.userId === userId);
+    const query = lastId ? { _id: { $lt: lastId } } : {};
+
+    const packages = await PackageModel.find(query)
+      .sort({ _id: -1 })
+      .limit(limit);
+
+    const finalAllPackages = packages.map((pkg) => {
+      const userLike = pkg.likes.find(
+        (like) => like.userId.toString() === userId
+      );
+
       return {
         ...pkg.toObject(),
         userLiked: userLike ? userLike.liked : false,
@@ -56,11 +67,40 @@ router.get("/", async (req, res) => {
 
     res.status(200).json({
       data: finalAllPackages,
-      message: "All best packages fetched successfully",
+      nextCursor: packages.length ? packages[packages.length - 1]._id : null,
+      hasMore: packages.length === limit,
+      message: "Packages fetched successfully",
     });
   } catch (error) {
     res.status(500).json({
-      message: "Error fetching best packages",
+      message: "Error fetching packages",
+      error: error.message,
+    });
+  }
+});
+
+router.get("/likeCount", async (req, res) => {
+  try {
+    const userId = req?.headers?.userid;
+    const allPackage = await PackageModel.find();
+
+    const finalAllPackages = allPackage.map((pkg) => {
+      const userLike = pkg.likes.find((like) => like.userId === userId);
+      return {
+        ...pkg.toObject(),
+        userLiked: userLike ? userLike.liked : false,
+      };
+    });
+
+    const likeTotalCount = finalAllPackages?.filter((pack) => pack?.userLiked);
+
+    res.status(200).json({
+      data: likeTotalCount?.length,
+      message: "like count fetched successfully",
+    });
+  } catch (error) {
+    res.status(500).json({
+      message: "Error fetching like count packages",
       error: error.message,
     });
   }
@@ -91,6 +131,7 @@ router.post(
 router.delete("/deletePackage/:id", async (req, res) => {
   try {
     const deletedPackage = await PackageModel.findByIdAndDelete(req.params.id);
+    console.log('PackageModel: ', PackageModel);
 
     if (!deletedPackage) {
       return res.status(404).json({ message: "Package not found" });
@@ -107,12 +148,12 @@ router.post("/like", async (req, res) => {
 
   try {
     const pkg = await PackageModel.findById(id);
-    console.log('pkg: ', pkg);
+    console.log("pkg: ", pkg);
 
     if (!pkg) return res.status(404).json({ message: "Package not found" });
 
     const userIndex = pkg.likes.findIndex((like) => like.userId === userId);
-    console.log('userIndex: ', userIndex);
+    console.log("userIndex: ", userIndex);
 
     if (userIndex >= 0) {
       pkg.likes[userIndex].liked = liked;

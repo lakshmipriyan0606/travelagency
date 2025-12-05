@@ -29,11 +29,15 @@ const buildEmptyFilters = (): FilterConfigForm["filterConfig"] => {
     return obj;
 };
 
-const LaptopFilterRender: React.FC<{ control: any; watchFilters: any }> = ({
+const LaptopFilterRender: React.FC<{ control: any; watchFilters: any, handleClear: () => void }> = ({
     control,
+    handleClear,
 }) => {
     return (
-        <div className="rounded-lg bg-white shadow-sm font-roboto text-sm hidden md:block p-2 xl:p-9">
+        <div className="rounded-lg bg-white shadow-sm sm:border sm:border-gray-300 sm:shadow-lg font-roboto text-sm hidden md:flex md:flex-col  p-2 xl:p-6 ">
+            <div className="text-right p-2" onClick={handleClear}>
+                <button className="px-3 py-1 bg-gray-300 text-black/60 rounded-sm">Clear filter</button>
+            </div>
             {Object.entries(filterConfig).map(([group, values]) => {
                 return (
                     <div key={group} className="pb-4">
@@ -85,7 +89,7 @@ const FilterConfigPage: React.FC<Props> = ({ onApply }) => {
         return Object.values(watchedFilters)
             .flatMap((g) => Object.values(g))
             .filter(Boolean).length;
-    }, [watchedFilters]);
+    }, [watchedFilters,]);
 
     const appliedByGroup = useMemo(() => {
         const map: Record<string, number> = {};
@@ -93,7 +97,7 @@ const FilterConfigPage: React.FC<Props> = ({ onApply }) => {
             map[group] = Object.values(watchedFilters?.[group] || {}).filter(Boolean).length;
         });
         return map;
-    }, [watchedFilters]);
+    }, [watchedFilters,watch()]);
 
     const handleClear = () => {
         reset({ filterConfig: buildEmptyFilters() } as any);
@@ -108,7 +112,7 @@ const FilterConfigPage: React.FC<Props> = ({ onApply }) => {
         <section className="font-roboto select-none">
             {/* Desktop View */}
             <div className="hidden md:block">
-                <LaptopFilterRender control={control} watchFilters={watchedFilters} />
+                <LaptopFilterRender control={control} watchFilters={watchedFilters} handleClear={handleClear} />
             </div>
 
             {/* Mobile View */}
@@ -121,8 +125,8 @@ const FilterConfigPage: React.FC<Props> = ({ onApply }) => {
                                 key={group}
                                 onClick={() => setActiveType(group)}
                                 className={`relative w-full text-left p-3 text-sm capitalize transition flex items-center justify-between ${activeType === group
-                                        ? "font-semibold text-primary"
-                                        : "text-gray-600"
+                                    ? "font-semibold text-primary"
+                                    : "text-gray-600"
                                     } cursor-pointer`}
                             >
                                 <span>{group.replace(/([A-Z])/g, " $1")}</span>
@@ -177,7 +181,7 @@ const FilterConfigPage: React.FC<Props> = ({ onApply }) => {
                                                         {value}
                                                     </label>
                                                 </div>
-                                                <div className="text-xs text-gray-400">(24)</div>
+                                                {/* <div className="text-xs text-gray-400">(24)</div> */}
                                             </div>
                                         </div>
                                     );
@@ -195,12 +199,12 @@ const FilterConfigPage: React.FC<Props> = ({ onApply }) => {
                         type="button"
                         className="flex-1 px-3 py-2 rounded border border-gray-200 bg-gray-500/4 text-custom-black text-sm"
                     />
-                    <PrimaryButton
+                    {/* <PrimaryButton
                         buttonText={`Apply ${totalApplied > 0 ? `(${totalApplied})` : ""}`}
                         onClick={handleApply}
                         type="button"
                         className="flex-1 px-3 py-2 rounded bg-primary text-custom-black font-medium text-sm"
-                    />
+                    /> */}
                 </div>
             </div>
         </section>

@@ -1,11 +1,13 @@
 import { FormProvider, useForm, useWatch } from "react-hook-form";
-import { useContext, useMemo } from "react";
+import { useContext, useEffect, useMemo, useState } from "react";
 import { filterPackages, generateDefaultValues } from "./constant";
 import { UseFetchAPIQuery } from "@/Hook/UseFetchAPIQuery";
 import { GetAllPackageList } from "@/api/user/api";
 import PackageCard from "../packageCard/PackageCard";
 import FilterConfigPage from "./filterConfigPage";
 import { AdminPanelContext } from "@/pages/Admin/AdminPanel/AdminPanel";
+import { useLocation } from "react-router-dom";
+import AnimatedButton from "@/components/Button/AnimatedButton/AnimatedButton";
 
 type FilterConfigForm = {
     filterConfig: {
@@ -15,16 +17,18 @@ type FilterConfigForm = {
     };
 };
 
+const PAGE_SIZE = 5;
+
 const FilterPackage = () => {
+    const { pathname } = useLocation();
+    const isLikePackageFlow = pathname?.includes("likePackage");
+
     const context = useContext(AdminPanelContext);
-
-
     const defaultValues = useMemo(() => generateDefaultValues(), []);
 
-    const { data, isLoading, isError, refetch } = UseFetchAPIQuery({
-        key: ["allPackage"],
-        queryFn: GetAllPackageList,
-    });
+    const [packageList, setPackageList] = useState<any[]>([]);
+    const [cursor, setCursor] = useState<string>('');
+    const [hasMore, setHasMore] = useState(true);
 
     const methods = useForm<FilterConfigForm>({
         defaultValues,
@@ -36,32 +40,64 @@ const FilterPackage = () => {
         control: methods.control,
     });
 
+    const { data, isLoading, isError, refetch } = UseFetchAPIQuery({
+        key: ["allPackage", cursor],
+        queryFn: () =>
+            GetAllPackageList({
+                limit: PAGE_SIZE,
+                lastId: cursor,
+            }),
+        options: {
+            enabled: false
+        }
+    });
+
+    useEffect(() => {
+        refetch()
+    }, [])
+
+    useEffect(() => {
+        if (data?.data?.length) {
+            setPackageList((prev) => [...prev, ...data.data]);
+            setCursor(data.nextCursor);
+            setHasMore(data.hasMore);
+        }
+    }, [data]);
+
     const removeDaysKey = (data: any) => {
         const { days, ...rest } = data;
         return rest;
     };
 
-    const allPackageList =
-        data?.data?.map((item: any) => removeDaysKey(item)) || [];
+    const cleanPackageList = useMemo(
+        () => packageList.map((item) => removeDaysKey(item)),
+        [packageList]
+    );
+
+    // ✅ Filtering AFTER pagination
     const filteredPackages = useMemo(() => {
-        return filterPackages(allPackageList, filters);
-    }, [allPackageList, filters]);
-    
-    if (isLoading) return <p>Loading packages...</p>;
+        const packageList = filterPackages(cleanPackageList, filters);
+        const finalPackageList = isLikePackageFlow
+            ? packageList?.filter((list) => list?.userLiked)
+            : packageList;
+
+        return finalPackageList;
+    }, [cleanPackageList, filters, isLikePackageFlow]);
+
+    if (isLoading && !packageList.length) return <p>Loading packages...</p>;
     if (isError) return <p>Error loading packages</p>;
-
-
 
     return (
         <FormProvider {...methods}>
-            <div className="lg:p-6 grid grid-cols-12 gap-6 bg-[#3F4FB] h-full">
-                {/* LEFT FILTER UI */}
-                <div className="col-span-12 md:col-span-3 lg:col-span-3 md:sticky md:top-0 sm:h-screen sm:left-5 w-full">
+            <div className="sm:p-6 flex flex-col sm:flex-row sm:justify-around bg-[#3F4FB] h-screen">
+
+                {/* ✅ LEFT FILTER - STICKY */}
+                <div className="w-full sm:w-[25%] xl:w-[17%] sticky top-0 h-screen self-start">
                     <FilterConfigPage />
                 </div>
 
-                {/* RIGHT PACKAGE LIST */}
-                <div className="col-span-12 md:col-span-9 p-2 md:h-screen md:overflow-y-auto sm:pr-2 lg:col-span-9">
+                {/* ✅ RIGHT PACKAGE LIST - SCROLLABLE */}
+                <div className="w-full sm:w-[75%] xl:-[78%] overflow-y-auto p-2 pr-2">
                     <h2 className="text-xl font-roboto mb-3">
                         Packages ({filteredPackages.length})
                     </h2>
@@ -72,17 +108,32 @@ const FilterPackage = () => {
                         setEditPackageId={context?.setEditPackageId || (() => { })}
                         setActive={context?.setActive || (() => { })}
                         refetch={refetch}
+                        handleLikeUpdate={(packageId: string, liked: boolean) => {
+                            setPackageList((prev) =>
+                                prev.map((pkg) =>
+                                    pkg._id === packageId
+                                        ? { ...pkg, userLiked: liked }
+                                        : pkg
+                                )
+                            );
+                        }}
                     />
 
+                    {hasMore && (
+                        <div className="text-center py-6">
+                            <AnimatedButton buttonText="Load more" onClick={() => refetch()} className="w-[200px]" />
+                        </div>
+                    )}
 
                     {!filteredPackages.length && (
-                        <p className="text-red-600 font-roboto  mt-3 text-center text-lg">
+                        <p className="text-red-600 font-roboto mt-3 text-center text-lg">
                             No results found! 😣
                         </p>
                     )}
                 </div>
+
             </div>
-        </FormProvider >
+        </FormProvider>
     );
 };
 

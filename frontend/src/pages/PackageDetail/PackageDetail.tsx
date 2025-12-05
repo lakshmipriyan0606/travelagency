@@ -14,13 +14,12 @@ const PackageDetail = () => {
     const { id } = useParams()
 
 
-    const { data :currentPackageList} = UseFetchAPIQuery({
+    const { data: currentPackageList } = UseFetchAPIQuery({
         key: ["currentPackageDetail", { id }],
         queryFn: async () => GetCurrentPackageDetail(id),
     });
 
     const [activeTab, setActiveTab] = useState(1);
-            console.log('currentPackageList: ', currentPackageList?.data);
 
 
     const tabberConfig = [
@@ -46,16 +45,16 @@ const PackageDetail = () => {
             <Navbar />
 
             {/* Container */}
-            <div className="max-w-7xl mx-auto p-4 grid grid-cols-1 lg:grid-cols-10 gap-30 lg:p-10">
+            <div className="mx-auto p-4 flex flex-col lg:gap-4 flex-row lg:p-10">
 
                 {/* Left 70% */}
-                <div className="lg:col-span-6">
+                <div className="">
                     <PackageDetailCarousel currentPackage={currentPackageList} />
-                    <div className='sm:hidden'>
+                    <div className='lg:hidden'>
                         <BookingFomField />
                     </div>
 
-                    <div className="w-full">
+                    <div className="w-full py-9">
 
                         {/* ----------- TAB BUTTONS ----------- */}
                         <div className="flex pb-2 font-semibold">
@@ -83,7 +82,7 @@ const PackageDetail = () => {
                 </div>
 
                 {/* Right 30% Sticky */}
-                <div className=" hidden sm:block lg:col-span-4">
+                <div className=" hidden lg:block lg:w-[30%]">
                     <div className="sticky top-20 bg-white shadow-lg rounded-lg p-6">
                         <BookingFomField />
                     </div>

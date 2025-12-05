@@ -1,4 +1,4 @@
-import { useState, useRef, useEffect } from "react";
+import { useState, useRef, useEffect, useMemo } from "react";
 import { ChevronDown, ChevronUp, Sun } from "lucide-react";
 import { CardContent } from "@/components/ui/card";
 import { motion, AnimatePresence } from "framer-motion";
@@ -44,7 +44,7 @@ export default function ItineraryDay({ currentPackage }: ItineraryDayProps) {
    *  DYNAMIC ICON POSITION CALCULATOR
    * -------------------------------
    */
-  useEffect(() => {
+  useMemo(() => {
     if (expandedDay === null) {
       setIconPositions({});
       return;
@@ -88,7 +88,7 @@ export default function ItineraryDay({ currentPackage }: ItineraryDayProps) {
       clearTimeout(timer);
       window.removeEventListener("resize", updatePositions);
     };
-  }, [expandedDay, daysListData]);
+  }, [expandedDay, JSON.stringify(daysListData)]);
 
   /**
    * Time-based icon
