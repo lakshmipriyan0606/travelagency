@@ -78,18 +78,18 @@ const LaptopFilterRender: React.FC<{ control: any; watchFilters: any, handleClea
     );
 };
 
-const FilterConfigPage: React.FC<Props> = ({ onApply }) => {
+const FilterConfigPage: React.FC<Props> = () => {
     const { control, watch, reset } = useFormContext<FilterConfigForm>();
     const [activeType, setActiveType] = useState<string>(Object.keys(filterConfig)[0] || "");
 
     const watchedFilters = watch("filterConfig") || useMemo(() => buildEmptyFilters(), []);
 
-    const totalApplied = useMemo(() => {
-        if (!watchedFilters) return 0;
-        return Object.values(watchedFilters)
-            .flatMap((g) => Object.values(g))
-            .filter(Boolean).length;
-    }, [watchedFilters,]);
+    // const totalApplied = useMemo(() => {
+    //     if (!watchedFilters) return 0;
+    //     return Object.values(watchedFilters)
+    //         .flatMap((g) => Object.values(g))
+    //         .filter(Boolean).length;
+    // }, [watchedFilters,]);
 
     const appliedByGroup = useMemo(() => {
         const map: Record<string, number> = {};
@@ -103,10 +103,10 @@ const FilterConfigPage: React.FC<Props> = ({ onApply }) => {
         reset({ filterConfig: buildEmptyFilters() } as any);
     };
 
-    const handleApply = () => {
-        const currentFilters = watchedFilters;
-        onApply?.(currentFilters);
-    };
+    // const handleApply = () => {
+    //     const currentFilters = watchedFilters;
+    //     onApply?.(currentFilters);
+    // };
 
     return (
         <section className="font-roboto select-none">

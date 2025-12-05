@@ -1,4 +1,4 @@
-import { useState, useRef, useEffect, useMemo } from "react";
+import { useState, useRef, useMemo } from "react";
 import { ChevronDown, ChevronUp, Sun } from "lucide-react";
 import { CardContent } from "@/components/ui/card";
 import { motion, AnimatePresence } from "framer-motion";
