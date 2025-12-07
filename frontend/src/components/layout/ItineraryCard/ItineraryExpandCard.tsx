@@ -99,7 +99,7 @@ export default function ItineraryDay({ currentPackage }: ItineraryDayProps) {
   };
 
   return (
-    <div className="max-w-4xl mx-auto py-10 px-4">
+    <div className="max-w-4xl py-10 px-4">
       {daysListData.map((day) => (
         <div
           key={day.id}
@@ -204,7 +204,7 @@ export default function ItineraryDay({ currentPackage }: ItineraryDayProps) {
 
                                   <img
                                     src={slot.image}
-                                    className="h-[180px] w-full rounded-lg object-cover"
+                                    className="h-[180px] sm:h-[350px] w-full rounded-lg object-cover"
                                     alt="schedule"
                                   />
 

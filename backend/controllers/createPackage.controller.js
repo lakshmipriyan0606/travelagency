@@ -12,6 +12,8 @@ export const createPackage = async (req, res) => {
       offerPrice,
       isBestPackage,
       bestRank,
+      packageName,
+      packageDescription,
     } = req.body;
 
     const days = JSON.parse(req.body.days);
@@ -92,6 +94,8 @@ export const createPackage = async (req, res) => {
 
     // Step 4: Create new package
     const pkg = await Package.create({
+      packageName,
+      packageDescription,
       packageType,
       location,
       daysAndNights,
@@ -126,6 +130,8 @@ export const updatePackage = async (req, res) => {
       offerPrice,
       isBestPackage,
       bestRank,
+      packageName,
+      packageDescription,
     } = req.body;
 
     // parse days: accept object or JSON string
@@ -249,6 +255,8 @@ export const updatePackage = async (req, res) => {
     const updatedPkg = await Package.findByIdAndUpdate(
       req.params.id,
       {
+        packageName,
+        packageDescription,
         packageType,
         location,
         daysAndNights,

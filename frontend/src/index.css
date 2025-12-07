@@ -237,7 +237,6 @@ body {
   cursor: pointer;
   z-index: 10;
   position: absolute;
-  bottom: 120px;
   left: 50%;
   transform: translateX(-50%) rotate(90deg) scale(1.5);
 }

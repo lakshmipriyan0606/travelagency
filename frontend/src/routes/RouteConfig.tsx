@@ -1,7 +1,3 @@
-import AdminPanel from "@/pages/Admin/AdminPanel/AdminPanel";
-import LoginForm from "@/pages/Admin/login/Login";
-import AllPackage from "@/pages/AllPackage/AllPackage";
-import PackageDetail from "@/pages/PackageDetail/PackageDetail";
 import { AppRoute } from "@/types/types";
 import { lazy } from "react";
 import ProtectedRoute from "./ProtectedRoute";
@@ -9,6 +5,10 @@ import NonProtectedRoute from "./NonProtectRoute";
 import FavouritePackage from "@/pages/FavouritePackage/FavouritePackage";
 
 const Home = lazy(() => import('@/pages/Home/Home'));
+const AllPackage = lazy(() => import('@/pages/AllPackage/AllPackage'));
+const AdminPanel = lazy(() => import('@/pages/Admin/AdminPanel/AdminPanel'));
+const PackageDetail = lazy(() => import('@/pages/PackageDetail/PackageDetail'));
+const LoginForm = lazy(() => import('@/pages/Admin/login/Login'));
 
 
 

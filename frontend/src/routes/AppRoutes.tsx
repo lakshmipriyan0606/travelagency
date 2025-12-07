@@ -43,7 +43,7 @@ const renderAppRoute = (routesList: AppRoute[]): ReactNode => {
 
 const AppRoutes = () => (
     <ErrorBoundary FallbackComponent={ErrorFallback} onReset={() => window.location.reload()}>
-        <Suspense fallback={<></>}>
+        <Suspense fallback={<>loading...</>}>
             <ScrollToTop />
             <Routes>{renderAppRoute(routes)}</Routes>
         </Suspense>

@@ -32,6 +32,8 @@ const daySchema = z.object({
 });
 
 const formSchema = z.object({
+  packageName: z.string(),
+  packageDescription: z.string(),
   location: z.string(),
   packageType: z.string(),
   daysAndNights: z.string(),
@@ -127,7 +129,7 @@ export default function AdminUploadPackageForm() {
       packageAPIDetail?.refetch();
     }
   });
-  const { mutate: updateMutate } = useMutationAPIQuery((data: any) => UpdatePackage(data, id),{
+  const { mutate: updateMutate } = useMutationAPIQuery((data: any) => UpdatePackage(data, id), {
     onSuccess: () => {
       reset()
       setActive("AllPackages");
@@ -154,6 +156,8 @@ export default function AdminUploadPackageForm() {
 
     const pkg = data.data;
     reset({
+      packageName: pkg.packageName || '',
+      packageDescription: pkg.packageDescription || '',
       location: pkg.location || "",
       packageType: pkg.packageType || "",
       daysAndNights: pkg.daysAndNights || "",
@@ -220,6 +224,8 @@ export default function AdminUploadPackageForm() {
       <Card className="max-w-4xl mx-auto p-6 bg-white shadow-xl rounded-2xl">
         <h2 className="text-2xl font-bold text-center mb-6">🧳 Add / Edit Travel Package</h2>
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-5">
+          <ReusableInput control={control} name="packageName" label="Package name" required />
+          <ReusableInput control={control} name="packageDescription" label="Package description" required />
           <ReusableInput control={control} name="location" label="Location" required />
           <SelectField control={control} name="packageType" label="Package Type" options={packageTypes} required />
           <SelectField control={control} name="daysAndNights" label="Days & Nights" options={daysOptions} required />

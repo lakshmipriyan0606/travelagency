@@ -73,7 +73,7 @@ const HeroSection = () => {
                 loop
                 muted
             />
-            <div className="hero-overlay text-white text-2xl  sm:text-6xl text-wrap text-center pt-20">
+            <div className="hero-overlay text-white text-2xl  sm:text-6xl text-wrap text-center  pt-10 sm:pt-20">
                 <h1 className="hero-title font-arizonia">Experience <span className="text-primary">Singapore</span> Like Never Before, </h1>
                 <h1 className="hero-title font-arizonia">Adventure Awaits <span className="text-primary">Everywhere!</span></h1>
                 <AnimatedButton buttonText="ENQUIRE NOW" borderButtonColor={'bg-custom-black'} className="mt-[70px] w-[170px]" />
