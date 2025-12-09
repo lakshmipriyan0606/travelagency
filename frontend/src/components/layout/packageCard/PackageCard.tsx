@@ -18,6 +18,7 @@ import { useMutationAPIQuery } from "@/Hook/useMutationAPIQuery";
 import { DeleteCurrentPackage } from "@/api/admin/auth.api";
 import { UpdateLikePackage } from "@/api/user/api";
 import { useQueryClient } from "@tanstack/react-query";
+import { WANumber } from "@/lib/utils";
 
 interface Package {
     _id: string;
@@ -94,6 +95,18 @@ export default function PackageCard({
     const handleToggleLike = (packageId: string, liked: boolean) => {
         updateLikeMutate({ id: packageId, liked, userId: localStorage.getItem("userId") });
     }
+
+    const handleSendToWhatsApp = (currPackage: any) => {
+        const phoneNumber = WANumber
+
+        const message = `Hi! I am interested in ${currPackage?.packageName}. Please share the details. Thanks!`;
+
+
+        const url = `https://wa.me/${phoneNumber}?text=${encodeURIComponent(message)}`;
+
+        window.open(url, "_blank");
+    };
+
 
 
     return (
@@ -187,7 +200,7 @@ export default function PackageCard({
                                                 <Divider />
 
                                                 <Row>
-                                                    <img src={whatsappIcon} alt="whatsapp" className="w-12 h-12" />
+                                                    <img src={whatsappIcon} alt="whatsapp" className="w-12 h-12 cursor-pointer" onClick={() => handleSendToWhatsApp(offer)} />
                                                     <AnimatedButton
                                                         buttonText="Contact us"
                                                         className="w-3/4 hover:bg-custom-black"

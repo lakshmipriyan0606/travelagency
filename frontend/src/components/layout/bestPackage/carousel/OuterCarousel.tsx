@@ -19,6 +19,7 @@ import { GetBestBackageList, UpdateLikePackage } from "@/api/user/api";
 import { useMutationAPIQuery } from "@/Hook/useMutationAPIQuery";
 import { useNavigate } from "react-router-dom";
 import { useQueryClient } from "@tanstack/react-query";
+import { WANumber } from "@/lib/utils";
 
 
 export default function OuterCarousel() {
@@ -50,6 +51,18 @@ export default function OuterCarousel() {
     const handleNavigation = (id: number | string) => {
         navigate(`/package/${id}`)
     }
+
+    const handleSendToWhatsApp = (currPackage: any) => {
+        const phoneNumber = WANumber
+
+        const message = `Hi! I am interested in ${currPackage?.packageName}. Please share the details. Thanks!`;
+
+
+        const url = `https://wa.me/${phoneNumber}?text=${encodeURIComponent(message)}`;
+
+        window.open(url, "_blank");
+    };
+
 
     return (
         <div className="max-w-7xl mx-auto">
@@ -149,7 +162,7 @@ export default function OuterCarousel() {
                                     </div>
                                     <div className="w-full h-[2px] bg-gray-300"></div>
                                     <div className="flex  gap-4 w-full items-center">
-                                        <img src={whatsappIcon} alt="whatsapp" className="w-12 h-12" />
+                                        <img src={whatsappIcon} alt="whatsapp" className="w-12 h-12 cursor-pointer" onClick={() => handleSendToWhatsApp(offer)} />
                                         <AnimatedButton buttonText="Contact us" borderButtonColor={'bg-white'} textColor={'text-white'} bgColor="bg-custom-black" className="hover:bg-custom-black w-3/4" onClick={() => handleNavigation(offer?._id)} />
                                     </div>
                                 </div>

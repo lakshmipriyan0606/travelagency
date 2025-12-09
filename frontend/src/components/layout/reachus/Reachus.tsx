@@ -2,9 +2,21 @@
 import { Phone, Mail } from 'lucide-react';
 import whatsappIcon from '@/assets/icons/whatsapp.svg';
 import BookingFomField from './BookingFomField';
+import { WANumber } from '@/lib/utils';
 
 
 export default function ReachUs() {
+
+  const handleSendToWhatsApp = () => {
+    const phoneNumber = WANumber
+
+    const message = `Hi Sastika Travels I visited your website and would like to know more about your travel packages.Please share the details. Thank you!`;
+
+
+    const url = `https://wa.me/${phoneNumber}?text=${encodeURIComponent(message)}`;
+
+    window.open(url, "_blank");
+  };
 
   return (
     <div className="bg-[#F6F9FF] p-10">
@@ -23,7 +35,7 @@ export default function ReachUs() {
           </h1>
 
           <div className="flex items-center gap-4 relative z-10">
-            <img src={whatsappIcon} alt="whatsapp" className="w-12 h-12" />
+            <img src={whatsappIcon} alt="whatsapp" className="w-12 h-12 cursor-pointer" onClick={() => handleSendToWhatsApp()} />
             <span className="font-medium text-gray-600">OR</span>
             <div className="w-12 h-12 bg-black rounded-full flex items-center justify-center">
               <Phone className="text-white" />

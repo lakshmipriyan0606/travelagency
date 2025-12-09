@@ -15,7 +15,7 @@ type Package = {
     {
         id: 2,
         alt: "Marina Bay Sands Singapore",
-        src: "https://images.unsplash.com/photo-1544025162-d76694265947?w=600&h=400&fit=crop",
+        src: "https://res.cloudinary.com/dizocitqw/image/upload/v1764940278/travel_packages/slots/a5102ywg2paktpr32x6i.jpg",
         title: 'Marina Bay Sands Singapore',
     },  
     {
