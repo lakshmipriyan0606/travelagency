@@ -1,37 +1,37 @@
 export const testimonials = [
   {
     id: 1,
-    name: "Mia Khalifa",
+    name: "Arjun Mehta",
     rating: 5,
-    text: "We booked our Maldives trip & spent 4 days and 3 nights at Sheraton Maldives Full Moon Resort & Spa. It was a great memorable experience. Thank you so much to Mia for arranging everything from flights to resort and helping us customize the trip. We never had to wait any where, everything was planned perfectly. Looking forward to book more with you!",
-    image: 'https://i.sstatic.net/l60Hf.png'
+    text: "Our Maldives trip was perfectly organized. From flights to resort transfers, everything was seamless. The team customized the itinerary exactly as we wanted. Truly a memorable experience!",
+    image: "https://randomuser.me/api/portraits/men/32.jpg",
   },
   {
     id: 2,
-    name: "Mia Khalifa",
+    name: "Sneha Reddy",
     rating: 5,
-    text: "We booked our Maldives trip & spent 4 days and 3 nights at Sheraton Maldives Full Moon Resort & Spa. It was a great memorable experience. Thank you so much to Mia for arranging everything from flights to resort and helping us customize the trip. We never had to wait any where, everything was planned perfectly. Looking forward to book more with you!",
-    image: 'https://i.sstatic.net/l60Hf.png'
+    text: "Amazing service and excellent planning. We never had to worry about anything during our vacation. Highly recommended for hassle-free travel planning.",
+    image: "https://randomuser.me/api/portraits/women/45.jpg",
   },
   {
     id: 3,
-    name: "Mia Khalifa",
-    rating: 5,
-    text: "We booked our Maldives trip & spent 4 days and 3 nights at Sheraton Maldives Full Moon Resort & Spa. It was a great memorable experience. Thank you so much to Mia for arranging everything from flights to resort and helping us customize the trip. We never had to wait any where, everything was planned perfectly. Looking forward to book more with you!",
-    image: 'https://i.sstatic.net/l60Hf.png'
+    name: "Rahul Verma",
+    rating: 4,
+    text: "Very professional team. The resort selection and coordination were top-notch. Will definitely book my next international trip with them.",
+    image: "https://randomuser.me/api/portraits/men/76.jpg",
   },
   {
     id: 4,
-    name: "Mia Khalifa",
+    name: "Priya Sharma",
     rating: 5,
-    text: "We booked our Maldives trip & spent 4 days and 3 nights at Sheraton Maldives Full Moon Resort & Spa. It was a great memorable experience. Thank you so much to Mia for arranging everything from flights to resort and helping us customize the trip. We never had to wait any where, everything was planned perfectly. Looking forward to book more with you!",
-    image: 'https://i.sstatic.net/l60Hf.png'
+    text: "Everything was well planned and executed on time. The support team was always available whenever we had questions. Loved the experience!",
+    image: "https://randomuser.me/api/portraits/women/68.jpg",
   },
   {
     id: 5,
-    name: "Mia Khalifa",
+    name: "Karthik Srinivasan",
     rating: 5,
-    text: "We booked our Maldives trip & spent 4 days and 3 nights at Sheraton Maldives Full Moon Resort & Spa. It was a great memorable experience. Thank you so much to Mia for arranging everything from flights to resort and helping us customize the trip. We never had to wait any where, everything was planned perfectly. Looking forward to book more with you!",
-    image: 'https://i.sstatic.net/l60Hf.png'
+    text: "Excellent coordination and smooth execution. From booking to return, everything went perfectly. Strongly recommended for family trips.",
+    image: "https://randomuser.me/api/portraits/men/54.jpg",
   },
 ];

@@ -14,6 +14,7 @@ interface ReusableInputProps {
   labelClassName?: string;
   inputClassName?: string;
   mainContainerClassName?: string;
+  placeholder?: string;
 }
 
 export const ReusableInput = ({
@@ -25,6 +26,7 @@ export const ReusableInput = ({
   labelClassName,
   inputClassName,
   mainContainerClassName,
+  placeholder,
 }: ReusableInputProps) => {
   return (
     <Controller
@@ -37,7 +39,7 @@ export const ReusableInput = ({
             <Input
               {...field}
               type={type}
-              placeholder=" "
+              placeholder={placeholder ?? ''}
               className={cn(
                 `peer w-full pt-6 pb-2 px-3
                border border-gray-300 rounded-md

@@ -311,3 +311,8 @@ body {
     transform: rotate(1turn);
   }
 }
+
+
+body:has([role="alertdialog"]) {
+  overflow: hidden;
+}

@@ -41,7 +41,7 @@ export default function Testimonials() {
                     >
                         {testimonials.map((testimonial) => (
                             <SwiperSlide key={testimonial.id}>
-                                <div className="bg-white rounded-2xl shadow-lg p-6 h-full flex flex-col">
+                                <div className="bg-white rounded-2xl shadow-lg p-6 h-[210px] flex flex-col">
                                     <div className="flex items-center justify-between gap-4 mb-4">
                                         <div className='flex gap-3 items-center'>
                                             <img

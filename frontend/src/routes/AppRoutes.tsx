@@ -10,6 +10,7 @@ import { setUser } from "@/store/authSlice";
 import { useDispatch } from "react-redux";
 import ScrollToTop from "@/components/layout/AutoScrollTopView/AutoScrolltopView";
 import Loading from "@/components/Loading/Loading";
+import AppToastContainer from "@/components/AppToastContainer/AppToastContainer";
 
 const renderAppRoute = (routesList: AppRoute[]): ReactNode => {
     const dispatch = useDispatch()
@@ -46,6 +47,7 @@ const AppRoutes = () => (
     <ErrorBoundary FallbackComponent={ErrorFallback} onReset={() => window.location.reload()}>
         <Suspense fallback={<Loading />}>
             <ScrollToTop />
+            <AppToastContainer />
             <Routes>{renderAppRoute(routes)}</Routes>
         </Suspense>
     </ErrorBoundary>

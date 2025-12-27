@@ -7,6 +7,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
 import { CreateBookingForm } from '@/api/user/api';
 import { useMutationAPIQuery } from '@/Hook/useMutationAPIQuery';
+import { showToast } from '@/lib/utils';
 
 const formSchema = z.object({
     name: z.string().min(1, 'Name is required'),
@@ -43,7 +44,7 @@ const vacationTypes = [
 
 const BookingFomField = () => {
 
-    const { control, handleSubmit } = useForm<FormData>({
+    const { control, handleSubmit, reset } = useForm<FormData>({
         resolver: zodResolver(formSchema),
         defaultValues: {
             name: "",
@@ -58,9 +59,21 @@ const BookingFomField = () => {
         }
     });
 
-    const { mutate } = useMutationAPIQuery(CreateBookingForm, {
-        onSuccess: (data) => {
-            console.log("create/update success", data);
+    const { mutate,isPending } = useMutationAPIQuery(CreateBookingForm, {
+        onSuccess() {
+            showToast({
+                type: 'success',
+                content: 'Your booking request has been submitted successfully!',
+                position: 'top-right',
+            });
+            reset();
+        },
+        onError(error: any) {
+            showToast({
+                type: 'error',
+                content: error.response?.data?.message || 'Something went wrong',
+                position: 'top-right',
+            });
         },
     });
 
@@ -87,9 +100,10 @@ const BookingFomField = () => {
 
                 <button
                     type="submit"
-                    className="w-full bg-yellow-500 text-black hover:bg-yellow-600 font-semibold py-3 rounded-md transition tracking-wider shadow"
+                    disabled={isPending}
+                    className={`w-full bg-yellow-500 text-black cursor-pointer hover:bg-yellow-600 font-semibold py-3 rounded-md transition tracking-wider shadow ${isPending ? 'opacity-50 cursor-not-allowed' : ''}`}
                 >
-                    Book Your Destination!
+                    {isPending ? "Booking..." : "Book Your Destination!"}
                 </button>
 
                 <p className="text-xs text-gray-500 text-center">

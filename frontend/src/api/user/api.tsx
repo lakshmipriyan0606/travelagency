@@ -21,3 +21,7 @@ export const UpdateLikePackage = async (payload: object) => {
   const { data } = await axiosClient.post("packages/like", payload);
   return data;
 }
+export const subscribeNewsletter = async (payload: object) => {
+  const { data } = await axiosClient.post("newsletter/subscribe", payload);
+  return data;
+}
