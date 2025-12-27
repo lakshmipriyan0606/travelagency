@@ -30,14 +30,14 @@ export default function Newsletter() {
 
     const emailRef = useRef<HTMLInputElement>(null);
 
-    const { mutate } = useMutationAPIQuery(subscribeNewsletter, {
+    const { mutate, isPending } = useMutationAPIQuery(subscribeNewsletter, {
         onSuccess() {
             showToast({
                 type: 'success',
                 content: 'Thank you for subscribing to our newsletter!',
                 position: 'top-right',
             });
-            if (emailRef.current) {
+            if (emailRef.current?.value) {
                 emailRef.current.value = '';
             }
         },
@@ -65,9 +65,7 @@ export default function Newsletter() {
                     SUBSCRIBE TO OUR NEWSLETTER
                 </h2>
 
-                <div
-                    className="rounded-2xl border border-gray-300 p-6 md:p-8 max-w-2xl mx-auto flex flex-col md:flex-row items-center gap-4 md:gap-6"
-                >
+                <form onSubmit={(e) => { e.preventDefault(); formSubmit(); }} className="rounded-2xl border border-gray-300 p-6 md:p-8 max-w-2xl mx-auto flex flex-col md:flex-row items-center gap-4 md:gap-6">
                     {/* Icon + Text */}
                     <div className="flex flex-col sm:flex-row items-center gap-2">
                         <motion.img
@@ -85,7 +83,7 @@ export default function Newsletter() {
                             name="email"
                             required
                             placeholder="Email address"
-                            className="py-0 rounded-none rounded-l-sm bg-custom-black text-white h-[34px] border-none pl-3 focus:ring-0 focus:outline-none w-[240px]"
+                            className="py-0 rounded-none rounded-l-sm bg-custom-black text-white h-[34px] border-none pl-3 focus:ring-0 focus:outline-none w-[210px]"
                             // mainContainerClassName="mb-0"
                             type='email'
                             ref={emailRef}
@@ -93,13 +91,13 @@ export default function Newsletter() {
                         />
 
                         <PrimaryButton
-                            type="button"
-                            className="whitespace-nowrap rounded-r-sm relative right-[2px] h-[34px]"
-                            buttonText={'Subscribe'}
-                            onClick={formSubmit}
+                            type="submit"
+                            {...{ disabled: isPending }}
+                            className={`whitespace-nowrap rounded-r-sm relative right-[2px] h-[34px] ${isPending ? 'opacity-50 cursor-not-allowed' : ''}`}
+                            buttonText={isPending ? "subscribing..." : "subscribe"}
                         />
                     </div>
-                </div>
+                </form>
             </div>
         </section>
     );
