@@ -202,7 +202,7 @@ export default function PackageCard({
                                                 <Row>
                                                     <img src={whatsappIcon} alt="whatsapp" className="w-12 h-12 cursor-pointer" onClick={() => handleSendToWhatsApp(offer)} />
                                                     <AnimatedButton
-                                                        buttonText="Contact us"
+                                                        buttonText="CONTACT US"
                                                         className="w-3/4 hover:bg-custom-black"
                                                         borderButtonColor="bg-white"
                                                         textColor="text-white"

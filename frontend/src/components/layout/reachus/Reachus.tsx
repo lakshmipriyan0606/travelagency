@@ -36,7 +36,7 @@ export default function ReachUs() {
 
           <div className="flex items-center gap-4 relative z-10">
             <img src={whatsappIcon} alt="whatsapp" className="w-12 h-12 cursor-pointer" onClick={() => handleSendToWhatsApp()} />
-            <span className="font-medium text-gray-600">OR</span>
+            <span className="font-medium">OR</span>
             <div className="w-12 h-12 bg-black rounded-full flex items-center justify-center">
               <Phone className="text-white" />
             </div>
@@ -55,10 +55,11 @@ export default function ReachUs() {
         </div>
 
         {/* RIGHT SECTION */}
-        <div className="">
-          <h2 className="text-2xl md:text-4xl font-serif text-center mb-6 ">
-            Book Your Dream Vacation Today!
+        <div className="text-black">
+          <h2 className="text-2xl md:text-4xl  font-semibold font-cormorant text-center">
+            Book Your Dream
           </h2>
+          <h3 className='font-serif text-center text-lg mb-6 text-xl md:text-2xl'> Vacation Today!</h3>
 
           <BookingFomField />
 

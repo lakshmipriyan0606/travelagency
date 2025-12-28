@@ -1,6 +1,8 @@
 
 import HeroSectionVideoClip from "@/assets/video/hero.mp4"
 import AnimatedButton from "@/components/Button/AnimatedButton/AnimatedButton"
+import whatsappIcon from '@/assets/icons/whatsapp.svg';
+import { WANumber } from "@/lib/utils";
 
 // import { motion } from "framer-motion";
 // import ArrowSvg from "@/assets/icons/heroDownArrow.svg";
@@ -63,6 +65,18 @@ const ScrollIndicator = () => {
 
 
 
+const handleSendToWhatsApp = () => {
+    const phoneNumber = WANumber
+
+    const message = `Hi Sastika Travels I visited your website and would like to know more about your travel packages.Please share the details. Thank you!`;
+
+
+    const url = `https://wa.me/${phoneNumber}?text=${encodeURIComponent(message)}`;
+
+    window.open(url, "_blank");
+};
+
+
 const HeroSection = () => {
     return (
         <div className="hero-container">
@@ -73,15 +87,17 @@ const HeroSection = () => {
                 loop
                 muted
             />
-            <div className="hero-overlay text-white text-2xl  sm:text-6xl text-wrap text-center  pt-10 sm:pt-20">
+            <div className="hero-overlay text-white text-2xl  sm:text-6xl text-wrap text-center  pt-10 sm:pt-20 realtive">
                 <h1 className="hero-title font-arizonia">Experience <span className="text-primary">Singapore</span> Like Never Before, </h1>
                 <h1 className="hero-title font-arizonia">Adventure Awaits <span className="text-primary">Everywhere!</span></h1>
                 <AnimatedButton buttonText="ENQUIRE NOW" borderButtonColor={'bg-custom-black'} className="mt-[70px] w-[170px]" />
                 <div className="pt-6">
                     <ScrollIndicator />
                 </div>
+                <div className="absolute right-[25px] bottom-[12%] sm:bottom-[12%]">
+                    <img src={whatsappIcon} alt="whatsapp" className="w-12 h-12 cursor-pointer" onClick={() => handleSendToWhatsApp()} />
+                </div>
             </div>
-
         </div >
     )
 }

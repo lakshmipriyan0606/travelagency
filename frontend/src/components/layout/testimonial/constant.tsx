@@ -9,7 +9,7 @@ export const testimonials = [
   {
     id: 2,
     name: "Sneha Reddy",
-    rating: 5,
+    rating: 3,
     text: "Amazing service and excellent planning. We never had to worry about anything during our vacation. Highly recommended for hassle-free travel planning.",
     image: "https://randomuser.me/api/portraits/women/45.jpg",
   },
@@ -30,7 +30,7 @@ export const testimonials = [
   {
     id: 5,
     name: "Karthik Srinivasan",
-    rating: 5,
+    rating: 4,
     text: "Excellent coordination and smooth execution. From booking to return, everything went perfectly. Strongly recommended for family trips.",
     image: "https://randomuser.me/api/portraits/men/54.jpg",
   },

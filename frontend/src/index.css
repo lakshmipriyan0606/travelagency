@@ -163,6 +163,18 @@ body {
   background-color: var(--color-primary) !important;
 }
 
+.testimonial_pagination .swiper-pagination-bullet {
+  background-color: gray !important;
+    opacity: 1 !important;
+}
+
+.testimonial_pagination .swiper-pagination-bullet.swiper-pagination-bullet-active {
+  background-color: var(--color-primary) !important;
+}
+
+
+
+
 .swiper-action-white .swiper-button-prev,
 .swiper-action-white .swiper-button-next {
   color: white !important;
@@ -315,4 +327,9 @@ body {
 
 body:has([role="alertdialog"]) {
   overflow: hidden;
+}
+
+
+.main_title {
+  @apply text-2xl sm:text-5xl 
 }

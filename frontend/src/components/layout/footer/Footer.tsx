@@ -35,17 +35,17 @@ export default function Footer() {
             <img src={companyLogo} alt="Company Logo" className='company-logo' />
             <span className="text-white text-2xl font-bold">   <span className='text-4xl'>S</span>ASTIKA <span className='text-4xl'>T</span>RAVELS</span>
           </div>
-          <p className="text-sm md:text-base text-justify leading-relaxed">
+          <p className="text-sm text-[#A1A1A1] md:text-base text-justify leading-8 mt-4 font-roboto">
             {footerData.about}
           </p>
         </section>
 
         {/* ---------- CONTACT & SOCIAL ---------- */}
-        <section className="grid grid-cols-1 md:grid-cols-4 gap-8 ">
+        <section className="grid grid-cols-1 md:grid-cols-4 gap-8  font-roboto">
 
           {/* WhatsApp */}
           <h1 className='text-primary text-4xl sm:hidden'>Contact us </h1>
-          <div className=''>
+          <div className='font-roboto'>
             <h3 className="text-white font-semibold mb-2 uppercase">
               WhatsApp Us
             </h3>
@@ -73,12 +73,12 @@ export default function Footer() {
           </div>
 
           <div>
-            <h1>Links</h1>
-            <h3 className="text-white flex gap-4 text-lg font-semibold mb-2">
+             <h3 className="text-white font-semibold mb-2 uppercase">LINKS</h3>
+            <h3 className="text-white flex gap-4 font-light font-semibold mb-2">
               {
                 navbarList?.map((item) => {
                   return (
-                    <Link key={item.name} to={item.path} className="hover:text-primary transition-colors">
+                    <Link key={item.name} to={item.path} className="hover:text-primary font-light transition-colors">
                       {item.name}
                     </Link>
                   )
@@ -137,7 +137,7 @@ export default function Footer() {
             </div>
 
             {/* Copyright */}
-            <p className="mt-5">{footerData.copyright}</p>
+            <p className="mt-5 font-roboto">{footerData.copyright}</p>
           </div>
         </section>
       </div>

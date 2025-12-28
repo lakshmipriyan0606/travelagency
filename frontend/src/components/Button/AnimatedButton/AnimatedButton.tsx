@@ -26,18 +26,18 @@ export default function AnimatedButton({
 
       {/* Horizontal lines */}
       <span
-        className={`absolute top-[2px] right-[2px] w-[35%] h-[1px] ${borderButtonColor} transition-all duration-500 group-hover:w-[calc(100%-4px)]`}
+        className={`absolute top-[2px] right-[2px] w-[35%] h-[0.5px] ${borderButtonColor} transition-all duration-500 group-hover:w-[calc(100%-4px)]`}
       ></span>
       <span
-        className={`absolute bottom-[2px] left-[2px] w-[35%] h-[1px] ${borderButtonColor} transition-all duration-500 group-hover:w-[calc(100%-4px)]`}
+        className={`absolute bottom-[2.3px] left-[2px] w-[35%] h-[0.5px] ${borderButtonColor} transition-all duration-500 group-hover:w-[calc(100%-4px)]`}
       ></span>
 
       {/* Vertical lines */}
       <span
-        className={`absolute top-[2px] right-[2px] w-[1px] h-6 ${borderButtonColor} transition-all duration-500 delay-150 group-hover:h-[calc(100%-4px)]`}
+        className={`absolute top-[2px] right-[2.5px] w-[0.5px] h-6 ${borderButtonColor} transition-all duration-500 delay-150 group-hover:h-[calc(100%-4px)]`}
       ></span>
       <span
-        className={`absolute bottom-[2px] left-[2px] w-[1px] h-6 ${borderButtonColor} transition-all duration-500 delay-150 group-hover:h-[calc(100%-4px)]`}
+        className={`absolute bottom-[2px] left-[2px] w-[0.5px] h-6 ${borderButtonColor} transition-all duration-500 delay-150 group-hover:h-[calc(100%-4px)]`}
       ></span>
     </Button>
 

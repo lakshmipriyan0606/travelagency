@@ -14,7 +14,7 @@ export default function BestPackage() {
                     {/* <img src={aueroplane} alt="Airplane path graphic" className="h-full w-full object-contain" /> */}
                 </div>
                 <div className="mb-4">
-                    <h1 className="text-3xl sm:text-5xl font-bold mb-2">
+                    <h1 className="main_title font-bold mb-2">
                         Welcome to  <span className='
                    text-primary'>Sastikaa Travels!</span>
                     </h1>

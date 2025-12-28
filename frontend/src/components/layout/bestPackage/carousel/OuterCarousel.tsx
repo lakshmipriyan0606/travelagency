@@ -27,18 +27,39 @@ export default function OuterCarousel() {
     const navigate = useNavigate()
     const queryClient = useQueryClient();
 
-    const { data, isLoading, isError, refetch } = UseFetchAPIQuery({
+    const { data, isLoading, isError, } = UseFetchAPIQuery({
         key: ["bestPackage"],
         queryFn: GetBestBackageList,
     });
-
     const { mutate: updateLikeMutate } = useMutationAPIQuery(UpdateLikePackage, {
-        onSuccess: () => {
-            refetch();
-            queryClient.invalidateQueries({ queryKey: ["likePackage"] });
-            console.log('Like status updated successfully');
-        }
+        onMutate: async (data:{id:number|string,liked:boolean,userId:string|null}) => {
+            await queryClient.cancelQueries({ queryKey: ["bestPackage"] });
+
+            const previousData = queryClient.getQueryData<any>(["bestPackage"]);
+
+            queryClient.setQueryData(["bestPackage"], (oldData: any) => {
+                return {
+                    ...oldData,
+                    data: oldData.data.map((item: any) =>
+                        item._id === data?.id
+                            ? { ...item, userLiked: data?.liked }
+                            : item
+                    ),
+                };
+            });
+
+            return { previousData };
+        },
+
+        onError: (_err, _variables, context) => {
+            queryClient.setQueryData(["bestPackage"], context?.previousData);
+        },
+
+        onSettled: () => {
+            queryClient.invalidateQueries({ queryKey: ["bestPackage"] });
+        },
     });
+
 
     if (isLoading) return <p>Loading packages...</p>;
     if (isError) return <p>Error loading packages</p>;
@@ -89,7 +110,7 @@ export default function OuterCarousel() {
             >
                 {bestPackageList?.map((offer: any) => (
                     <SwiperSlide key={offer._id}>
-                        <div className="bg-white rounded-md overflow-hidden shadow-xl text-gray-900 flex flex-col">
+                        <div className="bg-white rounded-md overflow-hidden shadow-xl text-gray-900 flex flex-col mt-3">
                             {/* Inner Carousel */}
                             <InnerCarousel images={offer.images} offerId={offer._id} />
 
@@ -106,7 +127,7 @@ export default function OuterCarousel() {
                             </div>
 
                             {/* Offer Details */}
-                            <div className="flex flex-col font-roboto gap-3 justify-center p-8">
+                            <div className="flex flex-col font-roboto gap-3 justify-center p-[15px]">
                                 <div className="flex items-center gap-2 justify-between">
                                     <div className="flex items-center gap-3 ">
                                         <span>
@@ -163,7 +184,7 @@ export default function OuterCarousel() {
                                     <div className="w-full h-[2px] bg-gray-300"></div>
                                     <div className="flex  gap-4 w-full items-center">
                                         <img src={whatsappIcon} alt="whatsapp" className="w-12 h-12 cursor-pointer" onClick={() => handleSendToWhatsApp(offer)} />
-                                        <AnimatedButton buttonText="Contact us" borderButtonColor={'bg-white'} textColor={'text-white'} bgColor="bg-custom-black" className="hover:bg-custom-black w-3/4" onClick={() => handleNavigation(offer?._id)} />
+                                        <AnimatedButton buttonText="CONTACT US" borderButtonColor={'bg-white'} textColor={'text-white'} bgColor="bg-custom-black" className="hover:bg-custom-black w-3/4" onClick={() => handleNavigation(offer?._id)} />
                                     </div>
                                 </div>
 
