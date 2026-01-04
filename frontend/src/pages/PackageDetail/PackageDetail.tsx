@@ -1,8 +1,6 @@
 import { GetCurrentPackageDetail } from '@/api/admin/auth.api'
-import Footer from '@/components/layout/footer/Footer'
 import ItineraryCard from '@/components/layout/ItineraryCard/ItineraryCard'
 import ItineraryExpandDay from '@/components/layout/ItineraryCard/ItineraryExpandCard'
-import Navbar from '@/components/layout/navbar/Navbar'
 import Newsletter from '@/components/layout/newsletter/Newsletter'
 import PackageDetailCarousel from '@/components/layout/packageDetailCarousel/PackageDetailCarousel'
 import BookingFomField from '@/components/layout/reachus/BookingFomField'
