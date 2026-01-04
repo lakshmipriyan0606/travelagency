@@ -20,6 +20,8 @@ import { useMutationAPIQuery } from "@/Hook/useMutationAPIQuery";
 import { useNavigate } from "react-router-dom";
 import { useQueryClient } from "@tanstack/react-query";
 import { WANumber } from "@/lib/utils";
+import WrapperCardSkeleton from "./WrapperCardSkeleton";
+import NoDataSkeleton from "./NoDataSkeleton";
 
 
 export default function OuterCarousel() {
@@ -32,7 +34,7 @@ export default function OuterCarousel() {
         queryFn: GetBestBackageList,
     });
     const { mutate: updateLikeMutate } = useMutationAPIQuery(UpdateLikePackage, {
-        onMutate: async (data:{id:number|string,liked:boolean,userId:string|null}) => {
+        onMutate: async (data: { id: number | string, liked: boolean, userId: string | null }) => {
             await queryClient.cancelQueries({ queryKey: ["bestPackage"] });
 
             const previousData = queryClient.getQueryData<any>(["bestPackage"]);
@@ -61,10 +63,42 @@ export default function OuterCarousel() {
     });
 
 
-    if (isLoading) return <p>Loading packages...</p>;
-    if (isError) return <p>Error loading packages</p>;
+
+
+    if (isLoading) {
+        return (
+            <div className="max-w-7xl mx-auto">
+                <Swiper
+                    modules={[Navigation, Pagination]}
+                    spaceBetween={30}
+                    slidesPerView={1}
+                    breakpoints={{
+                        768: { slidesPerView: 2 },
+                        1024: { slidesPerView: 3 },
+                    }}
+                    className="outer-swiper pb-12 p-20"
+                    style={{ padding: '9px' }}
+                >
+                    {[1, 2, 3].map((n) => (
+                        <SwiperSlide key={n}>
+                            <WrapperCardSkeleton />
+                        </SwiperSlide>
+                    ))}
+                </Swiper>
+            </div>
+        )
+    }
+
 
     const bestPackageList = data?.data || [];
+
+    if (!isLoading && bestPackageList.length === 0 || isError) {
+        return (
+            <div className="max-w-7xl mx-auto p-20">
+                <NoDataSkeleton />
+            </div>
+        )
+    }
 
     const handleToggleLike = (packageId: string, liked: boolean) => {
         updateLikeMutate({ id: packageId, liked, userId: localStorage.getItem("userId") });

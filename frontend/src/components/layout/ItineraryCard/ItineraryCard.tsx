@@ -28,7 +28,7 @@ interface ItineraryCardProps {
 
 const ItineraryCard: React.FC<ItineraryCardProps> = ({ currentPackage }) => {
   const cardWrapper =
-    "max-w-4xl p-4 font-sans flex flex-col gap-[9px]";
+    "p-4 font-sans flex flex-col gap-[9px]";
   const cardContainer =
     "border border-[#909090] rounded-lg overflow-hidden bg-white shadow-sm";
   const cardHeader =

@@ -7,7 +7,7 @@ import Navbar from "@/components/layout/navbar/Navbar";
 import Newsletter from "@/components/layout/newsletter/Newsletter";
 import Testimonials from "@/components/layout/testimonial/Testmonial";
 import Welcome from "@/components/layout/welcome/Welcome";
-import { createContext, useMemo} from "react"
+import { createContext, useMemo } from "react"
 
 export interface HomeContextType {
 }
@@ -24,7 +24,6 @@ const Home = () => {
   return (
     <HomeContext.Provider value={contextValue}>
       <div className="min-h-screen bg-background-black">
-        <Navbar />
         <HeroSection />
         <BestDestination />
         <Welcome />
@@ -32,7 +31,6 @@ const Home = () => {
         <ReachUs />
         <Testimonials />
         <Newsletter />
-        <Footer />
       </div>
     </HomeContext.Provider>
   )

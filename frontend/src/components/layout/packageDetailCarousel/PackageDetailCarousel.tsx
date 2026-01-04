@@ -40,7 +40,7 @@ export default function PackageDetailCarousel({
     }, [device, images]);
 
     return (
-        <div className="w-full max-w-6xl mx-auto swiper-action-white">
+        <div className="w-full max-w-6xl mx-auto swiper-action-white mt-[7%]">
             {/* MAIN SLIDER */}
             <Swiper
                 modules={[Navigation]}
@@ -69,9 +69,9 @@ export default function PackageDetailCarousel({
                             setActiveIndex(index);
                             mainSwiperRef.current?.slideTo(index);
                         }}
-                        className={`cursor-pointer transition-all duration-300 rounded-full relative overflow-hidden border-4 ${activeIndex === index
-                                ? "border-yellow-400 scale-110 bottom-2 sm:bottom-5"
-                                : "border-transparent border-2 opacity-60 hover:opacity-90 blur-[1px]"
+                        className={`cursor-pointer transition-all duration-300 rounded-full relative overflow-hidden border-3 ${activeIndex === index
+                            ? "border-yellow-400 scale-110 bottom-2 sm:bottom-5"
+                            : "border-transparent border-2 opacity-70 hover:opacity-100"
                             }`}
                     >
                         <img

@@ -1,15 +1,12 @@
 import FilterPackage from '@/components/layout/filterPackage/FilterPackage'
-import Navbar from '@/components/layout/navbar/Navbar'
 import HeroSectionVideoClip from "@/assets/video/hero.mp4"
 import AnimatedButton from '@/components/Button/AnimatedButton/AnimatedButton'
 import Newsletter from '@/components/layout/newsletter/Newsletter'
-import Footer from '@/components/layout/footer/Footer'
 import personaliztionBg from '@/assets/icons/bg1.svg'
 
 const AllPackage = () => {
     return (
         <div className="w-full overflow-x-hidden">
-            <Navbar />
 
             <div className="relative w-full h-[632px] overflow-hidden">
                 <video
@@ -63,7 +60,6 @@ const AllPackage = () => {
                 </div>
             </div>
             <Newsletter />
-            <Footer />
         </div>
     );
 };

@@ -9,6 +9,10 @@ import { AdminPanelContext } from "@/pages/Admin/AdminPanel/AdminPanel";
 import { useLocation } from "react-router-dom";
 import AnimatedButton from "@/components/Button/AnimatedButton/AnimatedButton";
 
+import PackageCardSkeleton from "../packageCard/PackageCardSkeleton";
+import NoDataFound from "../NoDataFound/NoDataFound";
+import PackageErrorSkeleton from "../packageCard/PackageErrorSkeleton";
+
 type FilterConfigForm = {
     filterConfig: {
         [key: string]: {
@@ -84,51 +88,63 @@ const FilterPackage = () => {
         return finalPackageList;
     }, [cleanPackageList, filters, isLikePackageFlow]);
 
-    if (isLoading && !packageList.length) return <p>Loading packages...</p>;
-    if (isError) return <p>Error loading packages</p>;
+    if (isError) return (
+        <div className="flex justify-center items-center h-full">
+            <PackageErrorSkeleton message="No data available" />
+        </div>
+    );
 
     return (
         <FormProvider {...methods}>
-            <div className="sm:p-6 flex flex-col sm:flex-row sm:justify-around bg-[#3F4FB] h-screen">
+            <div className="sm:p-6 flex flex-col sm:flex-row sm:justify-around bg-[#3F4FB] md:h-screen">
 
                 {/* ✅ LEFT FILTER - STICKY */}
-                <div className="w-full sm:w-[25%] xl:w-[17%] sticky top-0 h-screen self-start">
+                <div className="w-full sm:w-[25%] xl:w-[17%] sticky top-0 md:h-screen self-start z-40">
                     <FilterConfigPage />
                 </div>
 
                 {/* ✅ RIGHT PACKAGE LIST - SCROLLABLE */}
                 <div className="w-full sm:w-[75%] xl:-[78%] overflow-y-auto p-2 pr-2">
-                    <h2 className="text-xl font-roboto mb-3">
-                        Packages ({filteredPackages.length})
+                    <h2 className="text-xl font-roboto mb-3 text-white">
+                        Packages ({filteredPackages?.length || 0})
                     </h2>
 
-                    <PackageCard
-                        filterList={filteredPackages}
-                        isAdmin={context?.isAdmin || false}
-                        setEditPackageId={context?.setEditPackageId || (() => { })}
-                        setActive={context?.setActive || (() => { })}
-                        refetch={refetch}
-                        handleLikeUpdate={(packageId: string, liked: boolean) => {
-                            setPackageList((prev) =>
-                                prev.map((pkg) =>
-                                    pkg._id === packageId
-                                        ? { ...pkg, userLiked: liked }
-                                        : pkg
-                                )
-                            );
-                        }}
-                    />
-
-                    {hasMore && (
-                        <div className="text-center py-6">
-                            <AnimatedButton buttonText="Load more" onClick={() => refetch()} className="w-[200px]" />
+                    {/* LOADING STATE - Show Skeleton */}
+                    {isLoading && !packageList.length ? (
+                        <div className="flex flex-col gap-0 w-full">
+                            {[1, 2, 3].map((n) => (
+                                <PackageCardSkeleton key={n} />
+                            ))}
                         </div>
-                    )}
+                    ) : (
+                        <>
+                            <PackageCard
+                                filterList={filteredPackages}
+                                isAdmin={context?.isAdmin || false}
+                                setEditPackageId={context?.setEditPackageId || (() => { })}
+                                setActive={context?.setActive || (() => { })}
+                                refetch={refetch}
+                                handleLikeUpdate={(packageId: string, liked: boolean) => {
+                                    setPackageList((prev) =>
+                                        prev.map((pkg) =>
+                                            pkg._id === packageId
+                                                ? { ...pkg, userLiked: liked }
+                                                : pkg
+                                        )
+                                    );
+                                }}
+                            />
 
-                    {!filteredPackages.length && (
-                        <p className="text-red-600 font-roboto mt-3 text-center text-lg">
-                            No results found! 😣
-                        </p>
+                            {hasMore && (
+                                <div className="text-center py-6">
+                                    <AnimatedButton buttonText={isLoading ? "Loading..." : "Load more"} onClick={() => refetch()} className="w-[200px]" />
+                                </div>
+                            )}
+
+                            {!filteredPackages.length && !isLoading && (
+                                <NoDataFound message="No Packages Found" subMessage="Try adjusting your filters to find what you're looking for." />
+                            )}
+                        </>
                     )}
                 </div>
 

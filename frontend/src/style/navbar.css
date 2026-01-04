@@ -3,7 +3,7 @@
 }
 
 .navbar-main {
-  @apply text-white bg-custom-black flex items-center justify-between px-4 relative;
+  @apply text-white flex items-center justify-between px-4;
 }
 
 .navbar-list {

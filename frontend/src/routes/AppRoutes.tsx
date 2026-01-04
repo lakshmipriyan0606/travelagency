@@ -11,6 +11,8 @@ import { useDispatch } from "react-redux";
 import ScrollToTop from "@/components/layout/AutoScrollTopView/AutoScrolltopView";
 import Loading from "@/components/Loading/Loading";
 import AppToastContainer from "@/components/AppToastContainer/AppToastContainer";
+import Navbar from "@/components/layout/navbar/Navbar";
+import Footer from "@/components/layout/footer/Footer";
 
 const renderAppRoute = (routesList: AppRoute[]): ReactNode => {
     const dispatch = useDispatch()
@@ -48,7 +50,9 @@ const AppRoutes = () => (
         <Suspense fallback={<Loading />}>
             <ScrollToTop />
             <AppToastContainer />
+            <Navbar />
             <Routes>{renderAppRoute(routes)}</Routes>
+            <Footer />
         </Suspense>
     </ErrorBoundary>
 );

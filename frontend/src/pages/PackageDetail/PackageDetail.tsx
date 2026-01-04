@@ -42,15 +42,16 @@ const PackageDetail = () => {
 
     return (
         <div>
-            <Navbar />
 
             {/* Container */}
-            <div className="mx-auto p-4 lg:flex flex-col lg:gap-4 flex-row lg:p-10">
+            <div className="mx-auto p-4 lg:p-10 grid grid-cols-1 lg:grid-cols-12 gap-8">
 
-                {/* Left 70% */}
-                <div className="">
+                {/* Left 66% - Main Content & Image */}
+                <div className="lg:col-span-8">
                     <PackageDetailCarousel currentPackage={currentPackageList} />
-                    <div className='lg:hidden'>
+
+                    {/* Mobile Only Header/Booking */}
+                    <div className='lg:hidden mt-6'>
                         <div className='font-roboto text-center'>
                             <h1 className='text-bold text-2xl pb-2'>{currentPackageList?.data?.packageName}</h1>
                             <h6 className='pb-6'>Book your dream vacation <span className='text-primary'>Today!</span></h6>
@@ -84,9 +85,7 @@ const PackageDetail = () => {
 
                                     {/* Tab Text */}
                                     <span
-                                        // ${activeTab === tab.id ? "text-white" : "text-black"} 
-                                        className={`relative z-10
-                                            text-black`}
+                                        className={`relative z-10 text-black`}
                                     >
                                         {tab.text}
                                     </span>
@@ -104,19 +103,18 @@ const PackageDetail = () => {
 
                 </div>
 
-                {/* Right 30% Sticky */}
-                <div className=" hidden lg:block lg:w-[30%]">
-                    <div className="sticky top-20 bg-white shadow-lg rounded-lg">
-                        <div className='font-roboto text-center'>
+                {/* Right 33% - Sticky Booking Form */}
+                <div className="hidden lg:block lg:col-span-4">
+                    <div className="sticky top-28 bg-white rounded-2xl border border-gray-100">
+                        <div className='font-roboto text-center mb-6'>
                             <h1 className='text-bold text-2xl pb-2'>{currentPackageList?.data?.packageName}</h1>
-                            <h6 className='pb-6'>Book your dream vacation <span className='text-primary'>Today!</span></h6>
+                            <h6 className='text-gray-800'>Book your dream vacation <span className='text-primary font-medium'>Today!</span></h6>
                         </div>
                         <BookingFomField />
                     </div>
                 </div>
             </div>
             <Newsletter />
-            <Footer />
         </div>
     )
 }

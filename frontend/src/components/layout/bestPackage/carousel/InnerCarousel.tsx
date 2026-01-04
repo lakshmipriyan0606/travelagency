@@ -1,6 +1,8 @@
 
 import { Swiper, SwiperSlide } from "swiper/react";
 import { Navigation } from "swiper/modules";
+import "swiper/css";
+import "swiper/css/navigation";
 import arrowLeft from "@/assets/icons/leftarrow.svg";
 import arrowRight from "@/assets/icons/rightarrow.svg";
 import { useNavigate } from "react-router-dom";
@@ -34,10 +36,10 @@ export default function InnerCarousel({ images = [], offerId }: InnerCarouselPro
                     className="h-64 md:h-72"
                 >
                     {images.map((img, idx) => (
-                        <SwiperSlide key={idx}>
+                        <SwiperSlide key={idx} className="h-full">
                             <div
-                                className="h-full bg-cover bg-center relative flex cursor-pointer"
-                                style={{ backgroundImage: `url(${img})` }}
+                                className="h-full w-full bg-cover bg-center relative flex cursor-pointer"
+                                style={{ backgroundImage: `url("${img}")` }}
                                 onClick={() => handleNavigation(offerId)}
                             >
 

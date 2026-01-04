@@ -1,6 +1,4 @@
 import AdminUploadPackageForm from '@/components/layout/Admin/AdminUploadPackage/AdminUploadPackageForm'
-import Footer from '@/components/layout/footer/Footer'
-import Navbar from '@/components/layout/navbar/Navbar'
 import { useState, createContext } from 'react'
 import Sidebar from './SideNavbar/SideNavbar'
 import FilterPackage from '@/components/layout/filterPackage/FilterPackage'
@@ -59,7 +57,6 @@ const AdminPanel = () => {
 
     return (
         <AdminPanelContext.Provider value={contextValues}>
-            <Navbar />
             <div className='flex'>
                 <Sidebar active={active} onChange={(data) => {
                     setActive(data);
@@ -69,7 +66,6 @@ const AdminPanel = () => {
                     {renderPage()}
                 </main>
             </div>
-            <Footer />
         </AdminPanelContext.Provider>
     )
 }

@@ -94,7 +94,7 @@ const HeroSection = () => {
                 <div className="pt-6">
                     <ScrollIndicator />
                 </div>
-                <div className="absolute right-[25px] bottom-[12%] sm:bottom-[12%]">
+                <div className="absolute right-[25px] bottom-[3%]">
                     <img src={whatsappIcon} alt="whatsapp" className="w-12 h-12 cursor-pointer" onClick={() => handleSendToWhatsApp()} />
                 </div>
             </div>

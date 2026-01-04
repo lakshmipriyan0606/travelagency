@@ -99,7 +99,7 @@ export default function ItineraryDay({ currentPackage }: ItineraryDayProps) {
   };
 
   return (
-    <div className="max-w-4xl py-10 px-4">
+    <div className="py-10 px-4">
       {daysListData.map((day) => (
         <div
           key={day.id}
