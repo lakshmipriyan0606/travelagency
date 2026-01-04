@@ -1,18 +1,18 @@
 import 'swiper/css';
 import 'swiper/css/navigation';
 import 'swiper/css/pagination';
+import Auroplane from '@/assets/icons/Auroplane.svg';
 import OuterCarousel from './carousel/OuterCarousel';
 import { useNavigate } from 'react-router-dom';
 export default function BestPackage() {
-
     const navigate = useNavigate();
 
     return (
-        <div className=" bg-custom-black relative text-white main__container_space border-b-4 border-primary">
-            <div className='main__container_space_nextContainer'>
-                <div className='absolute z-10 right-0 top-0 **h-[400px] w-[200px]**'>
-                    {/* <img src={aueroplane} alt="Airplane path graphic" className="h-full w-full object-contain" /> */}
-                </div>
+        <div className=" bg-custom-black relative text-white main__container_space border-b-4 border-primary overflow-hidden">
+            <div className='absolute z-0 inset-0 w-full h-full pointer-events-none'>
+                <img src={Auroplane} alt="Airplane path graphic" className="w-full h-full object-cover object-right-top" />
+            </div>
+            <div className='main__container_space_nextContainer relative z-10'>
                 <div className="mb-4">
                     <h1 className="main_title font-bold mb-2">
                         Welcome to  <span className='

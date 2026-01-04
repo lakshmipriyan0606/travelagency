@@ -9,6 +9,7 @@ const AllPackage = lazy(() => import('@/pages/AllPackage/AllPackage'));
 const AdminPanel = lazy(() => import('@/pages/Admin/AdminPanel/AdminPanel'));
 const PackageDetail = lazy(() => import('@/pages/PackageDetail/PackageDetail'));
 const LoginForm = lazy(() => import('@/pages/Admin/login/Login'));
+const NotFound = lazy(() => import('@/pages/NotFound/NotFound'));
 
 
 
@@ -53,6 +54,11 @@ const routes: AppRoute[] = [
             { path: "", element: <AdminPanel /> },
         ],
     },
+    {
+        path: '*',
+        element: <NotFound />,
+        isProtectRoute: false,
+    }
 ];
 
 export default routes;

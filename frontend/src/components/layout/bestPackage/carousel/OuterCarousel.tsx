@@ -150,9 +150,10 @@ export default function OuterCarousel() {
 
                             <div className="absolute top-0 right-0">
                                 <div
-                                    className="absolute top-5 font-roboto font-normal -right-3 z-20 bg-red-500 text-white font-bold px-4 py-0 w-max"
+                                    className="absolute top-5 font-roboto font-normal -right-3 z-20 bg-red-500 text-white font-bold px-4 py-0 w-max overflow-hidden relative"
                                 >
-                                    <em>{calculateDiscountPercentage(offer?.price, offer?.offerPrice)}% OFF</em>
+                                    <div className="absolute top-0 left-0 w-[200%] h-full bg-gradient-to-r from-transparent via-white/50 to-transparent -translate-x-full animate-[shimmer_2s_infinite]"></div>
+                                    <em className="relative z-10">{calculateDiscountPercentage(offer?.price, offer?.offerPrice)}% OFF</em>
                                 </div>
 
                                 <div

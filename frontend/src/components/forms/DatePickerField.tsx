@@ -2,7 +2,7 @@ import { Controller, Control } from "react-hook-form"
 import { Calendar } from "@/components/ui/calendar"
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
 import { Button } from "@/components/ui/button"
-import { CalendarIcon } from "lucide-react"
+import calendarIcon from "@/assets/icons/calendar.svg"
 import { cn } from "@/lib/utils"
 
 interface DatePickerFieldProps {
@@ -24,11 +24,7 @@ export const DatePickerField = ({
       name={name}
       rules={required ? { required: `${label} is required` } : {}}
       render={({ field: { onChange, value }, fieldState: { error } }) => (
-        <div className="mb-4 flex flex-col gap-1 font-roboto">
-
-          <label className="text-sm font-medium text-gray-700">
-            {label} {required && <span className="text-red-500">*</span>}
-          </label>
+        <div className="mb-6 relative font-roboto">
 
           <Popover>
             <PopoverTrigger asChild>
@@ -36,16 +32,22 @@ export const DatePickerField = ({
                 type="button"
                 variant="outline"
                 className={cn(
-                  "w-full justify-between text-left font-normal px-4 border-gray-300 cursor-pointer",
-                  !value && "text-muted-foreground",
-                  error && "border-red-500"
+                  `peer w-full pt-6 pb-2 px-3
+                  border border-gray-300 rounded-md
+                  bg-white
+                  focus:outline-none focus:ring-1 focus:ring-blue-50/1
+                  focus:border-blue-500
+                  transition-all duration-300
+                  justify-between text-left font-normal`,
+                  !value && "text-transparent",
+                  error && "border-red-500 focus:border-red-500/2 focus:ring-red-500"
                 )}
               >
-                <span className="flex justify-between w-full items-center gap-2">
+                <span className="absolute bottom-0 right-2 top-2">
                   {value
                     ? new Date(value).toLocaleDateString("en-GB") // dd/MM/yyyy
-                    : "Select date"}
-                    <CalendarIcon className="h-4 w-4 cursor-pointer" />
+                    : " "}
+                  <img src={calendarIcon} alt="" />
                 </span>
               </Button>
             </PopoverTrigger>
@@ -65,8 +67,31 @@ export const DatePickerField = ({
             </PopoverContent>
           </Popover>
 
+          {label && (
+            <label
+              className={cn(
+                `absolute left-3 bg-white px-1
+                 pointer-events-none
+                 transition-all duration-300 ease-out
+
+                 /* Default resting */
+                 top-1/2 -translate-y-1/2 text-[15px] text-gray-500
+
+                 /* When focused */
+                 peer-focus:top-0
+                 peer-focus:-translate-y-1/2
+                 peer-focus:text-xs
+                 peer-focus:text-blue-600`,
+                value && `top-0 -translate-y-1/2 text-xs text-blue-600`
+              )}
+            >
+              {label}
+              {required && <span className="text-red-500 ml-[2px]">*</span>}
+            </label>
+          )}
+
           {error && (
-            <p className="text-red-500 text-xs mt-1">
+            <p className="mt-1 text-xs text-red-500">
               {error.message}
             </p>
           )}

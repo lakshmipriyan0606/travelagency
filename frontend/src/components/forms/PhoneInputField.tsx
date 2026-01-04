@@ -38,12 +38,12 @@ export const PhoneInputField = ({
               `peer w-full pt-6 pb-2 px-3
                border border-gray-300 rounded-md
                bg-white
-               focus:outline-none focus:ring-1 focus:ring-yellow-50/1
-               focus:border-primary
+               focus:outline-none focus:ring-1 focus:ring-blue-50/1
+               focus:border-blue-500
                transition-all duration-300 font-roboto`,
 
               error &&
-                "border-red-500 focus:border-red-500/2 focus:ring-red-500"
+              "border-red-500 focus:border-red-500/2 focus:ring-red-500"
             )}
           />
 
@@ -59,12 +59,12 @@ export const PhoneInputField = ({
                  peer-focus:top-0
                  peer-focus:-translate-y-1/2
                  peer-focus:text-xs
-                 peer-focus:text-primary
+                 peer-focus:text-blue-600
 
                  peer-[&:not(:placeholder-shown)]:top-0
                  peer-[&:not(:placeholder-shown)]:-translate-y-1/2
                  peer-[&:not(:placeholder-shown)]:text-xs
-                 peer-[&:not(:placeholder-shown)]:text-gray-500
+                 peer-[&:not(:placeholder-shown)]:text-blue-600
                 `,
                 labelClassName
               )}
