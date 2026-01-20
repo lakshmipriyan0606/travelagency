@@ -25,7 +25,7 @@ interface ItineraryDayProps {
 }
 
 export default function ItineraryDay({ currentPackage }: ItineraryDayProps) {
-  const [expandedDay, setExpandedDay] = useState<number | null>(null);
+  const [expandedDay, setExpandedDay] = useState<number | null>(1);
   const [iconPositions, setIconPositions] = useState<Record<string, number>>({});
 
   const scheduleRefs = useRef<Record<string, HTMLDivElement | null>>({});

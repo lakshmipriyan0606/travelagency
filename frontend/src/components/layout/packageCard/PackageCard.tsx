@@ -125,7 +125,7 @@ export default function PackageCard({
                             whileTap={{ scale: 0.97 }}
                             className="flex flex-col w-full"
                         >
-                            <div className={`msm:p-2 ${isAdmin ? "group" : ""}`}>
+                            <div className={`sm:p-2 ${isAdmin ? "group" : ""}`}>
                                 <SwiperSlide>
                                     <div className="relative flex flex-col md:flex-row bg-white rounded-2xl overflow-hidden shadow-xl text-gray-900">
                                         {isAdmin && (
@@ -199,11 +199,14 @@ export default function PackageCard({
 
                                                 <Divider />
 
-                                                <Row>
-                                                    <img src={whatsappIcon} alt="whatsapp" className="w-12 h-12 cursor-pointer" onClick={() => handleSendToWhatsApp(offer)} />
+                                                <Row className="flex-col sm:flex-row gap-4 mt-2">
+                                                    <div className="flex items-center gap-4 w-full sm:w-auto justify-center sm:justify-start">
+                                                        <img src={whatsappIcon} alt="whatsapp" className="w-10 h-10 md:w-12 md:h-12 cursor-pointer hover:scale-110 transition-transform" onClick={() => handleSendToWhatsApp(offer)} />
+                                                        <span className="sm:hidden text-white font-medium">WhatsApp Us</span>
+                                                    </div>
                                                     <AnimatedButton
                                                         buttonText="CONTACT US"
-                                                        className="w-3/4 hover:bg-custom-black"
+                                                        className="w-full sm:w-3/4 hover:bg-custom-black"
                                                         borderButtonColor="bg-white"
                                                         textColor="text-white"
                                                         bgColor="bg-custom-black"
@@ -239,8 +242,8 @@ function getOfferDetailsConfig(offer: Package) {
     ];
 }
 
-function Row({ children }: { children: React.ReactNode }) {
-    return <div className="flex items-center justify-between gap-4">{children}</div>;
+function Row({ children, className = "" }: { children: React.ReactNode, className?: string }) {
+    return <div className={`flex items-center justify-between gap-4 ${className}`}>{children}</div>;
 }
 
 function Divider() {

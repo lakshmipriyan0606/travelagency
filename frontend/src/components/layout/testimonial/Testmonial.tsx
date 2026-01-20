@@ -44,7 +44,7 @@ export default function Testimonials() {
                             >
                                 {testimonials.map((testimonial) => (
                                     <SwiperSlide key={testimonial.id}>
-                                        <div className="bg-white rounded-2xl shadow-lg p-6 h-[360px] md:h-[400px] flex flex-col">
+                                        <div className="bg-white rounded-2xl shadow-lg p-6 h-[400px] md:h-[400px] flex flex-col">
                                             <div className='items-end justify-end flex'>
                                                 <img className=' w-7 h-7 ' src={QuoteIcon} alt='quote-icon' />
                                             </div>

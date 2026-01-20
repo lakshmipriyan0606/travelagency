@@ -6,13 +6,8 @@ import { useNavigate } from "react-router-dom";
 import {
   AlertDialog,
   AlertDialogTrigger,
-  AlertDialogContent,
-  AlertDialogFooter,
-  AlertDialogAction,
-  AlertDialogCancel,
 } from "@/components/ui/alert-dialog";
 
-import BookingFomField from "../reachus/BookingFomField";
 
 const ProfileSection = () => {
   const navigate = useNavigate();
@@ -51,7 +46,7 @@ const ProfileSection = () => {
               <User className="w-5 h-5 cursor-pointer" />
             </button>
           </AlertDialogTrigger>
-
+          {/* 
           <AlertDialogContent
             className="
               w-[95vw]
@@ -63,22 +58,20 @@ const ProfileSection = () => {
               overflow-hidden
             "
           >
-            {/* ✅ SCROLLABLE FORM AREA */}
             <div className="max-h-[70vh] overflow-y-auto p-4">
               <BookingFomField />
             </div>
 
-            {/* ✅ FIXED FOOTER */}
-            <AlertDialogFooter className="border-t p-3">
+            <AlertDialogFooter className="border-0 p-3 cursor-pointer">
               <AlertDialogCancel>
-                Cancel
+                <span className="cursor-pointer">Cancel</span>
               </AlertDialogCancel>
 
               <AlertDialogAction>
-                Continue
+                <span className="cursor-pointer">Continue</span>
               </AlertDialogAction>
             </AlertDialogFooter>
-          </AlertDialogContent>
+          </AlertDialogContent> */}
         </AlertDialog>
       </div>
     </div>

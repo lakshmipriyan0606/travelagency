@@ -8,7 +8,7 @@ const AllPackage = () => {
     return (
         <div className="w-full overflow-x-hidden">
 
-            <div className="relative w-full h-[632px] overflow-hidden">
+            <div className="relative w-full h-[75.5vh] sm:h-[86vh] overflow-hidden">
                 <video
                     src={HeroSectionVideoClip}
                     autoPlay
@@ -18,19 +18,16 @@ const AllPackage = () => {
                 />
             </div>
 
-            <div className="bg-custom-black flex justify-between items-center p-3">
-                <div className="font-roboto text-white flex flex-col gap-2">
-                    <h1 className="text-[17px]">Create your next super hit holiday</h1>
-                    <p className="text-gray-300 font-light text-[15px]">
+            <div className="bg-custom-black flex flex-col md:flex-row justify-between items-center p-4 md:p-6 gap-4">
+                <div className="font-roboto text-white flex flex-col gap-2 text-center md:text-left">
+                    <h1 className="text-[18px] md:text-[22px] font-bold">Create your next super hit holiday</h1>
+                    <p className="text-gray-300 font-light text-[14px] md:text-[16px] max-w-2xl">
                         Our destination experts can help curate an itinerary exactly for you. Free to connect over a call?
                     </p>
-                    <div className="sm:hidden">
-                        <AnimatedButton buttonText="ENQUIRE NOW!" />
-                    </div>
                 </div>
 
-                <div className="text-center hidden md:block">
-                    <AnimatedButton buttonText="ENQUIRE NOW!" />
+                <div className="text-center w-full md:w-auto">
+                    <AnimatedButton buttonText="ENQUIRE NOW!" className="w-full md:w-auto" />
                 </div>
             </div>
 
@@ -45,8 +42,7 @@ const AllPackage = () => {
 
                 <div className="relative z-10 flex flex-col items-center justify-center h-full text-center p-4">
 
-                    <p className="text-white text-3xl md:text-5xl mb-6 leading-relaxed  font-arizonia"
-                    >
+                    <p className="text-white text-2xl sm:text-3xl md:text-5xl mb-6 leading-relaxed font-arizonia">
                         Personalized Tours to the Highest Standards,
                         <br />
                         Especially for You!

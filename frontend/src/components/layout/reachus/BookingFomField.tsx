@@ -59,7 +59,7 @@ const BookingFomField = () => {
         }
     });
 
-    const { mutate,isPending } = useMutationAPIQuery(CreateBookingForm, {
+    const { mutate, isPending } = useMutationAPIQuery(CreateBookingForm, {
         onSuccess() {
             showToast({
                 type: 'success',

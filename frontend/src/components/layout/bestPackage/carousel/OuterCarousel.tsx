@@ -22,12 +22,15 @@ import { useQueryClient } from "@tanstack/react-query";
 import { WANumber } from "@/lib/utils";
 import WrapperCardSkeleton from "./WrapperCardSkeleton";
 import NoDataSkeleton from "./NoDataSkeleton";
+import { useState } from "react";
 
 
 export default function OuterCarousel() {
 
     const navigate = useNavigate()
     const queryClient = useQueryClient();
+    const [prevEl, setPrevEl] = useState<HTMLElement | null>(null);
+    const [nextEl, setNextEl] = useState<HTMLElement | null>(null);
 
     const { data, isLoading, isError, } = UseFetchAPIQuery({
         key: ["bestPackage"],
@@ -120,14 +123,20 @@ export default function OuterCarousel() {
 
 
     return (
-        <div className="max-w-7xl mx-auto">
+        <div className="max-w-7xl mx-auto relative group">
             <Swiper
                 modules={[Navigation, Pagination]}
                 spaceBetween={30}
                 slidesPerView={1}
                 navigation={{
-                    nextEl: ".outer-next",
-                    prevEl: ".outer-prev",
+                    prevEl,
+                    nextEl,
+                }}
+                onBeforeInit={(swiper) => {
+                    // @ts-ignore
+                    swiper.params.navigation.prevEl = prevEl;
+                    // @ts-ignore
+                    swiper.params.navigation.nextEl = nextEl;
                 }}
                 breakpoints={{
                     768: { slidesPerView: 2 },
@@ -137,10 +146,13 @@ export default function OuterCarousel() {
                     clickable: true,
                     el: '.outer-custom-pagination',
                 }}
+                watchOverflow={true}
+                observer={true}
+                observeParents={true}
                 style={{
                     padding: '9px'
                 }}
-                className="outer-swiper pb-12 p-20"
+                className="outer-swiper pb-12"
             >
                 {bestPackageList?.map((offer: any) => (
                     <SwiperSlide key={offer._id}>
@@ -229,27 +241,34 @@ export default function OuterCarousel() {
                 ))}
             </Swiper>
 
-            {/* Outer Navigation */}
+            {/* Outer Navigation Buttons */}
+            {bestPackageList.length > 1 && (
+                <>
+                    {/* Previous Button */}
+                    <button
+                        ref={(node) => setPrevEl(node)}
+                        className="outer-prev absolute left-2 lg:left-0 xl:left-[-60px] top-[45%] -translate-y-1/2 z-50 cursor-pointer p-2 bg-white sm:bg-transparent rounded-full shadow-md sm:shadow-none transition-all hover:scale-110 active:scale-95 disabled:opacity-0 disabled:pointer-events-none"
+                        aria-label="Previous slide"
+                    >
+                        <img src={arrowLeft} className="w-6 h-6 sm:hidden" alt="" />
+                        <img src={customArrowLeft} className="hidden sm:block w-16 h-16 lg:w-20 lg:h-20" alt="" />
+                    </button>
 
-            {/* Mobile */}
-            <button className="outer-prev absolute left-2 top-1/2 -translate-y-1/2 bg-white cursor-pointer rounded-full p-3 shadow-md z-50 sm:hidden">
-                <img src={arrowLeft} className="w-6 h-6" />
-            </button>
+                    {/* Next Button */}
+                    <button
+                        ref={(node) => setNextEl(node)}
+                        className="outer-next absolute right-2 lg:right-0 xl:right-[-60px] top-[45%] -translate-y-1/2 z-50 cursor-pointer p-2 bg-white sm:bg-transparent rounded-full shadow-md sm:shadow-none transition-all hover:scale-110 active:scale-95 disabled:opacity-0 disabled:pointer-events-none"
+                        aria-label="Next slide"
+                    >
+                        <img src={arrowRight} className="w-6 h-6 sm:hidden" alt="" />
+                        <img src={customArrowRight} className="hidden sm:block w-16 h-16 lg:w-20 lg:h-20" alt="" />
+                    </button>
+                </>
+            )}
 
-            <button className="outer-next absolute right-2 top-1/2 -translate-y-1/2 bg-white cursor-pointer rounded-full p-3 shadow-md z-50 sm:hidden">
-                <img src={arrowRight} className="w-6 h-6" />
-            </button>
-
-            {/* Desktop */}
-            <button className="outer-prev absolute left-0 lg:left-5 xl:left-20 top-[53%] -translate-y-1/2 z-50 cursor-pointer hidden sm:block">
-                <img src={customArrowLeft} className="w-20 h-20" />
-            </button>
-
-            <button className="outer-next absolute right-0 lg:right-5 xl:right-20 top-[53%] -translate-y-1/2 cursor-pointer z-50 hidden sm:block">
-                <img src={customArrowRight} className="w-20 h-20" />
-            </button>
-
-            <div className="outer-custom-pagination mt-6 flex justify-center gap-2"></div>
+            {bestPackageList.length > 1 && (
+                <div className="outer-custom-pagination mt-6 flex justify-center gap-2"></div>
+            )}
         </div>
     );
 }

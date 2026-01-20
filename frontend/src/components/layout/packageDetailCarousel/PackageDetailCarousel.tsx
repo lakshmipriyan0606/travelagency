@@ -54,7 +54,7 @@ export default function PackageDetailCarousel({
                         <img
                             src={img}
                             alt=""
-                            className="w-full h-[350px] md:h-[500px] object-cover"
+                            className="w-full h-[580px] md:h-[580px] lg:h-[620px] object-cover"
                         />
                     </SwiperSlide>
                 ))}
@@ -70,14 +70,14 @@ export default function PackageDetailCarousel({
                             mainSwiperRef.current?.slideTo(index);
                         }}
                         className={`cursor-pointer transition-all duration-300 rounded-full relative overflow-hidden border-3 ${activeIndex === index
-                            ? "border-yellow-400 scale-110 bottom-2 sm:bottom-5"
-                            : "border-transparent border-2 opacity-70 hover:opacity-100"
+                            ? "border-yellow-400 scale-110 bottom-2 sm:bottom-13 shadow-md shadow-black/40 w-14 h-14 sm:w-24 sm:h-24"
+                            : "border-black/30 border-1 blur-[1px] hover:opacity-100 bottom-2 sm:bottom-8 shadow-md shadow-black/40"
                             }`}
                     >
                         <img
                             src={img}
                             alt=""
-                            className="w-12 h-12 sm:w-15 sm:h-15 object-cover rounded-full aspect-square"
+                            className="w-12 h-12 sm:w-22 sm:h-22 object-cover rounded-full aspect-square"
                         />
                     </div>
                 ))}

@@ -42,10 +42,9 @@ const PackageDetail = () => {
         <div>
 
             {/* Container */}
-            <div className="mx-auto p-4 lg:p-10 grid grid-cols-1 lg:grid-cols-12 gap-8">
-
+            <div className="mx-auto p-4 lg:p-8 grid grid-cols-1 lg:grid-cols-12 gap-8">
                 {/* Left 66% - Main Content & Image */}
-                <div className="lg:col-span-8">
+                <div className="lg:col-span-8 pt-10 sm:pt-0">
                     <PackageDetailCarousel currentPackage={currentPackageList} />
 
                     {/* Mobile Only Header/Booking */}
@@ -103,7 +102,7 @@ const PackageDetail = () => {
 
                 {/* Right 33% - Sticky Booking Form */}
                 <div className="hidden lg:block lg:col-span-4">
-                    <div className="sticky top-28 bg-white rounded-2xl border border-gray-100">
+                    <div className="sticky top-22 bg-white rounded-2xl border border-gray-100">
                         <div className='font-roboto text-center mb-6'>
                             <h1 className='text-bold text-2xl pb-2'>{currentPackageList?.data?.packageName}</h1>
                             <h6 className='text-gray-800'>Book your dream vacation <span className='text-primary font-medium'>Today!</span></h6>
