@@ -15,24 +15,6 @@ import Navbar from "@/components/layout/navbar/Navbar";
 import Footer from "@/components/layout/footer/Footer";
 
 const renderAppRoute = (routesList: AppRoute[]): ReactNode => {
-    const dispatch = useDispatch()
-    const { data: user, } = UseFetchAPIQuery({
-        key: ["me"],
-        queryFn: currentUserAPI,
-    });
-
-    useEffect(() => {
-        const currentUserId = localStorage.getItem("userId");
-        const id = crypto.randomUUID();
-        if (!currentUserId) {
-            localStorage.setItem("userId", id);
-        }
-    }, [])
-
-    useEffect(() => {
-        dispatch(setUser(user || null))
-    }, [user])
-
     return routesList.map(({ path, element, children }) => {
         const RouteElement = isValidElement(element) ? element : <></>
         return (
@@ -43,18 +25,36 @@ const renderAppRoute = (routesList: AppRoute[]): ReactNode => {
     });
 };
 
+const AppRoutes = () => {
+    const dispatch = useDispatch();
+    const { data: user } = UseFetchAPIQuery({
+        key: ["me"],
+        queryFn: currentUserAPI,
+    });
 
+    useEffect(() => {
+        const currentUserId = localStorage.getItem("userId");
+        if (!currentUserId) {
+            const id = crypto.randomUUID();
+            localStorage.setItem("userId", id);
+        }
+    }, []);
 
-const AppRoutes = () => (
-    <ErrorBoundary FallbackComponent={ErrorFallback} onReset={() => window.location.reload()}>
-        <Suspense fallback={<Loading />}>
-            <ScrollToTop />
-            <AppToastContainer />
-            <Navbar />
-            <Routes>{renderAppRoute(routes)}</Routes>
-            <Footer />
-        </Suspense>
-    </ErrorBoundary>
-);
+    useEffect(() => {
+        dispatch(setUser(user || null));
+    }, [user, dispatch]);
+
+    return (
+        <ErrorBoundary FallbackComponent={ErrorFallback} onReset={() => window.location.reload()}>
+            <Suspense fallback={<Loading />}>
+                <ScrollToTop />
+                <AppToastContainer />
+                <Navbar />
+                <Routes>{renderAppRoute(routes)}</Routes>
+                <Footer />
+            </Suspense>
+        </ErrorBoundary>
+    );
+};
 
 export default AppRoutes

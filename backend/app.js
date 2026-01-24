@@ -14,8 +14,9 @@ app.use(cookieParser());
 const allowedOrigins = [
   "http://localhost:5173",
   "https://travelagency-1-odma.onrender.com",
-  'https://travelagency-pearl.vercel.app/'
-];
+  "https://travelagency-pearl.vercel.app",
+  process.env.CORS_ORIGIN,
+].filter(Boolean);
 
 app.use(
   cors({
