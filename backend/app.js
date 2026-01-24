@@ -15,13 +15,14 @@ const allowedOrigins = [
   "http://localhost:5173",
   "https://travelagency-1-odma.onrender.com",
   "https://travelagency-pearl.vercel.app",
+  "https://travelagency-tawny.vercel.app",
   process.env.CORS_ORIGIN,
-].filter(Boolean);
+].filter(Boolean).map(origin => origin.replace(/\/$/, ""));
 
 app.use(
   cors({
     origin: function (origin, callback) {
-      if (!origin || allowedOrigins.includes(origin)) {
+      if (!origin || allowedOrigins.includes(origin.replace(/\/$/, ""))) {
         callback(null, true);
       } else {
         callback(new Error("CORS Not Allowed"));
@@ -29,7 +30,7 @@ app.use(
     },
     credentials: true,
     methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
-    allowedHeaders: ["Content-Type", "Authorization", "userId"],
+    allowedHeaders: ["Content-Type", "Authorization", "userId", "UserId"],
   })
 );
 
