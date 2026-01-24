@@ -85,7 +85,7 @@
 }
 @font-face {
   font-family: "Roboto";
-  src: url("./assets/fonts/roboto/Roboto-Italic.ttf") format("truetype");
+  src: url("./assets/fonts/roboto/Roboto-Regular.ttf") format("truetype");
   font-weight: 400;
   font-style: italic;
   font-display: swap;

@@ -1,6 +1,7 @@
 import express from "express";
 import cookieParser from "cookie-parser";
 import cors from "cors";
+import compression from "compression";
 import authRoutes from "./routes/admin.auth.routes.js";
 import packageRoute from "./routes/package.routes.js";
 import bookingRoute from "./routes/bookingForm.route.js";
@@ -8,6 +9,7 @@ import newsletterRoute from "./routes/newsletter.routes.js";
 
 const app = express();
 
+app.use(compression());
 app.use(express.json());
 app.use(cookieParser());
 
@@ -31,6 +33,7 @@ app.use(
     credentials: true,
     methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
     allowedHeaders: ["Content-Type", "Authorization", "userId", "UserId"],
+    maxAge: 86400, // Cache preflight requests for 24 hours
   })
 );
 
