@@ -18,6 +18,7 @@ const allowedOrigins = [
   "https://travelagency-1-odma.onrender.com",
   "https://travelagency-pearl.vercel.app",
   "https://travelagency-tawny.vercel.app",
+  'https://www.sastikaatravel.com/',
   process.env.CORS_ORIGIN,
 ].filter(Boolean).map(origin => origin.replace(/\/$/, ""));
 
