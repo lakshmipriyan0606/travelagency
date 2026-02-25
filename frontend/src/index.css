@@ -10,9 +10,29 @@
   --font-cormorant: "CormorantGaramond", serif;
   --font-roboto: "Roboto", sans-serif;
 
-  /* --- THE MISSING LINE --- */
   /* This creates the class "animate-shimmer-slide" */
   --animate-shimmer-slide: shimmer-slide 2s infinite linear;
+
+  --animate-marquee-left: marquee-left 40s linear infinite;
+  --animate-marquee-right: marquee-right 40s linear infinite;
+
+  @keyframes marquee-left {
+    0% {
+      transform: translateX(0);
+    }
+    100% {
+      transform: translateX(-50%);
+    }
+  }
+
+  @keyframes marquee-right {
+    0% {
+      transform: translateX(-50%);
+    }
+    100% {
+      transform: translateX(0);
+    }
+  }
 
   @keyframes shimmer-slide {
     0% {

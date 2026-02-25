@@ -123,7 +123,7 @@ export default function OuterCarousel() {
 
 
     return (
-        <div className="max-w-7xl mx-auto relative group">
+        <div className="max-w-7xl mx-auto relative">
             <Swiper
                 modules={[Navigation, Pagination]}
                 spaceBetween={30}

@@ -3,8 +3,11 @@ import BestPackage from "@/components/layout/bestPackage/BestPackage";
 import ReachUs from "@/components/layout/reachus/Reachus";
 import HeroSection from "@/components/layout/herosection/HeroSection";
 import Newsletter from "@/components/layout/newsletter/Newsletter";
-import Testimonials from "@/components/layout/testimonial/Testmonial";
 import Welcome from "@/components/layout/welcome/Welcome";
+import TrustBadges from "@/components/layout/TrustBadges/TrustBadges";
+import BestCities from "@/components/layout/bestCities/BestCities";
+import TravelExperiences from "@/components/layout/travelExperiences/TravelExperiences";
+import HappyStories from "@/components/layout/happyStories/HappyStories";
 import { createContext, useMemo } from "react"
 
 export interface HomeContextType {
@@ -23,11 +26,14 @@ const Home = () => {
     <HomeContext.Provider value={contextValue}>
       <div className="min-h-screen bg-background-black">
         <HeroSection />
+        <TrustBadges />
         <BestDestination />
         <Welcome />
         <BestPackage />
+        <BestCities />
         <ReachUs />
-        <Testimonials />
+        <TravelExperiences />
+        <HappyStories />
         <Newsletter />
       </div>
     </HomeContext.Provider>
