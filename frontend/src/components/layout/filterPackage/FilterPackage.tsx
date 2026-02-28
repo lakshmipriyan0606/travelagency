@@ -202,7 +202,7 @@ const FilterPackage = () => {
 
                 {/* ✅ RIGHT PACKAGE LIST - SCROLLABLE */}
                 <div className="w-full sm:w-[75%] xl:w-[78%] overflow-y-auto p-2 pr-2">
-                    <h2 className="text-xl font-roboto mb-3 text-white">
+                    <h2 className="text-xl mb-3 text-white">
                         Packages ({filteredPackages?.length || 0})
                     </h2>
 

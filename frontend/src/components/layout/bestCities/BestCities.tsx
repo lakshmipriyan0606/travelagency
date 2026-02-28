@@ -1,51 +1,43 @@
 import { Swiper, SwiperSlide } from "swiper/react";
-import { Navigation, Scrollbar } from "swiper/modules";
+import { Navigation, Autoplay } from "swiper/modules";
 import "swiper/css";
 import "swiper/css/navigation";
-import "swiper/css/scrollbar";
 import { BEST_CITIES } from "./constant";
 import badgeBackground from "@/assets/icons/badgeBackground.svg";
-import { useRef, useState } from "react";
+import { useRef } from "react";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 
 const BestCities = () => {
-  const [isEnd, setIsEnd] = useState(false);
-  const [isBeginning, setIsBeginning] = useState(true);
+
   const swiperRef = useRef<any>(null);
 
   return (
-    <section className="py-20 bg-white overflow-hidden">
-      <div className="max-w-7xl mx-auto px-4">
+    <section className=" main__container_space">
+      <div className='main__container_space_nextContainer'>
         <h2 className="text-4xl md:text-5xl font-bold  mb-16 text-custom-black">
           Best <span className="text-primary">Cities</span>
         </h2>
-
         <div className="relative group">
           <Swiper
-            modules={[Navigation, Scrollbar]}
+            modules={[Navigation, Autoplay]}
             spaceBetween={20}
             slidesPerView={1.2}
+            loop={true}
+            autoplay={{
+              delay: 3000,
+              disableOnInteraction: false,
+            }}
             onBeforeInit={(swiper) => {
               swiperRef.current = swiper;
             }}
-            onSlideChange={(swiper) => {
-              setIsBeginning(swiper.isBeginning);
-              setIsEnd(swiper.isEnd);
-            }}
+
             breakpoints={{
               640: { slidesPerView: 2.2 },
               1024: { slidesPerView: 3.5 },
               1280: { slidesPerView: 4.5 },
             }}
-            // autoplay={{
-            //   delay: 3000,
-            //   disableOnInteraction: false,
-            // }}
-            scrollbar={{
-              el: ".custom-scrollbar",
-              draggable: true,
-            }}
-            className="best-cities-swiper !pb-20"
+
+            className="best-cities-swiper !pb-20 relative"
           >
             {BEST_CITIES.map((city) => (
               <SwiperSlide key={city.id}>
@@ -59,7 +51,7 @@ const BestCities = () => {
                     }}
                   />
                   <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-transparent to-transparent" />
-                  
+
                   <div className="absolute bottom-8 left-1/2 -translate-x-1/2 w-full flex justify-center px-4">
                     <div className="relative">
                       <img
@@ -75,43 +67,24 @@ const BestCities = () => {
                 </div>
               </SwiperSlide>
             ))}
-          </Swiper>
-
-          {/* Navigation and Scrollbar Container */}
-          <div className="flex items-center justify-between mt-8 max-w-[300px] mx-auto md:mx-0 md:ml-auto md:mr-4">
-            {/* Custom Scrollbar */}
-            <div className="flex-1 mr-8">
-              <div className="custom-scrollbar h-1 bg-gray-200 rounded-full relative overflow-hidden cursor-pointer">
-                <div className="swiper-scrollbar-drag !bg-primary !rounded-full" />
-              </div>
-            </div>
-
-            {/* Custom Navigation Buttons */}
-            <div className="flex gap-4">
+            {/* Custom Navigation Buttons as Overlays */}
+            <div className="absolute top-1/2 -translate-y-1/2 left-0 right-0 flex justify-between px-4 z-10">
               <button
                 onClick={() => swiperRef.current?.slidePrev()}
-                className={`w-12 h-12 rounded-full flex items-center justify-center transition-all duration-300  cursor-pointer ${
-                  isBeginning 
-                    ? "bg-gray-100 text-gray-400 cursor-not-allowed" 
-                    : "bg-[#fff9e6] text-primary hover:bg-primary hover:text-white"
-                }`}
-                disabled={isBeginning}
+                className="w-12 h-12 rounded-full flex items-center justify-center bg-[#fff9e6] text-primary hover:bg-primary hover:text-white transition-all duration-300 shadow-md cursor-pointer"
               >
                 <ChevronLeft size={24} />
               </button>
               <button
                 onClick={() => swiperRef.current?.slideNext()}
-                className={`w-12 h-12 rounded-full flex items-center justify-center transition-all duration-300  cursor-pointer ${
-                  isEnd 
-                    ? "bg-gray-100 text-gray-400 cursor-not-allowed" 
-                    : "bg-[#fff9e6] text-primary hover:bg-primary hover:text-white"
-                }`}
-                disabled={isEnd}
+                className="w-12 h-12 rounded-full flex items-center justify-center bg-[#fff9e6] text-primary hover:bg-primary hover:text-white transition-all duration-300 shadow-md cursor-pointer"
               >
                 <ChevronRight size={24} />
               </button>
             </div>
-          </div>
+          </Swiper>
+
+
         </div>
       </div>
     </section>

@@ -15,7 +15,7 @@ const NoDataFound = ({
             <div className="bg-red-50 p-4 rounded-full mb-4">
                 <AlertCircle className="w-12 h-12 text-red-500" />
             </div>
-            <h3 className="text-xl font-bold text-gray-800 mb-2 font-roboto">{message}</h3>
+            <h3 className="text-xl font-bold text-gray-800 mb-2">{message}</h3>
             <p className="text-gray-500 max-w-md">{subMessage}</p>
         </div>
     );

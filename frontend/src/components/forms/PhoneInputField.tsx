@@ -40,7 +40,7 @@ export const PhoneInputField = ({
                bg-white
                focus:outline-none focus:ring-1 focus:ring-blue-50/1
                focus:border-blue-500
-               transition-all duration-300 font-roboto`,
+               transition-all duration-300 font-body`,
 
               error &&
               "border-red-500 focus:border-red-500/2 focus:ring-red-500"

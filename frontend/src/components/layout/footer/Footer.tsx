@@ -35,17 +35,17 @@ export default function Footer() {
             <img src={companyLogo} alt="Company Logo" className='company-logo' />
             <span className="text-white text-2xl font-bold">   <span className='text-4xl'>S</span>ASTIKA <span className='text-4xl'>T</span>RAVELS</span>
           </div>
-          <p className="text-sm text-[#A1A1A1] md:text-base text-justify leading-8 mt-4 font-roboto">
+          <p className="text-sm text-[#A1A1A1] md:text-base text-justify leading-8 mt-4">
             {footerData.about}
           </p>
         </section>
 
         {/* ---------- CONTACT & SOCIAL ---------- */}
-        <section className="grid grid-cols-1 md:grid-cols-4 gap-8  font-roboto">
+        <section className="grid grid-cols-1 md:grid-cols-4 gap-8">
 
           {/* WhatsApp */}
           <h1 className='text-primary text-4xl sm:hidden'>Contact us </h1>
-          <div className='font-roboto'>
+          <div>
             <h3 className="text-white font-semibold mb-2 uppercase">
               WhatsApp Us
             </h3>
@@ -53,7 +53,7 @@ export default function Footer() {
               href={`https://wa.me/91${footerData.whatsapp.replace(/\D/g, '')}`}
               target="_blank"
               rel="noopener noreferrer"
-              className="flex items-center gap-2 hover:text-primary transition-colors font-roboto"
+              className="flex items-center gap-2 hover:text-primary transition-colors"
             >
               {footerData.whatsapp}
             </a>
@@ -137,7 +137,7 @@ export default function Footer() {
             </div>
 
             {/* Copyright */}
-            <p className="mt-5 font-roboto">{footerData.copyright}</p>
+            <p className="mt-5">{footerData.copyright}</p>
           </div>
         </section>
       </div>

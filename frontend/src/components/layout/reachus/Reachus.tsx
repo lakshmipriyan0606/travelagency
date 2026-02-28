@@ -31,7 +31,7 @@ export default function ReachUs() {
         <div className="relative sm:p-10 flex flex-col sm:p-24 gap-4 items-center overflow-hidden">
 
 
-          <h1 className=" text-4xl sm:text-6xl font-serif text-primary mb-6 relative z-10">
+          <h1 className=" text-4xl sm:text-6xl text-primary mb-6 relative z-10">
             Reach Us!
           </h1>
 
@@ -43,7 +43,7 @@ export default function ReachUs() {
             </div>
           </div>
 
-          <p className="mt-6 text-lg text-gray-500 relative z-10 font-roboto">
+          <p className="mt-6 text-lg text-gray-500 relative z-10">
             +91 9789569791
           </p>
 
@@ -57,10 +57,10 @@ export default function ReachUs() {
 
         {/* RIGHT SECTION */}
         <div className="text-black">
-          <h2 className="text-2xl md:text-4xl  font-semibold font-cormorant text-center">
+          <h2 className="text-2xl md:text-4xl  font-semibold text-center">
             Book Your Dream
           </h2>
-          <h3 className='font-serif text-center text-lg mb-6 text-xl md:text-2xl'> Vacation Today!</h3>
+          <h3 className='text-center text-lg mb-6 text-xl md:text-2xl'> Vacation Today!</h3>
 
           <BookingFomField />
 

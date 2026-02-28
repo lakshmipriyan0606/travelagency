@@ -34,7 +34,7 @@ const LaptopFilterRender: React.FC<{ control: any; watchFilters: any, handleClea
     handleClear,
 }) => {
     return (
-        <div className="rounded-lg bg-white shadow-sm sm:border sm:border-gray-300 sm:shadow-lg font-roboto text-sm hidden md:flex md:flex-col  p-2 xl:p-6 ">
+        <div className="rounded-lg bg-white shadow-sm sm:border sm:border-gray-300 sm:shadow-lg text-sm hidden md:flex md:flex-col  p-2 xl:p-6 ">
             <div className="text-right p-2" onClick={handleClear}>
                 <button className="px-3 py-1 bg-gray-300 text-black/60 rounded-sm">Clear filter</button>
             </div>
@@ -109,7 +109,7 @@ const FilterConfigPage: React.FC<Props> = () => {
     // };
 
     return (
-        <section className="font-roboto select-none">
+        <section className="select-none">
             {/* Desktop View */}
             <div className="hidden md:block">
                 <LaptopFilterRender control={control} watchFilters={watchedFilters} handleClear={handleClear} />

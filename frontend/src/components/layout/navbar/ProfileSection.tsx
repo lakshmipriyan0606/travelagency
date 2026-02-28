@@ -33,7 +33,7 @@ const ProfileSection = () => {
           className="profile-section-item flex items-center gap-1 cursor-pointer"
           onClick={handleNavigate}
         >
-          <span className="heart-icon font-roboto">
+          <span className="heart-icon">
             {data?.data || 0}
           </span>
           <Heart className="w-5 h-5" />

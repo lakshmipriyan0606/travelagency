@@ -14,7 +14,7 @@ export default function BestPackage() {
             </div>
             <div className='main__container_space_nextContainer relative z-10'>
                 <div className="mb-4">
-                    <h1 className="main_title font-bold mb-2">
+                    <h1 className="main_title mb-2">
                         Welcome to  <span className='
                    text-primary'>Sastikaa Travels!</span>
                     </h1>

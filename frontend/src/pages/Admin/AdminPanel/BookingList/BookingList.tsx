@@ -51,7 +51,7 @@ export default function BookingAdminPage() {
         <div className="p-6">
             <h1 className="text-3xl font-bold mb-6">Bookings</h1>
 
-            <Card className="shadow-xl rounded-2xl font-roboto">
+            <Card className="shadow-xl rounded-2xl font-body">
                 <CardContent>
                     <div className="overflow-x-auto">
                         <table className="w-full border border-gray-200 rounded-lg">
@@ -89,7 +89,7 @@ export default function BookingAdminPage() {
                 open={!!selected}
                 onOpenChange={() => setSelected(null)}
             >
-                <DialogContent className="max-w-xl bg-white text-black font-roboto">
+                <DialogContent className="max-w-xl bg-white text-black font-body">
                     <DialogHeader>
                         <DialogTitle>Booking Details</DialogTitle>
                     </DialogHeader>

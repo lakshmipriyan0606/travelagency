@@ -34,7 +34,7 @@ export const SelectField = ({
       name={name}
       rules={required ? { required: `${label} is required` } : {}}
       render={({ field, fieldState: { error } }) => (
-        <div className="mb-6 relative font-roboto">
+        <div className="mb-6 relative font-body">
           <Select
             value={field.value}
             onValueChange={field.onChange}
@@ -53,7 +53,7 @@ export const SelectField = ({
               <SelectValue placeholder=" " />
             </SelectTrigger>
 
-            <SelectContent className="bg-white border-gray-300 font-roboto">
+            <SelectContent className="bg-white border-gray-300 font-body">
               {options.map((opt) => (
                 <SelectItem key={opt.value} value={opt.value} className="cursor-pointer text-gray-700">
                   {opt.label}

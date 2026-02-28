@@ -162,7 +162,7 @@ export default function OuterCarousel() {
 
                             <div className="absolute top-0 right-0">
                                 <div
-                                    className="absolute top-5 font-roboto font-normal -right-3 z-20 bg-red-500 text-white font-bold px-4 py-0 w-max overflow-hidden relative"
+                                    className="absolute top-5 font-body font-normal -right-3 z-20 bg-red-500 text-white font-bold px-4 py-0 w-max overflow-hidden relative"
                                 >
                                     <div className="absolute top-0 left-0 w-[200%] h-full bg-gradient-to-r from-transparent via-white/50 to-transparent -translate-x-full animate-[shimmer_2s_infinite]"></div>
                                     <em className="relative z-10">{calculateDiscountPercentage(offer?.price, offer?.offerPrice)}% OFF</em>
@@ -174,7 +174,7 @@ export default function OuterCarousel() {
                             </div>
 
                             {/* Offer Details */}
-                            <div className="flex flex-col font-roboto gap-3 justify-center p-[15px]">
+                            <div className="flex flex-col font-body gap-3 justify-center p-[15px]">
                                 <div className="flex items-center gap-2 justify-between">
                                     <div className="flex items-center gap-3 ">
                                         <span>

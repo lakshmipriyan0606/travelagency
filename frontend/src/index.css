@@ -5,10 +5,9 @@
   --color-custom-black: #2b2b2b;
   --color-primary: #fcaf16;
 
-  --font-allura: "Allura", cursive;
-  --font-arizonia: "Arizonia", cursive;
-  --font-cormorant: "CormorantGaramond", serif;
-  --font-roboto: "Roboto", sans-serif;
+  --font-heading: "Rubik", sans-serif;
+  --font-body: "Quicksand", sans-serif;
+  --font-accent: "Caramel", cursive;
 
   /* This creates the class "animate-shimmer-slide" */
   --animate-shimmer-slide: shimmer-slide 2s infinite linear;
@@ -44,134 +43,16 @@
   }
 }
 
-@font-face {
-  font-family: "Allura";
-  src: url("./assets/fonts/Allura/Allura-Regular.ttf") format("truetype");
-  font-weight: 400;
-  font-style: normal;
-  font-display: swap;
-}
-
-@font-face {
-  font-family: "Arizonia";
-  src: url("./assets/fonts/Arizonia/Arizonia-Regular.ttf") format("truetype");
-  font-weight: 400;
-  font-style: normal;
-  font-display: swap;
-}
-
-@font-face {
-  font-family: "CormorantGaramond";
-  src: url("./assets/fonts/Cormorant_Garamond/CormorantGaramond-VariableFont_wght.ttf")
-    format("truetype");
-  font-weight: 100 900;
-  font-style: normal;
-  font-display: swap;
-}
-
-@font-face {
-  font-family: "Roboto";
-  src: url("./assets/fonts/roboto/Roboto-Thin.ttf") format("truetype");
-  font-weight: 100;
-  font-style: normal;
-  font-display: swap;
-  font-display: swap;
-}
-@font-face {
-  font-family: "Roboto";
-  src: url("./assets/fonts/roboto/Roboto-ThinItalic.ttf") format("truetype");
-  font-weight: 100;
-  font-style: italic;
-  font-display: swap;
-  font-display: swap;
-}
-
-@font-face {
-  font-family: "Roboto";
-  src: url("./assets/fonts/roboto/Roboto-Light.ttf") format("truetype");
-  font-weight: 300;
-  font-style: normal;
-  font-display: swap;
-  font-display: swap;
-}
-@font-face {
-  font-family: "Roboto";
-  src: url("./assets/fonts/roboto/Roboto-LightItalic.ttf") format("truetype");
-  font-weight: 300;
-  font-style: italic;
-  font-display: swap;
-  font-display: swap;
-}
-
-@font-face {
-  font-family: "Roboto";
-  src: url("./assets/fonts/roboto/Roboto-Regular.ttf") format("truetype");
-  font-weight: 400;
-  font-style: normal;
-  font-display: swap;
-  font-display: swap;
-}
-@font-face {
-  font-family: "Roboto";
-  src: url("./assets/fonts/roboto/Roboto-Regular.ttf") format("truetype");
-  font-weight: 400;
-  font-style: italic;
-  font-display: swap;
-  font-display: swap;
-}
-
-@font-face {
-  font-family: "Roboto";
-  src: url("./assets/fonts/roboto/Roboto-Medium.ttf") format("truetype");
-  font-weight: 500;
-  font-style: normal;
-  font-display: swap;
-  font-display: swap;
-}
-@font-face {
-  font-family: "Roboto";
-  src: url("./assets/fonts/roboto/Roboto-MediumItalic.ttf") format("truetype");
-  font-weight: 500;
-  font-style: italic;
-  font-display: swap;
-  font-display: swap;
-}
-
-@font-face {
-  font-family: "Roboto";
-  src: url("./assets/fonts/roboto/Roboto-Bold.ttf") format("truetype");
-  font-weight: 700;
-  font-style: normal;
-  font-display: swap;
-  font-display: swap;
-}
-@font-face {
-  font-family: "Roboto";
-  src: url("./assets/fonts/roboto/Roboto-BoldItalic.ttf") format("truetype");
-  font-weight: 700;
-  font-style: italic;
-  font-display: swap;
-  font-display: swap;
-}
-
-@font-face {
-  font-family: "Roboto";
-  src: url("./assets/fonts/roboto/Roboto-Black.ttf") format("truetype");
-  font-weight: 900;
-  font-style: normal;
-  font-display: swap;
-  font-display: swap;
-}
-@font-face {
-  font-family: "Roboto";
-  src: url("./assets/fonts/roboto/Roboto-BlackItalic.ttf") format("truetype");
-  font-weight: 900;
-  font-style: italic;
-  font-display: swap;
-}
-
 body {
-  @apply font-cormorant text-custom-black;
+  @apply font-body text-custom-black;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  @apply font-heading;
+}
+
+.font-accent {
+  @apply font-accent;
 }
 
 @import "./style/navbar.css";

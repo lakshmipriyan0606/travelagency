@@ -49,14 +49,14 @@ const PackageDetail = () => {
 
                     {/* Mobile Only Header/Booking */}
                     <div className='lg:hidden mt-6'>
-                        <div className='font-roboto text-center'>
+                        <div className='font-body text-center'>
                             <h1 className='text-bold text-2xl pb-2'>{currentPackageList?.data?.packageName}</h1>
                             <h6 className='pb-6'>Book your dream vacation <span className='text-primary'>Today!</span></h6>
                         </div>
                         <BookingFomField />
                     </div>
 
-                    <div className='font-roboto mt-7'>
+                    <div className='font-body mt-7'>
                         <h1 className='text-bold text-xl'>{currentPackageList?.data?.packageName}</h1>
                         <p className='mt-5 text-sm'>{currentPackageList?.data?.packageDescription}</p>
                     </div>
@@ -103,7 +103,7 @@ const PackageDetail = () => {
                 {/* Right 33% - Sticky Booking Form */}
                 <div className="hidden lg:block lg:col-span-4">
                     <div className="sticky top-22 bg-white rounded-2xl border border-gray-100">
-                        <div className='font-roboto text-center mb-6'>
+                        <div className='font-body text-center mb-6'>
                             <h1 className='text-bold text-2xl pb-2'>{currentPackageList?.data?.packageName}</h1>
                             <h6 className='text-gray-800'>Book your dream vacation <span className='text-primary font-medium'>Today!</span></h6>
                         </div>

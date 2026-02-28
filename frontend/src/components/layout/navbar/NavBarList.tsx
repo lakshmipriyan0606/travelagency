@@ -4,7 +4,7 @@ import PrimaryOutlineButton from "@/components/Button/PrimaryOutlineButton";
 
 const NavbarRenderList = () => {
   const navbarListItems = navbarList.map((item) => (
-    <li key={item.key} className="navbar-list-item font-roboto">
+    <li key={item.key} className="navbar-list-item">
       <NavLink
         to={item.path}
         className={({ isActive }) =>

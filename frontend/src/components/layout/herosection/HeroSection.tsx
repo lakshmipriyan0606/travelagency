@@ -88,8 +88,8 @@ const HeroSection = () => {
                 muted
             />
             <div className="hero-overlay text-white text-2xl  sm:text-6xl text-wrap text-center  pt-10 sm:pt-20 realtive">
-                <h1 className="hero-title font-arizonia">Experience <span className="text-primary">Singapore</span> Like Never Before, </h1>
-                <h1 className="hero-title font-arizonia">Adventure Awaits <span className="text-primary">Everywhere!</span></h1>
+                <h3 className="font-thin">Experience <span className="text-primary font-accent text-8xl">Singapore</span> Like Never Before, </h3>
+                <h1 className="hero-title font-thin">Adventure Awaits <span className="text-primary font-accent text-8xl">Everywhere!</span></h1>
                 <AnimatedButton buttonText="ENQUIRE NOW" borderButtonColor={'bg-custom-black'} className="mt-[70px] w-[170px]" />
                 <div className="pt-6">
                     <ScrollIndicator />

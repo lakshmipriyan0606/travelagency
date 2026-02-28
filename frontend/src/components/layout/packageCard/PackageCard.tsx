@@ -153,7 +153,7 @@ export default function PackageCard({
 
                                             {/* Discount Ribbon */}
                                             <div className="absolute top-0 right-0">
-                                                <div className="absolute top-5 font-roboto -right-3 z-20 bg-red-500 text-white font-bold px-4 py-0 w-max">
+                                                <div className="absolute top-5 -right-3 z-20 bg-red-500 text-white font-bold px-4 py-0 w-max">
                                                     50 % OFF
                                                 </div>
                                                 <div className="absolute top-9 -right-1 h-5 w-2 bg-red-500 brightness-90 rotate-[60deg]"></div>
@@ -161,7 +161,7 @@ export default function PackageCard({
                                         </div>
 
                                         {/* Details */}
-                                        <div className="flex flex-col justify-center gap-3 p-8 md:w-[45%] font-roboto">
+                                        <div className="flex flex-col justify-center gap-3 p-8 md:w-[45%]">
                                             <Row>
                                                 <IconText icon={location} text={offer.location} />
                                                 <motion.button

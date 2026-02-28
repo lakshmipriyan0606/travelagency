@@ -13,10 +13,10 @@ export function BestDestination() {
     };
 
     return (
-        <section className="bg-custom-black main__container_space border-b-4 border-primary">
+        <section className="main__container_space">
             <div className='main__container_space_nextContainer'>
-                <h2 className="text-2xl md:text-3xl lg:text-5xl font-bold text-white text-center mb-10 leading-tight">
-                    Explore Our <span className="text-yellow-400">Best Packages</span> &amp; Be Amazed
+                <h2 className="text-2xl md:text-3xl lg:text-5xl mb-10 leading-tight">
+                  Popular <span className="text-yellow-400">Destinations</span>
                 </h2>
 
                 <div className="grid grid-cols-12 gap-4 max-w-7xl mx-auto">

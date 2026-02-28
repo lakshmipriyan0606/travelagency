@@ -24,7 +24,7 @@ export const DatePickerField = ({
       name={name}
       rules={required ? { required: `${label} is required` } : {}}
       render={({ field: { onChange, value }, fieldState: { error } }) => (
-        <div className="mb-6 relative font-roboto">
+        <div className="mb-6 relative font-body">
 
           <Popover>
             <PopoverTrigger asChild>
@@ -52,7 +52,7 @@ export const DatePickerField = ({
               </Button>
             </PopoverTrigger>
 
-            <PopoverContent className="w-auto p-0 bg-white text-black font-roboto " align="start">
+            <PopoverContent className="w-auto p-0 bg-white text-black font-body " align="start">
               <Calendar
                 mode="single"
                 selected={value}

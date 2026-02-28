@@ -125,7 +125,7 @@ export default function ItineraryDay({ currentPackage }: ItineraryDayProps) {
 
               <div className="absolute left-2 top-0 p-1 flex flex-col items-center z-10">
                 <span className="font-medium text-gray-600 mb-1">Day</span>
-                <div className="text-[18px] font-roboto">{day.id}</div>
+                <div className="text-[18px]">{day.id}</div>
               </div>
 
               {expandedDay === day.id &&
