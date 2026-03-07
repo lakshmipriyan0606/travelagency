@@ -20,7 +20,7 @@ export default function ReachUs() {
   };
 
   return (
-    <div className="relative bg-[#F6F9FF] p-10 overflow-hidden">
+    <div id="reach-us-section" className="relative bg-[#F6F9FF] p-10 overflow-hidden">
       <img
         src={MapIcon}
         alt="Map background"

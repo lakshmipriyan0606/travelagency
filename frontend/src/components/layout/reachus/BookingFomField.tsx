@@ -1,65 +1,90 @@
-import { ReusableInput } from '@/components/forms/ReusableInput';
-import { SelectField } from '@/components/forms/SelectField';
-import { DatePickerField } from '@/components/forms/DatePickerField';
-import { PhoneInputField } from '@/components/forms/PhoneInputField';
+/**
+ * BookingFomField — ReachUs Section
+ * ─────────────────────────────────────────────────────────────────────────────
+ * Full booking form driven by reachUsFormFields config (formConfig.ts).
+ * Uses existing reusable components: SelectField, ReusableInput, PhoneInputField
+ * ─────────────────────────────────────────────────────────────────────────────
+ */
+
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import * as z from 'zod';
+import {
+    reachUsFormFields,
+    reachUsFormSchema,
+    ReachUsFormData,
+    FormFieldConfig,
+} from '@/config/formConfig';
+import { SelectField } from '@/components/forms/SelectField';
+import { ReusableInput } from '@/components/forms/ReusableInput';
+import { PhoneInputField } from '@/components/forms/PhoneInputField';
+import AnimatedButton from '@/components/Button/AnimatedButton/AnimatedButton';
 import { CreateBookingForm } from '@/api/user/api';
 import { useMutationAPIQuery } from '@/Hook/useMutationAPIQuery';
 import { showToast } from '@/lib/utils';
 
-const formSchema = z.object({
-    name: z.string().min(1, 'Name is required'),
-    city: z.string().min(1, 'City is required'),
-    email: z.string().email('Invalid email').min(1, 'Email is required'),
-    phone: z.string().min(1, 'Phone is required'),
-    whatsapp: z.string().min(1, 'WhatsApp is required'),
-    destination: z.string().min(1, 'Select a destination'),
-    noOfPeople: z.string().min(1, 'Select number of people'),
-    vacationType: z.string().min(1, 'Select vacation type'),
-    travelDate: z.date().optional(),
-});
+// ─── Single dynamic field renderer ───────────────────────────────────────────
 
-type FormData = z.infer<typeof formSchema>;
+interface DynamicFieldProps {
+    fieldConfig: FormFieldConfig;
+    control: any;
+}
 
-const destinations = [
-    { value: 'bali', label: 'Bali' },
-    { value: 'maldives', label: 'Maldives' },
-    { value: 'dubai', label: 'Dubai' },
-    { value: 'switzerland', label: 'Switzerland' },
-];
+const DynamicField = ({ fieldConfig, control }: DynamicFieldProps) => {
+    if (fieldConfig.type === 'select' && fieldConfig.options) {
+        return (
+            <SelectField
+                control={control}
+                name={fieldConfig.name}
+                label={fieldConfig.label}
+                options={fieldConfig.options}
+                required={fieldConfig.required}
+            />
+        );
+    }
 
-const peopleOptions = Array.from({ length: 20 }, (_, i) => ({
-    value: String(i + 1),
-    label: `${i + 1} ${i === 0 ? 'Person' : 'People'}`,
-}));
+    if (fieldConfig.type === 'phone') {
+        return (
+            <PhoneInputField
+                control={control}
+                name={fieldConfig.name}
+                label={fieldConfig.label}
+                required={fieldConfig.required}
+            />
+        );
+    }
 
-const vacationTypes = [
-    { value: 'family', label: 'Family Vacation' },
-    { value: 'honeymoon', label: 'Honeymoon' },
-    { value: 'adventure', label: 'Adventure' },
-    { value: 'luxury', label: 'Luxury' },
-];
+    // text | email
+    return (
+        <ReusableInput
+            control={control}
+            name={fieldConfig.name}
+            label={fieldConfig.label}
+            type={fieldConfig.type}
+            placeholder={fieldConfig.placeholder}
+            required={fieldConfig.required}
+        />
+    );
+};
+
+// ─── BookingFomField ──────────────────────────────────────────────────────────
 
 const BookingFomField = () => {
+    const defaultValues = reachUsFormFields.reduce<Record<string, string>>(
+        (acc, f) => ({ ...acc, [f.name]: '' }),
+        {}
+    ) as ReachUsFormData;
 
-    const { control, handleSubmit, reset } = useForm<FormData>({
-        resolver: zodResolver(formSchema),
-        defaultValues: {
-            name: "",
-            city: "",
-            email: "",
-            phone: "",
-            whatsapp: "",
-            destination: "",
-            noOfPeople: "",
-            vacationType: "",
-            travelDate: undefined,
-        }
+    const {
+        control,
+        handleSubmit,
+        reset,
+        formState: { isSubmitting },
+    } = useForm<ReachUsFormData>({
+        resolver: zodResolver(reachUsFormSchema),
+        defaultValues,
     });
 
-    const { mutate, isPending } = useMutationAPIQuery(CreateBookingForm, {
+    const { mutate, isPending: isMutating } = useMutationAPIQuery(CreateBookingForm, {
         onSuccess() {
             showToast({
                 type: 'success',
@@ -77,41 +102,39 @@ const BookingFomField = () => {
         },
     });
 
-    const onSubmit = (data: FormData) => {
-        mutate(data);
+    const onSubmit = (data: ReachUsFormData) => {
+        mutate(data as any);
     };
+
+    const loading = isSubmitting || isMutating;
+
     return (
         <div>
-            <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
-                <ReusableInput control={control} name="name" label="Name" required />
-                <ReusableInput control={control} name="city" label="City of Residence" required />
-                <ReusableInput control={control} name="email" label="Email" required />
+            <form onSubmit={handleSubmit(onSubmit)} noValidate className="space-y-0">
+                {reachUsFormFields.map((fieldConfig) => (
+                    <DynamicField
+                        key={fieldConfig.name}
+                        fieldConfig={fieldConfig}
+                        control={control}
+                    />
+                ))}
 
-                <PhoneInputField control={control} name="phone" label="Phone Number" required />
-                <PhoneInputField control={control} name="whatsapp" label="WhatsApp Number" required />
+                <div className="mt-4">
+                    <AnimatedButton
+                        type="submit"
+                        disabled={loading}
+                        buttonText={loading ? 'Submitting...' : 'Book Your Destination!'}
+                        className="w-full !px-10 !py-3.5 "
+                    />
+                </div>
 
-                <SelectField control={control} name="destination" label="Travel Destination" options={destinations} required />
-
-                <DatePickerField control={control} name="travelDate" label="Date of Travel" required />
-
-                <SelectField control={control} name="noOfPeople" label="No. of People" options={peopleOptions} required />
-
-                <SelectField control={control} name="vacationType" label="Vacation Type" options={vacationTypes} required />
-
-                <button
-                    type="submit"
-                    disabled={isPending}
-                    className={`w-full bg-yellow-500 text-black cursor-pointer hover:bg-yellow-600 font-semibold py-3 rounded-md transition tracking-wider shadow ${isPending ? 'opacity-50 cursor-not-allowed' : ''}`}
-                >
-                    {isPending ? "Booking..." : "Book Your Destination!"}
-                </button>
-
-                <p className="text-xs text-gray-500 text-center">
-                    By proceeding, you agree with <span className="underline text-blue-600">Terms of Use</span>
+                <p className="text-xs text-gray-500 text-center mt-2">
+                    By proceeding, you agree with{' '}
+                    <span className="underline text-blue-600 cursor-pointer">Terms of Use</span>
                 </p>
             </form>
         </div>
-    )
-}
+    );
+};
 
-export default BookingFomField
+export default BookingFomField;

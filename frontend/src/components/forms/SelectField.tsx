@@ -34,68 +34,48 @@ export const SelectField = ({
       name={name}
       rules={required ? { required: `${label} is required` } : {}}
       render={({ field, fieldState: { error } }) => (
-        <div className="mb-6 relative font-body">
+        <div className="flex flex-col font-body cursor-pointer">
+          {label && (
+            <label className="text-gray-600 text-[15px] font-semibold mb-[-4px]">
+              {label}
+              {required && <span className="text-red-500 ml-[2px]">*</span>}
+            </label>
+          )}
+
           <Select
             value={field.value}
             onValueChange={field.onChange}
           >
             <SelectTrigger
               className={cn(
-                `peer w-full pt-6 pb-2 px-3
-                border border-gray-300 rounded-md
-                bg-white
-                focus:outline-none focus:ring-1 focus:ring-blue-50/1
-                focus:border-blue-500
-                transition-all duration-300`,
-                error && "border-red-500 focus:border-red-500/2 focus:ring-red-500"
+                "!border-none !ring-0 !shadow-none bg-transparent p-0 h-auto w-full",
+                "focus:!outline-none focus:!ring-0 focus:!border-none",
+                "[&_svg]:!hidden transition-all duration-300",
+                "text-gray-500 text-sm placeholder:text-gray-400 cursor-pointer",
+                error && "text-red-400"
               )}
             >
-              <SelectValue placeholder=" " />
+              <SelectValue placeholder={error ? error.message : label || "Select Option"} />
             </SelectTrigger>
 
-            <SelectContent className="bg-white border-gray-300 font-body">
+            <SelectContent
+              className="bg-white border-gray-300 font-body"
+              side="bottom"
+              sideOffset={4}
+            >
               {options.map((opt) => (
-                <SelectItem key={opt.value} value={opt.value} className="cursor-pointer text-gray-700">
+                <SelectItem
+                  key={opt.value}
+                  value={opt.value}
+                  className="cursor-pointer text-gray-700 focus:bg-yellow-500 focus:text-black data-[state=checked]:bg-yellow-50 data-[state=checked]:text-yellow-700 font-medium"
+                >
                   {opt.label}
                 </SelectItem>
               ))}
             </SelectContent>
           </Select>
 
-          {label && (
-            <label
-              className={cn(
-                `absolute left-3 bg-white px-1
-                 pointer-events-none
-                 transition-all duration-300 ease-out
 
-                 /* Default resting */
-                 top-1/2 -translate-y-1/2 text-[15px] text-gray-500
-
-                 /* When focused */
-                 peer-focus:top-0
-                 peer-focus:-translate-y-1/2
-                 peer-focus:text-xs
-                 peer-focus:text-blue-600
-
-                 /* When select has value */
-                 peer-data-[state=open]:top-0
-                 peer-data-[state=open]:-translate-y-1/2
-                 peer-data-[state=open]:text-xs
-                 peer-data-[state=open]:text-blue-600`,
-                field.value && `top-0 -translate-y-1/2 text-xs text-blue-600`
-              )}
-            >
-              {label}
-              {required && <span className="text-red-500 ml-[2px]">*</span>}
-            </label>
-          )}
-
-          {error && (
-            <p className="mt-1 text-xs text-red-500">
-              {error.message}
-            </p>
-          )}
         </div>
       )}
     />

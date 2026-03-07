@@ -18,7 +18,7 @@ const Welcome = () => {
                 <section className='flex items-center gap-2 mb-20'>
                     <img src={Exclimation} className='w-10 h-10' alt="" />
                     <div className='relative flex-1 top-[70px] sm:top-[100px] border border-[#9C9C9C] rounded-[10px] text-center  text-xl p-2 sm:text-5xl sm:p-5'>
-                        <h1 className='font-accent'> Travel isn’t about the miles you cover, it’s about
+                        <h1 className='font-accent font-thin'> Travel isn’t about the miles you cover, it’s about
                             memories you create.
                         </h1>
                         <p className='text-[16px] sm:text-xl text-right sm:pt-5'>- Sastikaa Travels</p>

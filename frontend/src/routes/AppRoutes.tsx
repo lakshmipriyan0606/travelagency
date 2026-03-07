@@ -9,6 +9,7 @@ import { currentUserAPI } from "@/api/admin/auth.api";
 import { setUser } from "@/store/authSlice";
 import { useDispatch } from "react-redux";
 import ScrollToTop from "@/components/layout/AutoScrollTopView/AutoScrolltopView";
+import BackToTop from "@/components/common/BackToTop";
 import Loading from "@/components/Loading/Loading";
 import AppToastContainer from "@/components/AppToastContainer/AppToastContainer";
 import Navbar from "@/components/layout/navbar/Navbar";
@@ -48,6 +49,7 @@ const AppRoutes = () => {
         <ErrorBoundary FallbackComponent={ErrorFallback} onReset={() => window.location.reload()}>
             <Suspense fallback={<Loading />}>
                 <ScrollToTop />
+                <BackToTop />
                 <AppToastContainer />
                 <Navbar />
                 <Routes>{renderAppRoute(routes)}</Routes>

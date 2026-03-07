@@ -8,6 +8,7 @@ interface BorderAnimatedButtonProps {
   borderButtonColor?: string;
   onClick?: any;
   disabled?: boolean;
+  type?: "button" | "submit" | "reset";
 }
 
 export default function AnimatedButton({
@@ -17,10 +18,12 @@ export default function AnimatedButton({
   className = '',
   borderButtonColor = 'bg-black',
   onClick,
-  disabled
+  disabled,
+  type = "button"
 }: BorderAnimatedButtonProps) {
   return (
     <Button
+      type={type}
       className={`relative p-2 cursor-pointer font-semibold tracking-widest overflow-hidden group ${bgColor} ${textColor} ${className}`}
       onClick={onClick}
       disabled={disabled}

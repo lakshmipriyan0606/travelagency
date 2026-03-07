@@ -25,12 +25,13 @@ const Home = () => {
   return (
     <HomeContext.Provider value={contextValue}>
       <div className="min-h-screen bg-background-black">
-        <HeroSection />
+        <div className="py-20 px-4">
+          <HeroSection />
+        </div>
         <TrustBadges />
         <BestDestination />
         <Welcome />
         <BestPackage />
-        <BestCities />
         <ReachUs />
         <TravelExperiences />
         <HappyStories />

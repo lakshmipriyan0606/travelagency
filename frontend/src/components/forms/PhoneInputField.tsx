@@ -26,7 +26,14 @@ export const PhoneInputField = ({
       name={name}
       rules={required ? { required: `${label} is required` } : {}}
       render={({ field: { onChange, value }, fieldState: { error } }) => (
-        <div className={cn("mb-6 relative", mainContainerClassName)}>
+        <div className={cn("flex flex-col font-body", mainContainerClassName)}>
+          {label && (
+            <label className={cn("text-gray-600 text-[15px] font-semibold mb-[-4px]", labelClassName)}>
+              {label}
+              {required && <span className="text-red-500 ml-[2px]">*</span>}
+            </label>
+          )}
+
           <PhoneInput
             international
             countryCallingCodeEditable={false}
@@ -35,44 +42,12 @@ export const PhoneInputField = ({
             onChange={onChange}
             placeholder=" "
             className={cn(
-              `peer w-full pt-6 pb-2 px-3
-               border border-gray-300 rounded-md
-               bg-white
-               focus:outline-none focus:ring-1 focus:ring-blue-50/1
-               focus:border-blue-500
-               transition-all duration-300 font-body`,
-
-              error &&
-              "border-red-500 focus:border-red-500/2 focus:ring-red-500"
+              "!border-none !ring-0 !shadow-none bg-transparent p-0 h-auto w-full",
+              "focus:!outline-none focus:!ring-0 focus:!border-none",
+              "transition-all duration-300 font-body text-gray-500 text-sm",
+              error && "text-red-400"
             )}
           />
-
-          {label && (
-            <label
-              className={cn(
-                `absolute left-3 bg-white px-1
-                 text-gray-300 pointer-events-none
-                 transition-all duration-300 ease-out
-
-                 top-1/2 -translate-y-1/2 text-[15px] text-gray-500
-
-                 peer-focus:top-0
-                 peer-focus:-translate-y-1/2
-                 peer-focus:text-xs
-                 peer-focus:text-blue-600
-
-                 peer-[&:not(:placeholder-shown)]:top-0
-                 peer-[&:not(:placeholder-shown)]:-translate-y-1/2
-                 peer-[&:not(:placeholder-shown)]:text-xs
-                 peer-[&:not(:placeholder-shown)]:text-blue-600
-                `,
-                labelClassName
-              )}
-            >
-              {label}
-              {required && <span className="text-red-500 ml-[2px]">*</span>}
-            </label>
-          )}
 
           {error && (
             <p className="mt-1 text-xs text-red-500">{error.message}</p>
