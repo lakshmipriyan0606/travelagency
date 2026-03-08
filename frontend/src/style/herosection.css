@@ -23,33 +23,30 @@
 /* ── Main two-column layout ──────────────────────────────────────────────── */
 
 .hero-layout {
-  @apply w-full h-full flex flex-col md:flex-row items-center
+  @apply w-full h-full flex flex-col md:flex-row items-start md:items-center justify-center gap-3
          px-6 md:px-12 lg:px-20 gap-6 md:gap-10; /* offset navbar */
 }
 
 /* ── Left — text side ────────────────────────────────────────────────────── */
 
 .hero-text-side {
-  @apply flex flex-col items-center md:items-start justify-center
-         text-white text-center md:text-left
+  @apply flex flex-col items-start justify-center
+         text-white text-left
          w-full md:w-[55%]
-         gap-4 md:gap-6;
+         gap-3 md:gap-6
+         max-w-[19rem] sm:max-w-[22rem] md:max-w-none;
 }
 
 .hero-headline {
-  @apply flex flex-col gap-2;
+  @apply flex flex-col gap-1;
 }
 
 .hero-sub-heading {
-  @apply text-xl sm:text-3xl lg:text-4xl leading-snug;
-}
-
-.hero-main-heading {
-  @apply text-2xl sm:text-4xl lg:text-5xl leading-tight;
+  @apply text-[1.25rem] sm:text-2xl lg:text-4xl leading-snug font-semibold;
 }
 
 .hero-accent-text {
-  @apply text-5xl sm:text-6xl lg:text-7xl;
+  @apply text-4xl sm:text-6xl lg:text-7xl font-bold tracking-tight;
 }
 
 .hero-trust-line {
@@ -57,7 +54,7 @@
 }
 
 .hero-cta-group {
-  @apply flex flex-col items-center md:items-start gap-4 mt-2;
+  @apply flex flex-col items-start gap-4 mt-2;
 }
 
 /* Mobile-only enquire button */

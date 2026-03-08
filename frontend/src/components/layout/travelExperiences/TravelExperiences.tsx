@@ -1,6 +1,6 @@
 import { useRef, useState } from "react";
 import { Swiper, SwiperSlide } from "swiper/react";
-import { Navigation, Autoplay } from "swiper/modules";
+import { Navigation } from "swiper/modules";
 import "swiper/css";
 import "swiper/css/navigation";
 import { motion } from "framer-motion";
@@ -65,14 +65,9 @@ const TravelExperiences = () => {
           <div className="lg:w-[70%] w-full">
             <div className="relative">
               <Swiper
-                modules={[Navigation, Autoplay]}
-              spaceBetween={30}
-              slidesPerView={1.1}
-              loop={true}
-              autoplay={{
-                delay: 5000,
-                disableOnInteraction: false,
-              }}
+                modules={[Navigation]}
+                spaceBetween={40}
+                slidesPerView={1}
                 breakpoints={{
                   768: { slidesPerView: 1.1 },
                   1024: { slidesPerView: 1.2 },
@@ -81,7 +76,7 @@ const TravelExperiences = () => {
                 onBeforeInit={(swiper) => {
                   swiperRef.current = swiper;
                 }}
-                className="testimonial-swiper relative"
+                className="testimonial-swiper"
               >
                 {TRAVEL_EXPERIENCES.map((exp, idx) => {
                   const nextExp = TRAVEL_EXPERIENCES[(idx + 1) % TRAVEL_EXPERIENCES.length];
@@ -130,21 +125,6 @@ const TravelExperiences = () => {
                     </SwiperSlide>
                   );
                 })}
-                {/* Custom Navigation Buttons as Overlays */}
-                <div className="absolute top-1/2 -translate-y-1/2 left-0 right-0 flex justify-between px-2 z-40 pointer-events-none">
-                  <button
-                    onClick={handlePrev}
-                    className="w-12 h-12 rounded-full flex items-center justify-center bg-[#fff9e6] text-primary hover:bg-primary hover:text-white transition-all duration-300 shadow-md pointer-events-auto cursor-pointer"
-                  >
-                    <ChevronLeft size={24} />
-                  </button>
-                  <button
-                    onClick={handleNext}
-                    className="w-12 h-12 rounded-full flex items-center justify-center bg-[#fff9e6] text-primary hover:bg-primary hover:text-white transition-all duration-300 shadow-md pointer-events-auto cursor-pointer mr-[10%]"
-                  >
-                    <ChevronRight size={24} />
-                  </button>
-                </div>
               </Swiper>
 
               {/* White Fade Overlay on the Right */}
@@ -153,7 +133,39 @@ const TravelExperiences = () => {
           </div>
         </div>
 
+        {/* Custom Navigation and Progress Bar - Aligned as per image */}
+        <div className="flex items-center justify-center md:justify-end gap-12 mt-4 md:mr-32">
+          <div className="flex items-center gap-6">
+            <span className="text-[#FCAF16] font-bold text-lg">
+              {String(activeIndex + 1).padStart(2, '0')}/{String(TRAVEL_EXPERIENCES.length).padStart(2, '0')}
+            </span>
+            <div className="w-64 h-[2px] bg-gray-200 relative rounded-full overflow-hidden">
+              <motion.div 
+                className="absolute top-0 left-0 h-full bg-[#FCAF16]"
+                initial={false}
+                animate={{ width: `${((activeIndex + 1) / TRAVEL_EXPERIENCES.length) * 100}%` }}
+                transition={{ duration: 0.4, ease: "easeOut" }}
+              />
+            </div>
+          </div>
 
+          <div className="flex gap-5">
+            <button
+              onClick={handlePrev}
+              className="w-14 h-14 rounded-full flex items-center justify-center text-[#FCAF16] hover:bg-[#FCAF16] hover:text-white transition-all bg-[#FFF7E6] shadow-sm disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
+              disabled={activeIndex === 0}
+            >
+              <ChevronLeft size={28} />
+            </button>
+            <button
+              onClick={handleNext}
+              className="w-14 h-14 rounded-full flex items-center justify-center text-[#FCAF16] hover:bg-[#FCAF16] hover:text-white transition-all bg-[#FFF7E6] shadow-sm disabled:opacity-50 disabled:cursor-not-allowed  cursor-pointer"
+              disabled={activeIndex === TRAVEL_EXPERIENCES.length - 1}
+            >
+              <ChevronRight size={28} />
+            </button>
+          </div>
+        </div>
       </div>
     </section>
   );

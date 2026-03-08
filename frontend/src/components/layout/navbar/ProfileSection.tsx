@@ -1,6 +1,6 @@
 import { GetLikePackageListCount } from "@/api/user/api";
 import { UseFetchAPIQuery } from "@/Hook/UseFetchAPIQuery";
-import { Heart, User } from "lucide-react";
+import { Heart, User, ShoppingCart } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 
 import {
@@ -37,6 +37,11 @@ const ProfileSection = () => {
             {data?.data || 0}
           </span>
           <Heart className="w-5 h-5" />
+        </div>
+
+        {/* Cart Icon */}
+        <div className="profile-section-item flex items-center cursor-pointer">
+          <ShoppingCart className="w-5 h-5" />
         </div>
 
         {/* Profile Modal */}

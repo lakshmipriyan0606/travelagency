@@ -44,20 +44,18 @@ export default function EnquiryModal({ isOpen, onClose }: EnquiryModalProps) {
 
     return (
         <div
-            className="enquiry-modal-overlay"
+            className="fixed inset-0 z-50 bg-black/60 backdrop-blur-sm flex items-end sm:items-center justify-center p-0 sm:p-4"
             onClick={onClose}
             role="dialog"
             aria-modal="true"
             aria-label="Enquiry Form"
         >
-            {/* Card — stop click bubbling so clicking card doesn't close modal */}
             <div
-                className="enquiry-modal-card"
+                className="relative bg-white w-full sm:max-w-sm bottom-16 rounded-t-3xl sm:rounded-2xl shadow-2xl overflow-y-auto max-h-[90vh]"
                 onClick={(e) => e.stopPropagation()}
             >
-                {/* Close button */}
                 <button
-                    className="enquiry-modal-close"
+                    className="absolute top-3 right-3 z-10 w-8 h-8 rounded-full bg-gray-100 hover:bg-gray-200 flex items-center justify-center text-gray-600"
                     onClick={onClose}
                     aria-label="Close enquiry form"
                     type="button"

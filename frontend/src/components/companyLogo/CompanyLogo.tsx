@@ -1,11 +1,44 @@
 
-import companyLogo from '@/assets/image/logo/companyLogo.png'
+import companyLogo from '@/assets/image/logo/latestlogo.svg'
+
+const CompanyLogoWeb = () => {
+    return (
+        <div className=' hidden lg:flex items-center gap-2 sm:gap-3 p-1'>
+            <img src={companyLogo} alt="Company Logo" className='w-10 h-10 sm:w-14 sm:h-14' />
+            <div className='flex flex-col'>
+                <h1 className='text-white font-semibold leading-[1.2] tracking-[0.2em] flex items-end'>
+                    <span className='text-2xl '>SASTIKAA</span>
+                    <span className='text-2xl px-1'>TRAVEL</span>
+                </h1>
+                <div className='flex items-center  w-full'>
+                    <div className='h-[0.2px] bg-[#D3D3D3] w-[55%]'></div>
+                    <div className='w-2 h-2 rounded-full bg-[#F69520] z-10 ml-1'></div>
+                    <div className='h-[0.2px] bg-[#D3D3D3] flex-grow -mx-0.5 ml-1'></div>
+                    <div className='w-[7px] h-[7px] rounded-full bg-gray-200'></div>
+                </div>
+                <p className='text-[#EE7322] text-base font-semibold tracking-[0.1em] uppercase'>
+                    DISCOVER NEW EXPERIENCES
+                </p>
+            </div>
+        </div>
+    )
+}
+
+
+const CompanyLogoInMobile = () => {
+    return (
+        <div className='flex justify-center items-center lg:hidden'>
+            <img src={companyLogo}  className='w-12 h-12'alt='Company Logo' />
+            <h1 className='text-[15px] sm:text-[19px] font-semibold'>SASTIKAA TRAVELS</h1>
+        </div>
+    )
+}
 
 const CompanyLogo = () => {
     return (
-        <div className='flex justify-center items-center'>
-            <img src={companyLogo} alt="Company Logo" className='company-logo' />
-            <h1 className='text-[12px] sm:text-[19px] font-semibold'>SASTIKAA TRAVELS</h1>
+        <div>
+            <CompanyLogoWeb />
+            <CompanyLogoInMobile />
         </div>
     )
 }

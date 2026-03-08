@@ -2,9 +2,9 @@
 
 import { Facebook, Twitter, Instagram, Linkedin } from 'lucide-react';
 import { footerData } from './constant';
-import companyLogo from '@/assets/image/logo/companyLogo.png'
 import { Link } from 'react-router-dom';
 import { navbarList } from '../navbar/constant';
+import AnimatedButton from '@/components/Button/AnimatedButton/AnimatedButton';
 type IconComponent = React.FC<React.SVGProps<SVGSVGElement>>;
 
 const iconMap: Record<string, IconComponent> = {
@@ -29,95 +29,127 @@ export default function Footer() {
     <footer className="bg-custom-black text-gray-300">
       <div className="max-w-7xl mx-auto px-4 py-12 space-y-10">
 
-        {/* ---------- LOGO & ABOUT ---------- */}
-        <section>
-          <div className='flex gap-2 items-center'>
-            <img src={companyLogo} alt="Company Logo" className='company-logo' />
-            <span className="text-white text-2xl font-bold">   <span className='text-4xl'>S</span>ASTIKA <span className='text-4xl'>T</span>RAVELS</span>
-          </div>
-          <p className="text-sm text-[#A1A1A1] md:text-base text-justify leading-8 mt-4">
-            {footerData.about}
-          </p>
-        </section>
-
-        {/* ---------- CONTACT & SOCIAL ---------- */}
-        <section className="grid grid-cols-1 md:grid-cols-4 gap-8">
-
-          {/* WhatsApp */}
-          <h1 className='text-primary text-4xl sm:hidden'>Contact us </h1>
-          <div>
-            <h3 className="text-white font-semibold mb-2 uppercase">
-              WhatsApp Us
-            </h3>
-            <a
-              href={`https://wa.me/91${footerData.whatsapp.replace(/\D/g, '')}`}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="flex items-center gap-2 hover:text-primary transition-colors"
-            >
-              {footerData.whatsapp}
-            </a>
-          </div>
-
-          {/* Email */}
-          <div>
-            <h3 className="text-white font-semibold mb-2 uppercase">
-              Email Us
-            </h3>
-            <a
-              href={`mailto:${footerData.email}`}
-              className="flex items-center gap-2 hover:text-primary transition-colors"
-            >
-              {footerData.email}
-            </a>
-          </div>
-
-          <div>
-             <h3 className="text-white font-semibold mb-2 uppercase">LINKS</h3>
-            <h3 className="text-white flex gap-4 font-light font-semibold mb-2">
-              {
-                navbarList?.map((item) => {
-                  return (
-                    <Link key={item.name} to={item.path} className="hover:text-primary font-light transition-colors">
-                      {item.name}
-                    </Link>
-                  )
-                })
-              }
-            </h3>
-
-
-          </div>
-
-          {/* Social */}
-          <div>
-            <h3 className="text-white font-semibold mb-2 uppercase">
-              Follow Us
-            </h3>
-            <div className="flex gap-3">
-              {footerData.social.map((item) => {
-                const Icon = iconMap[item.icon];
-                return (
-                  <a
-                    key={item.name}
-                    href={item.href}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="w-8 h-8 bg-white text-custom-black rounded-full flex items-center justify-center hover:bg-primary transition-colors"
-                  >
-                    {Icon && <Icon className="w-4 h-4" />}
-                  </a>
-                );
-              })}
+        {/* CTA BANNER */}
+        <section
+          className="relative max-w-7xl mx-auto rounded-3xl overflow-hidden shadow-2xl h-[400px] sm:h-[400px]"
+          style={{
+            backgroundImage: `url(${footerData.cta.image})`,
+            backgroundSize: 'cover',
+            backgroundPosition: 'center',
+          }}
+        >
+          <div className="absolute inset-0 bg-black/60" />
+          <div className="relative z-10 w-full h-full flex items-center px-6 sm:px-12 md:px-20 lg:px-28">
+            <div className="flex flex-col items-start text-left max-w-2xl gap-6">
+              <h3 className="text-white text-3xl sm:text-4xl lg:text-5xl font-bold leading-tight">
+                {footerData.cta.title.replace(',', '')},
+                <br />
+                Especially or You!
+              </h3>
+              <AnimatedButton
+                buttonText={footerData.cta.buttonText}
+                onClick={() => (window.location.href = footerData.cta.buttonHref)}
+                className="bg-[#FBB03B] hover:bg-yellow-500 text-black font-bold py-3 px-8 rounded-md shadow-lg transition duration-300 text-sm tracking-widest uppercase mt-4 !border-none"
+              />
             </div>
           </div>
         </section>
 
-        {/* ---------- FOOTER BOTTOM ---------- */}
-        <section className="border-t border-gray-800 pt-6 text-center">
-          <div className="text-lg">
+        {/* LINK COLUMNS */}
+        <section className="bg-[#1F1F1F] rounded-2xl p-6 md:p-8">
+          <h4 className="text-gray-300 text-sm tracking-wide uppercase mb-6">Top links to find your dream home!</h4>
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-8">
+            {footerData.linkColumns.map((col) => (
+              <div key={col.title}>
+                <h5 className="text-white font-semibold mb-3 uppercase">{col.title}</h5>
+                <ul className="space-y-2 text-gray-400">
+                  {col.items.map((item) => (
+                    <li key={item.label}>
+                      <a href={item.href} className="hover:text-primary transition-colors">
+                        {item.label}
+                      </a>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            ))}
+            <div>
+              <h5 className="text-white font-semibold mb-3 uppercase">Quick Links</h5>
+              <ul className="space-y-2 text-gray-400">
+                {navbarList.map((item) => (
+                  <li key={item.key}>
+                    <Link to={item.path} className="hover:text-primary transition-colors">
+                      {item.name}
+                    </Link>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          </div>
+        </section>
 
-            {/* Footer Links */}
+        <div className="bg-gray-100 h-[0.2px] w-full mt-8" />
+
+        {/* CONTACT + SOCIAL ROW */}
+        <div className="flex flex-col gap-6 mt-8">
+          {/* <h2 className="text-[#FBB03B] text-2xl font-bold tracking-widest font-accent">
+            C o n t a c t &nbsp; U s
+          </h2> */}
+          <section className="flex flex-col md:flex-row items-start md:items-center justify-between gap-8 md:gap-12 w-full">
+            <div className="w-full md:w-1/3">
+              <h3 className="text-white font-semibold mb-2 uppercase tracking-wide">
+                Whats App Us
+              </h3>
+              <a
+                href={`https://wa.me/91${footerData.whatsapp.replace(/\D/g, '')}`}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex items-center gap-2 hover:text-primary transition-colors text-sm"
+              >
+                {footerData.whatsapp}
+              </a>
+            </div>
+
+            <div className="w-full md:w-1/3 text-left">
+              <h3 className="text-white font-semibold mb-2 uppercase tracking-wide">
+                Email Us
+              </h3>
+              <a
+                href={`mailto:${footerData.email}`}
+                className="flex items-center gap-2 hover:text-primary transition-colors text-sm"
+              >
+                {footerData.email}
+              </a>
+            </div>
+
+            <div className="w-full md:w-1/3">
+              <h3 className="text-white font-semibold mb-2 uppercase tracking-wide text-left md:text-right">
+                Follow Us
+              </h3>
+              <div className="flex gap-3 justify-start md:justify-end">
+                {footerData.social.map((item) => {
+                  const Icon = iconMap[item.icon];
+                  return (
+                    <a
+                      key={item.name}
+                      href={item.href}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="w-8 h-8 bg-white text-custom-black rounded-full flex items-center justify-center hover:bg-primary transition-colors"
+                    >
+                      {Icon && <Icon className="w-4 h-4" />}
+                    </a>
+                  );
+                })}
+              </div>
+            </div>
+          </section>
+        </div>
+
+        {/* BOTTOM LINKS + COPYRIGHT */}
+        <section className="border-t border-gray-800 pt-6 text-center">
+          <div className="text-sm">
+
             <div className="flex flex-wrap justify-center">
               {footerData.links.map((link, i) => (
                 <span key={link.name} className=''>
@@ -136,7 +168,6 @@ export default function Footer() {
               ))}
             </div>
 
-            {/* Copyright */}
             <p className="mt-5">{footerData.copyright}</p>
           </div>
         </section>

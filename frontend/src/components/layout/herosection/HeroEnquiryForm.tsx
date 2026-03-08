@@ -8,14 +8,18 @@
  */
 
 import { useForm } from 'react-hook-form';
+import { useState, useEffect } from 'react';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { MapPin, Calendar, Users, Clock } from 'lucide-react';
+import { MapPin, Calendar, Users, Clock, Mail, User } from 'lucide-react';
 import {
     heroFormFields,
     heroFormSchema,
     HeroFormData,
+    languageOptions,
 } from '@/config/formConfig';
 import { SelectField } from '@/components/forms/SelectField';
+import { ReusableInput } from '@/components/forms/ReusableInput';
+import { PhoneInputField } from '@/components/forms/PhoneInputField';
 import AnimatedButton from '@/components/Button/AnimatedButton/AnimatedButton';
 
 // ─── Icon map ─────────────────────────────────────────────────────────────────
@@ -36,83 +40,178 @@ interface HeroEnquiryFormProps {
     compact?: boolean;
 }
 
+type StepFormData = HeroFormData & { name?: string; email?: string; whatsapp?: string; language?: string };
+
 export default function HeroEnquiryForm({
     onComplete,
     compact = false,
 }: HeroEnquiryFormProps) {
+    const [step, setStep] = useState<1 | 2>(1);
     const {
         control,
         handleSubmit,
-        formState: { errors, isSubmitted },
-    } = useForm<HeroFormData>({
+        watch,
+    } = useForm<StepFormData>({
         resolver: zodResolver(heroFormSchema),
+        mode: 'onChange',
         defaultValues: {
             destination: '',
             travelMonth: '',
             noOfPeople: '',
             duration: '',
+            name: '',
+            email: '',
+            whatsapp: '',
+            language: '',
         },
     });
 
-    const onSubmit = (data: HeroFormData) => {
-        onComplete?.(data);
-        const reachUsEl = document.getElementById('reach-us-section');
-        if (reachUsEl) {
-            reachUsEl.scrollIntoView({ behavior: 'smooth' });
+    const [destination, travelMonth, noOfPeople, duration, name, email] = watch([
+        'destination',
+        'travelMonth',
+        'noOfPeople',
+        'duration',
+        'name',
+        'email',
+    ]);
+    const step1Complete = Boolean(destination && travelMonth && noOfPeople && duration);
+    const step2Complete = Boolean(step1Complete && name && email);
+
+    const onSubmit = (data: StepFormData) => {
+        if (step === 1) {
+            if (step1Complete) {
+                setStep(2);
+            }
+            return;
+        }
+        if (step === 2 && step2Complete) {
+            const payload: HeroFormData = {
+                destination: data.destination,
+                travelMonth: data.travelMonth,
+                noOfPeople: data.noOfPeople,
+                duration: data.duration,
+            };
+            onComplete?.(payload);
         }
     };
 
-    const hasAnyError = isSubmitted && Object.keys(errors).length > 0;
+    useEffect(() => {
+        if (step === 2) {
+            const el = document.getElementById('hero-name-input') as HTMLInputElement | null;
+            el?.focus();
+        }
+    }, [step]);
 
     return (
-        <div className={`hero-form-card ${compact ? 'hero-form-card--compact' : ''}`}>
-            {/* Card title */}
-            <p className="hero-form-title">Your Perfect Trip Begins Here!</p>
-
-            {/* Divider */}
-            <div className="hero-form-divider" />
-
-            {/* Fields */}
+        <div
+            id="hero-form-card"
+            className={[
+                'bg-white/95 backdrop-blur-sm rounded-2xl shadow-2xl w-full max-w-sm px-6 pt-6 pb-4 flex flex-col gap-3',
+                compact ? 'rounded-2xl shadow-none px-4 pt-4 pb-3' : '',
+            ].join(' ')}
+        >
+            <p className="font-bold text-center leading-snug">Your Perfect Trip Begins Here!</p>
+            <div className="-mx-2 border-t border-gray-200" />
             <form onSubmit={handleSubmit(onSubmit)} noValidate>
-                <div className="hero-form-fields">
-                    {heroFormFields.map((field) => (
-                        <div key={field.name} className="hero-form-field">
-                            {/* Icon bubble */}
-                            <div className="hero-form-field-icon">
-                                {iconMap[field.icon]}
+                <div className="flex flex-col">
+                    {step === 1 &&
+                        heroFormFields.map((field) => (
+                            <div key={field.name} className="flex items-center gap-3 py-3 border-b border-gray-100 last:border-b-0">
+                                <div className="flex-none w-9 h-9 rounded-full bg-yellow-50 border border-yellow-200 flex items-center justify-center">
+                                    {iconMap[field.icon]}
+                                </div>
+                                <div className="flex-1 min-w-0">
+                                    {field.options && (
+                                        <SelectField
+                                            control={control}
+                                            name={field.name}
+                                            label={field.label}
+                                            options={field.options}
+                                            required={field.required}
+                                        />
+                                    )}
+                                </div>
                             </div>
+                        ))}
 
-                            {/* SelectField reusable component */}
-                            <div className="flex-1 min-w-0">
-                                {field.options && (
+                    {step === 2 && (
+                        <>
+                            <div className="flex items-center gap-3 py-3 border-b border-gray-100">
+                                <div className="flex-none w-9 h-9 rounded-full bg-yellow-50 border border-yellow-200 flex items-center justify-center">
+                                    <User size={18} className="text-yellow-600" />
+                                </div>
+                                <div className="flex-1 min-w-0">
+                                    <ReusableInput
+                                        control={control}
+                                        name="name"
+                                        label="Name"
+                                        required
+                                        inputClassName="focus-visible:ring-yellow-200 focus-visible:border-yellow-400"
+                                        inputProps={{ id: 'hero-name-input' }}
+                                    />
+                                </div>
+                            </div>
+                            <div className="flex items-center gap-3 py-3 border-b border-gray-100">
+                                <div className="flex-none w-9 h-9 rounded-full bg-yellow-50 border border-yellow-200 flex items-center justify-center">
+                                    <Mail size={18} className="text-yellow-600" />
+                                </div>
+                                <div className="flex-1 min-w-0">
+                                    <ReusableInput
+                                        control={control}
+                                        name="email"
+                                        label="Email"
+                                        type="email"
+                                        required
+                                        inputClassName="focus-visible:ring-yellow-200 focus-visible:border-yellow-400"
+                                    />
+                                </div>
+                            </div>
+                            <div className="flex items-center gap-3 py-3 border-b border-gray-100">
+                                <div className="flex-none w-9 h-9 rounded-full bg-yellow-50 border border-yellow-200 flex items-center justify-center">
+                                    <span className="text-yellow-600 text-[12px] font-bold">WA</span>
+                                </div>
+                                <div className="flex-1 min-w-0">
+                                    <PhoneInputField
+                                        control={control}
+                                        name="whatsapp"
+                                        label="WhatsApp"
+                                        required
+                                        mainContainerClassName="mb-0"
+                                    />
+                                </div>
+                            </div>
+                            <div className="flex items-center gap-3 py-3 border-b border-gray-100 last:border-b-0">
+                                <div className="flex-none w-9 h-9 rounded-full bg-yellow-50 border border-yellow-200 flex items-center justify-center">
+                                    <span className="text-yellow-600 text-[12px] font-bold">LG</span>
+                                </div>
+                                <div className="flex-1 min-w-0">
                                     <SelectField
                                         control={control}
-                                        name={field.name}
-                                        label={field.label}
-                                        options={field.options}
-                                        required={field.required}
+                                        name="language"
+                                        label="Preferred Language"
+                                        options={languageOptions}
+                                        required={false}
                                     />
-                                )}
+                                </div>
                             </div>
-                        </div>
-                    ))}
+                        </>
+                    )}
                 </div>
 
-                {/* Submit */}
-                <div className="mt-4">
+                <div className="flex items-center justify-center gap-2 mt-2">
+                    <div className={`w-3 h-3 rounded-full ${step === 1 ? 'bg-yellow-500' : 'bg-gray-300'}`} />
+                    <div className={`w-3 h-3 rounded-full ${step === 2 ? 'bg-yellow-500' : 'bg-gray-300'}`} />
+                    <span className="text-xs text-gray-500 ml-2">Step {step} of 2</span>
+                </div>
+
+                <div className="mt-4 text-center">
                     <AnimatedButton
-                        buttonText="NEXT"
+                        buttonText={step === 1 ? 'NEXT' : 'SUBMIT'}
                         type="submit"
                         className="w-full !px-10 !py-3.5 rounded-md"
                         borderButtonColor={'#FFD700'}
                     />
                 </div>
-
-                {/* Step dots */}
-                {/* <div className="hero-form-dots">
-                    <span className="hero-form-dot hero-form-dot--active" />
-                    <span className="hero-form-dot" />
-                </div> */}
             </form>
         </div>
     );

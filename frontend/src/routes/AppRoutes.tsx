@@ -14,6 +14,7 @@ import Loading from "@/components/Loading/Loading";
 import AppToastContainer from "@/components/AppToastContainer/AppToastContainer";
 import Navbar from "@/components/layout/navbar/Navbar";
 import Footer from "@/components/layout/footer/Footer";
+import MobileStickyBottomBar from "@/components/layout/mobileStickyBottomBar/MobileStickyBottomBar";
 
 const renderAppRoute = (routesList: AppRoute[]): ReactNode => {
     return routesList.map(({ path, element, children }) => {
@@ -33,13 +34,13 @@ const AppRoutes = () => {
         queryFn: currentUserAPI,
     });
 
-    useEffect(() => {
-        const currentUserId = localStorage.getItem("userId");
-        if (!currentUserId) {
-            const id = crypto.randomUUID();
-            localStorage.setItem("userId", id);
-        }
-    }, []);
+    // useEffect(() => {
+    //     const currentUserId = localStorage.getItem("userId");
+    //     if (!currentUserId) {
+    //         const id = crypto.randomUUID();
+    //         localStorage.setItem("userId", id);
+    //     }
+    // }, []);
 
     useEffect(() => {
         dispatch(setUser(user || null));
@@ -54,6 +55,7 @@ const AppRoutes = () => {
                 <Navbar />
                 <Routes>{renderAppRoute(routes)}</Routes>
                 <Footer />
+                <MobileStickyBottomBar />
             </Suspense>
         </ErrorBoundary>
     );

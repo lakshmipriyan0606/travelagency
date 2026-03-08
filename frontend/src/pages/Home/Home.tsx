@@ -5,7 +5,6 @@ import HeroSection from "@/components/layout/herosection/HeroSection";
 import Newsletter from "@/components/layout/newsletter/Newsletter";
 import Welcome from "@/components/layout/welcome/Welcome";
 import TrustBadges from "@/components/layout/TrustBadges/TrustBadges";
-import BestCities from "@/components/layout/bestCities/BestCities";
 import TravelExperiences from "@/components/layout/travelExperiences/TravelExperiences";
 import HappyStories from "@/components/layout/happyStories/HappyStories";
 import { createContext, useMemo } from "react"
@@ -25,7 +24,7 @@ const Home = () => {
   return (
     <HomeContext.Provider value={contextValue}>
       <div className="min-h-screen bg-background-black">
-        <div className="py-20 px-4">
+        <div className="py-17 md:py-20 px-4">
           <HeroSection />
         </div>
         <TrustBadges />

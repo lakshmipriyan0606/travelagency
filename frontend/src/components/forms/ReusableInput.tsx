@@ -4,6 +4,7 @@
 import { Controller, Control } from "react-hook-form";
 import { Input } from "../ui/input";
 import { cn } from "@/lib/utils";
+import React from "react";
 
 interface ReusableInputProps {
   control: Control<any>;
@@ -15,6 +16,7 @@ interface ReusableInputProps {
   inputClassName?: string;
   mainContainerClassName?: string;
   placeholder?: string;
+  inputProps?: React.InputHTMLAttributes<HTMLInputElement>;
 }
 
 export const ReusableInput = ({
@@ -27,6 +29,7 @@ export const ReusableInput = ({
   inputClassName,
   mainContainerClassName,
   placeholder,
+  inputProps,
 }: ReusableInputProps) => {
   return (
     <Controller
@@ -54,6 +57,7 @@ export const ReusableInput = ({
                 inputClassName,
                 error && "text-red-400"
               )}
+              {...inputProps}
             />
           </div>
         )

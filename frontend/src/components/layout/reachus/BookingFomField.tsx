@@ -21,6 +21,8 @@ import AnimatedButton from '@/components/Button/AnimatedButton/AnimatedButton';
 import { CreateBookingForm } from '@/api/user/api';
 import { useMutationAPIQuery } from '@/Hook/useMutationAPIQuery';
 import { showToast } from '@/lib/utils';
+import { MapPin, Calendar, Users, Clock, User, Mail, Phone, Globe } from 'lucide-react';
+import type { ReactElement } from 'react';
 
 // ─── Single dynamic field renderer ───────────────────────────────────────────
 
@@ -29,40 +31,51 @@ interface DynamicFieldProps {
     control: any;
 }
 
+const IconMap: Record<FormFieldConfig['icon'], ReactElement> = {
+    MapPin: <MapPin size={18} className="text-yellow-600" />,
+    Calendar: <Calendar size={18} className="text-yellow-600" />,
+    Users: <Users size={18} className="text-yellow-600" />,
+    Clock: <Clock size={18} className="text-yellow-600" />,
+    User: <User size={18} className="text-yellow-600" />,
+    Mail: <Mail size={18} className="text-yellow-600" />,
+    Phone: <Phone size={18} className="text-yellow-600" />,
+    Globe: <Globe size={18} className="text-yellow-600" />,
+};
+
 const DynamicField = ({ fieldConfig, control }: DynamicFieldProps) => {
-    if (fieldConfig.type === 'select' && fieldConfig.options) {
-        return (
-            <SelectField
-                control={control}
-                name={fieldConfig.name}
-                label={fieldConfig.label}
-                options={fieldConfig.options}
-                required={fieldConfig.required}
-            />
-        );
-    }
-
-    if (fieldConfig.type === 'phone') {
-        return (
-            <PhoneInputField
-                control={control}
-                name={fieldConfig.name}
-                label={fieldConfig.label}
-                required={fieldConfig.required}
-            />
-        );
-    }
-
-    // text | email
     return (
-        <ReusableInput
-            control={control}
-            name={fieldConfig.name}
-            label={fieldConfig.label}
-            type={fieldConfig.type}
-            placeholder={fieldConfig.placeholder}
-            required={fieldConfig.required}
-        />
+        <div className="flex items-center gap-3 py-3">
+            <div className="flex-none w-9 h-9 rounded-full bg-yellow-50/90 border border-yellow-200 flex items-center justify-center">
+                {IconMap[fieldConfig.icon]}
+            </div>
+            <div className="flex-1 min-w-0">
+                {fieldConfig.type === 'select' && fieldConfig.options ? (
+                    <SelectField
+                        control={control}
+                        name={fieldConfig.name}
+                        label={fieldConfig.label}
+                        options={fieldConfig.options}
+                        required={fieldConfig.required}
+                    />
+                ) : fieldConfig.type === 'phone' ? (
+                    <PhoneInputField
+                        control={control}
+                        name={fieldConfig.name}
+                        label={fieldConfig.label}
+                        required={fieldConfig.required}
+                    />
+                ) : (
+                    <ReusableInput
+                        control={control}
+                        name={fieldConfig.name}
+                        label={fieldConfig.label}
+                        type={fieldConfig.type}
+                        placeholder={fieldConfig.placeholder}
+                        required={fieldConfig.required}
+                    />
+                )}
+            </div>
+        </div>
     );
 };
 
@@ -109,28 +122,30 @@ const BookingFomField = () => {
     const loading = isSubmitting || isMutating;
 
     return (
-        <div>
-            <form onSubmit={handleSubmit(onSubmit)} noValidate className="space-y-0">
-                {reachUsFormFields.map((fieldConfig) => (
-                    <DynamicField
-                        key={fieldConfig.name}
-                        fieldConfig={fieldConfig}
-                        control={control}
-                    />
-                ))}
+        <div className="bg-transparent border border-white/30 rounded-2xl shadow-2xl p-6 sm:p-8">
+            <form onSubmit={handleSubmit(onSubmit)} noValidate>
+                <div className="flex flex-col">
+                    {reachUsFormFields.map((fieldConfig) => (
+                        <DynamicField
+                            key={fieldConfig.name}
+                            fieldConfig={fieldConfig}
+                            control={control}
+                        />
+                    ))}
+                </div>
 
                 <div className="mt-4">
                     <AnimatedButton
                         type="submit"
                         disabled={loading}
                         buttonText={loading ? 'Submitting...' : 'Book Your Destination!'}
-                        className="w-full !px-10 !py-3.5 "
+                        className="w-full !px-10 !py-3.5 rounded-md"
                     />
                 </div>
 
-                <p className="text-xs text-gray-500 text-center mt-2">
+                <p className="text-xs text-gray-300 text-center mt-2">
                     By proceeding, you agree with{' '}
-                    <span className="underline text-blue-600 cursor-pointer">Terms of Use</span>
+                    <span className="underline text-blue-300 cursor-pointer">Terms of Use</span>
                 </p>
             </form>
         </div>

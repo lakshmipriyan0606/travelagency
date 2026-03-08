@@ -20,13 +20,16 @@ export default function ReachUs() {
   };
 
   return (
-    <div id="reach-us-section" className="relative bg-[#F6F9FF] p-10 overflow-hidden">
+    <div id="reach-us-section" className="relative bg-[#1F1F1F] p-10 overflow-hidden">
+      {/* Background map */}
       <img
         src={MapIcon}
         alt="Map background"
-        className="absolute inset-0 opacity-40 object-cover pointer-events-none w-full h-full"
+        className="absolute inset-0 opacity-10 object-cover pointer-events-none w-full h-full"
       />
-      <div className="relative z-10 max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-10 sm:px-6 lg:px-14  sm:p-8">
+      {/* Subtle dark overlay for contrast */}
+      <div className="absolute inset-0 bg-black/40" />
+      <div className="relative z-10 max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-10 sm:px-6 lg:px-14 sm:p-8">
         {/* LEFT SECTION */}
         <div className="relative sm:p-10 flex flex-col sm:p-24 gap-4 items-center overflow-hidden">
 
@@ -37,13 +40,13 @@ export default function ReachUs() {
 
           <div className="flex items-center gap-4 relative z-10">
             <img src={whatsappIcon} alt="whatsapp" className="w-12 h-12 cursor-pointer" onClick={() => handleSendToWhatsApp()} />
-            <span className="font-medium">OR</span>
+            <span className="font-medium text-gray-300">OR</span>
             <div className="w-12 h-12 bg-black rounded-full flex items-center justify-center">
               <Phone className="text-white" />
             </div>
           </div>
 
-          <p className="mt-6 text-lg text-gray-500 relative z-10">
+          <p className="mt-6 text-lg text-gray-300 relative z-10">
             +91 9789569791
           </p>
 
@@ -51,16 +54,16 @@ export default function ReachUs() {
             <div className="w-12 h-12 bg-black rounded-full flex items-center justify-center">
               <Mail className="text-white" />
             </div>
-            <p className="text-gray-700 text-lg">info@SastikaTravels.com</p>
+            <p className="text-gray-300 text-lg">info@SastikaTravels.com</p>
           </div>
         </div>
 
         {/* RIGHT SECTION */}
-        <div className="text-black">
+        <div className="text-white">
           <h2 className="text-2xl md:text-4xl  font-semibold text-center">
             Book Your Dream
           </h2>
-          <h3 className='text-center text-lg mb-6 text-xl md:text-2xl'> Vacation Today!</h3>
+          <h3 className='text-center text-lg mb-6 text-xl md:text-2xl text-gray-200'> Vacation Today!</h3>
 
           <BookingFomField />
 
