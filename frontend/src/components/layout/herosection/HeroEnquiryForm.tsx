@@ -8,12 +8,12 @@
  */
 
 import { useForm } from 'react-hook-form';
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { MapPin, Calendar, Users, Clock, Mail, User } from 'lucide-react';
 import {
     heroFormFields,
-    heroFormSchema,
+    // heroFormSchema,
     reachUsFormSchema,
     HeroFormData,
     languageOptions,
@@ -79,7 +79,7 @@ export default function HeroEnquiryForm({
 
     console.log(errors);
 
-    const [destination, travelMonth, noOfPeople, duration, name, email] = watch([
+    const [destination, travelMonth, noOfPeople, duration] = watch([
         'destination',
         'travelMonth',
         'noOfPeople',
@@ -88,7 +88,7 @@ export default function HeroEnquiryForm({
         'email',
     ]);
     const step1Complete = Boolean(destination && travelMonth && noOfPeople && duration);
-    const step2Complete = Boolean(step1Complete && name && email);
+    // const step2Complete = Boolean(step1Complete && name && email);
 
     const { mutate, isPending: isMutating } = useMutationAPIQuery(CreateBookingForm, {
         onSuccess() {

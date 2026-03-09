@@ -2,7 +2,6 @@ import { BestDestination } from "@/components/layout/bestDestination/BestDestina
 import BestPackage from "@/components/layout/bestPackage/BestPackage";
 import ReachUs from "@/components/layout/reachus/Reachus";
 import HeroSection from "@/components/layout/herosection/HeroSection";
-import Newsletter from "@/components/layout/newsletter/Newsletter";
 import Welcome from "@/components/layout/welcome/Welcome";
 import TrustBadges from "@/components/layout/TrustBadges/TrustBadges";
 import TravelExperiences from "@/components/layout/travelExperiences/TravelExperiences";
