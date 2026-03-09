@@ -33,13 +33,6 @@ export default function EnquiryModal({ isOpen, onClose }: EnquiryModalProps) {
 
     const handleComplete = (_data: HeroFormData) => {
         onClose();
-        // Scroll to ReachUs section after closing modal
-        setTimeout(() => {
-            const reachUsEl = document.getElementById('reach-us-section');
-            if (reachUsEl) {
-                reachUsEl.scrollIntoView({ behavior: 'smooth' });
-            }
-        }, 300);
     };
 
     return (

@@ -223,10 +223,17 @@ export const reachUsFormSchema = z.object({
   travelMonth: z.string().min(1, 'Please select travel month'),
   noOfPeople: z.string().min(1, 'Please select no. of persons'),
   duration: z.string().min(1, 'Please select duration'),
-  name: z.string().min(1, 'Name is required'),
-  email: z.string().email('Invalid email').min(1, 'Email is required'),
-  whatsapp: z.string().min(1, 'WhatsApp number is required'),
-  language: z.string().optional(),
+  name: z.string()
+    .min(1, 'Name is required')
+    .regex(/^[a-zA-Z\s\.]+$/, 'Name can only contain alphabets, spaces, and dots'),
+  email: z.string()
+    .min(1, 'Email is required')
+    .email('Invalid email')
+    .regex(/^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/, 'Invalid email format'),
+  whatsapp: z.string()
+    .min(1, 'WhatsApp number is required')
+    .regex(/^\+?[0-9]{10,15}$/, 'Invalid WhatsApp number'),
+  language: z.string().min(1, 'Please select language'),
 });
 
 export type ReachUsFormData = z.infer<typeof reachUsFormSchema>;

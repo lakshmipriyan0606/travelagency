@@ -38,7 +38,7 @@ export default function Footer() {
             backgroundPosition: 'center',
           }}
         >
-          <div className="absolute inset-0 bg-black/60" />
+          <div className="absolute top-0 left-0 w-full h-full bg-black/80" />
           <div className="relative z-10 w-full h-full flex items-center px-6 sm:px-12 md:px-20 lg:px-28">
             <div className="flex flex-col items-start text-left max-w-2xl gap-6">
               <h3 className="text-white text-3xl sm:text-4xl lg:text-5xl font-bold leading-tight">

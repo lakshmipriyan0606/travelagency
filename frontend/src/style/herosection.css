@@ -239,10 +239,6 @@
    Scroll indicator (preserved from original)
 ───────────────────────────────────────────────────────────────────────────── */
 
-.scroll-indicator {
-  @apply cursor-pointer flex items-center justify-center opacity-80 hover:opacity-100
-         transition-opacity duration-200;
-}
 
 .scroll-group {
   overflow: visible;

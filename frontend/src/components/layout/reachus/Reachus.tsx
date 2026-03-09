@@ -4,6 +4,7 @@ import whatsappIcon from '@/assets/icons/whatsapp.svg';
 import MapIcon from '@/assets/icons/Map.svg';
 import BookingFomField from './BookingFomField';
 import { WANumber } from '@/lib/utils';
+import HeroEnquiryForm from '../herosection/HeroEnquiryForm';
 
 
 export default function ReachUs() {
@@ -20,7 +21,7 @@ export default function ReachUs() {
   };
 
   return (
-    <div id="reach-us-section" className="relative bg-[#1F1F1F] p-10 overflow-hidden">
+    <div id="reach-us-section" className="relative bg-[#1F1F1F] py-10 px-2 overflow-hidden">
       {/* Background map */}
       <img
         src={MapIcon}
@@ -29,9 +30,9 @@ export default function ReachUs() {
       />
       {/* Subtle dark overlay for contrast */}
       <div className="absolute inset-0 bg-black/40" />
-      <div className="relative z-10 max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-10 sm:px-6 lg:px-14 sm:p-8">
+      <div className="relative z-10 max-w-7xl p-3 py-4 mx-auto grid grid-cols-1 md:grid-cols-2 gap-10 sm:px-6 lg:px-14 sm:p-8">
         {/* LEFT SECTION */}
-        <div className="relative sm:p-10 flex flex-col sm:p-24 gap-4 items-center overflow-hidden">
+        <div className="relative  flex flex-col justify-center gap-4 items-center overflow-hidden">
 
 
           <h1 className=" text-4xl sm:text-6xl text-primary mb-6 relative z-10">
@@ -65,8 +66,13 @@ export default function ReachUs() {
           </h2>
           <h3 className='text-center text-lg mb-6 text-xl md:text-2xl text-gray-200'> Vacation Today!</h3>
 
-          <BookingFomField />
+          <div className='hidden sm:block'>
+            <BookingFomField />
+          </div>
 
+          <div className='sm:hidden'>
+            <HeroEnquiryForm onComplete={() => { }} compact isCustomMobileView={true} />
+          </div>
         </div>
 
       </div>

@@ -97,7 +97,7 @@ export default function OuterCarousel() {
 
     if (!isLoading && bestPackageList.length === 0 || isError) {
         return (
-            <div className="max-w-7xl mx-auto p-20">
+            <div className="max-w-7xl mx-auto p-5">
                 <NoDataSkeleton />
             </div>
         )

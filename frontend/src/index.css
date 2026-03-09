@@ -160,13 +160,6 @@ h1, h2, h3, h4, h5, h6 {
   --time: 0.4s ease;
 }
 
-.scroll-indicator {
-  cursor: pointer;
-  z-index: 10;
-  position: absolute;
-  left: 50%;
-  transform: translateX(-50%) rotate(90deg) scale(1.5);
-}
 
 /* SVG */
 .scroll-group {

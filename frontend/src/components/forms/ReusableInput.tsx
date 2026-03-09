@@ -49,7 +49,7 @@ export const ReusableInput = ({
             <Input
               {...field}
               type={type}
-              placeholder={placeholder ?? ''}
+              placeholder={error ? error.message : placeholder ?? ''}
               className={cn(
                 "!border-none !ring-0 !shadow-none bg-transparent p-0 h-auto w-full",
                 "focus:!outline-none focus:!ring-0 focus:!border-none",

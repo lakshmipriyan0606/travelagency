@@ -23,7 +23,7 @@ const ScrollIndicator = () => {
     };
 
     return (
-        <div className="scroll-indicator" onClick={handleScroll}>
+        <div className="cursor-pointer z-10 absolute left-1/2 sm:left-[37%] rotate-90 scale-150 top-[70%] sm:top-[77%] lg:top-[75%] lg:left-[45%]" onClick={handleScroll}>
             <svg
                 className="scroll-group"
                 xmlns="http://www.w3.org/2000/svg"
@@ -69,11 +69,7 @@ const HeroSection = () => {
     const [isModalOpen, setIsModalOpen] = useState(false);
 
     const handleFormComplete = (_data: HeroFormData) => {
-        // Step 1 done — scroll to ReachUs for step 2
-        const reachUsEl = document.getElementById('reach-us-section');
-        if (reachUsEl) {
-            reachUsEl.scrollIntoView({ behavior: 'smooth' });
-        }
+        // Form is fully submitted and success message shown.
     };
 
     return (
@@ -81,13 +77,13 @@ const HeroSection = () => {
             <video className="absolute inset-0 w-full h-full object-cover rounded-2xl" src={HeroSectionVideoClip} autoPlay loop muted playsInline />
 
             <div className="absolute inset-0 bg-black/50 z-10 flex items-center rounded-2xl">
-                <div className="w-full h-full flex flex-col md:flex-row items-start md:items-center mt-[68%] sm:mt-[0%] px-6 md:px-12 lg:px-20 gap-6 md:gap-10 rounded-2xl">
-                    <div className="flex flex-col items-start justify-center text-white text-left w-full md:w-[55%] gap-3 md:gap-6 max-w-[19rem] sm:max-w-[22rem] md:max-w-none">
+                <div className="w-full h-full flex flex-col md:flex-row items-start md:items-center mt-[68%] sm:mt-0 px-6 md:px-12 lg:px-20 gap-6 md:gap-10 rounded-2xl">
+                    <div className="flex flex-col items-start justify-center text-white text-left w-full md:w-[55%] gap-3 md:gap-6 max-w-[19rem] sm:max-w-[22rem] md:max-w-none sm:pb-10 lg:pb-0">
                         <div className="flex flex-col gap-1">
-                            <p className="text-[1.8rem] sm:text-2xl lg:text-4xl leading-[1.7] sm:leading-snug font-semibold">
+                            <p className="text-[1.8rem] sm:text-2xl lg:text-4xl leading-[1.5] sm:leading-snug font-semibold">
                                 Experience <span className="text-primary">Singapore</span> like never before,
                             </p>
-                            <p className="text-[1.8rem] sm:text-2xl lg:text-4xl leading-[1.7] sm:leading-snug font-semibold">
+                            <p className="text-[1.8rem] sm:text-2xl lg:text-4xl leading-[1.5] sm:leading-snug font-semibold">
                                 Adventure awaits <span className="text-primary">Everywhere!</span>
                             </p>
                         </div>
@@ -106,19 +102,19 @@ const HeroSection = () => {
                                 }}
                             />
 
-                            <div className="text-center md:block mt-[120px] sm:mt-8">
+                            <div className="">
                                 <ScrollIndicator />
                             </div>
                         </div>
                     </div>
 
-                    <div className="hidden md:flex items-center justify-center w-full md:w-[45%] lg:w-[40%] self-center">
+                    <div className="hidden md:flex items-center justify-center md:pb-22 lg:pb-1 w-full md:w-[45%] lg:w-[40%] self-center">
                         <HeroEnquiryForm onComplete={handleFormComplete} />
                     </div>
                 </div>
             </div>
 
-            <div className="absolute right-4 bottom-6 z-20">
+            <div className="hidden sm:block absolute right-4 sm:bottom-19 lg:bottom-24 z-20">
                 <img
                     src={whatsappIcon}
                     alt="Chat on WhatsApp"
