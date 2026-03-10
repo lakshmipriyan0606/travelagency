@@ -19,6 +19,8 @@ interface SelectFieldProps {
   label: string;
   options: Option[];
   required?: boolean;
+  labelClassName?: string;
+  selectedValueClassName?: string;
 }
 
 export const SelectField = ({
@@ -27,6 +29,8 @@ export const SelectField = ({
   label,
   options,
   required = false,
+  labelClassName,
+  selectedValueClassName,
 }: SelectFieldProps) => {
   return (
     <Controller
@@ -36,7 +40,7 @@ export const SelectField = ({
       render={({ field, fieldState: { error } }) => (
         <div className="flex flex-col font-body cursor-pointer">
           {label && (
-            <label className="text-gray-600 text-[15px] font-semibold mb-[-4px]">
+            <label className={cn("text-gray-600 text-[15px] font-semibold mb-[-4px]", labelClassName)}>
               {label}
               {required && <span className="text-red-500 ml-[2px]">*</span>}
             </label>
@@ -52,7 +56,8 @@ export const SelectField = ({
                 "focus:!outline-none focus:!ring-0 focus:!border-none",
                 "[&_svg]:!hidden transition-all duration-300",
                 "text-gray-500 text-sm placeholder:text-gray-400 cursor-pointer",
-                error && "text-red-400"
+                selectedValueClassName,
+                error && "text-red-400",
               )}
             >
               <SelectValue placeholder={error ? error.message : label || "Select Option"} />

@@ -1,6 +1,6 @@
 import { useState } from 'react';
-import { MessageSquare } from 'lucide-react';
-import whatsappIcon from '@/assets/icons/whatsapp.svg';
+import enquiryIcon from '@/assets/icons/EnqiryIconMobile.svg';
+import whatsappIcon from '@/assets/icons/WhatsappMobileIcon.svg';
 import { WANumber } from '@/lib/utils';
 import EnquiryModal from '../herosection/EnquiryModal';
 
@@ -15,23 +15,23 @@ const MobileStickyBottomBar = () => {
 
     return (
         <>
-            <div className="fixed bottom-0 left-0 right-0 z-[100] sm:hidden bg-custom-black border-t border-white/10 h-16 flex items-center shadow-[0_-4px_10px_rgba(0,0,0,0.3)]">
+            <div className="fixed bottom-0 left-0 right-0 z-[100] sm:hidden bg-black border-t border-white/20 h-16 flex items-center shadow-[0_-4px_10px_rgba(0,0,0,0.5)]">
                 {/* Enquiry Button */}
-                <button 
+                <button
                     onClick={() => setIsModalOpen(true)}
-                    className="flex-1 flex items-center justify-center gap-2 h-full border-r border-white/10 hover:bg-white/5 transition-colors"
+                    className="flex-1 flex items-center justify-center gap-3 h-full border-r border-white/20 hover:bg-white/5 transition-colors cursor-pointer"
                 >
-                    <MessageSquare size={20} className="text-white" />
-                    <span className="text-white text-xs font-bold tracking-[0.1em] uppercase">ENQUIRY US</span>
+                    <img src={enquiryIcon} alt="Enquiry" className="w-[21px] h-[18px]" />
+                    <span className="text-white text-[11px] font-bold tracking-[0.12em] uppercase">ENQUIRY US</span>
                 </button>
 
                 {/* WhatsApp Button */}
-                <button 
+                <button
                     onClick={handleWhatsAppClick}
-                    className="flex-1 flex items-center justify-center gap-2 h-full hover:bg-white/5 transition-colors"
+                    className="flex-1 flex items-center justify-center gap-3 h-full hover:bg-white/5 transition-colors"
                 >
-                    <img src={whatsappIcon} alt="WhatsApp" className="w-5 h-5" />
-                    <span className="text-white text-xs font-bold tracking-[0.1em] uppercase">WHAT'SUP US</span>
+                    <img src={whatsappIcon} alt="WhatsApp" className="w-[18px] h-[18px]" />
+                    <span className="text-white text-[11px] font-bold tracking-[0.12em] uppercase">WHAT'SUP US</span>
                 </button>
             </div>
 

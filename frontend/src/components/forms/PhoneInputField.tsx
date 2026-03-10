@@ -10,6 +10,7 @@ interface PhoneInputFieldProps {
   required?: boolean;
   mainContainerClassName?: string;
   labelClassName?: string;
+  inputClassName?: string;
 }
 
 export const PhoneInputField = ({
@@ -19,6 +20,7 @@ export const PhoneInputField = ({
   required = false,
   mainContainerClassName,
   labelClassName,
+  inputClassName,
 }: PhoneInputFieldProps) => {
   return (
     <Controller
@@ -34,25 +36,26 @@ export const PhoneInputField = ({
             </label>
           )}
 
-              <PhoneInput
-                international
-                countryCallingCodeEditable={false}
-                defaultCountry="IN"
-                value={value as string}
-                onChange={onChange}
-                placeholder=" "
-                className={cn(
-                  "!border-none !ring-0 !shadow-none bg-transparent p-0 h-auto w-full",
-                  "focus:!outline-none focus:!ring-0 focus:!border-none",
-                  "transition-all duration-300 font-body text-gray-500 text-sm",
-                  error && "text-red-400"
-                )}
-              />
-
-            {error && (
-            <p className="mt-1 text-xs text-red-500">{error.message}</p>
+          <PhoneInput
+            international
+            countryCallingCodeEditable={false}
+            defaultCountry="IN"
+            value={value as string}
+            onChange={onChange}
+            placeholder=" "
+            className={cn(
+              "!border-none !ring-0 !shadow-none bg-transparent p-0 h-auto w-full",
+              "focus:!outline-none focus:!ring-0 focus:!border-none",
+              "transition-all duration-300 font-body text-gray-500 text-sm",
+              inputClassName,
+              error && "text-red-400",
             )}
-          </div>
+          />
+
+          {error && (
+            <p className="mt-1 text-xs text-red-400">{error.message}</p>
+          )}
+        </div>
       )}
     />
   );

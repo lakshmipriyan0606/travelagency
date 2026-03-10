@@ -18,9 +18,14 @@ const TravelExperiences = () => {
   return (
     <section className="py-4 bg-white overflow-hidden relative">
       {/* Large Quote Icon Background - Positioned as per image */}
-      <div className="absolute top-0 left-[-20px] opacity-10 select-none pointer-events-none z-0">
-        <img src={quoteIcon} alt="quote" className="w-64 h-64 md:w-96 md:h-96" />
+      <div className="hidden md:block absolute top-0 -left-[40px] opacity-60 select-none pointer-events-none z-0">
+        <img src={quoteIcon} alt="quote" className="w-64 h-64 md:w-40 md:h-40" />
       </div>
+
+      <div className="hidden md:block absolute top-0 left-[120px] opacity-60 select-none pointer-events-none z-0">
+        <img src={quoteIcon} alt="quote" className="w-64 h-64 md:w-40 md:h-40" />
+      </div>
+
 
       <div className="max-w-[1440px] mx-auto px-4 md:px-12 relative z-10">
         {/* Mobile Top Heading */}
@@ -44,7 +49,7 @@ const TravelExperiences = () => {
               Read genuine reviews and testimonials showcasing the joy and satisfaction of their journeys with us.
             </p>
 
-            <div className="flex flex-row flex-wrap items-center justify-center md:justify-start gap-4 sm:gap-6 md:gap-8 w-full">
+            <div className="flex flex-row flex-wrap lg:flex-nowrap items-center justify-center md:justify-start gap-4 sm:gap-6 md:gap-8 w-full">
               <button className="bg-[#FFAE00] text-white px-6 md:px-8 py-3 rounded-xl text-sm md:text-base font-semibold hover:bg-opacity-90 transition-all shadow-lg shadow-orange-100 whitespace-nowrap">
                 View more Reviews
               </button>
@@ -110,7 +115,7 @@ const TravelExperiences = () => {
                         {/* Column 1 */}
                         <div className="flex flex-col gap-4 md:gap-6">
                           {/* Image Card (Top) */}
-                          <div className="h-40 md:h-64 rounded-2xl md:rounded-[24px] overflow-hidden shadow-[0_20px_50px_rgba(0,0,0,0.1)] bg-white flex-shrink-0">
+                          <div className="h-40 rounded-2xl md:rounded-[24px] overflow-hidden shadow-[0_20px_50px_rgba(0,0,0,0.1)] bg-white flex-shrink-0">
                             <img src={exp.image} alt={exp.name} className="w-full h-full object-cover" />
                           </div>
 
@@ -140,7 +145,7 @@ const TravelExperiences = () => {
                           </div>
 
                           {/* Image Card (Bottom) */}
-                          <div className="h-48 lg:h-64 rounded-[24px] overflow-hidden shadow-[0_20px_50px_rgba(0,0,0,0.1)] bg-white flex-shrink-0">
+                          <div className="h-48 rounded-[24px] overflow-hidden shadow-[0_20px_50px_rgba(0,0,0,0.1)] bg-white flex-shrink-0">
                             <img src={nextExp.image} alt={nextExp.name} className="w-full h-full object-cover" />
                           </div>
                         </div>

@@ -1,3 +1,6 @@
+
+import footerBg from '@/assets/icons/footerBG.svg'
+
 export const footerData = {
   logo: "S' SASTIKA TRAVELS",
   about:
@@ -9,8 +12,7 @@ export const footerData = {
     highlight: "Especially for You!",
     buttonText: "ENQUIRE NOW!",
     buttonHref: "/#reach-us-section",
-    image:
-      "https://images.unsplash.com/photo-1518684079-3c830dcef090?q=80&w=1600&auto=format&fit=crop",
+    image: footerBg,
   },
   linkColumns: [
     {

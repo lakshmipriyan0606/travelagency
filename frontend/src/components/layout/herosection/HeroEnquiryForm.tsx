@@ -61,6 +61,7 @@ export default function HeroEnquiryForm({
         trigger,
         watch,
         reset,
+        clearErrors,
         formState: { errors },
     } = useForm<StepFormData>({
         resolver: zodResolver(reachUsFormSchema),
@@ -114,17 +115,17 @@ export default function HeroEnquiryForm({
         // Trigger validation for step 1 fields only
         const isStep1Valid = await trigger(['destination', 'travelMonth', 'noOfPeople', 'duration']);
         if (isStep1Valid) {
+            clearErrors(['name', 'email', 'whatsapp', 'language']);
             setStep(2);
         }
     };
 
-    const onSubmit = (data: StepFormData) => {
+    const handleFormSubmit = async (e: React.FormEvent) => {
+        e.preventDefault();
         if (step === 1) {
-            handleNextStep();
-            return;
-        }
-        if (step === 2) {
-            mutate(data);
+            await handleNextStep();
+        } else {
+            handleSubmit((data) => mutate(data))(e);
         }
     };
 
@@ -141,7 +142,7 @@ export default function HeroEnquiryForm({
         >
             <p className="font-bold text-center leading-snug">Your Perfect Trip Begins Here!</p>
             <div className="-mx-2 border-t border-gray-200" />
-            <form onSubmit={handleSubmit(onSubmit)} noValidate>
+            <form onSubmit={handleFormSubmit} noValidate>
                 <div className="flex flex-col">
                     {step === 1 &&
                         heroFormFields.map((field) => (
@@ -165,7 +166,7 @@ export default function HeroEnquiryForm({
 
                     {step === 2 && (
                         <>
-                            <div className="flex items-center gap-3 py-3 border-b border-gray-100">
+                            <div className="flex items-center gap-3 py-3">
                                 <div className="flex-none w-9 h-9 rounded-full bg-yellow-50 border border-yellow-200 flex items-center justify-center">
                                     <User size={18} className="text-yellow-600" />
                                 </div>
@@ -180,7 +181,7 @@ export default function HeroEnquiryForm({
                                     />
                                 </div>
                             </div>
-                            <div className="flex items-center gap-3 py-3 border-b border-gray-100">
+                            <div className="flex items-center gap-3 py-3 ">
                                 <div className="flex-none w-9 h-9 rounded-full bg-yellow-50 border border-yellow-200 flex items-center justify-center">
                                     <Mail size={18} className="text-yellow-600" />
                                 </div>
@@ -195,7 +196,7 @@ export default function HeroEnquiryForm({
                                     />
                                 </div>
                             </div>
-                            <div className="flex items-center gap-3 py-3 border-b border-gray-100">
+                            <div className="flex items-center gap-3 py-3 ">
                                 <div className="flex-none w-9 h-9 rounded-full bg-yellow-50 border border-yellow-200 flex items-center justify-center">
                                     <span className="text-yellow-600 text-[12px] font-bold">WA</span>
                                 </div>
@@ -209,7 +210,7 @@ export default function HeroEnquiryForm({
                                     />
                                 </div>
                             </div>
-                            <div className="flex items-center gap-3 py-3 border-b border-gray-100 last:border-b-0">
+                            <div className="flex items-center gap-3 py-3  last:border-b-0">
                                 <div className="flex-none w-9 h-9 rounded-full bg-yellow-50 border border-yellow-200 flex items-center justify-center">
                                     <span className="text-yellow-600 text-[12px] font-bold">LG</span>
                                 </div>
@@ -243,8 +244,7 @@ export default function HeroEnquiryForm({
                 <div className="mt-4 text-center">
                     <AnimatedButton
                         buttonText={step === 1 ? 'NEXT' : (isMutating ? 'SUBMITTING...' : 'SUBMIT')}
-                        type={step === 1 ? 'button' : 'submit'}
-                        onClick={step === 1 ? handleNextStep : undefined}
+                        type="submit"
                         className="w-full !px-10 !py-3.5 rounded-md"
                         borderButtonColor={'#FFD700'}
                         disabled={isMutating}

@@ -56,6 +56,8 @@ const DynamicField = ({ fieldConfig, control }: DynamicFieldProps) => {
                         label={fieldConfig.label}
                         options={fieldConfig.options}
                         required={fieldConfig.required}
+                        labelClassName="text-gray-500"
+                        selectedValueClassName="text-gray-200"
                     />
                 ) : fieldConfig.type === 'phone' ? (
                     <PhoneInputField
@@ -63,6 +65,8 @@ const DynamicField = ({ fieldConfig, control }: DynamicFieldProps) => {
                         name={fieldConfig.name}
                         label={fieldConfig.label}
                         required={fieldConfig.required}
+                        labelClassName="text-gray-500"
+                        inputClassName="text-gray-200"
                     />
                 ) : (
                     <ReusableInput
@@ -72,6 +76,8 @@ const DynamicField = ({ fieldConfig, control }: DynamicFieldProps) => {
                         type={fieldConfig.type}
                         placeholder={fieldConfig.placeholder}
                         required={fieldConfig.required}
+                        labelClassName="text-gray-500"
+                        inputClassName="text-gray-200"
                     />
                 )}
             </div>

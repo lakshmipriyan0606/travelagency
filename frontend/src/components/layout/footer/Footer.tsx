@@ -31,7 +31,7 @@ export default function Footer() {
 
         {/* CTA BANNER */}
         <section
-          className="relative max-w-7xl mx-auto rounded-3xl overflow-hidden shadow-2xl h-[400px] sm:h-[400px]"
+          className="relative max-w-7xl mx-auto rounded-lg overflow-hidden shadow-2xl h-[400px] sm:h-[400px]"
           style={{
             backgroundImage: `url(${footerData.cta.image})`,
             backgroundSize: 'cover',
@@ -40,8 +40,8 @@ export default function Footer() {
         >
           <div className="absolute top-0 left-0 w-full h-full bg-black/80" />
           <div className="relative z-10 w-full h-full flex items-center px-6 sm:px-12 md:px-20 lg:px-28">
-            <div className="flex flex-col items-start text-left max-w-2xl gap-6">
-              <h3 className="text-white text-3xl sm:text-4xl lg:text-5xl font-bold leading-tight">
+            <div className="flex flex-col items-start text-left gap-6">
+              <h3 className="text-white text-3xl sm:text-4xl lg:text-3xl leading-tight">
                 {footerData.cta.title.replace(',', '')},
                 <br />
                 Especially or You!
@@ -56,7 +56,7 @@ export default function Footer() {
         </section>
 
         {/* LINK COLUMNS */}
-        <section className="bg-[#1F1F1F] rounded-2xl p-6 md:p-8">
+        <section className="rounded-2xl p-6 md:p-8">
           <h4 className="text-gray-300 text-sm tracking-wide uppercase mb-6">Top links to find your dream home!</h4>
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-8">
             {footerData.linkColumns.map((col) => (
@@ -88,7 +88,7 @@ export default function Footer() {
           </div>
         </section>
 
-        <div className="bg-gray-100 h-[0.2px] w-full mt-8" />
+        <div className="bg-gray-500 h-[0.1px] w-full mt-8" />
 
         {/* CONTACT + SOCIAL ROW */}
         <div className="flex flex-col gap-6 mt-8">
@@ -147,7 +147,7 @@ export default function Footer() {
         </div>
 
         {/* BOTTOM LINKS + COPYRIGHT */}
-        <section className="border-t border-gray-800 pt-6 text-center">
+        <section className="pt-6 text-center">
           <div className="text-sm">
 
             <div className="flex flex-wrap justify-center">
