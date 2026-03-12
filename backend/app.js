@@ -6,6 +6,7 @@ import authRoutes from "./routes/admin.auth.routes.js";
 import packageRoute from "./routes/package.routes.js";
 import bookingRoute from "./routes/bookingForm.route.js";
 import newsletterRoute from "./routes/newsletter.routes.js";
+import uploadRoutes from "./routes/upload.routes.js";
 
 const app = express();
 
@@ -43,5 +44,6 @@ app.use("/api/admin", authRoutes);
 app.use("/api/packages", packageRoute);
 app.use("/api", bookingRoute);
 app.use("/api/newsletter", newsletterRoute);
+app.use("/api/upload", uploadRoutes);
 
 export default app;

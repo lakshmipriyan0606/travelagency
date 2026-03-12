@@ -19,11 +19,11 @@ const TravelExperiences = () => {
     <section className="py-4 bg-white overflow-hidden relative">
       {/* Large Quote Icon Background - Positioned as per image */}
       <div className="hidden md:block absolute top-0 -left-[40px] opacity-60 select-none pointer-events-none z-0">
-        <img src={quoteIcon} alt="quote" className="w-64 h-64 md:w-40 md:h-40" />
+        <img src={quoteIcon} alt="quote" loading="lazy" className="w-64 h-64 md:w-40 md:h-40" />
       </div>
 
       <div className="hidden md:block absolute top-0 left-[120px] opacity-60 select-none pointer-events-none z-0">
-        <img src={quoteIcon} alt="quote" className="w-64 h-64 md:w-40 md:h-40" />
+        <img src={quoteIcon} alt="quote" loading="lazy" className="w-64 h-64 md:w-40 md:h-40" />
       </div>
 
 
@@ -116,7 +116,7 @@ const TravelExperiences = () => {
                         <div className="flex flex-col gap-4 md:gap-6">
                           {/* Image Card (Top) */}
                           <div className="h-40 rounded-2xl md:rounded-[24px] overflow-hidden shadow-[0_20px_50px_rgba(0,0,0,0.1)] bg-white flex-shrink-0">
-                            <img src={exp.image} alt={exp.name} className="w-full h-full object-cover" />
+                            <img src={exp.image} alt={exp.name} loading="lazy" className="w-full h-full object-cover" />
                           </div>
 
                           {/* Text Card (Bottom) */}
@@ -125,7 +125,7 @@ const TravelExperiences = () => {
                               "{exp.text}"
                             </p>
                             <div className="flex items-center gap-4 mt-auto pt-6 bg-white z-10">
-                              <img src={exp.avatar} alt={exp.name} className="w-12 h-12 rounded-full object-cover flex-shrink-0" />
+                              <img src={exp.avatar} alt={exp.name} loading="lazy" className="w-12 h-12 rounded-full object-cover flex-shrink-0" />
                               <span className="font-bold text-[#2B2B2B] text-base truncate">{exp.name}</span>
                             </div>
                           </div>
@@ -146,7 +146,7 @@ const TravelExperiences = () => {
 
                           {/* Image Card (Bottom) */}
                           <div className="h-48 rounded-[24px] overflow-hidden shadow-[0_20px_50px_rgba(0,0,0,0.1)] bg-white flex-shrink-0">
-                            <img src={nextExp.image} alt={nextExp.name} className="w-full h-full object-cover" />
+                            <img src={nextExp.image} alt={nextExp.name} loading="lazy" className="w-full h-full object-cover" />
                           </div>
                         </div>
                       </div>

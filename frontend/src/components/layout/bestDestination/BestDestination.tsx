@@ -20,16 +20,33 @@ export function BestDestination() {
                 </h2>
 
                 <div className="grid grid-cols-12 gap-4 max-w-7xl mx-auto">
-                    {bestPackageList.map(({ src, alt, title }, index) => (
+                    {bestPackageList.map(({ src, alt, title, fallbackSrc }, index) => {
+                        const aspect =
+                          index === 1 || index === 2 ? "3 / 2" : "4 / 3";
+                        return (
                         <div
                             key={index}
                             className={`
                             ${handleColSpan(index)}
-                            rounded-[15px] relative overflow-hidden group
+                            rounded-[15px] relative overflow-hidden group min-h-[220px] sm:min-h-[280px] lg:min-h-[340px]
                             cursor-pointer
                         `}
+                            style={{ aspectRatio: aspect }}
                         >
-                            <img src={src} alt={alt} className="w-full h-48 sm:h-64 lg:h-54 xl:h-64 2xl:h-[280px] object-cover" />
+                            <img 
+                                src={src} 
+                                alt={alt} 
+                                loading="lazy"
+                                className="w-full h-full object-cover"
+                                onError={(e) => {
+                                    const img = e.currentTarget as HTMLImageElement;
+                                    if (fallbackSrc && img.src !== fallbackSrc) {
+                                        img.src = fallbackSrc;
+                                    } else {
+                                        img.src = "https://images.unsplash.com/photo-1488646953014-85cb44e25828?q=80&w=800&auto=format&fit=crop";
+                                    }
+                                }}
+                            />
 
                             {/* From center → left */}
                             <span
@@ -67,7 +84,7 @@ export function BestDestination() {
                                             alt="badge"
                                             className="w-[160px] sm:w-[200px] h-[500px] object-contain"
                                         />
-                                        <h3 className="absolute inset-0 flex items-center justify-center text-white font-arizonia text-xl sm:text-3xl mt-1 drop-shadow-md">
+                                        <h3 className="absolute inset-0 flex items-center pl4 justify-center text-white font-arizonia text-xl sm:text-xl mt-1 drop-shadow-md">
                                             {title.split(' ').slice(0, 2).join(' ')}
                                         </h3>
                                     </div>
@@ -79,7 +96,8 @@ export function BestDestination() {
                                 </div>
                             </div>
                         </div>
-                    ))}
+                        );
+                    })}
                 </div>
             </div>
         </section>

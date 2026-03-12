@@ -18,6 +18,7 @@ const HappyStories = () => {
               <img
                 src={src}
                 alt="Customer Story"
+                loading="lazy"
                 className="w-full h-full object-cover"
               />
             </div>
@@ -47,6 +48,7 @@ const HappyStories = () => {
               <img
                 src={src}
                 alt="Customer Story"
+                loading="lazy"
                 className="w-full h-full object-cover"
               />
             </div>

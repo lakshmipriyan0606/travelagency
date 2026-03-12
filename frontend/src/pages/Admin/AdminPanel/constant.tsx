@@ -17,4 +17,10 @@ export const adminMenu = [
         icon: "📝",
         component: "FormList",
     },
+    {
+        id: 4,
+        label: "Upload Image",
+        icon: "🖼️",
+        component: "UploadImage",
+    },
 ];

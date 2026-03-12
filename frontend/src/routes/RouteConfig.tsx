@@ -3,6 +3,7 @@ import { lazy } from "react";
 import ProtectedRoute from "./ProtectedRoute";
 import NonProtectedRoute from "./NonProtectRoute";
 import FavouritePackage from "@/pages/FavouritePackage/FavouritePackage";
+import RegisterForm from "@/pages/Admin/register/Register";
 
 const Home = lazy(() => import('@/pages/Home/Home'));
 const AllPackage = lazy(() => import('@/pages/AllPackage/AllPackage'));
@@ -35,11 +36,11 @@ const routes: AppRoute[] = [
         element: <FavouritePackage />,
         isProtectRoute: false,
     },
-    // {
-    //     path: '/admin/register',
-    //     element: <RegisterForm />,
-    //     isProtectRoute: false,
-    // },
+    {
+        path: '/admin/register',
+        element: <RegisterForm />,
+        isProtectRoute: false,
+    },
     {
         path: '/admin/login',
         element: <NonProtectedRoute />,

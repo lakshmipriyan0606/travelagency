@@ -1,33 +1,54 @@
+import kualaLumpurLocal from "@/assets/image/popularDestination/Kuala Lumpur.jpeg";
+import langkawiLocal from "@/assets/image/popularDestination/Langkawi.jpeg";
+import gentingHighlandsLocal from "@/assets/image/popularDestination/Genting Highlands.jpeg";
+import penangLocal from "@/assets/image/popularDestination/Penang.jpeg";
+
 type Package = {
     id: number;
     alt: string;
     src: string;
     title: string;
+    description?: string;
+    fallbackSrc?: string;
 };
 
- export const bestPackageList: Package[] = [
-    {
-        id: 1,
-        alt: "Great Wall of China",
-        src: "https://images.unsplash.com/photo-1505832018823-50331d70d237?w=600&h=400&fit=crop&crop=center",
-        title: 'Great Wall of China',
-    },
+export const bestPackageList: Package[] = [
+
     {
         id: 2,
-        alt: "Marina Bay Sands Singapore",
-        src: "https://res.cloudinary.com/dizocitqw/image/upload/v1764940278/travel_packages/slots/a5102ywg2paktpr32x6i.jpg",
-        title: 'Marina Bay Sands Singapore',
-    },  
-    {
-        id: 3,
-        alt: "Marina Bay Sands at Sunset",
-        src: "https://images.unsplash.com/photo-1551918120-9739cb430c6d?w=600&h=400&fit=crop",
-        title: 'Marina Bay Sands at Sunset',
+        alt: "Langkawi",
+        src: "https://res.cloudinary.com/dizocitqw/image/upload/v1773289720/uploads/dujsljvtrzon8ulsktjj.jpg",
+        fallbackSrc: langkawiLocal,
+        title: "Langkawi",
+        description:
+            "Relax on pristine beaches and discover tropical island adventures in Malaysia’s paradise getaway.",
     },
     {
         id: 4,
-        alt: "Phi Phi Island Boat",
-        src: "https://images.unsplash.com/photo-1528543606781-2f6e6857f318?ixlib=rb-4.1.0",
-        title: 'Phi Phi Island Boat',
+        alt: "Penang",
+        src: "https://res.cloudinary.com/dizocitqw/image/upload/v1773289674/uploads/orx7bvfhmyn0fkkf4fvw.jpg",
+        fallbackSrc: penangLocal,
+        title: "Penang",
+        description:
+            "Experience heritage streets, famous street food, and beautiful coastal charm in Penang.",
+    },
+    {
+        id: 3,
+        alt: "Genting Highlands",
+        src: "https://res.cloudinary.com/dizocitqw/image/upload/v1773289736/uploads/caiv3y1zu3xcxhale8ko.jpg",
+        fallbackSrc: gentingHighlandsLocal,
+        title: "Genting Highlands",
+        description:
+            "Enjoy cool mountain air, exciting casinos, theme parks, and breathtaking hilltop views.",
+    },
+
+    {
+        id: 1,
+        alt: "Kuala Lumpur",
+        src: "https://res.cloudinary.com/dizocitqw/image/upload/v1773289703/uploads/koeqcpz78twzsg1qplfm.jpg",
+        fallbackSrc: kualaLumpurLocal,
+        title: "Kuala Lumpur",
+        description:
+            "Explore Malaysia’s vibrant capital filled with iconic landmarks, shopping, and cultural experiences.",
     },
 ];

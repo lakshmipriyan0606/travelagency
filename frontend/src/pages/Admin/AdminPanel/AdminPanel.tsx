@@ -6,6 +6,7 @@ import { useSelector } from 'react-redux'
 import BookingAdminPage from './BookingList/BookingList'
 import { UseFetchAPIQuery } from "@/Hook/UseFetchAPIQuery";
 import { GetAllPackageList } from "@/api/user/api";
+import UploadImagePage from "./UploadImage/UploadImage";
 
 interface FilterPackageProps {
     isAdmin: boolean;
@@ -43,6 +44,7 @@ const AdminPanel = () => {
             case "CreatePackage": return <AdminUploadPackageForm />;
             case "AllPackages": return <FilterPackage />;
             case "FormList": return <BookingAdminPage />;
+            case "UploadImage": return <UploadImagePage />;
             default: return <div>Page Not Found</div>;
         }
     };

@@ -6,6 +6,9 @@ import { ReusableInput } from "@/components/forms/ReusableInput";
 import * as z from "zod";
 import { registerSchema } from "@/ZodSchema/schema";
 import { useNavigate } from "react-router-dom";
+import { useMutationAPIQuery } from "@/Hook/useMutationAPIQuery";
+import { registerAPI } from "@/api/admin/auth.api";
+import { showToast } from "@/lib/utils";
 
 type FormData = z.infer<typeof registerSchema>;
 
@@ -15,9 +18,26 @@ const RegisterForm = () => {
         resolver: zodResolver(registerSchema),
     });
 
+    const { mutate, isPending } = useMutationAPIQuery(registerAPI, {
+        onSuccess() {
+            showToast({
+                type: 'success',
+                content: 'Account created successfully. Please login.',
+                position: 'top-right',
+            });
+            navigate('/admin/login');
+        },
+        onError(error: any) {
+            showToast({
+                type: 'error',
+                content: error?.response?.data?.msg || 'Registration failed',
+                position: 'top-right',
+            });
+        },
+    });
+
     const onSubmit = (data: FormData) => {
-        console.log("Register Data:", data);
-        // call API here
+        mutate(data as any);
     };
 
     return (
@@ -42,9 +62,10 @@ const RegisterForm = () => {
 
                 <button
                     type="submit"
-                    className="w-full bg-blue-500 text-white hover:bg-blue-600 py-3 rounded-md font-semibold transition shadow"
+                    disabled={isPending}
+                    className="w-full bg-blue-500 text-white hover:bg-blue-600 disabled:opacity-50 py-3 rounded-md font-semibold transition shadow"
                 >
-                    Register
+                    {isPending ? 'Creating...' : 'Register'}
                 </button>
             </form>
 
