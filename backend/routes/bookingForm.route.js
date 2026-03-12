@@ -3,6 +3,7 @@ import Booking from "../models/Booking.model.js";
 import { sendEmail } from "../services/email.service.js";
 import { v4 as uuidv4 } from "uuid";
 import { encryptValue, decryptValue } from "../utils/crypto.js";
+import { syncBookingToSheet } from "../services/googleSheets.service.js";
 
 const router = express.Router();
 
@@ -16,9 +17,12 @@ router.post("/booking/create", async (req, res) => {
       whatsapp,
       destination,
       travelDate,
+      travelMonth, // Added
       noOfPeople,
+      duration, // Added
       vacationType,
       name,
+      language, // Added
     } = req.body;
 
     const bookingId = `ID-${uuidv4().split("-")[0].toUpperCase()}`;
@@ -33,55 +37,55 @@ router.post("/booking/create", async (req, res) => {
       city: city || "",
       destination: destination || "",
       vacationType: vacationType || "",
+      duration: duration || "",
+      language: language || "",
 
       // Encrypt sensitive fields
       email: email ? encryptValue(email.toLowerCase().trim()) : "",
-      phone: phone ? encryptValue(phone) : "",
+      phone: (phone || whatsapp) ? encryptValue(phone || whatsapp) : "", // Fallback to whatsapp if phone is empty
       whatsapp: whatsapp ? encryptValue(whatsapp) : null,
 
       travelDate: travelDateObj,
-      noOfPeople: peopleCount,
+      travelMonth: travelMonth || "",
+      noOfPeople: noOfPeople ? String(noOfPeople) : "",
     });
 
     await newBooking.save();
 
     const bookingData = {
       bookingId,
-      name,
-      email,
-      phone,
-      whatsapp,
-      city,
-      destination,
-      travelDate: travelDateObj,
-      noOfPeople: peopleCount,
-      vacationType,
+      name: name || "",
+      email: email || "",
+      whatsapp: whatsapp || "",
+      destination: destination || "",
+      travelMonth: travelMonth || "",
+      noOfPeople: noOfPeople || "",
+      duration: duration || "",
+      language: language || "",
     };
 
+    // Sync to Google Sheets
+    await syncBookingToSheet(bookingData);
+
     // Send confirmation to customer
-    await sendEmail({
-      to: email,
-      subject: `Your Trip Confirmed - ${bookingId}`,
-      html: `<h2>Booking Confirmed!</h2>
-             <p>Booking ID: <strong>${bookingId}</strong></p>
-             <p>Travel Date: <strong>${
-               travelDateObj?.toDateString() || "-"
-             }</strong></p>
-             <p>No. of People: <strong>${peopleCount || "-"}</strong></p>`,
-    });
+    try {
+      await sendEmail({
+        to: email,
+        subject: `Your Trip Confirmed - ${bookingId}`,
+        html: `<h2>Booking Confirmed!</h2>
+               <p>Booking ID: <strong>${bookingId}</strong></p>
+               <p>Travel Date: <strong>${travelDateObj?.toDateString() || "-"}</strong></p>
+               <p>No. of People: <strong>${noOfPeople || "-"}</strong></p>`,
+      });
+    } catch (emailErr) {
+      console.error("Email notification failed:", emailErr.message);
+    }
 
-    // Send notification to admin
-    await sendEmail({
-      to: process.env.ADMIN_EMAIL,
-      subject: `New Booking: ${bookingId}`,
-      html: `<h2>New Booking Received</h2>
-             <pre>${JSON.stringify(bookingData, null, 2)}</pre>`,
-    });
-
+    console.log(`✅ Booking ${bookingId} processed successfully`);
     res.status(201).json({ success: true, bookingId });
   } catch (err) {
-    console.error(err);
-    res.status(500).json({ success: false, message: "Server error" });
+    console.error("🚨 Create Booking Error:", err);
+    res.status(500).json({ success: false, message: err.message || "Server error" });
   }
 });
 // Get all bookings (decrypt before sending)
@@ -93,13 +97,14 @@ router.get("/booking/all", async (req, res) => {
       bookingId: b.bookingId,
       name: b.name,
       email: decryptValue(b.email),
-      phone: decryptValue(b.phone),
+      phone: decryptValue(b.phone), // Still include phone for display if needed
       whatsapp: decryptValue(b.whatsapp),
-      city: b.city,
       destination: b.destination,
-      travelDate: b.travelDate,
+      travelMonth: b.travelMonth,
       noOfPeople: b.noOfPeople,
-      vacationType: b.vacationType,
+      duration: b.duration,
+      language: b.language,
+      createdAt: b.createdAt,
     }));
 
     res.status(200).json({ success: true, bookings: decryptedBookings });

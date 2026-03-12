@@ -56,7 +56,7 @@ export default function Footer() {
         </section>
 
         {/* LINK COLUMNS */}
-        <section className="rounded-2xl p-6 md:p-8">
+        <section className="rounded-2xl">
           <h4 className="text-gray-300 text-sm tracking-wide uppercase mb-6">Top links to find your dream home!</h4>
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-8">
             {footerData.linkColumns.map((col) => (

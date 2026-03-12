@@ -97,7 +97,7 @@ const FilterConfigPage: React.FC<Props> = () => {
             map[group] = Object.values(watchedFilters?.[group] || {}).filter(Boolean).length;
         });
         return map;
-    }, [watchedFilters,watch()]);
+    }, [watchedFilters, watch()]);
 
     const handleClear = () => {
         reset({ filterConfig: buildEmptyFilters() } as any);
@@ -116,7 +116,7 @@ const FilterConfigPage: React.FC<Props> = () => {
             </div>
 
             {/* Mobile View */}
-            <div className="md:hidden rounded-lg overflow-hidden bg-white p-6">
+            <div className="md:hidden rounded-lg overflow-hidden bg-white pt-16 sm:p-6">
                 <div className="flex">
                     {/* Left: Category Tabs */}
                     <div className="w-1/2 bg-white">

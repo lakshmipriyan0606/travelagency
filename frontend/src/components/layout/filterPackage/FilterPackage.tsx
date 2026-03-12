@@ -193,10 +193,10 @@ const FilterPackage = () => {
 
     return (
         <FormProvider {...methods}>
-            <div className="sm:p-6 flex flex-col sm:flex-row sm:justify-around bg-[#3F4FB] md:h-screen">
+            <div className="sm:mt-20 flex flex-col sm:flex-row sm:justify-around bg-[#3F4FB]">
 
                 {/* ✅ LEFT FILTER - STICKY */}
-                <div className="w-full sm:w-[25%] xl:w-[17%] md:sticky md:top-0 md:h-screen self-start z-40 bg-zinc-900 sm:bg-transparent">
+                <div className="w-full sm:w-[25%] xl:w-[17%] md:sticky md:top-0 self-start z-40 bg-zinc-900 sm:bg-transparent">
                     <FilterConfigPage />
                 </div>
 

@@ -121,7 +121,7 @@ const TravelExperiences = () => {
 
                           {/* Text Card (Bottom) */}
                           <div className="bg-white p-5 md:p-8 rounded-2xl md:rounded-[24px] shadow-[0_10px_30px_rgba(0,0,0,0.06)] md:shadow-[0_20px_50px_rgba(0,0,0,0.06)] border border-gray-200 md:border-gray-300 flex flex-col h-[230px] sm:h-[260px] md:h-[350px]">
-                            <p className="text-[#666666] text-sm md:text-base italic font-roboto leading-relaxed overflow-y-auto custom-scrollbar pr-2">
+                            <p className="text-[#666666] text-sm md:text-base italic font-roboto leading-relaxed sm:max-h-[270px] custom-scrollbar pr-2 overflow-hidden">
                               "{exp.text}"
                             </p>
                             <div className="flex items-center gap-4 mt-auto pt-6 bg-white z-10">

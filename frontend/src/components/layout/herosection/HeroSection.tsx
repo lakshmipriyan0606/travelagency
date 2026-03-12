@@ -80,11 +80,14 @@ const HeroSection = () => {
                 <div className="w-full h-full flex flex-col md:flex-row items-start md:items-center mt-[38%] md:mt-0 px-6 md:px-12 lg:px-20 gap-6 md:gap-10 rounded-2xl">
                     <div className="flex flex-col items-start justify-center text-white text-left w-full md:w-[55%] gap-3 md:gap-6 max-w-[19rem] sm:max-w-[22rem] md:max-w-none sm:pb-10 lg:pb-0">
                         <div className="flex flex-col gap-1">
-                            <p className="text-[1.8rem] sm:text-2xl lg:text-4xl leading-[1.5] sm:leading-[1.8] md:leading-snug font-semibold">
-                                Experience <span className="text-primary">Singapore</span> like never before,
+                            <h1 className="text-[1.8rem] sm:text-2xl lg:text-4xl leading-[1.5] sm:leading-[1.8] md:leading-snug font-semibold text-white">
+                                Best Travel Agency in <span className="text-primary">Malaysia</span>
+                            </h1>
+                            <p className="text-[1.8rem] sm:text-2xl lg:text-4xl leading-[1.5] sm:leading-[1.8] md:leading-snug font-semibold text-white">
+                                For <span className="text-primary">Personalized Trips</span>
                             </p>
-                            <p className="text-[1.8rem] sm:text-2xl lg:text-4xl leading-[1.5] sm:leading-[1.8] md:leading-snug font-semibold">
-                                Adventure awaits <span className="text-primary">Everywhere!</span>
+                            <p className="text-sm sm:text-base lg:text-lg text-gray-200 mt-2 max-w-2xl leading-relaxed">
+                                Plan your perfect Malaysia trip with <span className="text-primary font-medium">Sastikaa Travel</span> — a professional travel agency in Malaysia providing city tours, airport transfers, and customized travel packages across Kuala Lumpur, Genting Highlands, Langkawi, and more.
                             </p>
                         </div>
 

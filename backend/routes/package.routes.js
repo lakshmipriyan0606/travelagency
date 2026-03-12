@@ -6,6 +6,7 @@ import {
   updatePackage,
 } from "../controllers/createPackage.controller.js";
 import PackageModel from "../models/Package.model.js";
+import { fetchPackagesFromSheet } from "../services/googleSheets.service.js";
 const router = express.Router();
 
 router.post(
@@ -166,6 +167,30 @@ router.post("/like", async (req, res) => {
     res.json({ message: "Updated", likes: pkg.likes });
   } catch (err) {
     res.status(500).json({ message: "Server Error", error: err });
+  }
+});
+
+router.post("/sync-from-sheet", protectRoute, adminOnly, async (req, res) => {
+  try {
+    const sheetPackages = await fetchPackagesFromSheet();
+    
+    if (!sheetPackages || sheetPackages.length === 0) {
+      return res.status(400).json({ success: false, message: "No data found in sheet" });
+    }
+
+    // Example logic: Update existing packages by name or ID, or insert new ones
+    for (const pkgData of sheetPackages) {
+      await PackageModel.findOneAndUpdate(
+        { packageName: pkgData.packageName },
+        { $set: pkgData },
+        { upsert: true, new: true }
+      );
+    }
+
+    res.status(200).json({ success: true, message: `Synced ${sheetPackages.length} packages from sheet` });
+  } catch (error) {
+    console.error("Sync error:", error);
+    res.status(500).json({ success: false, message: "Error syncing from sheet", error: error.message });
   }
 });
 

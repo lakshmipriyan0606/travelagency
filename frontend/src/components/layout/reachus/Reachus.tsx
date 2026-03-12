@@ -19,17 +19,15 @@ export default function ReachUs() {
 
     window.open(url, "_blank");
   };
-
   return (
-    <div id="reach-us-section" className="relative bg-[#1F1F1F] py-10 px-2 overflow-hidden">
+    <div id="reach-us-section" className="relative bg-[#474747] py-10 px-2 overflow-hidden">
       {/* Background map */}
       <img
         src={MapIcon}
         alt="Map background"
-        className="absolute inset-0 opacity-10 object-cover pointer-events-none w-full h-full"
+        className="absolute inset-3 opacity-25 object-cover pointer-events-none w-full h-full"
       />
-      {/* Subtle dark overlay for contrast */}
-      <div className="absolute inset-0 bg-black/40" />
+      {/* Subtle overlay removed to let gray color shine through */}
       <div className="relative z-10 max-w-7xl p-3 py-4 mx-auto grid grid-cols-1 md:grid-cols-2 gap-10 sm:px-6 lg:px-14 sm:p-8">
         {/* LEFT SECTION */}
         <div className="relative  flex flex-col justify-center gap-4 items-center overflow-hidden">

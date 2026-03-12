@@ -15,7 +15,7 @@ const MobileStickyBottomBar = () => {
 
     return (
         <>
-            <div className="fixed bottom-0 left-0 right-0 z-[100] sm:hidden bg-black border-t border-white/20 h-16 flex items-center shadow-[0_-4px_10px_rgba(0,0,0,0.5)]">
+            <div className="fixed bottom-0 left-0 right-0 z-[100] sm:hidden bg-black border-t border-white/20 h-10 flex items-center shadow-[0_-4px_10px_rgba(0,0,0,0.5)]">
                 {/* Enquiry Button */}
                 <button
                     onClick={() => setIsModalOpen(true)}

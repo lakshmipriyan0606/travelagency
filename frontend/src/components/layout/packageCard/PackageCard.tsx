@@ -110,7 +110,7 @@ export default function PackageCard({
 
 
     return (
-        <div className="flex flex-col gap-6 items-center justify-center max-w-7xl mx-auto p-2 sm:p-5 w-full">
+        <div className="flex flex-col gap-6 items-center justify-center max-w-7xl mx-auto  w-full">
             <AnimatePresence mode="popLayout">
                 {filterList.map((offer) => {
                     const details = getOfferDetailsConfig(offer);

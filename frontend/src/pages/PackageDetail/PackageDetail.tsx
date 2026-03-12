@@ -1,7 +1,6 @@
 import { GetCurrentPackageDetail } from '@/api/admin/auth.api'
 import ItineraryCard from '@/components/layout/ItineraryCard/ItineraryCard'
 import ItineraryExpandDay from '@/components/layout/ItineraryCard/ItineraryExpandCard'
-import Newsletter from '@/components/layout/newsletter/Newsletter'
 import PackageDetailCarousel from '@/components/layout/packageDetailCarousel/PackageDetailCarousel'
 import BookingFomField from '@/components/layout/reachus/BookingFomField'
 import { UseFetchAPIQuery } from '@/Hook/UseFetchAPIQuery'
@@ -111,7 +110,6 @@ const PackageDetail = () => {
                     </div>
                 </div>
             </div>
-            <Newsletter />
         </div>
     )
 }

@@ -31,9 +31,9 @@ const Home = () => {
         <BestDestination />
         <Welcome />
         <BestPackage />
+        <TravelExperiences />
         <TravelPartnerSection />
         <ReachUs />
-        <TravelExperiences />
         <HappyStories />
         {/* <Newsletter /> */}
       </div>

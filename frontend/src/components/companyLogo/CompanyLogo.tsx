@@ -1,16 +1,19 @@
 
 import companyLogo from '@/assets/image/logo/latestlogo.svg'
+import { useNavigate } from 'react-router-dom';
 
 const CompanyLogoWeb = () => {
+
+    const navigate = useNavigate();
     return (
         <div className=' hidden lg:flex items-center gap-2 sm:gap-3 p-1'>
-            <img src={companyLogo} alt="Company Logo" className='w-10 h-10 sm:w-14 sm:h-14' />
+            <img src={companyLogo} alt="Company Logo" onClick={() => { navigate('/') }} className='w-10 h-10 sm:w-14 sm:h-14 cursor-pointer' />
             <div className='flex flex-col'>
                 <h1 className='text-white font-semibold leading-[1.2] tracking-[0.2em] flex items-end'>
                     <span className='text-2xl '>SASTIKAA</span>
                     <span className='text-2xl px-1'>TRAVEL</span>
                 </h1>
-                <div className='flex items-center  w-full'>
+                <div className='flex items-center  w-full cursor-pointer'>
                     <div className='h-[0.2px] bg-[#D3D3D3] w-[55%]'></div>
                     <div className='w-2 h-2 rounded-full bg-[#F69520] z-10 ml-1'></div>
                     <div className='h-[0.2px] bg-[#D3D3D3] flex-grow -mx-0.5 ml-1'></div>
@@ -26,9 +29,10 @@ const CompanyLogoWeb = () => {
 
 
 const CompanyLogoInMobile = () => {
+    const navigate = useNavigate();
     return (
         <div className='flex justify-center items-center lg:hidden'>
-            <img src={companyLogo}  className='w-12 h-12'alt='Company Logo' />
+            <img src={companyLogo} className='w-12 h-12 cursor-pointer' alt='Company Logo' onClick={() => { navigate('/') }} />
             <h1 className='text-[15px] sm:text-[19px] font-semibold'>SASTIKAA TRAVELS</h1>
         </div>
     )
