@@ -1,5 +1,4 @@
 
-import dotLineLeftPng from "@/assets/image/dotlineLeftpng.png";
 import dotLineRightPng from "@/assets/image/dotlineRightpng.png";
 
 export const itinerariesExpandCardDetails = [
@@ -92,7 +91,7 @@ export const itinerariesCardDetails = [
     },
     {
         interval: true,
-        backgroundImage: dotLineLeftPng,
+        backgroundImage: dotLineRightPng,
     },
     {
         day: {
@@ -200,7 +199,7 @@ export const handleDayListFormat = (daysData: DayData[] = []): FinalTimelineItem
     if (!isLast) {
       finalList.push({
         interval: true,
-        backgroundImage: index % 2 === 0 ? dotLineRightPng : dotLineLeftPng,
+        backgroundImage: index % 2 === 0 ? dotLineRightPng : dotLineRightPng,
       });
     }
   });
