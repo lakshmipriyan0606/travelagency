@@ -1,7 +1,10 @@
 import { bestPackageList } from "./constant";
 import badgeBackground from "@/assets/icons/badgeBackground.svg";
+import { useNavigate } from "react-router-dom";
 
 export function BestDestination() {
+    const navigate = useNavigate();
+
     const handleColSpan = (index: number) => {
         const map: Record<number, string> = {
             0: "col-span-12 sm:col-span-4",
@@ -26,6 +29,7 @@ export function BestDestination() {
                         return (
                             <div
                                 key={index}
+                                onClick={() => navigate(`/allpackage?city=${encodeURIComponent(title)}`)}
                                 className={`
                             ${handleColSpan(index)}
                             rounded-[15px] relative overflow-hidden group 

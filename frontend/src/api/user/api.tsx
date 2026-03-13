@@ -4,10 +4,24 @@ export const GetBestBackageList = async () => {
   const { data } = await axiosClient.get("packages/bestpackages");
   return data;
 }
-export const GetAllPackageList = async ({ limit = 10, lastId }: { limit: number, lastId: string }) => {
-  const { data } = await axiosClient.get(`packages?limit=${limit}&lastId=${lastId ?? ""}`);
+export const GetAllPackageList = async ({ limit = 10, lastId = '', search = '', city = '', isAdmin = false }: { limit?: number; lastId?: string, search?: string, city?: string, isAdmin?: boolean }) => {
+  const queryParams = new URLSearchParams();
+  if (limit) queryParams.append('limit', limit.toString());
+  if (lastId) queryParams.append('lastId', lastId);
+  if (search) queryParams.append('search', search);
+  if (city) queryParams.append('city', city);
+  if (isAdmin) queryParams.append('isAdmin', 'true');
+
+  const { data } = await axiosClient.get(`packages?${queryParams.toString()}`);
   return data;
 }
+
+export const GetPackageSuggestions = async (query: string) => {
+  if (!query) return { locations: [], packages: [] };
+  const { data } = await axiosClient.get(`packages/suggestions?q=${encodeURIComponent(query)}`);
+  return data;
+}
+
 export const GetLikePackageListCount = async () => {
   const { data } = await axiosClient.get("packages/likeCount");
   return data;

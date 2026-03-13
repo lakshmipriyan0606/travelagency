@@ -29,6 +29,7 @@ interface Package {
     price: number;
     offerPrice: number;
     userLiked: boolean;
+    isActive?: boolean;
 }
 
 interface PackageCardProps {
@@ -110,7 +111,7 @@ export default function PackageCard({
 
 
     return (
-        <div className="flex flex-col gap-6 items-center justify-center max-w-7xl mx-auto  w-full">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
             <AnimatePresence mode="popLayout">
                 {filterList.map((offer) => {
                     const details = getOfferDetailsConfig(offer);
@@ -127,7 +128,7 @@ export default function PackageCard({
                         >
                             <div className={`sm:p-2 ${isAdmin ? "group" : ""}`}>
                                 <SwiperSlide>
-                                    <div className="relative flex flex-col md:flex-row bg-white rounded-2xl overflow-hidden shadow-xl text-gray-900">
+                                    <div className="relative flex flex-col bg-white rounded-2xl overflow-hidden shadow-xl text-gray-900">
                                         {isAdmin && (
                                             <div className="absolute top-0 right-4 opacity-0 scale-90 translate-y-3 transition-all duration-300 group-hover:opacity-100 group-hover:scale-100 group-hover:translate-y-0 flex gap-4 z-30">
                                                 <Pencil
@@ -148,7 +149,7 @@ export default function PackageCard({
                                         )}
 
                                         {/* Carousel */}
-                                        <div className="w-full sm:relative sm:w-[55%]">
+                                        <div className="">
                                             <InnerCarousel images={offer.images} offerId={offer._id} />
 
                                             {/* Discount Ribbon */}
@@ -158,10 +159,22 @@ export default function PackageCard({
                                                 </div>
                                                 <div className="absolute top-9 -right-1 h-5 w-2 bg-red-500 brightness-90 rotate-[60deg]"></div>
                                             </div>
+
+                                            {/* Status Badge (Admin Only) */}
+                                            {isAdmin && offer.isActive === false && (
+                                                <div className="absolute top-16 right-4 z-20 bg-gray-600 text-white text-[10px] uppercase font-bold px-2 py-1 rounded shadow-md">
+                                                    Inactive
+                                                </div>
+                                            )}
+                                            {isAdmin && offer.isActive !== false && (
+                                                <div className="absolute top-16 right-4 z-20 bg-green-600 text-white text-[10px] uppercase font-bold px-2 py-1 rounded shadow-md">
+                                                    Active
+                                                </div>
+                                            )}
                                         </div>
 
                                         {/* Details */}
-                                        <div className="flex flex-col justify-center gap-3 p-8 md:w-[45%]">
+                                        <div className="flex flex-col justify-center gap-3 p-2">
                                             <Row>
                                                 <IconText icon={location} text={offer.location} />
                                                 <motion.button

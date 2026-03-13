@@ -9,9 +9,11 @@ const packageSchema = new mongoose.Schema(
     rating: { type: Number, required: true },
     price: { type: Number, required: true },
     location: { type: String, required: true },
+    country: { type: String, required: true },
     offerPrice: { type: Number, required: true },
     isBestPackage: { type: Boolean},
     bestRank: { type: Number },
+    isActive: { type: Boolean, default: true },
     images: [String],
     createdBy: {
       type: mongoose.Schema.Types.ObjectId,

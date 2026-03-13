@@ -1,13 +1,11 @@
-import Navbar from '@/components/layout/navbar/Navbar'
-import FilterPackage from '@/components/layout/filterPackage/FilterPackage'
+import FilterPackage from "@/components/layout/filterPackage/FilterPackage";
 
 const FavouritePackage = () => {
     return (
-        <div>
-            <Navbar />
-            <FilterPackage />
+        <div className="w-full min-h-screen bg-white">
+            <FilterPackage likePackageOnly={true} />
         </div>
-    )
-}
+    );
+};
 
-export default FavouritePackage
+export default FavouritePackage;

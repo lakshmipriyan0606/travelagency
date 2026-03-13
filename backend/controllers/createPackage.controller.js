@@ -14,6 +14,8 @@ export const createPackage = async (req, res) => {
       bestRank,
       packageName,
       packageDescription,
+      country,
+      isActive,
     } = req.body;
 
     const days = JSON.parse(req.body.days);
@@ -106,6 +108,8 @@ export const createPackage = async (req, res) => {
       bestRank: bestRank || null,
       images: mainImages,
       days: transformedDays,
+      country,
+      isActive: isActive === 'false' ? false : true,
       createdBy: req.user._id,
     });
     res.status(201).json({
@@ -132,6 +136,8 @@ export const updatePackage = async (req, res) => {
       bestRank,
       packageName,
       packageDescription,
+      country,
+      isActive,
     } = req.body;
 
     // parse days: accept object or JSON string
@@ -267,6 +273,8 @@ export const updatePackage = async (req, res) => {
         bestRank,
         images: mainImages,
         days: transformedDays,
+        country,
+        isActive: isActive === 'false' ? false : true,
       },
       { new: true, runValidators: true }
     );

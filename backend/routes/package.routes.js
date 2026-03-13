@@ -20,7 +20,10 @@ router.get("/bestpackages", async (req, res) => {
   try {
     const userId = req?.headers?.userid;
     console.log('userId: ', userId);
-    const bestPackages = await PackageModel.find({ isBestPackage: true });
+    const bestPackages = await PackageModel.find({ 
+      isBestPackage: true,
+      isActive: { $ne: false } 
+    });
 
     const finalBestPackages = bestPackages.map((pkg) => {
       const userLike = pkg.likes.find((like) => like.userId === userId);
@@ -47,9 +50,41 @@ router.get("/", async (req, res) => {
     const userId = req?.headers?.userid;
     const limit = parseInt(req.query.limit) || 10;
     const lastId = req.query.lastId;
-    console.log('lastId: ', lastId);
+    
+    // Extract filters
+    const search = req.query.search;
+    const city = req.query.city;
 
-    const query = lastId ? { _id: { $lt: lastId } } : {};
+    const isAdmin = req.query.isAdmin === 'true';
+    const query = isAdmin ? {} : { isActive: { $ne: false } };
+    const andConditions = [];
+
+    if (lastId) {
+      andConditions.push({ _id: { $lt: lastId } });
+    }
+
+    if (search) {
+      andConditions.push({
+        $or: [
+          { packageName: { $regex: search, $options: "i" } },
+          { location: { $regex: search, $options: "i" } },
+          { packageType: { $regex: search, $options: "i" } }
+        ]
+      });
+    }
+
+    if (city) {
+      andConditions.push({
+        $or: [
+          { location: { $regex: city, $options: "i" } },
+          { city: { $regex: city, $options: "i" } }
+        ]
+      });
+    }
+
+    if (andConditions.length > 0) {
+      query.$and = andConditions;
+    }
 
     const packages = await PackageModel.find(query)
       .sort({ _id: -1 })
@@ -106,6 +141,59 @@ router.get("/likeCount", async (req, res) => {
     });
   }
 });
+
+router.get("/suggestions", async (req, res) => {
+  try {
+    const q = (req.query.q || "").trim();
+    if (!q) {
+      return res.status(200).json({ locations: [], packages: [] });
+    }
+
+    // Limit to make it fast
+    const limit = 5;
+
+    // Search exact package names
+    const packages = await PackageModel.find({
+      packageName: { $regex: q, $options: "i" }
+    })
+      .select("packageName location") // only grab needed fields
+      .limit(limit)
+      .lean();
+
+    // Search existing locations or cities
+    // We can just query anything matching location/city and extract uniques
+    const locationDocs = await PackageModel.find({
+      $or: [
+        { location: { $regex: q, $options: "i" } },
+        { city: { $regex: q, $options: "i" } }
+      ]
+    })
+      .select("location city")
+      .limit(20) // pull a small batch to extract uniques
+      .lean();
+
+    const uniqueLocations = new Set();
+    locationDocs.forEach(doc => {
+      const locMatch = doc.location && doc.location.toLowerCase().includes(q.toLowerCase());
+      const cityMatch = doc.city && doc.city.toLowerCase().includes(q.toLowerCase());
+      
+      if (locMatch) uniqueLocations.add(doc.location);
+      if (cityMatch) uniqueLocations.add(doc.city);
+    });
+
+    res.status(200).json({
+      locations: Array.from(uniqueLocations).slice(0, 3), 
+      packages: packages
+    });
+
+  } catch (error) {
+    res.status(500).json({
+      message: "Error fetching suggestions",
+      error: error.message
+    });
+  }
+});
+
 router.get("/:id", async (req, res) => {
   try {
     const currentPackage = await PackageModel.findOne({ _id: req.params.id });

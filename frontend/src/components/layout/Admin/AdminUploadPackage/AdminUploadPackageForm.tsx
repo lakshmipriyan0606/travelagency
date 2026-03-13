@@ -42,6 +42,8 @@ const formSchema = z.object({
   offerPrice: z.string(),
   isBestPackage: z.boolean(),
   bestRank: z.string().optional(),
+  country: z.string().min(1, "Country is required"),
+  isActive: z.boolean().default(true),
   days: z.array(daySchema),
 });
 
@@ -143,9 +145,23 @@ export default function AdminUploadPackageForm() {
     options: { enabled: !!id }
   });
 
-  const methods = useForm<FormData>({
+  const methods = useForm({
     resolver: zodResolver(formSchema),
-    defaultValues: { isBestPackage: false, days: [{ dayTitle: "", slots: [{ slotType: "", title: "", description: "" }] }] },
+    defaultValues: { 
+      packageName: "",
+      packageDescription: "",
+      location: "",
+      packageType: "",
+      daysAndNights: "",
+      rating: "",
+      price: "",
+      offerPrice: "",
+      isBestPackage: false, 
+      isActive: true,
+      country: "Malaysia",
+      bestRank: "",
+      days: [{ dayTitle: "", slots: [{ slotType: "", title: "", description: "" }] }] 
+    },
   });
 
   const { control, handleSubmit, watch, reset, formState } = methods;
@@ -166,6 +182,8 @@ export default function AdminUploadPackageForm() {
       offerPrice: pkg.offerPrice?.toString() || "",
       isBestPackage: pkg.isBestPackage || false,
       bestRank: pkg.bestRank?.toString() || "",
+      country: pkg.country || "Malaysia",
+      isActive: pkg.isActive !== false,
       days: (pkg.days || []).map((day: any) => ({
         dayTitle: day.dayTitle || "",
         slots: (day.slots || []).map((slot: any) => ({
@@ -229,6 +247,7 @@ export default function AdminUploadPackageForm() {
           <ReusableInput control={control} name="location" label="Location" required />
           <SelectField control={control} name="packageType" label="Package Type" options={packageTypes} required />
           <SelectField control={control} name="daysAndNights" label="Days & Nights" options={daysOptions} required />
+          <ReusableInput control={control} name="country" label="Country" required />
 
           <div className="grid grid-cols-2 gap-4">
             <ReusableInput control={control} name="rating" label="Rating (0–5)" required />
@@ -240,6 +259,10 @@ export default function AdminUploadPackageForm() {
           {watch("isBestPackage") && (
             <SelectField control={control} name="bestRank" label="Best Package Rank" options={rankOptions} required />
           )}
+
+          <div className="flex items-center space-x-2 bg-gray-50 p-3 rounded-lg border border-gray-100">
+             <ReusableCheckbox control={control} name="isActive" label="Show Package on Website (Active Status)" />
+          </div>
 
           {/* Main Images Uploader */}
           <MainImagesUploader

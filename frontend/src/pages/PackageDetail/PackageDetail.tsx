@@ -7,9 +7,10 @@ import { UseFetchAPIQuery } from '@/Hook/UseFetchAPIQuery'
 import { useEffect, useState } from 'react'
 import { useParams } from 'react-router-dom'
 import { motion } from 'framer-motion'
+import Breadcrumb from '@/components/common/Breadcrumb/Breadcrumb'
+
 const PackageDetail = () => {
     const { id } = useParams()
-
 
     const { data: currentPackageList } = UseFetchAPIQuery({
         key: ["currentPackageDetail", { id }],
@@ -17,7 +18,6 @@ const PackageDetail = () => {
     });
 
     const [activeTab, setActiveTab] = useState(1);
-
 
     const tabberConfig = [
         {
@@ -30,15 +30,29 @@ const PackageDetail = () => {
             text: 'Day to Day',
             component: <ItineraryExpandDay currentPackage={currentPackageList?.data} />
         },
-
     ]
 
     useEffect(() => {
         window.scrollTo(0, 0);
     }, [id]);
 
+    const packageName = currentPackageList?.data?.packageName;
+    const packageType = currentPackageList?.data?.packageType;
+
     return (
         <div>
+            {/* Breadcrumb */}
+            <div className="px-4 sm:px-8 lg:px-8 pt-20 sm:pt-24">
+                <Breadcrumb
+                    items={[
+                        { label: "Home", href: "/" },
+                        { label: "All Packages", href: "/allpackage" },
+                        ...(packageType ? [{ label: packageType }] : []),
+                        ...(packageName ? [{ label: packageName }] : []),
+                    ]}
+                    className="text-gray-300"
+                />
+            </div>
 
             {/* Container */}
             <div className="mx-auto p-4 lg:p-8 grid grid-cols-1 lg:grid-cols-12 gap-8">

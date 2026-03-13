@@ -2,70 +2,44 @@ import Skeleton from 'react-loading-skeleton';
 
 const PackageCardSkeleton = () => {
     return (
-        <div className="flex flex-col w-full max-w-7xl mx-auto p-2 sm:p-5">
-            <div className="relative flex flex-col md:flex-row bg-white rounded-2xl overflow-hidden shadow-xl w-full">
+        <div className="flex flex-col w-full h-full bg-white rounded-xl overflow-hidden shadow-md border border-gray-200">
+            {/* Image Placeholder */}
+            <div className="w-full h-[220px] sm:h-[240px] flex-shrink-0">
+                <Skeleton height="100%" containerClassName="h-full block" style={{ borderRadius: 0, height: '100%' }} />
+            </div>
 
-                {/* Image Placeholder */}
-                <div className="w-full sm:w-[55%] h-[300px] md:h-auto">
-                    <Skeleton height="100%" containerClassName="h-full block" style={{ borderRadius: 0, height: '100%' }} />
+            {/* Content Placeholder */}
+            <div className="flex flex-col flex-1 p-5 gap-4">
+                {/* Title & Location Placeholder */}
+                <div className="flex items-start justify-between gap-2">
+                    <div className="flex flex-col gap-2 w-full">
+                        <Skeleton height={20} width="80%" />
+                        <Skeleton height={16} width="50%" />
+                    </div>
+                    <div className="w-8 flex-shrink-0">
+                        <Skeleton circle height={32} width={32} />
+                    </div>
                 </div>
 
-                {/* Content Placeholder */}
-                <div className="flex flex-col justify-center gap-6 p-8 md:w-[45%] w-full">
+                {/* Badges row Placeholder */}
+                <div className="flex flex-wrap items-center gap-x-4 gap-y-2 mt-2">
+                    <Skeleton height={24} width={100} borderRadius={6} />
+                    <Skeleton height={24} width={60} borderRadius={6} />
+                </div>
 
-                    {/* Location & Heart */}
-                    <div className="flex justify-between items-center">
-                        <div className="w-32">
-                            <Skeleton height={24} />
-                        </div>
-                        <div className="w-8">
-                            <Skeleton circle height={32} width={32} />
-                        </div>
+                {/* Footer Placeholder (pricing & buttons) */}
+                <div className="mt-auto pt-4 flex flex-col gap-4 border-t border-gray-100">
+                    {/* Pricing */}
+                    <div className="flex items-center gap-2">
+                        <Skeleton height={14} width={40} />
+                        <Skeleton height={16} width={60} />
+                        <Skeleton height={24} width={80} />
                     </div>
 
-                    {/* Details (Days, Rating) */}
-                    <div className="flex flex-col gap-4">
-                        <div className="flex items-center gap-3">
-                            <div className="w-6">
-                                <Skeleton height={24} width={24} />
-                            </div>
-                            <div className="w-24">
-                                <Skeleton height={16} />
-                            </div>
-                        </div>
-                        <div className="flex items-center gap-3">
-                            <div className="w-6">
-                                <Skeleton height={24} width={24} />
-                            </div>
-                            <div className="w-20">
-                                <Skeleton height={16} />
-                            </div>
-                        </div>
-                    </div>
-
-                    {/* Price & Contact */}
-                    <div className="mt-2 flex flex-col gap-4">
-                        <div className="flex justify-between items-center">
-                            <div className="w-12">
-                                <Skeleton height={16} />
-                            </div>
-                            <div className="w-28">
-                                <Skeleton height={24} />
-                            </div>
-                        </div>
-
-                        <div className="w-full h-[2px] ">
-                            <Skeleton height={2} />
-                        </div>
-
-                        <div className="flex justify-between items-center gap-4">
-                            <div className="w-10">
-                                <Skeleton height={40} width={40} />
-                            </div>
-                            <div className="w-full">
-                                <Skeleton height={40} borderRadius={8} />
-                            </div>
-                        </div>
+                    {/* Actions */}
+                    <div className="flex items-stretch gap-2 w-full mt-1">
+                        <Skeleton height={40} width={40} borderRadius={8} />
+                        <Skeleton height={40} width="100%" borderRadius={8} />
                     </div>
                 </div>
             </div>
