@@ -22,6 +22,7 @@ interface SelectFieldProps {
   labelClassName?: string;
   selectedValueClassName?: string;
   variant?: "classic" | "floating";
+  textColor?: string;
 }
 
 export const SelectField = ({
@@ -33,6 +34,7 @@ export const SelectField = ({
   labelClassName,
   selectedValueClassName,
   variant = "classic",
+  textColor = "text-zinc-800",
 }: SelectFieldProps) => {
   return (
     <Controller
@@ -46,7 +48,8 @@ export const SelectField = ({
               <Select value={field.value} onValueChange={field.onChange}>
                 <SelectTrigger
                   className={cn(
-                    "peer w-full h-12 pt-5 pb-1 px-3 border border-gray-200 rounded-lg bg-white focus:outline-none focus:ring-1 focus:ring-yellow-50/1 focus:border-yellow-400 transition-all duration-300 font-body text-gray-700 text-sm",
+                    "peer w-full h-12 pt-2 pb-1 px-3 border border-gray-200 rounded-lg bg-white focus:outline-none focus:ring-1 focus:ring-yellow-50/1 focus:border-yellow-400 transition-all duration-300 font-body text-sm",
+                    textColor,
                     selectedValueClassName,
                     error && "border-red-500 focus:border-red-500/2 focus:ring-red-500"
                   )}
@@ -63,7 +66,7 @@ export const SelectField = ({
                        transition-all duration-300 ease-out
 
                        /* Default resting */
-                       top-[50%] -translate-y-1/2 text-[14px] font-medium text-gray-400
+                       top-[39%] -translate-y-1/2 text-[14px] font-medium text-gray-400
 
                        /* When focused or has value */
                        ${field.value ? "top-0 -translate-y-1/2 text-xs text-yellow-600" : "group-focus-within:top-0 group-focus-within:-translate-y-1/2 group-focus-within:text-xs group-focus-within:text-yellow-600"}
@@ -111,7 +114,8 @@ export const SelectField = ({
                   "!border-none !ring-0 !shadow-none bg-transparent p-0 h-auto w-full",
                   "focus:!outline-none focus:!ring-0 focus:!border-none",
                   "[&_svg]:!hidden transition-all duration-300",
-                  "text-gray-500 text-sm placeholder:text-gray-400 cursor-pointer",
+                  "text-sm placeholder:text-gray-400 cursor-pointer",
+                  textColor,
                   selectedValueClassName,
                   error && "text-red-400"
                 )}

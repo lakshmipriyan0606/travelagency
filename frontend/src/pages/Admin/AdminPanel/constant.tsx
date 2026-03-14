@@ -19,8 +19,8 @@ export const adminMenu = [
     },
     {
         id: 4,
-        label: "Upload Image",
+        label: "Media Gallery",
         icon: "🖼️",
-        component: "UploadImage",
+        component: "MediaGallery",
     },
 ];

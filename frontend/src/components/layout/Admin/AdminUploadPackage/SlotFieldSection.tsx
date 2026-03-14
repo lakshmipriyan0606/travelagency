@@ -80,31 +80,48 @@ export const SlotFieldSection = ({ control, dayIndex, slotIndex, removeSlot }: S
                     </div>
 
                     <div className="lg:col-span-3 self-stretch">
-                        <div {...getRootProps()} className={`h-full min-h-[140px] border-2 border-dashed rounded-2xl transition-all cursor-pointer relative flex items-center justify-center overflow-hidden ${isDragActive ? "border-primary bg-primary/5" : "border-neutral-200 hover:border-primary/40 bg-white shadow-inner"}`}>
-                            <input {...getInputProps()} />
-                            
-                            {imagePreview ? (
+                        <div className={`h-full min-h-[140px] border-2 border-dashed rounded-2xl transition-all cursor-pointer relative flex items-center justify-center overflow-hidden ${isDragActive ? "border-primary bg-primary/5" : "border-neutral-200 hover:border-primary/40 bg-white shadow-inner"}`}>
+                            {!imagePreview && (
+                                <div {...getRootProps()} className="absolute inset-0 flex flex-col items-center justify-center z-10">
+                                    <input {...getInputProps()} />
+                                    <div className="flex flex-col items-center gap-1.5 text-neutral-400 group-hover/slot:text-primary transition-colors p-3">
+                                        <Camera size={20} />
+                                        <div className="text-center">
+                                            <p className="text-[9px] font-bold uppercase tracking-widest leading-tight">Drop Image</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            )}
+
+                             {imagePreview ? (
                                 <div className="absolute inset-0 group/img">
                                     <img src={imagePreview} className="w-full h-full object-cover transition-transform duration-700 group-hover/img:scale-110" alt="Slot" />
                                     <div className="absolute inset-0 bg-black/40 opacity-0 group-hover/img:opacity-100 transition-opacity flex items-center justify-center">
-                                       <span className="text-[9px] text-white font-bold uppercase tracking-widest bg-white/20 backdrop-blur-md px-2.5 py-1 rounded-full border border-white/20">Change</span>
+                                        <div {...getRootProps()} className="cursor-pointer">
+                                            <input {...getInputProps()} />
+                                            <span className="text-[9px] text-white font-bold uppercase tracking-widest bg-white/20 backdrop-blur-md px-2.5 py-1 rounded-full border border-white/20">Change File</span>
+                                        </div>
                                     </div>
                                     <button 
                                         type="button" 
                                         onClick={(e) => { e.stopPropagation(); removeImage(); }} 
-                                        className="absolute top-1.5 right-1.5 w-7 h-7 bg-black/60 backdrop-blur-md text-white rounded-full flex items-center justify-center hover:bg-red-500 transition-colors z-10"
+                                        className="absolute top-1.5 right-1.5 w-7 h-7 bg-black/60 backdrop-blur-md text-white rounded-full flex items-center justify-center hover:bg-red-500 transition-colors z-20"
                                     >
                                         <X size={12} />
                                     </button>
                                 </div>
-                            ) : (
-                                <div className="flex flex-col items-center gap-1.5 text-neutral-400 group-hover/slot:text-primary transition-colors p-3">
-                                    <Camera size={20} />
-                                    <div className="text-center">
-                                        <p className="text-[9px] font-bold uppercase tracking-widest leading-tight">Image</p>
-                                    </div>
+                             ) : (
+                                <div className="absolute bottom-0 left-0 right-0 p-2 bg-neutral-50 border-t border-neutral-100 flex gap-1 z-20">
+                                    <input 
+                                        type="text" 
+                                        placeholder="Or Paste URL..." 
+                                        value={typeof currentImage === 'string' ? currentImage : ""}
+                                        onChange={(e) => setValue(`days.${dayIndex}.slots.${slotIndex}.imageUrl`, e.target.value)}
+                                        onKeyDown={(e) => e.key === 'Enter' && e.preventDefault()}
+                                        className="w-full bg-white border border-neutral-200 px-2 py-1 rounded-lg text-[8px] focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none"
+                                    />
                                 </div>
-                            )}
+                             )}
                         </div>
                     </div>
                 </div>

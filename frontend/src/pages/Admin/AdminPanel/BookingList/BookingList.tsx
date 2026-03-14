@@ -1,23 +1,24 @@
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { 
-    Dialog, 
-    DialogContent 
+import {
+    Dialog,
+    DialogContent
 } from "@/components/ui/dialog";
-import { 
-    Loader2, 
-    Mail, 
-    Phone, 
-    MapPin, 
-    Users, 
-    Info, 
+import {
+    Loader2,
+    Mail,
+    Phone,
+    MapPin,
+    Users,
+    Info,
     ExternalLink,
     ChevronRight,
     Search,
     Filter
 } from "lucide-react";
-import { UseFetchAPIQuery } from "@/Hook/UseFetchAPIQuery";
 import { GetAllBookings } from "@/api/admin/auth.api";
+import whatsappIcon from "@/assets/icons/whatsapp.svg";
+import { UseFetchAPIQuery } from "@/Hook/UseFetchAPIQuery";
 
 interface Booking {
     _id: string;
@@ -47,7 +48,7 @@ export default function BookingAdminPage() {
         queryFn: GetAllBookings,
     });
 
-    const filteredBookings = data?.bookings?.filter(b => 
+    const filteredBookings = data?.bookings?.filter(b =>
         (b.name?.toLowerCase() || "").includes(searchQuery.toLowerCase()) ||
         (b.bookingId?.toLowerCase() || "").includes(searchQuery.toLowerCase()) ||
         (b.destination?.toLowerCase() || "").includes(searchQuery.toLowerCase())
@@ -96,8 +97,8 @@ export default function BookingAdminPage() {
                 <div className="flex items-center gap-3">
                     <div className="relative group">
                         <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-neutral-400 group-focus-within:text-primary transition-colors" />
-                        <input 
-                            type="text" 
+                        <input
+                            type="text"
                             placeholder="Search bookings..."
                             value={searchQuery}
                             onChange={(e) => setSearchQuery(e.target.value)}
@@ -123,12 +124,12 @@ export default function BookingAdminPage() {
                     <AnimatePresence mode="popLayout">
                         {filteredBookings && filteredBookings.length > 0 ? (
                             filteredBookings.map((b) => (
-                                <motion.div 
+                                <motion.div
                                     layout
                                     initial={{ opacity: 0 }}
                                     animate={{ opacity: 1 }}
                                     exit={{ opacity: 0 }}
-                                    key={b._id} 
+                                    key={b._id}
                                     className="grid grid-cols-12 gap-4 px-6 py-5 items-center hover:bg-neutral-50/50 transition-colors group"
                                 >
                                     <div className="col-span-3">
@@ -160,24 +161,24 @@ export default function BookingAdminPage() {
                                             <a href={`mailto:${b.email}`} className="w-8 h-8 rounded-full bg-neutral-100 flex items-center justify-center text-neutral-400 hover:bg-primary/20 hover:text-primary transition-all">
                                                 <Mail size={14} />
                                             </a>
-                                            <a 
-                                                href={`tel:${b.phone}`} 
+                                            <a
+                                                href={`tel:${b.phone}`}
                                                 className="w-8 h-8 rounded-full bg-neutral-100 flex items-center justify-center text-neutral-400 hover:bg-green-100 hover:text-green-600 transition-all"
                                                 title="Call Customer"
                                             >
                                                 <Phone size={14} />
                                             </a>
-                                            <button 
+                                            <button
                                                 onClick={() => handleWhatsApp(b.whatsapp || b.phone, b.name)}
-                                                className="w-8 h-8 rounded-full bg-neutral-100 flex items-center justify-center text-neutral-400 hover:bg-emerald-100 hover:text-emerald-600 transition-all"
+                                                className="w-8 h-8 rounded-full bg-neutral-100 flex items-center justify-center text-emerald-500 hover:bg-emerald-50 hover:scale-110 transition-all border border-neutral-100"
                                                 title="WhatsApp Message"
                                             >
-                                                <Phone size={14} className="rotate-0" />
+                                                <img src={whatsappIcon} alt="WA" className="w-10 h-10" />
                                             </button>
                                         </div>
                                     </div>
                                     <div className="col-span-1 text-right">
-                                        <button 
+                                        <button
                                             onClick={() => setSelected(b)}
                                             className="inline-flex items-center justify-center w-9 h-9 bg-neutral-100 text-neutral-400 rounded-xl hover:bg-primary hover:text-white transition-all shadow-sm group-hover:scale-105"
                                         >
@@ -270,33 +271,33 @@ export default function BookingAdminPage() {
                                     <div>
                                         <h4 className="text-[11px] font-bold text-neutral-400 uppercase tracking-widest mb-3">Trip Preferences</h4>
                                         <div className="bg-neutral-50 rounded-2xl p-5 border border-neutral-100 space-y-4">
-                                            <div className="flex justify-between items-center bg-white p-3 rounded-xl border border-neutral-100 shadow-sm">
-                                                <span className="text-xs font-bold text-neutral-400 uppercase tracking-widest">Destination</span>
-                                                <span className="text-sm font-bold text-neutral-800">{selected.destination}</span>
+                                            <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center bg-white p-3.5 rounded-xl border border-neutral-100 shadow-sm gap-2">
+                                                <span className="text-[10px] font-bold text-neutral-400 uppercase tracking-widest whitespace-nowrap">Destination</span>
+                                                <span className="text-sm font-bold text-neutral-800 text-right">{selected.destination}</span>
                                             </div>
-                                            <div className="flex justify-between items-center bg-white p-3 rounded-xl border border-neutral-100 shadow-sm">
-                                                <span className="text-xs font-bold text-neutral-400 uppercase tracking-widest">Group Size</span>
-                                                <span className="text-sm font-bold text-neutral-800">{selected.noOfPeople || 1} Person(s)</span>
+                                            <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center bg-white p-3.5 rounded-xl border border-neutral-100 shadow-sm gap-2">
+                                                <span className="text-[10px] font-bold text-neutral-400 uppercase tracking-widest whitespace-nowrap">Group Size</span>
+                                                <span className="text-sm font-bold text-neutral-800 text-right">{selected.noOfPeople || 1} Person(s)</span>
                                             </div>
-                                            <div className="flex justify-between items-center bg-white p-3 rounded-xl border border-neutral-100 shadow-sm">
-                                                <span className="text-xs font-bold text-neutral-400 uppercase tracking-widest">Style</span>
+                                            <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center bg-white p-3.5 rounded-xl border border-neutral-100 shadow-sm gap-2">
+                                                <span className="text-[10px] font-bold text-neutral-400 uppercase tracking-widest whitespace-nowrap">Style</span>
                                                 <span className="px-2 py-0.5 bg-primary/10 text-primary text-[10px] font-bold rounded-full uppercase tracking-widest">{selected.vacationType || "General"}</span>
                                             </div>
                                         </div>
                                     </div>
                                     <div className="flex gap-3">
-                                        <button 
+                                        <button
                                             onClick={() => handleQuickReply(selected.email, selected.name, selected.bookingId)}
                                             className="flex-1 py-3 bg-neutral-800 text-white rounded-2xl font-bold text-sm hover:bg-neutral-900 transition-all shadow-lg shadow-neutral-200"
                                         >
                                             Quick Reply
                                         </button>
-                                        <button 
+                                        <button
                                             onClick={() => handleWhatsApp(selected.whatsapp || selected.phone, selected.name)}
-                                            className="w-12 h-12 flex items-center justify-center bg-green-500 text-white rounded-2xl hover:bg-green-600 transition-all shadow-lg shadow-green-200"
+                                            className="w-12 h-12 flex items-center justify-center"
                                             title="WhatsApp Message"
                                         >
-                                            <Phone size={20} />
+                                            <img src={whatsappIcon} alt="WA" className="w-10 h-10" />
                                         </button>
                                     </div>
                                 </section>

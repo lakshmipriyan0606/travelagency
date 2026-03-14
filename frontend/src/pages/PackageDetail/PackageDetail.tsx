@@ -66,7 +66,7 @@ const PackageDetail = () => {
                             <h1 className='text-bold text-2xl pb-2'>{currentPackageList?.data?.packageName}</h1>
                             <h6 className='pb-6'>Book your dream vacation <span className='text-primary'>Today!</span></h6>
                         </div>
-                        <BookingFomField />
+                        <BookingFomField fieldClassName="text-gray-800" />
                     </div>
 
                     <div className='font-body mt-7'>
@@ -120,7 +120,7 @@ const PackageDetail = () => {
                             <h1 className='text-bold text-2xl pb-2'>{currentPackageList?.data?.packageName}</h1>
                             <h6 className='text-gray-800'>Book your dream vacation <span className='text-primary font-medium'>Today!</span></h6>
                         </div>
-                        <BookingFomField />
+                        <BookingFomField fieldClassName="text-gray-800" />
                     </div>
                 </div>
             </div>

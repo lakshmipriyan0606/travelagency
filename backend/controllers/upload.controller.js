@@ -26,3 +26,25 @@ export const uploadImage = async (req, res) => {
     return res.status(500).json({ message: error.message || "Server error" });
   }
 };
+
+export const getAllImages = async (req, res) => {
+  try {
+    // Note: Cloudinary Admin API might require specific permissions or be rate-limited
+    // We use the search API or resources API
+    const result = await cloudinary.api.resources({
+      type: "upload",
+      prefix: "uploads/", // Only images from our 'uploads' folder
+      max_results: 100,
+    });
+
+    const images = result.resources.map((resource) => ({
+      url: resource.secure_url,
+      publicId: resource.public_id,
+      createdAt: resource.created_at,
+    }));
+
+    return res.status(200).json({ images });
+  } catch (error) {
+    return res.status(500).json({ message: error.message || "Failed to fetch images" });
+  }
+};

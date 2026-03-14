@@ -1,10 +1,11 @@
 import express from "express";
 import { protectRoute } from "../middlewares/auth.middleware.js";
 import { upload } from "../config/multer.js";
-import { uploadImage } from "../controllers/upload.controller.js";
+import { uploadImage, getAllImages } from "../controllers/upload.controller.js";
 
 const router = express.Router();
 
 router.post("/image", protectRoute, upload.single("image"), uploadImage);
+router.get("/all", protectRoute, getAllImages);
 
 export default router;

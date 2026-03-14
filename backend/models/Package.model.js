@@ -16,6 +16,7 @@ const packageSchema = new mongoose.Schema(
     isActive: { type: Boolean, default: true },
     status: { type: String, enum: ['Active', 'Inactive'], default: 'Active' },
     images: [String],
+    isDeleted: { type: Boolean, default: false },
     createdBy: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "User",

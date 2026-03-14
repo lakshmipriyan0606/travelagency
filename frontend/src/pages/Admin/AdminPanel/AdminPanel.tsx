@@ -7,6 +7,7 @@ import BookingAdminPage from './BookingList/BookingList'
 import { UseFetchAPIQuery } from "@/Hook/UseFetchAPIQuery";
 import { GetAllPackageList } from "@/api/user/api";
 import UploadImagePage from "./UploadImage/UploadImage";
+import MediaGallery from "./MediaGallery/MediaGallery";
 
 interface FilterPackageProps {
     isAdmin: boolean;
@@ -45,6 +46,7 @@ const AdminPanel = () => {
             case "AllPackages": return <FilterPackage />;
             case "FormList": return <BookingAdminPage />;
             case "UploadImage": return <UploadImagePage />;
+            case "MediaGallery": return <MediaGallery />;
             default: return <div>Page Not Found</div>;
         }
     };

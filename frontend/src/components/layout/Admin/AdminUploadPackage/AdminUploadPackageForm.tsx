@@ -10,9 +10,11 @@ import {
   X,
   Plus,
   Loader2,
-  ArrowRight
+  ArrowRight,
+  ChevronRight
 } from "lucide-react";
 import { useForm, useFieldArray, FormProvider } from "react-hook-form";
+import { toast } from "react-toastify";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
 import { useState, useCallback, useEffect, useContext } from "react";
@@ -70,6 +72,8 @@ interface MainImagesUploaderProps {
 }
 
 function MainImagesUploader({ mainImageFiles, setMainImageFiles, mainImageUrls, setMainImageUrls }: MainImagesUploaderProps) {
+  const [urlInput, setUrlInput] = useState("");
+
   const onDrop = useCallback((acceptedFiles: File[]) => {
     setMainImageFiles(prev => [...prev, ...acceptedFiles]);
   }, [setMainImageFiles]);
@@ -78,6 +82,12 @@ function MainImagesUploader({ mainImageFiles, setMainImageFiles, mainImageUrls, 
     accept: { "image/*": [] },
     onDrop,
   });
+
+  const handleAddUrl = () => {
+    if (!urlInput.trim()) return;
+    setMainImageUrls(prev => [...prev, urlInput.trim()]);
+    setUrlInput("");
+  };
 
   const removeFile = (file: File) => {
     setMainImageFiles(prev => prev.filter(f => f !== file));
@@ -88,17 +98,37 @@ function MainImagesUploader({ mainImageFiles, setMainImageFiles, mainImageUrls, 
   };
 
   return (
-    <div className="space-y-4">
-      <div {...getRootProps()} className={`border-2 border-dashed rounded-3xl p-10 text-center transition-all cursor-pointer ${isDragActive ? "border-primary bg-primary/5 shadow-inner" : "border-neutral-200 hover:border-primary/50 hover:bg-neutral-50"}`}>
-        <input {...getInputProps()} />
-        <div className="flex flex-col items-center gap-3">
-          <div className="w-14 h-14 bg-neutral-100 rounded-2xl flex items-center justify-center text-neutral-400 group-hover:text-primary transition-colors">
-            <Upload size={28} />
+    <div className="space-y-6">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        {/* Upload Box */}
+        <div {...getRootProps()} className={`border-2 border-dashed rounded-3xl p-6 text-center transition-all cursor-pointer ${isDragActive ? "border-primary bg-primary/5 shadow-inner" : "border-neutral-200 hover:border-primary/50 hover:bg-neutral-50"}`}>
+          <input {...getInputProps()} />
+          <div className="flex flex-col items-center gap-2">
+            <div className="w-10 h-10 bg-neutral-100 rounded-xl flex items-center justify-center text-neutral-400 group-hover:text-primary transition-colors">
+              <Upload size={20} />
+            </div>
+            <div>
+              <p className="text-neutral-700 text-xs font-bold uppercase tracking-tight">Drop Image Here</p>
+              <p className="text-neutral-400 text-[10px] mt-0.5 font-medium">Click to browse your files</p>
+            </div>
           </div>
-          <div>
-            <p className="text-neutral-700 font-bold">Upload Gallery Images</p>
-            <p className="text-neutral-400 text-sm mt-1">Drag and drop or click to browse</p>
+        </div>
+
+        {/* URL Box */}
+        <div className="border border-neutral-200 rounded-3xl p-6 bg-neutral-50/30 flex flex-col justify-center">
+          <p className="text-neutral-700 text-[10px] font-black uppercase tracking-widest mb-3 opacity-60">Pasted URL from Gallery</p>
+          <div className="flex gap-2">
+            <input
+              type="text"
+              placeholder="https://cloudinary.com/..."
+              value={urlInput}
+              onChange={(e) => setUrlInput(e.target.value)}
+              onKeyDown={(e) => e.key === 'Enter' && (e.preventDefault(), handleAddUrl())}
+              className="flex-1 bg-white border border-neutral-200 px-3 py-2 rounded-xl text-xs focus:ring-4 focus:ring-primary/10 focus:border-primary outline-none transition-all shadow-sm"
+            />
+            <Button type="button" onClick={handleAddUrl} size="sm" className="rounded-xl h-9 px-4 font-bold text-[10px] uppercase">Add</Button>
           </div>
+          <p className="text-[10px] text-neutral-400 mt-2 font-medium italic">Paste images from your Media Gallery here</p>
         </div>
       </div>
 
@@ -110,10 +140,11 @@ function MainImagesUploader({ mainImageFiles, setMainImageFiles, mainImageUrls, 
               <button
                 type="button"
                 onClick={() => removeUrl(url)}
-                className="absolute top-2 right-2 w-8 h-8 bg-black/50 backdrop-blur-md rounded-full text-white flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all hover:bg-red-500"
+                className="absolute top-2 right-2 w-7 h-7 bg-black/50 backdrop-blur-md rounded-full text-white flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all hover:bg-red-500"
               >
-                <X size={16} />
+                <X size={14} />
               </button>
+              <span className="absolute bottom-2 left-2 px-2 py-0.5 bg-emerald-500 text-white text-[8px] font-black rounded uppercase tracking-tighter shadow-sm">By URL</span>
             </div>
           ))}
 
@@ -124,11 +155,11 @@ function MainImagesUploader({ mainImageFiles, setMainImageFiles, mainImageUrls, 
               <button
                 type="button"
                 onClick={() => removeFile(file)}
-                className="absolute top-2 right-2 w-8 h-8 bg-black/50 backdrop-blur-md rounded-full text-white flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all hover:bg-red-500"
+                className="absolute top-2 right-2 w-7 h-7 bg-black/50 backdrop-blur-md rounded-full text-white flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all hover:bg-red-500"
               >
-                <X size={16} />
+                <X size={14} />
               </button>
-              <span className="absolute bottom-2 left-2 px-2 py-0.5 bg-primary text-white text-[8px] font-bold rounded uppercase">New</span>
+              <span className="absolute bottom-2 left-2 px-2 py-0.5 bg-primary text-white text-[8px] font-black rounded uppercase tracking-tighter shadow-sm">Uploaded</span>
             </div>
           ))}
         </div>
@@ -156,16 +187,24 @@ export default function AdminUploadPackageForm() {
 
   const { mutate } = useMutationAPIQuery(CreatePackage, {
     onSuccess: () => {
+      toast.success("Package created successfully!");
       reset();
       setActive("AllPackages");
       packageAPIDetail?.refetch();
+    },
+    onError: (error: any) => {
+      toast.error(error?.message || "Failed to create package");
     }
   });
   const { mutate: updateMutate } = useMutationAPIQuery((data: any) => UpdatePackage(data, id), {
     onSuccess: () => {
+      toast.success("Package updated successfully!");
       reset();
       setActive("AllPackages");
       packageAPIDetail?.refetch();
+    },
+    onError: (error: any) => {
+      toast.error(error?.message || "Failed to update package");
     }
   });
 
@@ -193,6 +232,7 @@ export default function AdminUploadPackageForm() {
       status: "Active",
       days: [{ dayTitle: "", slots: [{ slotType: "", title: "", description: "", imageUrl: "" }] }]
     },
+    mode: 'onChange'
   });
 
   const { control, handleSubmit, watch, reset, formState } = methods;
@@ -228,34 +268,53 @@ export default function AdminUploadPackageForm() {
     setMainImageFiles([]);
   }, [id, data?.data, reset]);
 
-  const onSubmit = (values: any) => {
+  const onSubmit = async (values: any) => {
+    // SECURITY: Ensure we are absolutely on the last step before submitting
+    const isLastStep = activeStep === steps.length - 1;
+    if (!isLastStep) return;
+
     setIsSubmitting(true);
-    const formData = new FormData();
-    Object.entries(values).forEach(([key, val]) => {
-      if (key !== "days") formData.append(key, val as any);
-    });
-    formData.append("existingImages", JSON.stringify(mainImageUrls));
-    mainImageFiles.forEach(file => formData.append("images", file));
-    const daysClean = values.days.map((day: any) => ({
-      dayTitle: day.dayTitle,
-      slots: day.slots.map((slot: any) => ({
-        slotType: slot.slotType,
-        title: slot.title,
-        description: slot.description,
-        imageUrl: slot.imageUrl instanceof File ? undefined : slot.imageUrl,
-      }))
-    }));
-    formData.append("days", JSON.stringify(daysClean));
-    values.days.forEach((day: any, dIndex: number) => {
-      day.slots.forEach((slot: any, sIndex: number) => {
-        if (slot.imageUrl instanceof File) formData.append(`slotImage_${dIndex}_${sIndex}`, slot.imageUrl);
+    try {
+      const formData = new FormData();
+      Object.entries(values).forEach(([key, val]) => {
+        if (key !== "days") formData.append(key, val as any);
       });
-    });
-    id ? updateMutate(formData) : mutate(formData);
-    setIsSubmitting(false);
+      formData.append("existingImages", JSON.stringify(mainImageUrls));
+      mainImageFiles.forEach(file => formData.append("images", file));
+      
+      const daysClean = values.days.map((day: any) => ({
+        dayTitle: day.dayTitle,
+        slots: day.slots.map((slot: any) => ({
+          slotType: slot.slotType,
+          title: slot.title,
+          description: slot.description,
+          imageUrl: slot.imageUrl instanceof File ? undefined : slot.imageUrl,
+        }))
+      }));
+      formData.append("days", JSON.stringify(daysClean));
+      
+      values.days.forEach((day: any, dIndex: number) => {
+        day.slots.forEach((slot: any, sIndex: number) => {
+          if (slot.imageUrl instanceof File) {
+            formData.append(`slotImage_${dIndex}_${sIndex}`, slot.imageUrl);
+          }
+        });
+      });
+
+      if (id) {
+        await updateMutate(formData);
+      } else {
+        await mutate(formData);
+      }
+    } catch (error) {
+      console.error("Submission error:", error);
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
-  const nextStep = async () => {
+  const nextStep = async (e?: React.MouseEvent) => {
+    e?.preventDefault();
     // Only validate the fields in the current step if needed, or validate all for simplicity
     const fieldsByStep = [
       ["packageName", "packageDescription", "location", "country", "packageType", "daysAndNights"],
@@ -273,7 +332,7 @@ export default function AdminUploadPackageForm() {
   const { fields: dayFields, append: addDay, remove: removeDay } = useFieldArray({ control, name: "days" });
 
   const SectionHeader = ({ icon: Icon, title, subtitle }: { icon: any, title: string, subtitle?: string }) => (
-    <div className="flex items-center gap-3 justify-center">
+    <div className="flex items-center gap-3 justify-center pt-4">
       <div className="w-8 h-8 rounded-lg bg-primary/10 flex items-center justify-center text-primary shadow-sm border border-primary/10">
         <Icon size={18} />
       </div>
@@ -345,7 +404,7 @@ export default function AdminUploadPackageForm() {
                     {isCompleted ? <CheckCircle size={20} /> : <Icon size={20} />}
                   </button>
                   <div className="absolute -bottom-8 whitespace-nowrap text-center">
-                    <p className={`text-[8px] font-bold uppercase tracking-wider ${isActive ? "text-primary scale-105" : "text-neutral-400 opacity-60"}`}>
+                    <p className={`text-[9px] font-bold uppercase tracking-wider ${isActive ? "text-primary scale-105" : "text-neutral-400 opacity-60"}`}>
                       {step.title}
                     </p>
                   </div>
@@ -355,7 +414,15 @@ export default function AdminUploadPackageForm() {
           </div>
         </div>
 
-        <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
+        <form
+          onSubmit={handleSubmit(onSubmit)}
+          className="space-y-6"
+          onKeyDown={(e) => {
+            if (e.key === 'Enter' && (e.target as HTMLElement).tagName !== 'TEXTAREA') {
+              e.preventDefault();
+            }
+          }}
+        >
           <div className="px-4">
             {activeStep === 0 && (
               <div className="animate-in fade-in slide-in-from-right-4 duration-500">
@@ -387,7 +454,7 @@ export default function AdminUploadPackageForm() {
             )}
 
             {activeStep === 1 && (
-              <div className="animate-in fade-in slide-in-from-right-4 duration-500 grid grid-cols-1 lg:grid-cols-3 gap-6">
+              <div className="animate-in fade-in slide-in-from-right-4 duration-500 grid grid-cols-1 lg:grid-cols-3 gap-2">
                 <Card className="lg:col-span-2 p-6 border border-neutral-200/60 shadow-xl shadow-neutral-200/30 rounded-[24px] bg-white/80 backdrop-blur-md">
                   <SectionHeader icon={Tag} title="Pricing Details" subtitle="Set the value and competitive offers" />
                   <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mt-6">
@@ -442,7 +509,7 @@ export default function AdminUploadPackageForm() {
             {activeStep === 2 && (
               <div className="animate-in fade-in slide-in-from-right-4 duration-500">
                 <Card className="p-8 border border-neutral-200/60 shadow-2xl shadow-neutral-200/40 rounded-[32px] bg-white/80 backdrop-blur-md">
-                  <SectionHeader icon={ImageIcon} title="Media Library" subtitle="High-quality visuals for your package" />
+                  <SectionHeader icon={ImageIcon} title="Main Image" subtitle="High-quality visuals for your package" />
                   <div className="mt-6">
                     <MainImagesUploader
                       mainImageFiles={mainImageFiles}
@@ -499,11 +566,11 @@ export default function AdminUploadPackageForm() {
               {activeStep < steps.length - 1 ? (
                 <button
                   type="button"
-                  onClick={nextStep}
+                  onClick={(e) => nextStep(e)}
                   className="flex-1 py-3 rounded-xl font-bold text-[10px] tracking-wider uppercase text-white bg-neutral-800 hover:bg-neutral-900 shadow-lg shadow-neutral-200 transition-all flex items-center justify-center gap-2"
                 >
                   <span>Next Step</span>
-                  <ArrowRight size={14} className="rotate-45" />
+                  <ArrowRight size={14} />
                 </button>
               ) : (
                 <button

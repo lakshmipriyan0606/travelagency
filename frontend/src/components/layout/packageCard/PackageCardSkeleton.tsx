@@ -2,44 +2,60 @@ import Skeleton from 'react-loading-skeleton';
 
 const PackageCardSkeleton = () => {
     return (
-        <div className="flex flex-col w-full h-full bg-white rounded-xl overflow-hidden shadow-md border border-gray-200">
-            {/* Image Placeholder */}
-            <div className="w-full h-[220px] sm:h-[240px] flex-shrink-0">
-                <Skeleton height="100%" containerClassName="h-full block" style={{ borderRadius: 0, height: '100%' }} />
-            </div>
-
-            {/* Content Placeholder */}
-            <div className="flex flex-col flex-1 p-5 gap-4">
-                {/* Title & Location Placeholder */}
-                <div className="flex items-start justify-between gap-2">
-                    <div className="flex flex-col gap-2 w-full">
-                        <Skeleton height={20} width="80%" />
-                        <Skeleton height={16} width="50%" />
-                    </div>
-                    <div className="w-8 flex-shrink-0">
-                        <Skeleton circle height={32} width={32} />
-                    </div>
+        <div className="sm:p-2">
+            <div className="relative flex flex-col bg-white rounded-2xl overflow-hidden shadow-xl text-gray-900 border border-neutral-100/50">
+                {/* Image Placeholder - Matching InnerCarousel aspect ratio */}
+                <div className="w-full aspect-[4/3] flex-shrink-0">
+                    <Skeleton height="100%" containerClassName="h-full block" style={{ borderRadius: 0 }} />
                 </div>
 
-                {/* Badges row Placeholder */}
-                <div className="flex flex-wrap items-center gap-x-4 gap-y-2 mt-2">
-                    <Skeleton height={24} width={100} borderRadius={6} />
-                    <Skeleton height={24} width={60} borderRadius={6} />
-                </div>
-
-                {/* Footer Placeholder (pricing & buttons) */}
-                <div className="mt-auto pt-4 flex flex-col gap-4 border-t border-gray-100">
-                    {/* Pricing */}
-                    <div className="flex items-center gap-2">
-                        <Skeleton height={14} width={40} />
-                        <Skeleton height={16} width={60} />
-                        <Skeleton height={24} width={80} />
+                {/* Details Section - Matching p-2 from PackageCard */}
+                <div className="flex flex-col justify-center gap-3 p-2">
+                    {/* Location & Heart Row */}
+                    <div className="flex items-center justify-between gap-4">
+                        <div className="flex items-center gap-3">
+                            <Skeleton circle height={20} width={20} />
+                            <Skeleton height={18} width={120} />
+                        </div>
+                        <div className="p-2">
+                            <Skeleton circle height={24} width={24} />
+                        </div>
                     </div>
 
-                    {/* Actions */}
-                    <div className="flex items-stretch gap-2 w-full mt-1">
-                        <Skeleton height={40} width={40} borderRadius={8} />
-                        <Skeleton height={40} width="100%" borderRadius={8} />
+                    {/* Info Lines (Date, Rating) - Matching getOfferDetailsConfig */}
+                    <div className="space-y-3">
+                        <div className="flex items-center gap-3">
+                            <Skeleton height={18} width={18} className="rounded-md" />
+                            <Skeleton height={16} width={100} />
+                        </div>
+                        <div className="flex items-center gap-3">
+                            <Skeleton height={18} width={18} className="rounded-md" />
+                            <Skeleton height={16} width={60} />
+                        </div>
+                    </div>
+
+                    {/* Pricing & Actions Section - Matching mt-2 gap-3 */}
+                    <div className="mt-2 flex flex-col gap-3">
+                        <div className="flex items-center justify-between gap-4">
+                            <Skeleton height={20} width={40} />
+                            <div className="flex items-center gap-2">
+                                <Skeleton height={16} width={50} />
+                                <Skeleton height={24} width={80} />
+                            </div>
+                        </div>
+
+                        {/* Divider - h-[2px] bg-gray-300 */}
+                        <div className="w-full h-[2px] bg-gray-200/80" />
+
+                        {/* Button Row - Matching flex-col sm:flex-row gap-4 mt-2 */}
+                        <div className="flex flex-col sm:flex-row gap-4 mt-2 mb-1">
+                            <div className="flex items-center justify-center sm:justify-start">
+                                <Skeleton circle height={44} width={44} />
+                            </div>
+                            <div className="flex-1">
+                                <Skeleton height={44} className="rounded-xl" width="100%" />
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>

@@ -22,7 +22,8 @@ router.get("/bestpackages", async (req, res) => {
     console.log('userId: ', userId);
     const bestPackages = await PackageModel.find({ 
       isBestPackage: true,
-      isActive: { $ne: false } 
+      isActive: { $ne: false },
+      isDeleted: { $ne: true } 
     });
 
     const finalBestPackages = bestPackages.map((pkg) => {
@@ -56,7 +57,7 @@ router.get("/", async (req, res) => {
     const city = req.query.city;
 
     const isAdmin = req.query.isAdmin === 'true';
-    const query = isAdmin ? {} : { isActive: { $ne: false } };
+    const query = isAdmin ? { isDeleted: { $ne: true } } : { isActive: { $ne: false }, isDeleted: { $ne: true } };
     const andConditions = [];
 
     if (lastId) {
@@ -118,7 +119,7 @@ router.get("/", async (req, res) => {
 router.get("/likeCount", async (req, res) => {
   try {
     const userId = req?.headers?.userid;
-    const allPackage = await PackageModel.find();
+    const allPackage = await PackageModel.find({ isDeleted: { $ne: true } });
 
     const finalAllPackages = allPackage.map((pkg) => {
       const userLike = pkg.likes.find((like) => like.userId === userId);
@@ -154,7 +155,8 @@ router.get("/suggestions", async (req, res) => {
 
     // Search exact package names
     const packages = await PackageModel.find({
-      packageName: { $regex: q, $options: "i" }
+      packageName: { $regex: q, $options: "i" },
+      isDeleted: { $ne: true }
     })
       .select("packageName location") // only grab needed fields
       .limit(limit)
@@ -166,7 +168,8 @@ router.get("/suggestions", async (req, res) => {
       $or: [
         { location: { $regex: q, $options: "i" } },
         { city: { $regex: q, $options: "i" } }
-      ]
+      ],
+      isDeleted: { $ne: true }
     })
       .select("location city")
       .limit(20) // pull a small batch to extract uniques
@@ -196,7 +199,7 @@ router.get("/suggestions", async (req, res) => {
 
 router.get("/:id", async (req, res) => {
   try {
-    const currentPackage = await PackageModel.findOne({ _id: req.params.id });
+    const currentPackage = await PackageModel.findOne({ _id: req.params.id, isDeleted: { $ne: true } });
     res.status(200).json({
       data: currentPackage,
       message: "All best packages fetched successfully",
@@ -219,8 +222,11 @@ router.post(
 
 router.delete("/deletePackage/:id", async (req, res) => {
   try {
-    const deletedPackage = await PackageModel.findByIdAndDelete(req.params.id);
-    console.log('PackageModel: ', PackageModel);
+    const deletedPackage = await PackageModel.findByIdAndUpdate(
+      req.params.id,
+      { isDeleted: true },
+      { new: true }
+    );
 
     if (!deletedPackage) {
       return res.status(404).json({ message: "Package not found" });
@@ -236,7 +242,7 @@ router.post("/like", async (req, res) => {
   const { userId, id, liked } = req.body;
 
   try {
-    const pkg = await PackageModel.findById(id);
+    const pkg = await PackageModel.findOne({ _id: id, isDeleted: { $ne: true } });
     console.log("pkg: ", pkg);
 
     if (!pkg) return res.status(404).json({ message: "Package not found" });

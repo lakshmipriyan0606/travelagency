@@ -2,6 +2,7 @@ import { useState, useRef, useEffect } from "react";
 import { Search, MapPin, Package, Loader2 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { GetPackageSuggestions } from "@/api/user/api";
+import { NiceSelect } from "@/components/common/NiceSelect";
 
 interface FilterSearchBarProps {
     country: string;
@@ -86,25 +87,23 @@ export default function FilterSearchBar({
     return (
         <div className="relative w-full shadow-sm drop-shadow-sm border border-gray-200 rounded-md bg-gray-50 flex flex-col md:flex-row items-stretch md:items-center">
             {/* Left section: Dropdowns */}
-            <div className="flex flex-row divide-x divide-gray-200 bg-gray-100 rounded-t-md md:rounded-l-md md:rounded-tr-none">
-                <select
+            <div className="flex flex-row divide-x divide-gray-200 bg-gray-100/50 rounded-t-md md:rounded-l-md md:rounded-tr-none border-b md:border-b-0 md:border-r border-gray-200">
+                <NiceSelect
                     value={country}
-                    onChange={(e) => setCountry(e.target.value)}
-                    className="bg-transparent text-gray-700 font-medium text-sm px-4 py-3 outline-none cursor-pointer tracking-wider"
-                >
-                    <option value="Malaysia">MALAYSIA</option>
-                </select>
+                    onValueChange={(val) => setCountry(val)}
+                    options={[{ value: "Malaysia", label: "MALAYSIA" }]}
+                    triggerClassName="min-w-[120px]"
+                />
                 
-                <select
-                    value={city}
-                    onChange={(e) => setCity(e.target.value)}
-                    className="bg-transparent text-gray-700 font-medium text-sm px-4 py-3 outline-none cursor-pointer tracking-wider min-w-[140px]"
-                >
-                    <option value="">ALL CITIES</option>
-                    {cities.map((c) => (
-                        <option key={c} value={c}>{c.toUpperCase()}</option>
-                    ))}
-                </select>
+                <NiceSelect
+                    value={city || "ALL CITIES"}
+                    onValueChange={(val) => setCity(val === "ALL CITIES" ? "" : val)}
+                    options={[
+                        { value: "ALL CITIES", label: "ALL CITIES" },
+                        ...cities.map((c) => ({ value: c, label: c.toUpperCase() }))
+                    ]}
+                    triggerClassName="min-w-[150px]"
+                />
             </div>
 
             {/* Right section: Search input and button */}

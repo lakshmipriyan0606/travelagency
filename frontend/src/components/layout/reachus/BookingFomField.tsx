@@ -29,6 +29,7 @@ import type { ReactElement } from 'react';
 interface DynamicFieldProps {
     fieldConfig: FormFieldConfig;
     control: any;
+    fieldClassName?: string;
 }
 
 const IconMap: Record<FormFieldConfig['icon'], ReactElement> = {
@@ -42,7 +43,7 @@ const IconMap: Record<FormFieldConfig['icon'], ReactElement> = {
     Globe: <Globe size={18} className="text-yellow-600" />,
 };
 
-const DynamicField = ({ fieldConfig, control }: DynamicFieldProps) => {
+const DynamicField = ({ fieldConfig, control, fieldClassName }: DynamicFieldProps) => {
     return (
         <div className="flex items-center gap-3 py-2">
             <div className="flex-none w-9 h-9 rounded-full bg-yellow-50/90 border border-yellow-200 flex items-center justify-center">
@@ -57,7 +58,7 @@ const DynamicField = ({ fieldConfig, control }: DynamicFieldProps) => {
                         options={fieldConfig.options}
                         required={fieldConfig.required}
                         labelClassName="text-gray-500"
-                        selectedValueClassName="text-gray-200"
+                        selectedValueClassName={fieldClassName}
                     />
                 ) : fieldConfig.type === 'phone' ? (
                     <PhoneInputField
@@ -66,7 +67,7 @@ const DynamicField = ({ fieldConfig, control }: DynamicFieldProps) => {
                         label={fieldConfig.label}
                         required={fieldConfig.required}
                         labelClassName="text-gray-500"
-                        inputClassName="text-gray-200"
+                        inputClassName={fieldClassName}
                     />
                 ) : (
                     <ReusableInput
@@ -77,7 +78,7 @@ const DynamicField = ({ fieldConfig, control }: DynamicFieldProps) => {
                         placeholder={fieldConfig.placeholder}
                         required={fieldConfig.required}
                         labelClassName="text-gray-500"
-                        inputClassName="text-gray-200"
+                        inputClassName={fieldClassName}
                     />
                 )}
             </div>
@@ -87,7 +88,7 @@ const DynamicField = ({ fieldConfig, control }: DynamicFieldProps) => {
 
 // ─── BookingFomField ──────────────────────────────────────────────────────────
 
-const BookingFomField = () => {
+const BookingFomField = ({ fieldClassName = 'text-gray-200' }: { fieldClassName?: string }) => {
     const defaultValues = reachUsFormFields.reduce<Record<string, string>>(
         (acc, f) => ({ ...acc, [f.name]: '' }),
         {}
@@ -136,6 +137,7 @@ const BookingFomField = () => {
                             key={fieldConfig.name}
                             fieldConfig={fieldConfig}
                             control={control}
+                            fieldClassName={fieldClassName}
                         />
                     ))}
                 </div>

@@ -14,7 +14,8 @@ const iconMap: Record<string, any> = {
     "AllPackages": <LayoutDashboard size={20} />,
     "CreatePackage": <Package size={20} />,
     "FormList": <ClipboardList size={20} />,
-    "UploadImage": <ImageIcon size={20} />
+    "UploadImage": <ImageIcon size={20} />,
+    "MediaGallery": <ImageIcon size={20} />
 };
 
 export default function Sidebar({ active, onChange }: SidebarProps) {

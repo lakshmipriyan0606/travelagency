@@ -19,6 +19,7 @@ import { DeleteCurrentPackage } from "@/api/admin/auth.api";
 import { UpdateLikePackage } from "@/api/user/api";
 import { useQueryClient } from "@tanstack/react-query";
 import { WANumber } from "@/lib/utils";
+import { toast } from "react-toastify";
 
 interface Package {
     _id: string;
@@ -64,8 +65,13 @@ export default function PackageCard({
 
     const { mutate: DeleteMutate } = useMutationAPIQuery(DeleteCurrentPackage, {
         onSuccess: () => {
+            toast.success("Package deleted successfully");
+            queryClient.invalidateQueries({ queryKey: ["allPackage"] });
             refetch?.();
         },
+        onError: (error: any) => {
+            toast.error(error?.message || "Failed to delete package");
+        }
     });
 
 
@@ -131,21 +137,31 @@ export default function PackageCard({
                                 <SwiperSlide>
                                     <div className="relative flex flex-col bg-white rounded-2xl overflow-hidden shadow-xl text-gray-900">
                                         {isAdmin && (
-                                            <div className="absolute top-0 right-4 opacity-0 scale-90 translate-y-3 transition-all duration-300 group-hover:opacity-100 group-hover:scale-100 group-hover:translate-y-0 flex gap-4 z-30">
-                                                <Pencil
-                                                    className="w-6 h-6 text-gray-700 cursor-pointer hover:text-blue-600"
-                                                    onClick={() => {
+                                            <div className="absolute top-3 left-3 flex gap-2 z-40">
+                                                <button
+                                                    type="button"
+                                                    onClick={(e) => {
+                                                        e.stopPropagation();
                                                         setEditPackageId(offer._id);
                                                         setActive("CreatePackage");
                                                     }}
-                                                />
-                                                <Trash2
-                                                    className="w-6 h-6 text-gray-700 cursor-pointer hover:text-red-600"
-                                                    onClick={() => {
+                                                    className="w-8 h-8 bg-white/95 backdrop-blur-md rounded-full flex items-center justify-center text-neutral-700 shadow-xl hover:bg-neutral-800 hover:text-white transition-all transform active:scale-95 border border-white"
+                                                    title="Edit Package"
+                                                >
+                                                    <Pencil size={12} strokeWidth={3} />
+                                                </button>
+                                                <button
+                                                    type="button"
+                                                    onClick={(e) => {
+                                                        e.stopPropagation();
                                                         setOpen(true);
                                                         setDeleteId(offer._id);
                                                     }}
-                                                />
+                                                    className="w-8 h-8 bg-white/95 backdrop-blur-md rounded-full flex items-center justify-center text-neutral-700 shadow-xl hover:bg-red-500 hover:text-white transition-all transform active:scale-95 border border-white"
+                                                    title="Delete Package"
+                                                >
+                                                    <Trash2 size={12} strokeWidth={3} />
+                                                </button>
                                             </div>
                                         )}
 
@@ -163,8 +179,11 @@ export default function PackageCard({
 
                                             {/* Status Badge (Admin Only) */}
                                             {isAdmin && (
-                                                <div className={`absolute top-16 right-4 z-20 text-white text-[10px] uppercase font-bold px-2.5 py-1 rounded-full shadow-lg backdrop-blur-md ${offer.status === 'Inactive' ? 'bg-red-500/80' : 'bg-emerald-500/80'}`}>
-                                                    {offer.status || 'Active'}
+                                                <div className={`absolute top-16 right-3 z-30 text-white text-[9px] uppercase font-black px-3 py-1 rounded-full shadow-xl backdrop-blur-md border border-white/20 ${offer.status === 'Inactive' ? 'bg-rose-500/90' : 'bg-emerald-500/90'} tracking-tighter`}>
+                                                    <div className="flex items-center gap-1.5">
+                                                        <div className={`w-1.5 h-1.5 rounded-full bg-white ${offer.status !== 'Inactive' ? 'animate-pulse' : ''}`} />
+                                                        {offer.status || 'Active'}
+                                                    </div>
                                                 </div>
                                             )}
                                         </div>
