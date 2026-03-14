@@ -3,7 +3,6 @@ import {
   Calendar,
   Image as ImageIcon,
   CheckCircle,
-  AlertCircle,
   TrendingUp,
   Tag,
   Upload,
@@ -11,7 +10,6 @@ import {
   Plus,
   Loader2,
   ArrowRight,
-  ChevronRight
 } from "lucide-react";
 import { useForm, useFieldArray, FormProvider } from "react-hook-form";
 import { toast } from "react-toastify";
@@ -23,7 +21,6 @@ import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { ReusableInput } from "@/components/forms/ReusableInput";
 import { SelectField } from "@/components/forms/SelectField";
-import { ReusableTextArea } from "@/components/forms/ReusableTextArea";
 import { ReusableCheckbox } from "@/components/forms/ReusableCheckbox";
 import { packageTypes, daysOptions, rankOptions, statusOptions } from "./constant";
 import { ItineraryDaySection } from "./ItineraryDaySection";
@@ -281,7 +278,7 @@ export default function AdminUploadPackageForm() {
       });
       formData.append("existingImages", JSON.stringify(mainImageUrls));
       mainImageFiles.forEach(file => formData.append("images", file));
-      
+
       const daysClean = values.days.map((day: any) => ({
         dayTitle: day.dayTitle,
         slots: day.slots.map((slot: any) => ({
@@ -292,7 +289,7 @@ export default function AdminUploadPackageForm() {
         }))
       }));
       formData.append("days", JSON.stringify(daysClean));
-      
+
       values.days.forEach((day: any, dIndex: number) => {
         day.slots.forEach((slot: any, sIndex: number) => {
           if (slot.imageUrl instanceof File) {

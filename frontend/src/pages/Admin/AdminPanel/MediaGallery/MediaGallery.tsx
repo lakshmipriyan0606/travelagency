@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
-import { Card, CardContent } from "@/components/ui/card";
+import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Loader2, Copy, Check, Trash2, Search, Image as ImageIcon, ExternalLink } from "lucide-react";
+import { Loader2, Copy, Check, Search, Image as ImageIcon, ExternalLink } from "lucide-react";
 import { showToast } from "@/lib/utils";
 import axiosClient from "@/api/axiosClient";
 import UploadImagePage from "../UploadImage/UploadImage";
@@ -39,7 +39,7 @@ export default function MediaGallery() {
         }
     };
 
-    const filteredImages = images.filter(img => 
+    const filteredImages = images.filter(img =>
         img.publicId.toLowerCase().includes(searchTerm.toLowerCase())
     );
 
@@ -49,9 +49,9 @@ export default function MediaGallery() {
             <section>
                 <UploadImagePage />
                 <div className="flex justify-center mt-4">
-                     <Button variant="outline" onClick={fetchImages} className="gap-2 rounded-xl">
+                    <Button variant="outline" onClick={fetchImages} className="gap-2 rounded-xl">
                         Refresh Gallery
-                     </Button>
+                    </Button>
                 </div>
             </section>
 
@@ -72,8 +72,8 @@ export default function MediaGallery() {
 
                     <div className="relative group">
                         <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-neutral-400 group-focus-within:text-primary transition-colors" />
-                        <input 
-                            type="text" 
+                        <input
+                            type="text"
                             placeholder="Find image..."
                             value={searchTerm}
                             onChange={(e) => setSearchTerm(e.target.value)}
@@ -92,15 +92,15 @@ export default function MediaGallery() {
                         {filteredImages.map((img) => (
                             <div key={img.publicId} className="flex flex-col gap-2 group">
                                 <Card className="overflow-hidden border-neutral-200 group-hover:border-primary/50 group-hover:shadow-lg transition-all duration-300 rounded-2xl bg-white aspect-square relative cursor-pointer">
-                                    <img 
-                                        src={img.url} 
-                                        alt={img.publicId} 
+                                    <img
+                                        src={img.url}
+                                        alt={img.publicId}
                                         className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
                                     />
                                     <div className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity">
-                                        <a 
-                                            href={img.url} 
-                                            target="_blank" 
+                                        <a
+                                            href={img.url}
+                                            target="_blank"
                                             rel="noreferrer"
                                             className="w-8 h-8 rounded-lg bg-white/90 backdrop-blur-md text-neutral-800 flex items-center justify-center hover:bg-primary hover:text-white shadow-sm transition-all"
                                             title="Open full image"
@@ -118,7 +118,7 @@ export default function MediaGallery() {
                                     <div className="flex-1 min-w-0">
                                         <p className="text-[10px] text-neutral-500 truncate font-mono select-all" title={img.url}>{img.url}</p>
                                     </div>
-                                    <button 
+                                    <button
                                         onClick={() => handleCopy(img.url, img.publicId)}
                                         className={`p-1 rounded-md transition-all ${copyingId === img.publicId ? 'text-emerald-500 bg-emerald-50' : 'text-neutral-400 hover:text-primary hover:bg-primary/10'}`}
                                         title="Copy Image URL"
