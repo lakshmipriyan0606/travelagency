@@ -14,6 +14,7 @@ const packageSchema = new mongoose.Schema(
     isBestPackage: { type: Boolean},
     bestRank: { type: Number },
     isActive: { type: Boolean, default: true },
+    status: { type: String, enum: ['Active', 'Inactive'], default: 'Active' },
     images: [String],
     createdBy: {
       type: mongoose.Schema.Types.ObjectId,

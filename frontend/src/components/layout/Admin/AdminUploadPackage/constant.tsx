@@ -26,4 +26,7 @@ export const slotTypeOptions = [
   { label: "Evening", value: "evening" },
   { label: "Full Day", value: "fullDay" },
 ];
-;
+export const statusOptions = [
+    { value: "Active", label: "Active" },
+    { value: "Inactive", label: "Inactive" },
+];

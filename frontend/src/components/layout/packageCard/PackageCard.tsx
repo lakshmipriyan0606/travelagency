@@ -30,6 +30,7 @@ interface Package {
     offerPrice: number;
     userLiked: boolean;
     isActive?: boolean;
+    status?: string;
 }
 
 interface PackageCardProps {
@@ -111,7 +112,7 @@ export default function PackageCard({
 
 
     return (
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+        <div className={isAdmin ? "grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6" : "grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6"}>
             <AnimatePresence mode="popLayout">
                 {filterList.map((offer) => {
                     const details = getOfferDetailsConfig(offer);
@@ -161,14 +162,9 @@ export default function PackageCard({
                                             </div>
 
                                             {/* Status Badge (Admin Only) */}
-                                            {isAdmin && offer.isActive === false && (
-                                                <div className="absolute top-16 right-4 z-20 bg-gray-600 text-white text-[10px] uppercase font-bold px-2 py-1 rounded shadow-md">
-                                                    Inactive
-                                                </div>
-                                            )}
-                                            {isAdmin && offer.isActive !== false && (
-                                                <div className="absolute top-16 right-4 z-20 bg-green-600 text-white text-[10px] uppercase font-bold px-2 py-1 rounded shadow-md">
-                                                    Active
+                                            {isAdmin && (
+                                                <div className={`absolute top-16 right-4 z-20 text-white text-[10px] uppercase font-bold px-2.5 py-1 rounded-full shadow-lg backdrop-blur-md ${offer.status === 'Inactive' ? 'bg-red-500/80' : 'bg-emerald-500/80'}`}>
+                                                    {offer.status || 'Active'}
                                                 </div>
                                             )}
                                         </div>

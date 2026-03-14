@@ -1,5 +1,5 @@
 import { AppRoute } from "@/types/types";
-import { Route, Routes } from "react-router-dom";
+import { Route, Routes, useLocation } from "react-router-dom";
 import { ReactNode, Suspense, isValidElement, useEffect } from "react";
 import routes from "./RouteConfig";
 import { ErrorBoundary } from "react-error-boundary";
@@ -29,22 +29,17 @@ const renderAppRoute = (routesList: AppRoute[]): ReactNode => {
 
 const AppRoutes = () => {
     const dispatch = useDispatch();
+    const location = useLocation();
     const { data: user } = UseFetchAPIQuery({
         key: ["me"],
         queryFn: currentUserAPI,
     });
 
-    // useEffect(() => {
-    //     const currentUserId = localStorage.getItem("userId");
-    //     if (!currentUserId) {
-    //         const id = crypto.randomUUID();
-    //         localStorage.setItem("userId", id);
-    //     }
-    // }, []);
-
     useEffect(() => {
         dispatch(setUser(user || null));
     }, [user, dispatch]);
+
+    const isAdminRoute = location.pathname.startsWith("/admin");
 
     return (
         <ErrorBoundary FallbackComponent={ErrorFallback} onReset={() => window.location.reload()}>
@@ -52,10 +47,10 @@ const AppRoutes = () => {
                 <ScrollToTop />
                 <BackToTop />
                 <AppToastContainer />
-                <Navbar />
+                {!isAdminRoute && <Navbar />}
                 <Routes>{renderAppRoute(routes)}</Routes>
-                <Footer />
-                <MobileStickyBottomBar />
+                {!isAdminRoute && <Footer />}
+                {!isAdminRoute && <MobileStickyBottomBar />}
             </Suspense>
         </ErrorBoundary>
     );

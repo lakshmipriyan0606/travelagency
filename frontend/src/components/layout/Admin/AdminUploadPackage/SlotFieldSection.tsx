@@ -1,11 +1,11 @@
-import { Controller, useFormContext } from "react-hook-form";
+import { useFormContext } from "react-hook-form";
 import { ReusableInput } from "@/components/forms/ReusableInput";
-import { Button } from "@/components/ui/button";
+import { SelectField } from "@/components/forms/SelectField";
+import { ReusableTextArea } from "@/components/forms/ReusableTextArea";
 import { slotTypeOptions } from "./constant";
 import { useCallback } from "react";
 import { useDropzone } from "react-dropzone";
-import { X } from "lucide-react";
-import { ReusableTextArea } from "@/components/forms/ReusableTextArea";
+import { X, Trash2, Camera } from "lucide-react";
 
 interface SlotFieldProps {
     control: any;
@@ -21,9 +21,8 @@ export const SlotFieldSection = ({ control, dayIndex, slotIndex, removeSlot }: S
 
     const onDrop = useCallback((files: File[]) => {
         if (files.length === 0) return;
-
         setValue(`days.${dayIndex}.slots.${slotIndex}.imageUrl`, files[0]);
-    }, []);
+    }, [dayIndex, slotIndex, setValue]);
 
     const removeImage = () => {
         setValue(`days.${dayIndex}.slots.${slotIndex}.imageUrl`, "");
@@ -39,63 +38,77 @@ export const SlotFieldSection = ({ control, dayIndex, slotIndex, removeSlot }: S
     });
 
     return (
-        <div className="border p-4 rounded-md mb-4 bg-white shadow-sm">
-
-            {/* SLOT FIELDS */}
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4 items-center">
-                <Controller
-                    name={`days.${dayIndex}.slots.${slotIndex}.slotType`}
-                    control={control}
-                    render={({ field }) => (
-                        <select {...field} className="border rounded-md p-2">
-                            <option value="">Select Slot Type</option>
-                            {slotTypeOptions.map((s) => (
-                                <option key={s.value} value={s.value}>{s.label}</option>
-                            ))}
-                        </select>
-                    )}
-                />
-
-                <ReusableInput
-                    control={control}
-                    name={`days.${dayIndex}.slots.${slotIndex}.title`}
-                    label="Slot Title"
-                />
-
-                <Button type="button" variant="outline" className="text-red-500" onClick={() => removeSlot(slotIndex)}>
-                    Remove Slot
-                </Button>
-            </div>
-
-            {/* IMAGE UPLOAD + PREVIEW */}
-            <div className="grid grid-cols-12 gap-5 mt-4">
-
-                <div className="col-span-7">
-                    <ReusableTextArea
-                        control={control}
-                        name={`days.${dayIndex}.slots.${slotIndex}.description`}
-                        label="Slot Description"
-                    />
+        <div className="bg-neutral-50/70 border border-neutral-200/50 p-5 rounded-[20px] mb-3 hover:bg-white hover:border-primary/20 hover:shadow-lg hover:shadow-neutral-100 transition-all group/slot">
+            <div className="flex flex-col gap-5">
+                {/* Header & Primary Fields */}
+                <div className="flex flex-col md:flex-row gap-3 items-end">
+                    <div className="flex-1 w-full text-left">
+                        <SelectField
+                            name={`days.${dayIndex}.slots.${slotIndex}.slotType`}
+                            control={control}
+                            label="Category"
+                            options={slotTypeOptions}
+                            required
+                        />
+                    </div>
+                    <div className="flex-[2] w-full text-left">
+                        <ReusableInput
+                            control={control}
+                            name={`days.${dayIndex}.slots.${slotIndex}.title`}
+                            label="Activity Title"
+                            required
+                        />
+                    </div>
+                    <button 
+                        type="button" 
+                        onClick={() => removeSlot(slotIndex)}
+                        className="w-10 h-10 rounded-lg bg-white border border-neutral-100 text-neutral-400 flex items-center justify-center hover:bg-red-50 hover:text-red-500 hover:border-red-100 transition-all shadow-sm"
+                        title="Remove Activity"
+                    >
+                        <Trash2 size={14} />
+                    </button>
                 </div>
 
-                <div {...getRootProps()} className="border-2 border-dashed p-4 rounded-lg col-span-5 cursor-pointer">
-                    <input {...getInputProps()} />
+                {/* Content & Media */}
+                <div className="grid grid-cols-1 lg:grid-cols-12 gap-5 items-start">
+                    <div className="lg:col-span-9 text-left">
+                        <ReusableTextArea
+                            control={control}
+                            name={`days.${dayIndex}.slots.${slotIndex}.description`}
+                            label="Schedule Details"
+                        />
+                    </div>
 
-                    {imagePreview ? (
-                        <div className="relative">
-                            <img src={imagePreview} className="w-full h-40 object-cover rounded-md" />
-                            <button type="button" onClick={removeImage} className="absolute top-2 right-2 bg-black bg-opacity-70 text-white rounded-full p-1">
-                                <X size={16} />
-                            </button>
+                    <div className="lg:col-span-3 self-stretch">
+                        <div {...getRootProps()} className={`h-full min-h-[140px] border-2 border-dashed rounded-2xl transition-all cursor-pointer relative flex items-center justify-center overflow-hidden ${isDragActive ? "border-primary bg-primary/5" : "border-neutral-200 hover:border-primary/40 bg-white shadow-inner"}`}>
+                            <input {...getInputProps()} />
+                            
+                            {imagePreview ? (
+                                <div className="absolute inset-0 group/img">
+                                    <img src={imagePreview} className="w-full h-full object-cover transition-transform duration-700 group-hover/img:scale-110" alt="Slot" />
+                                    <div className="absolute inset-0 bg-black/40 opacity-0 group-hover/img:opacity-100 transition-opacity flex items-center justify-center">
+                                       <span className="text-[9px] text-white font-bold uppercase tracking-widest bg-white/20 backdrop-blur-md px-2.5 py-1 rounded-full border border-white/20">Change</span>
+                                    </div>
+                                    <button 
+                                        type="button" 
+                                        onClick={(e) => { e.stopPropagation(); removeImage(); }} 
+                                        className="absolute top-1.5 right-1.5 w-7 h-7 bg-black/60 backdrop-blur-md text-white rounded-full flex items-center justify-center hover:bg-red-500 transition-colors z-10"
+                                    >
+                                        <X size={12} />
+                                    </button>
+                                </div>
+                            ) : (
+                                <div className="flex flex-col items-center gap-1.5 text-neutral-400 group-hover/slot:text-primary transition-colors p-3">
+                                    <Camera size={20} />
+                                    <div className="text-center">
+                                        <p className="text-[9px] font-bold uppercase tracking-widest leading-tight">Image</p>
+                                    </div>
+                                </div>
+                            )}
                         </div>
-                    ) : (
-                        <p className="text-center text-gray-500">
-                            {isDragActive ? "Drop image here..." : "Upload Slot Image"}
-                        </p>
-                    )}
+                    </div>
                 </div>
-
             </div>
         </div>
     );
-};
+};

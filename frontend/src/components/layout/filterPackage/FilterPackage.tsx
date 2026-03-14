@@ -171,12 +171,12 @@ const FilterPackage = ({ likePackageOnly = false }: FilterPackageProps) => {
     const queryKey = useMemo(() => ["allPackage", cursor, filters.search, filters.city, isAdminMode], [cursor, filters.search, filters.city, isAdminMode]);
     const { data, isLoading, isError, refetch } = UseFetchAPIQuery({
         key: queryKey,
-        queryFn: () => GetAllPackageList({ 
-            limit: PAGE_SIZE, 
-            lastId: cursor, 
-            search: filters.search, 
+        queryFn: () => GetAllPackageList({
+            limit: PAGE_SIZE,
+            lastId: cursor,
+            search: filters.search,
             city: filters.city,
-            isAdmin: isAdminMode 
+            isAdmin: isAdminMode
         }),
         options: { enabled: false },
     });
@@ -317,7 +317,7 @@ const FilterPackage = ({ likePackageOnly = false }: FilterPackageProps) => {
     // ─────────────────────────────────────────────────────────────────────────
     return (
         <FormProvider {...methods}>
-            <div className="sm:mt-20 min-h-screen bg-white">
+            <div className="min-h-screen bg-white">
 
                 {/* ── TOP SECTION (Breadcrumb + Search) ── */}
                 <div className="px-4 sm:px-8 xl:px-16 pt-4 pb-2 relative z-40">
