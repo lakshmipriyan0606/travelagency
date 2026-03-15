@@ -108,46 +108,77 @@ const TravelExperiences = () => {
               >
                 {TRAVEL_EXPERIENCES.map((exp, idx) => {
                   const nextExp = TRAVEL_EXPERIENCES[(idx + 1) % TRAVEL_EXPERIENCES.length];
-
                   return (
                     <SwiperSlide key={exp.id}>
                       <div className="flex lg:grid lg:grid-cols-2 flex-col gap-x-6 gap-y-6 lg:gap-y-0 py-8 px-2 max-w-sm md:max-w-md lg:max-w-none mx-auto lg:mx-0">
+
                         {/* Column 1 */}
                         <div className="flex flex-col gap-4 md:gap-6">
+
                           {/* Image Card (Top) */}
-                          <div className="h-40 rounded-2xl md:rounded-[24px] overflow-hidden shadow-[0_20px_50px_rgba(0,0,0,0.1)] bg-white flex-shrink-0">
-                            <img src={exp.image} alt={exp.name} loading="lazy" className="w-full h-full object-cover" />
+                          <div className="w-full aspect-[4/3] rounded-[24px] overflow-hidden shadow-lg">
+                            <img
+                              src={exp.image}
+                              alt={exp.name}
+                              loading="lazy"
+                              className="w-full h-full object-cover object-center"
+                            />
                           </div>
 
                           {/* Text Card (Bottom) */}
                           <div className="bg-white p-5 md:p-8 rounded-2xl md:rounded-[24px] shadow-[0_10px_30px_rgba(0,0,0,0.06)] md:shadow-[0_20px_50px_rgba(0,0,0,0.06)] border border-gray-200 md:border-gray-300 flex flex-col h-[230px] sm:h-[260px] md:h-[350px]">
+
                             <p className="text-[#666666] text-sm md:text-base italic font-roboto leading-relaxed sm:max-h-[270px] custom-scrollbar pr-2 overflow-hidden">
                               "{exp.text}"
                             </p>
+
                             <div className="flex items-center gap-4 mt-auto pt-6 bg-white z-10">
-                              <img src={exp.avatar} alt={exp.name} loading="lazy" className="w-12 h-12 rounded-full object-cover flex-shrink-0" />
-                              <span className="font-bold text-[#2B2B2B] text-base truncate">{exp.name}</span>
+                              <img
+                                src={exp.image}
+                                alt={exp.name}
+                                loading="lazy"
+                                className="w-12 h-12 rounded-full object-cover object-center flex-shrink-0"
+                              />
+                              <span className="font-bold text-[#2B2B2B] text-base truncate">
+                                {exp.name}
+                              </span>
                             </div>
                           </div>
                         </div>
 
                         {/* Column 2 (Staggered) */}
                         <div className="hidden lg:flex flex-col gap-6 lg:mt-20">
+
                           {/* Text Card (Top) */}
                           <div className="bg-white p-6 md:p-8 rounded-[24px] shadow-[0_20px_50px_rgba(0,0,0,0.06)] border border-gray-300 flex flex-col h-[280px] lg:h-[320px]">
-                            <p className="text-[#666666] text-sm md:text-base italic font-roboto leading-relaxed overflow-y-auto custom-scrollbar pr-2">
+
+                            <p className="text-[#666666] text-sm md:text-base italic font-roboto leading-relaxed overflow-hidden custom-scrollbar pr-2">
                               "{nextExp.text}"
                             </p>
+
                             <div className="flex items-center gap-4 mt-auto pt-6 bg-white z-10">
-                              <img src={nextExp.avatar} alt={nextExp.name} className="w-12 h-12 rounded-full object-cover flex-shrink-0" />
-                              <span className="font-bold text-[#2B2B2B] text-base truncate">{nextExp.name}</span>
+                              <img
+                                src={nextExp.image}
+                                alt={nextExp.name}
+                                loading="lazy"
+                                className="w-12 h-12 rounded-full object-cover object-center flex-shrink-0"
+                              />
+                              <span className="font-bold text-[#2B2B2B] text-base truncate">
+                                {nextExp.name}
+                              </span>
                             </div>
                           </div>
 
                           {/* Image Card (Bottom) */}
-                          <div className="h-48 rounded-[24px] overflow-hidden shadow-[0_20px_50px_rgba(0,0,0,0.1)] bg-white flex-shrink-0">
-                            <img src={nextExp.image} alt={nextExp.name} loading="lazy" className="w-full h-full object-cover" />
+                          <div className="w-full aspect-[4/3] rounded-[24px] overflow-hidden shadow-lg">
+                            <img
+                              src={nextExp.image}
+                              alt={nextExp.name}
+                              loading="lazy"
+                              className="w-full h-full object-cover object-center"
+                            />
                           </div>
+
                         </div>
                       </div>
                     </SwiperSlide>

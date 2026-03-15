@@ -22,7 +22,8 @@ import { Button } from "@/components/ui/button";
 import { ReusableInput } from "@/components/forms/ReusableInput";
 import { SelectField } from "@/components/forms/SelectField";
 import { ReusableCheckbox } from "@/components/forms/ReusableCheckbox";
-import { packageTypes, daysOptions, rankOptions, statusOptions } from "./constant";
+import { packageTypes, rankOptions, statusOptions } from "./constant";
+import { destinationOptions } from "@/config/destinations";
 import { ItineraryDaySection } from "./ItineraryDaySection";
 import { useMutationAPIQuery } from "@/Hook/useMutationAPIQuery";
 import { CreatePackage, UpdatePackage, GetCurrentPackageDetail } from "@/api/admin/auth.api";
@@ -48,7 +49,7 @@ const formSchema = z.object({
   location: z.string().min(1, "Required"),
   packageType: z.string().min(1, "Required"),
   daysAndNights: z.string().min(1, "Required"),
-  rating: z.string().min(1, "Required"),
+  hotelName: z.string().min(1, "Required"),
   price: z.string().min(1, "Required"),
   offerPrice: z.string().min(1, "Required"),
   isBestPackage: z.boolean(),
@@ -165,14 +166,31 @@ function MainImagesUploader({ mainImageFiles, setMainImageFiles, mainImageUrls, 
   );
 }
 
+const SectionHeader = ({ icon: Icon, title, subtitle }: { icon: any, title: string, subtitle?: string }) => (
+  <div className="flex items-center gap-3 justify-center pt-4">
+    <div className="w-8 h-8 rounded-lg bg-primary/10 flex items-center justify-center text-primary shadow-sm border border-primary/10">
+      <Icon size={18} />
+    </div>
+    <div>
+      <h3 className="text-[15px] font-bold text-neutral-800 tracking-tight leading-none">{title}</h3>
+      {subtitle && <p className="text-[9px] text-neutral-400 mt-1 font-medium italic">{subtitle}</p>}
+    </div>
+  </div>
+);
+
+const StyledField = ({ children, className }: { children: React.ReactNode, className?: string }) => (
+  <div className={`p-2 rounded-lg hover:bg-neutral-50/10 transition-all group ${className}`}>
+    {children}
+  </div>
+);
+
 export default function AdminUploadPackageForm() {
   const context = useContext(AdminPanelContext);
   if (!context) throw new Error("AdminUploadPackageForm must be used within AdminPanelContext");
-  const { editPackageId: id, setActive, packageAPIDetail } = context;
+  const { editPackageId: id, setActive, triggerRefresh } = context;
 
   const [mainImageFiles, setMainImageFiles] = useState<File[]>([]);
   const [mainImageUrls, setMainImageUrls] = useState<string[]>([]);
-  const [isSubmitting, setIsSubmitting] = useState(false);
   const [activeStep, setActiveStep] = useState(0);
 
   const steps = [
@@ -182,28 +200,31 @@ export default function AdminUploadPackageForm() {
     { title: "Journey Roadmap", subtitle: "Daily Itinerary", icon: Calendar },
   ];
 
-  const { mutate } = useMutationAPIQuery(CreatePackage, {
+  const createMutation = useMutationAPIQuery(CreatePackage, {
     onSuccess: () => {
       toast.success("Package created successfully!");
       reset();
       setActive("AllPackages");
-      packageAPIDetail?.refetch();
+      triggerRefresh?.(); 
     },
     onError: (error: any) => {
       toast.error(error?.message || "Failed to create package");
     }
   });
-  const { mutate: updateMutate } = useMutationAPIQuery((data: any) => UpdatePackage(data, id), {
+
+  const updateMutation = useMutationAPIQuery((data: any) => UpdatePackage(data, id), {
     onSuccess: () => {
       toast.success("Package updated successfully!");
       reset();
       setActive("AllPackages");
-      packageAPIDetail?.refetch();
+      triggerRefresh?.();
     },
     onError: (error: any) => {
       toast.error(error?.message || "Failed to update package");
     }
   });
+
+  const isSubmitting = createMutation.isPending || updateMutation.isPending;
 
   const { data } = UseFetchAPIQuery({
     key: ["currentPackageDetail", { id }],
@@ -219,7 +240,7 @@ export default function AdminUploadPackageForm() {
       location: "",
       packageType: "",
       daysAndNights: "",
-      rating: "",
+      hotelName: "",
       price: "",
       offerPrice: "",
       isBestPackage: false,
@@ -243,7 +264,7 @@ export default function AdminUploadPackageForm() {
       location: pkg.location || "",
       packageType: pkg.packageType || "",
       daysAndNights: pkg.daysAndNights || "",
-      rating: pkg.rating?.toString() || "",
+      hotelName: pkg.hotelName || "",
       price: pkg.price?.toString() || "",
       offerPrice: pkg.offerPrice?.toString() || "",
       isBestPackage: pkg.isBestPackage || false,
@@ -270,7 +291,6 @@ export default function AdminUploadPackageForm() {
     const isLastStep = activeStep === steps.length - 1;
     if (!isLastStep) return;
 
-    setIsSubmitting(true);
     try {
       const formData = new FormData();
       Object.entries(values).forEach(([key, val]) => {
@@ -299,14 +319,12 @@ export default function AdminUploadPackageForm() {
       });
 
       if (id) {
-        await updateMutate(formData);
+        await updateMutation.mutateAsync(formData);
       } else {
-        await mutate(formData);
+        await createMutation.mutateAsync(formData);
       }
     } catch (error) {
       console.error("Submission error:", error);
-    } finally {
-      setIsSubmitting(false);
     }
   };
 
@@ -315,7 +333,7 @@ export default function AdminUploadPackageForm() {
     // Only validate the fields in the current step if needed, or validate all for simplicity
     const fieldsByStep = [
       ["packageName", "packageDescription", "location", "country", "packageType", "daysAndNights"],
-      ["price", "offerPrice", "rating", "status", "isActive", "isBestPackage", "bestRank"],
+      ["price", "offerPrice", "hotelName", "status", "isActive", "isBestPackage", "bestRank"],
       [], // Media step doesn't have zod fields in this schema
       ["days"]
     ];
@@ -328,23 +346,6 @@ export default function AdminUploadPackageForm() {
 
   const { fields: dayFields, append: addDay, remove: removeDay } = useFieldArray({ control, name: "days" });
 
-  const SectionHeader = ({ icon: Icon, title, subtitle }: { icon: any, title: string, subtitle?: string }) => (
-    <div className="flex items-center gap-3 justify-center pt-4">
-      <div className="w-8 h-8 rounded-lg bg-primary/10 flex items-center justify-center text-primary shadow-sm border border-primary/10">
-        <Icon size={18} />
-      </div>
-      <div>
-        <h3 className="text-[15px] font-bold text-neutral-800 tracking-tight leading-none">{title}</h3>
-        {subtitle && <p className="text-[9px] text-neutral-400 mt-1 font-medium italic">{subtitle}</p>}
-      </div>
-    </div>
-  );
-
-  const StyledField = ({ children, className }: { children: React.ReactNode, className?: string }) => (
-    <div className={`p-2 rounded-lg hover:bg-neutral-50/10 transition-all group ${className}`}>
-      {children}
-    </div>
-  );
 
   return (
     <FormProvider {...methods}>
@@ -434,7 +435,7 @@ export default function AdminUploadPackageForm() {
                       <ReusableInput control={control} name="packageDescription" label="Detailed Description" required variant="floating" />
                     </StyledField>
                     <StyledField>
-                      <ReusableInput control={control} name="location" label="Main Location" required variant="floating" />
+                      <SelectField control={control} name="location" label="Main Location" options={destinationOptions} required variant="floating" />
                     </StyledField>
                     <StyledField>
                       <ReusableInput control={control} name="country" label="Country" required variant="floating" />
@@ -443,7 +444,7 @@ export default function AdminUploadPackageForm() {
                       <SelectField control={control} name="packageType" label="Category" options={packageTypes} required variant="floating" />
                     </StyledField>
                     <StyledField>
-                      <SelectField control={control} name="daysAndNights" label="Duration" options={daysOptions} required variant="floating" />
+                      <ReusableInput control={control} name="daysAndNights" label="Duration" placeholder="e.g. 3 Days, 2 Nights" required variant="floating" />
                     </StyledField>
                   </div>
                 </Card>
@@ -456,13 +457,13 @@ export default function AdminUploadPackageForm() {
                   <SectionHeader icon={Tag} title="Pricing Details" subtitle="Set the value and competitive offers" />
                   <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mt-6">
                     <StyledField>
-                      <ReusableInput control={control} name="price" label="Price (₹)" required type="number" variant="floating" />
+                      <ReusableInput control={control} name="price" label="Price (RM)" required variant="floating" />
                     </StyledField>
                     <StyledField>
-                      <ReusableInput control={control} name="offerPrice" label="Offer (₹)" required type="number" variant="floating" />
+                      <ReusableInput control={control} name="offerPrice" label="Offer (RM)" required variant="floating" />
                     </StyledField>
                     <StyledField>
-                      <ReusableInput control={control} name="rating" label="Rating (0-5)" required type="number" variant="floating" />
+                      <ReusableInput control={control} name="hotelName" label="Hotel Name" placeholder="e.g. Grand Mercure" required variant="floating" />
                     </StyledField>
                   </div>
                   <div className="mt-8 flex items-center justify-between bg-primary/5 rounded-2xl border border-primary/10 border-dashed p-5">

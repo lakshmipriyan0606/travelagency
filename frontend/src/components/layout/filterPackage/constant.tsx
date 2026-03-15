@@ -11,8 +11,7 @@ export const filterConfig = {
     packageType: ["Honeymoon", "Family", "Friends", "Group Tour", "Adventure"],
     activities: ["Sightseeing", "Water Sports", "Hiking", "Shopping", "Relaxing"],
     daysAndNights: ["2 Days, 2 Nights", "3 Days, 2 Nights", "4 Days, 3 Nights", "7 Days, 6 Nights"],
-    hotelRatings: ["5 Star", "4 Star", "3 Star", "2 Star", "1 Star"],
-    price: ["Below $1K", "$1K - $3K", "$3K - $5K", "Above $5K"],
+    price: ["Below RM 1K", "RM 1K - RM 3K", "RM 3K - RM 5K", "Above RM 5K"],
 } as const;
 
 export type FilterConfigKey = keyof typeof filterConfig;
@@ -36,17 +35,13 @@ export type SortOption =
     | "az"
     | "za"
     | "price-low"
-    | "price-high"
-    | "hotel-low"
-    | "hotel-high";
+    | "price-high";
 
 export const SORT_OPTIONS: { value: SortOption; label: string; icon: string }[] = [
     { value: "az", label: "A - Z", icon: "↑" },
     { value: "za", label: "Z - A", icon: "↓" },
-    { value: "price-low", label: "Low - High", icon: "$" },
-    { value: "price-high", label: "High - Low", icon: "$" },
-    { value: "hotel-low", label: "Low - High (Hotel)", icon: "★" },
-    { value: "hotel-high", label: "High - Low (Hotel)", icon: "★" },
+    { value: "price-low", label: "Low - High", icon: "RM" },
+    { value: "price-high", label: "High - Low", icon: "RM" },
 ];
 
 // ─────────────────────────────────────────────────────────────────────────────
@@ -167,10 +162,10 @@ export const filterPackages = (packages: any[], filters: FilterState): any[] => 
         result = result.filter((pkg) => {
             const price = Number(pkg.offerPrice ?? pkg.price ?? 0);
             return selectedBudgets.some((range) => {
-                if (range === "Below $1K") return price < 1000;
-                if (range === "$1K - $3K") return price >= 1000 && price <= 3000;
-                if (range === "$3K - $5K") return price > 3000 && price <= 5000;
-                if (range === "Above $5K") return price > 5000;
+                if (range === "Below RM 1K") return price < 1000;
+                if (range === "RM 1K - RM 3K") return price >= 1000 && price <= 3000;
+                if (range === "RM 3K - RM 5K") return price > 3000 && price <= 5000;
+                if (range === "Above RM 5K") return price > 5000;
                 return false;
             });
         });
@@ -188,18 +183,8 @@ export const filterPackages = (packages: any[], filters: FilterState): any[] => 
         });
     }
 
-    // 4. Hotel Ratings
-    const selectedRatings = Object.entries(filters.filterConfig?.hotelRatings ?? {})
-        .filter(([, v]) => v)
-        .map(([k]) => parseInt(k.replace(" Star", "")));
 
-    if (selectedRatings.length) {
-        result = result.filter((pkg) =>
-            selectedRatings.includes(Math.floor(Number(pkg.rating ?? 0)))
-        );
-    }
-
-    // 5. City search
+    // 4. City search
     if (filters.city) {
         const cityQuery = filters.city.toLowerCase().trim();
         result = result.filter(
@@ -241,10 +226,6 @@ export const sortPackages = (packages: any[], sort: SortOption): any[] => {
                 return Number(a.offerPrice ?? a.price ?? 0) - Number(b.offerPrice ?? b.price ?? 0);
             case "price-high":
                 return Number(b.offerPrice ?? b.price ?? 0) - Number(a.offerPrice ?? a.price ?? 0);
-            case "hotel-low":
-                return Number(a.rating ?? 0) - Number(b.rating ?? 0);
-            case "hotel-high":
-                return Number(b.rating ?? 0) - Number(a.rating ?? 0);
             default:
                 return 0;
         }

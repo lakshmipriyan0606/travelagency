@@ -4,6 +4,7 @@ import { Facebook, Twitter, Instagram, Linkedin } from 'lucide-react';
 import { footerData } from './constant';
 import { Link } from 'react-router-dom';
 import { navbarList } from '../navbar/constant';
+import { WANumber } from '@/lib/utils';
 import AnimatedButton from '@/components/Button/AnimatedButton/AnimatedButton';
 type IconComponent = React.FC<React.SVGProps<SVGSVGElement>>;
 
@@ -101,7 +102,7 @@ export default function Footer() {
                 Whats App Us
               </h3>
               <a
-                href={`https://wa.me/91${footerData.whatsapp.replace(/\D/g, '')}`}
+                href={`https://wa.me/${WANumber}`}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="flex items-center gap-2 hover:text-primary transition-colors text-sm"

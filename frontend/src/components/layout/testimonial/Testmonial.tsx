@@ -51,7 +51,7 @@ export default function Testimonials() {
                                             <div className="flex items-center justify-between gap-4 mb-4 mt-4">
                                                 <div className='flex gap-3 items-center'>
                                                     <img
-                                                        src={testimonial.image}
+                                                        src={testimonial.avatar}
                                                         alt={testimonial.name}
                                                         className="w-16 h-16 rounded-full object-cover"
                                                     />

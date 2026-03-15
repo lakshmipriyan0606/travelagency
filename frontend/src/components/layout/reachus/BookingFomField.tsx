@@ -88,7 +88,7 @@ const DynamicField = ({ fieldConfig, control, fieldClassName }: DynamicFieldProp
 
 // ─── BookingFomField ──────────────────────────────────────────────────────────
 
-const BookingFomField = ({ fieldClassName = 'text-gray-200' }: { fieldClassName?: string }) => {
+const BookingFomField = ({ fieldClassName = 'text-gray-200', mainClassName }: { fieldClassName?: string, mainClassName?: string }) => {
     const defaultValues = reachUsFormFields.reduce<Record<string, string>>(
         (acc, f) => ({ ...acc, [f.name]: '' }),
         {}
@@ -129,7 +129,7 @@ const BookingFomField = ({ fieldClassName = 'text-gray-200' }: { fieldClassName?
     const loading = isSubmitting || isMutating;
 
     return (
-        <div className="border border-white/30 rounded-2xl shadow-2xl p-6 sm:p-8">
+        <div className={`border border-white/30 rounded-2xl shadow-2xl p-6 sm:p-8 ${mainClassName}`}>
             <form onSubmit={handleSubmit(onSubmit)} noValidate>
                 <div className="flex flex-col">
                     {reachUsFormFields.map((fieldConfig) => (
@@ -150,11 +150,6 @@ const BookingFomField = ({ fieldClassName = 'text-gray-200' }: { fieldClassName?
                         className="w-full !px-10 !py-3.5 rounded-md"
                     />
                 </div>
-
-                <p className="text-xs text-gray-300 text-center mt-2">
-                    By proceeding, you agree with{' '}
-                    <span className="underline text-blue-300 cursor-pointer">Terms of Use</span>
-                </p>
             </form>
         </div>
     );

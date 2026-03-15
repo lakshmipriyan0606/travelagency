@@ -16,10 +16,10 @@ export const bestPackageList: Package[] = [
 
     {
         id: 2,
-        alt: "Langkawi",
+        alt: "Langkawi Island",
         src: "https://res.cloudinary.com/dizocitqw/image/upload/v1773289720/uploads/dujsljvtrzon8ulsktjj.jpg",
         fallbackSrc: langkawiLocal,
-        title: "Langkawi",
+        title: "Langkawi Island",
         description:
             "Relax on pristine beaches and discover tropical island adventures in Malaysia’s paradise getaway.",
     },
@@ -34,10 +34,10 @@ export const bestPackageList: Package[] = [
     },
     {
         id: 3,
-        alt: "Genting Highlands",
+        alt: "Genting Highland",
         src: "https://res.cloudinary.com/dizocitqw/image/upload/v1773289736/uploads/caiv3y1zu3xcxhale8ko.jpg",
         fallbackSrc: gentingHighlandsLocal,
-        title: "Genting Highlands",
+        title: "Genting Highland",
         description:
             "Enjoy cool mountain air, exciting casinos, theme parks, and breathtaking hilltop views.",
     },

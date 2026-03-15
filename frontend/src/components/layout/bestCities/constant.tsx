@@ -8,31 +8,21 @@ export const BEST_CITIES: City[] = [
   {
     id: 1,
     name: "Kuala Lumpur",
-    image: "https://images.unsplash.com/photo-1537996194471-e657df975ab4?q=80&w=800&auto=format&fit=crop",
+    image: "https://res.cloudinary.com/dizocitqw/image/upload/v1773289703/uploads/koeqcpz78twzsg1qplfm.jpg",
   },
   {
     id: 2,
-    name: "Singapore",
-    image: "https://images.unsplash.com/photo-1565967511849-76a60a516170?q=80&w=800&auto=format&fit=crop",
+    name: "Langkawi Island",
+    image: "https://res.cloudinary.com/dizocitqw/image/upload/v1773289720/uploads/dujsljvtrzon8ulsktjj.jpg",
   },
   {
     id: 3,
-    name: "Bangkok",
-    image: "https://images.unsplash.com/photo-1589308078059-be1415eab4c3?q=80&w=800&auto=format&fit=crop",
+    name: "Penang",
+    image: "https://res.cloudinary.com/dizocitqw/image/upload/v1773289674/uploads/orx7bvfhmyn0fkkf4fvw.jpg",
   },
   {
     id: 4,
-    name: "Bali",
-    image: "https://images.unsplash.com/photo-1537996194471-e657df975ab4?q=80&w=800&auto=format&fit=crop",
-  },
-  {
-    id: 5,
-    name: "Phuket",
-    image: "https://images.unsplash.com/photo-1589308078059-be1415eab4c3?q=80&w=800&auto=format&fit=crop",
-  },
-  {
-    id: 6,
-    name: "Hanoi",
-    image: "https://images.unsplash.com/photo-1555921015-5532091f6026?q=80&w=800&auto=format&fit=crop",
+    name: "Genting Highland",
+    image: "https://res.cloudinary.com/dizocitqw/image/upload/v1773289736/uploads/caiv3y1zu3xcxhale8ko.jpg",
   },
 ];

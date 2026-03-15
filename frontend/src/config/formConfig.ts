@@ -17,67 +17,19 @@ export interface SelectOption {
   label: string;
 }
 
-export const destinationOptions: SelectOption[] = [
-  { value: 'singapore', label: 'Singapore' },
-  { value: 'bali', label: 'Bali' },
-  { value: 'maldives', label: 'Maldives' },
-  { value: 'dubai', label: 'Dubai' },
-  { value: 'switzerland', label: 'Switzerland' },
-  { value: 'thailand', label: 'Thailand' },
-  { value: 'malaysia', label: 'Malaysia' },
-  { value: 'europe', label: 'Europe' },
-];
+import { destinationOptions } from './destinations';
+import { GLOBAL_CONFIG } from './globalConfig';
+export { destinationOptions };
 
-export const travelMonthOptions: SelectOption[] = [
-  { value: 'january', label: 'January' },
-  { value: 'february', label: 'February' },
-  { value: 'march', label: 'March' },
-  { value: 'april', label: 'April' },
-  { value: 'may', label: 'May' },
-  { value: 'june', label: 'June' },
-  { value: 'july', label: 'July' },
-  { value: 'august', label: 'August' },
-  { value: 'september', label: 'September' },
-  { value: 'october', label: 'October' },
-  { value: 'november', label: 'November' },
-  { value: 'december', label: 'December' },
-];
+export const travelMonthOptions: SelectOption[] = GLOBAL_CONFIG.months;
 
-export const personsOptions: SelectOption[] = Array.from({ length: 20 }, (_, i) => ({
-  value: String(i + 1),
-  label: `${i + 1} ${i === 0 ? 'Person' : 'Persons'}`,
-}));
+export const personsOptions: SelectOption[] = GLOBAL_CONFIG.personCounts;
 
-export const durationOptions: SelectOption[] = [
-  { value: '1N2D', label: '1 Night / 2 Days' },
-  { value: '2N3D', label: '2 Nights / 3 Days' },
-  { value: '3N4D', label: '3 Nights / 4 Days' },
-  { value: '4N5D', label: '4 Nights / 5 Days' },
-  { value: '5N6D', label: '5 Nights / 6 Days' },
-  { value: '6N7D', label: '6 Nights / 7 Days' },
-  { value: '7N8D', label: '7 Nights / 8 Days' },
-  { value: '8N9D', label: '8 Nights / 9 Days' },
-  { value: '9N10D', label: '9 Nights / 10 Days' },
-  { value: '10N11D', label: '10 Nights / 11 Days' },
-];
+export const durationOptions: SelectOption[] = GLOBAL_CONFIG.durations;
 
-export const vacationTypeOptions: SelectOption[] = [
-  { value: 'family', label: 'Family Vacation' },
-  { value: 'honeymoon', label: 'Honeymoon' },
-  { value: 'adventure', label: 'Adventure' },
-  { value: 'luxury', label: 'Luxury' },
-  { value: 'business', label: 'Business' },
-  { value: 'pilgrimage', label: 'Pilgrimage' },
-];
+export const vacationTypeOptions: SelectOption[] = GLOBAL_CONFIG.vacationTypes;
 
-export const languageOptions: SelectOption[] = [
-  { value: 'english', label: 'English' },
-  { value: 'tamil', label: 'Tamil' },
-  { value: 'hindi', label: 'Hindi' },
-  { value: 'telugu', label: 'Telugu' },
-  { value: 'kannada', label: 'Kannada' },
-  { value: 'malayalam', label: 'Malayalam' },
-];
+export const languageOptions: SelectOption[] = GLOBAL_CONFIG.languages;
 
 // ─── Field type ───────────────────────────────────────────────────────────────
 

@@ -3,11 +3,15 @@ import { twMerge } from "tailwind-merge";
 import { toast, ToastOptions, ToastPosition } from "react-toastify";
 import { ReactNode } from "react";
 
+import { GLOBAL_CONFIG } from "@/config/globalConfig";
+
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
 }
 
-export const WANumber = "917708561615";
+export const WANumber = GLOBAL_CONFIG.contact.whatsappNumber;
+export const WADisplayNumber = GLOBAL_CONFIG.contact.whatsappDisplay;
+export const CurrencySymbol = GLOBAL_CONFIG.currency.symbol;
 
 
 type ToastType = "success" | "error" | "info" | "warning";

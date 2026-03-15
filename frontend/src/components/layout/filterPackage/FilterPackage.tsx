@@ -26,15 +26,9 @@ import { AdminPanelContext } from "@/pages/Admin/AdminPanel/AdminPanel";
 import { useContext } from "react";
 import FilterSearchBar from "./FilterSearchBar";
 
-// ─────────────────────────────────────────────────────────────────────────────
-// Constants
-// ─────────────────────────────────────────────────────────────────────────────
+import { MALAYSIA_CITIES } from "@/config/destinations";
 
 const PAGE_SIZE = 5;
-const MALAYSIA_CITIES = [
-    "Kuala Lumpur", "Langkawi", "Penang", "Genting Highlands",
-    "Malacca", "Johor Bahru", "Kota Kinabalu", "Kuching",
-];
 
 // ─────────────────────────────────────────────────────────────────────────────
 // Breadcrumb builder
@@ -216,6 +210,7 @@ const FilterPackage = ({ likePackageOnly = false }: FilterPackageProps) => {
 
     const breadcrumbItems = useMemo(() => buildBreadcrumb(filters), [filters]);
 
+
     // ─── Active filter tags removal
     const handleRemoveTag = useCallback(
         (group: string, value: string) => {
@@ -244,6 +239,21 @@ const FilterPackage = ({ likePackageOnly = false }: FilterPackageProps) => {
         setValue("search", searchInput);
     };
 
+    const resetAndRefetch = useCallback(() => {
+        setPackageList([]);
+        setCursor("");
+        setHasMore(true);
+        lastProcessedCursor.current = "RESET";
+        setTimeout(() => refetch(), 0);
+    }, [refetch]);
+
+    // Handle global refresh trigger from AdminPanel
+    useEffect(() => {
+        if (context?.refreshCount && context.refreshCount > 0) {
+            resetAndRefetch();
+        }
+    }, [context?.refreshCount, resetAndRefetch]);
+
     // ─── Render helpers
     const renderContent = () => {
         if (isError && !packageList.length) {
@@ -270,7 +280,7 @@ const FilterPackage = ({ likePackageOnly = false }: FilterPackageProps) => {
                         isAdmin={context?.isAdmin || false}
                         setEditPackageId={context?.setEditPackageId || (() => { })}
                         setActive={context?.setActive || (() => { })}
-                        refetch={refetch}
+                        refetch={resetAndRefetch}
                         handleLikeUpdate={(id, liked) => {
                             setPackageList((prev) =>
                                 prev.map((pkg) =>

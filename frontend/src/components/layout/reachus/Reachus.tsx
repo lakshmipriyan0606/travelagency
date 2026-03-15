@@ -3,7 +3,7 @@ import { Phone, Mail } from 'lucide-react';
 import whatsappIcon from '@/assets/icons/whatsapp.svg';
 import MapIcon from '@/assets/icons/Map.svg';
 import BookingFomField from './BookingFomField';
-import { WANumber } from '@/lib/utils';
+import { WANumber, WADisplayNumber } from '@/lib/utils';
 import HeroEnquiryForm from '../herosection/HeroEnquiryForm';
 
 
@@ -46,7 +46,7 @@ export default function ReachUs() {
           </div>
 
           <p className="mt-6 text-lg text-gray-300 relative z-10">
-            +91 9789569791
+            {WADisplayNumber}
           </p>
 
           <div className="flex flex-col items-center gap-3 mt-10 relative z-10">
@@ -65,7 +65,7 @@ export default function ReachUs() {
           <h3 className='text-center text-lg mb-6 text-xl md:text-2xl text-gray-200'> Vacation Today!</h3>
 
           <div className='hidden sm:block'>
-            <BookingFomField />
+            <BookingFomField fieldClassName={'text-gray-700'} mainClassName='bg-white' />
           </div>
 
           <div className='sm:hidden'>

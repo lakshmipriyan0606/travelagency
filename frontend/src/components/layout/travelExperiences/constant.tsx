@@ -3,49 +3,43 @@ export interface Testimonial {
   name: string;
   text: string;
   image: string;
-  avatar: string;
   location: string;
 }
 
 export const TRAVEL_EXPERIENCES: Testimonial[] = [
   {
+    id: 1,
+    name: "Compass31041884377",
+    text: "While waiting for my flight, I was relaxing at the lobby of Grand Mercure Hotel and noticed the Sastikaa Travel desk. I decided to try their Batu Caves Half Day Tour. It turned out to be a wonderful decision! The Batu Caves visit was amazing and the playful monkeys around the temple made the experience even more fun and memorable.",
+    image: "https://dynamic-media-cdn.tripadvisor.com/media/photo-o/32/ac/68/a4/caption.jpg?w=800&h=-1&s=1",
+    location: "Batu Caves",
+  },
+  {
+    id: 2,
+    name: "Wander33428579703",
+    text: "Fantastic Genting tour with driver Kalai! He was very professional and patient, making the whole trip enjoyable and stress-free. Everything from pickup to drop-off was perfectly organized. Highly recommended!",
+    image: "https://dynamic-media-cdn.tripadvisor.com/media/photo-o/32/a4/ec/17/caption.jpg?w=600&h=-1&s=1",
+    location: "Genting Highland",
+  },
+  {
+    id: 3,
+    name: "Markus",
+    text: "The tour was very enjoyable and well organized. Our driver, Kalai, was friendly and welcoming. She drove us to the different sights, explained each stop beforehand, and then gave us time to explore on our own. Overall, it was a great experience, and we highly recommend the tour.",
+    image: "https://dynamic-media-cdn.tripadvisor.com/media/photo-o/32/8b/3b/3a/caption.jpg?w=1400&h=-1&s=1",
+    location: "Kuala Lumpur",
+  },
+  {
+    id: 4,
+    name: "Umar M",
+    text: "We had a wonderful time with Alen. Batu Caves was awesome! We will definitely come back to Kuala Lumpur to explore different states and enjoy new experiences.",
+    image: "https://dynamic-media-cdn.tripadvisor.com/media/photo-o/32/a0/c3/77/caption.jpg?w=800&h=-1&s=1",
+    location: "Batu Caves",
+  },
+  {
     id: 5,
-    name: "Ananya Iyer",
-    text: "Our trip to Phuket was rejuvenating. The island hopping tour was the highlight. Sastikaa Travels took care of our dietary preferences at every stop, which we really appreciated. Highly recommend for a hassle-free tropical getaway!.The train passes and hotel check-ins we arrive countries.",
-    image: "https://images.unsplash.com/photo-1589308078059-be1415eab4c3?q=80&w=800&auto=format&fit=crop",
-    avatar: "https://randomuser.me/api/portraits/women/22.jpg",
-    location: "Phuket",
-  },
-  {
-    id: 6,
-    name: "Rohan Gupta",
-    text: "Europe tour was extensive but very well managed. The train passes and hotel check-ins were all set before we arrived. Truly a stress-free experience across multiple countries.",
-    image: "https://images.unsplash.com/photo-1467269204594-9661b134dd2b?q=80&w=800&auto=format&fit=crop",
-    avatar: "https://randomuser.me/api/portraits/men/12.jpg",
-    location: "Europe",
-  },
-  {
-    id: 7,
-    name: "Pooja Hegde",
-    text: "Thailand's street food and culture were amazing. Sastikaa Travels gave us the best local tips that weren't in any guidebook. The personalized touch made our honeymoon special.",
-    image: "https://images.unsplash.com/photo-1552465011-b4e21bf6e79a?q=80&w=800&auto=format&fit=crop",
-    avatar: "https://randomuser.me/api/portraits/women/11.jpg",
-    location: "Thailand",
-  },
-  {
-    id: 8,
-    name: "Suresh Menon",
-    text: "Vietnam was a revelation. The Halong Bay cruise was spectacular. Sastikaa Travels' attention to detail in choosing the right cruise line really showed. Five stars!",
-    image: "https://images.unsplash.com/photo-1528127269322-539801943592?q=80&w=800&auto=format&fit=crop",
-    avatar: "https://randomuser.me/api/portraits/men/88.jpg",
-    location: "Vietnam",
-  },
-  {
-    id: 9,
-    name: "Kavita Reddy",
-    text: "Sri Lanka's tea gardens and beaches were lovely. The driver provided was very polite and acted as a great guide too. Everything was smooth and safe for us women travelers.",
-    image: "https://images.unsplash.com/photo-1546708973-b339540b5162?q=80&w=800&auto=format&fit=crop",
-    avatar: "https://randomuser.me/api/portraits/women/33.jpg",
-    location: "Sri Lanka",
+    name: "Olawale Ajibowo",
+    text: "Had an amazing experience and my tour guide Kalai is a wonderful lady. The stairs and monkeys at Batu Caves makes it memorable.",
+    image: "https://dynamic-media-cdn.tripadvisor.com/media/photo-o/31/9e/2f/c4/caption.jpg?w=200&h=200&s=1",
+    location: "Batu Caves",
   },
 ];

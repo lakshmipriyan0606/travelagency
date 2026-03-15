@@ -5,20 +5,18 @@ import AnimatedButton from "@/components/Button/AnimatedButton/AnimatedButton";
 import whatsappIcon from "@/assets/icons/whatsapp.svg";
 import { useDeviceSize } from "@/Hook/UseDevice";
 import InnerCarousel from "../bestPackage/carousel/InnerCarousel";
-import location from "@/assets/icons/location.svg";
-import star from "@/assets/icons/Star.svg";
-import { Heart } from "lucide-react";
+import locationIcon from "@/assets/icons/location.svg";
+import { Heart, Hotel, Pencil, Trash2 } from "lucide-react";
 import dateIcon from "@/assets/icons/date.svg";
 
 import { AnimatePresence, motion } from "framer-motion";
-import { Pencil, Trash2 } from "lucide-react";
 import { DeleteConfirmDialog } from "../DeleteConfirmDialog/DeleteConfirmDialog";
 import { useState } from "react";
 import { useMutationAPIQuery } from "@/Hook/useMutationAPIQuery";
 import { DeleteCurrentPackage } from "@/api/admin/auth.api";
 import { UpdateLikePackage } from "@/api/user/api";
 import { useQueryClient } from "@tanstack/react-query";
-import { WANumber } from "@/lib/utils";
+import { WANumber, CurrencySymbol } from "@/lib/utils";
 import { toast } from "react-toastify";
 
 interface Package {
@@ -26,7 +24,7 @@ interface Package {
     images: string[];
     location: string;
     daysAndNights: string;
-    rating: string | number;
+    hotelName: string;
     price: number;
     offerPrice: number;
     userLiked: boolean;
@@ -116,7 +114,6 @@ export default function PackageCard({
     };
 
 
-
     return (
         <div className={isAdmin ? "grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6" : "grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6"}>
             <AnimatePresence mode="popLayout">
@@ -191,7 +188,7 @@ export default function PackageCard({
                                         {/* Details */}
                                         <div className="flex flex-col justify-center gap-3 p-2">
                                             <Row>
-                                                <IconText icon={location} text={offer.location} />
+                                                <IconText icon={locationIcon} text={offer.location} />
                                                 <motion.button
                                                     onClick={() => handleToggleLike(offer._id, !offer.userLiked)}
                                                     whileTap={{ scale: 0.75 }}
@@ -266,7 +263,7 @@ export default function PackageCard({
 function getOfferDetailsConfig(offer: Package) {
     return [
         { icon: dateIcon, label: offer.daysAndNights },
-        { icon: star, label: offer.rating },
+        { icon: <Hotel size={18} className="text-[#FFD700]" />, label: offer.hotelName || 'Hotel Name' },
     ];
 }
 
@@ -278,11 +275,11 @@ function Divider() {
     return <div className="w-full h-[2px] bg-gray-300" />;
 }
 
-function IconText({ icon, text }: { icon: string; text: string | any }) {
+function IconText({ icon, text }: { icon: any; text: string | any }) {
     return (
-        <div className="flex items-center gap-3">
-            <img src={icon} alt="" />
-            <h3>{text}</h3>
+        <div className="flex items-center gap-3 text-sm font-medium">
+            {typeof icon === 'string' ? <img src={icon} alt="" className="w-5 h-5" /> : icon}
+            <h3 className="line-clamp-1">{text}</h3>
         </div>
     );
 }
@@ -291,10 +288,10 @@ function PriceStrike({ original, final }: { original: number | string; final: nu
     return (
         <span className="flex items-center text-lg">
             <span className="relative inline-block text-base mr-2">
-                {original}
+                {CurrencySymbol} {original}
                 <span className="absolute top-1/2 right-0 w-full h-[3px] bg-red-500 rotate-[10deg]" />
             </span>
-            <span className="sm:text-lg font-semibold">{final}</span>
+            <span className="sm:text-lg font-semibold">{CurrencySymbol} {final}</span>
         </span>
     );
 }

@@ -10,8 +10,7 @@ import arrowRight from '@/assets/icons/rightarrow.svg'
 import AnimatedButton from "@/components/Button/AnimatedButton/AnimatedButton";
 import whatsappIcon from '@/assets/icons/whatsapp.svg';
 import location from '@/assets/icons/location.svg';
-import star from '@/assets/icons/Star.svg';
-import { Heart } from "lucide-react";
+import { Heart, Hotel } from "lucide-react";
 import { motion } from "framer-motion";
 import dateIcon from '@/assets/icons/date.svg';
 import { UseFetchAPIQuery } from "@/Hook/UseFetchAPIQuery";
@@ -19,7 +18,7 @@ import { GetBestBackageList, UpdateLikePackage } from "@/api/user/api";
 import { useMutationAPIQuery } from "@/Hook/useMutationAPIQuery";
 import { useNavigate } from "react-router-dom";
 import { useQueryClient } from "@tanstack/react-query";
-import { WANumber } from "@/lib/utils";
+import { WANumber, CurrencySymbol } from "@/lib/utils";
 import WrapperCardSkeleton from "./WrapperCardSkeleton";
 import NoDataSkeleton from "./NoDataSkeleton";
 import { useState } from "react";
@@ -210,8 +209,8 @@ export default function OuterCarousel() {
                                     <h3 className="">   {offer?.daysAndNights || ''}</h3>
                                 </div>
                                 <div className="flex items-center gap-3">
-                                    {<img src={star} alt="" />}
-                                    <h3 className="">   {offer.rating}</h3>
+                                    <Hotel size={18} className="text-[#FFD700]" />
+                                    <h3 className="line-clamp-1">{offer.hotelName || 'Hotel Name'}</h3>
                                 </div>
                                 <div className="flex flex-col justify-between items-start mt-2 gap-3">
                                     <div className="flex justify-between gap-4  items-center">
@@ -219,12 +218,12 @@ export default function OuterCarousel() {
 
                                         <span className="text-lg flex items-center">
                                             <span className="relative inline-block text-base mr-2">
-                                                {offer.price}
+                                                {CurrencySymbol} {offer.price}
                                                 <span className="absolute right-0 top-[40%] w-full h-[3px] bg-red-500 rotate-[10deg]"></span>
                                             </span>
 
                                             <span className="sm:text-lg font-semibold">
-                                                {offer.offerPrice}
+                                                {CurrencySymbol} {offer.offerPrice}
                                             </span>
                                         </span>
                                     </div>

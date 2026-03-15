@@ -20,6 +20,8 @@ interface FilterPackageProps {
         isError: boolean;
         refetch: () => void;
     };
+    triggerRefresh?: () => void;
+    refreshCount?: number;
 }
 
 export const AdminPanelContext = createContext<FilterPackageProps | null>(null);
@@ -30,6 +32,9 @@ const AdminPanel = () => {
 
     const [active, setActive] = useState("AllPackages");
     const [editPackageId, setEditPackageId] = useState<string | null>(null);
+    const [refreshCount, setRefreshCount] = useState(0);
+
+    const triggerRefresh = () => setRefreshCount(prev => prev + 1);
 
     const packageAPIDetail = UseFetchAPIQuery({
         key: ["allPackage"],
@@ -57,6 +62,8 @@ const AdminPanel = () => {
         setEditPackageId,
         setActive,
         packageAPIDetail,
+        triggerRefresh,
+        refreshCount,
     };
 
     return (

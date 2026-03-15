@@ -7,15 +7,15 @@
  */
 
 import { useState } from 'react';
-import HeroSectionVideoClip from '@/assets/video/hero.mp4';
 import whatsappIcon from '@/assets/icons/whatsapp.svg';
 import { WANumber } from '@/lib/utils';
 import HeroEnquiryForm from './HeroEnquiryForm';
 import EnquiryModal from './EnquiryModal';
 import { HeroFormData } from '@/config/formConfig';
 import AnimatedButton from '@/components/Button/AnimatedButton/AnimatedButton';
+import { motion } from 'framer-motion';
 
-// ─── Scroll indicator (unchanged) ────────────────────────────────────────────
+// ... Scroll indicator (unchanged) ...
 
 const ScrollIndicator = () => {
     const handleScroll = () => {
@@ -73,8 +73,20 @@ const HeroSection = () => {
     };
 
     return (
-        <div className="relative w-full h-screen overflow-hidden p-10 rounded-md">
-            <video className="absolute inset-0 w-full h-full object-cover rounded-2xl" src={HeroSectionVideoClip} autoPlay loop muted playsInline />
+        <div className="relative w-full h-screen overflow-hidden p-10 rounded-2xl">
+            {/* <video className="absolute inset-0 w-full h-full object-cover rounded-2xl" src={HeroSectionVideoClip} autoPlay loop muted playsInline /> */}
+            <motion.img
+                className="absolute inset-0 w-full h-full object-cover rounded-2xl"
+                src={'https://i.postimg.cc/Pqjn2TdS/view-world-monument-celebrate-world-heritage-day.jpg'}
+                initial={{ scale: 1 }}
+                animate={{ scale: 1.3 }}
+                transition={{
+                    duration: 5,
+                    repeat: Infinity,
+                    repeatType: "reverse",
+                    ease: "linear",
+                }}
+            />
 
             <div className="absolute inset-0 bg-black/50 z-10 flex items-center rounded-2xl">
                 <div className="w-full h-full flex flex-col md:flex-row items-start md:items-center mt-[38%] md:mt-0 px-6 md:px-12 lg:px-20 gap-6 md:gap-10 rounded-2xl">
@@ -87,7 +99,7 @@ const HeroSection = () => {
                                 For <span className="text-primary">Personalized Trips</span>
                             </p>
                             <p className="text-sm sm:text-base lg:text-lg text-gray-200 mt-2 max-w-2xl leading-relaxed">
-                                Plan your perfect Malaysia trip with <span className="text-primary font-medium">Sastikaa Travel</span> — a professional travel agency in Malaysia providing city tours, airport transfers, and customized travel packages across Kuala Lumpur, Genting Highlands, Langkawi, and more.
+                                Plan your perfect Malaysia trip with <span className="text-primary font-medium">Sastikaa Travel</span> — a professional travel agency in Malaysia providing city tours, airport transfers, and customized travel packages across Kuala Lumpur, Genting Highland, Langkawi Island, and Penang.
                             </p>
                         </div>
 

@@ -30,6 +30,7 @@ router.get("/bestpackages", async (req, res) => {
       const userLike = pkg.likes.find((like) => like.userId === userId);
       return {
         ...pkg.toObject(),
+        hotelName: pkg.hotelName || (pkg.rating ? `${pkg.rating} Stars Hotel` : ""),
         userLiked: userLike ? userLike.liked : false,
       };
     });
@@ -98,6 +99,7 @@ router.get("/", async (req, res) => {
 
       return {
         ...pkg.toObject(),
+        hotelName: pkg.hotelName || (pkg.rating ? `${pkg.rating} Stars Hotel` : ""),
         userLiked: userLike ? userLike.liked : false,
       };
     });
