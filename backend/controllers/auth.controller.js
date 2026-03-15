@@ -46,16 +46,18 @@ export const login = async (req, res) => {
     const refreshToken = generateRefreshToken(user);
 
     // cookies
+    const isProduction = process.env.NODE_ENV === "production";
+
     res.cookie("access_token", accessToken, {
       httpOnly: true,
-      secure: false, // set true in production https
-      sameSite: "strict",
+      secure: isProduction,
+      sameSite: isProduction ? "none" : "strict",
     });
 
     res.cookie("refresh_token", refreshToken, {
       httpOnly: true,
-      secure: false,
-      sameSite: "strict",
+      secure: isProduction,
+      sameSite: isProduction ? "none" : "strict",
     });
 
     res.json({ msg: "Logged in", user });
@@ -78,10 +80,11 @@ export const refresh = (req, res) => {
       { expiresIn: process.env.JWT_ACCESS_EXPIRE }
     );
 
+    const isProduction = process.env.NODE_ENV === "production";
     res.cookie("access_token", newAccessToken, {
       httpOnly: true,
-      secure: false,
-      sameSite: "strict",
+      secure: isProduction,
+      sameSite: isProduction ? "none" : "strict",
     });
 
     return res.json({ msg: "Refreshed" });
