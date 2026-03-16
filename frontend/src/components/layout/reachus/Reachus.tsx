@@ -65,7 +65,7 @@ export default function ReachUs() {
           <h3 className='text-center text-lg mb-6 text-xl md:text-2xl text-gray-200'> Vacation Today!</h3>
 
           <div className='hidden sm:block'>
-            <BookingFomField fieldClassName={'text-gray-200 sm:text-gary-700'} mainClassName='bg-white' />
+            <BookingFomField fieldClassName={'text-gray-200 sm:text-gray-700'} mainClassName='bg-white' />
           </div>
 
           <div className='sm:hidden'>
