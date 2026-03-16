@@ -15,6 +15,9 @@ import AppToastContainer from "@/components/AppToastContainer/AppToastContainer"
 import Navbar from "@/components/layout/navbar/Navbar";
 import Footer from "@/components/layout/footer/Footer";
 import MobileStickyBottomBar from "@/components/layout/mobileStickyBottomBar/MobileStickyBottomBar";
+import FloatingActions from "@/components/layout/FloatingActions";
+import EnquiryModal from "@/components/layout/herosection/EnquiryModal";
+import { useState } from "react";
 
 const renderAppRoute = (routesList: AppRoute[]): ReactNode => {
     return routesList.map(({ path, element, children }) => {
@@ -35,11 +38,27 @@ const AppRoutes = () => {
         queryFn: currentUserAPI,
     });
 
+    const [isAutoModalOpen, setIsAutoModalOpen] = useState(false);
+
     useEffect(() => {
         dispatch(setUser(user || null));
     }, [user, dispatch]);
 
     const isAdminRoute = location.pathname.startsWith("/admin");
+
+    useEffect(() => {
+        if (isAdminRoute) return;
+
+        const hasTriggered = sessionStorage.getItem('enquiryModalTriggered');
+        if (hasTriggered) return;
+
+        const timer = setTimeout(() => {
+            setIsAutoModalOpen(true);
+            sessionStorage.setItem('enquiryModalTriggered', 'true');
+        }, 30000); // 10 seconds
+
+        return () => clearTimeout(timer);
+    }, [isAdminRoute]);
 
     return (
         <ErrorBoundary FallbackComponent={ErrorFallback} onReset={() => window.location.reload()}>
@@ -51,6 +70,8 @@ const AppRoutes = () => {
                 <Routes>{renderAppRoute(routes)}</Routes>
                 {!isAdminRoute && <Footer />}
                 {!isAdminRoute && <MobileStickyBottomBar />}
+                {!isAdminRoute && <FloatingActions />}
+                <EnquiryModal isOpen={isAutoModalOpen} onClose={() => setIsAutoModalOpen(false)} />
             </Suspense>
         </ErrorBoundary>
     );

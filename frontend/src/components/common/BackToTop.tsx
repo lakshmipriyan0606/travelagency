@@ -33,15 +33,15 @@ const BackToTop = () => {
                     animate={{ opacity: 1, scale: 1, y: 0 }}
                     exit={{ opacity: 0, scale: 0.5, y: 20 }}
                     onClick={scrollToTop}
-                    className="fixed bottom-24 sm:bottom-8 right-6 z-[60] group cursor-pointer"
+                    className="fixed bottom-[50px] right-3 sm:right-5 z-[90] group cursor-pointer sm:bottom-[110px]"
                     aria-label="Back to top"
                 >
                     {/* Main circle */}
-                    <div className="relative w-12 h-12 flex items-center justify-center bg-white rounded-full shadow-lg border border-gray-100 transition-transform duration-300 group-hover:scale-110">
-                        <ChevronUp className="w-6 h-6 text-yellow-500 transition-transform duration-300 group-hover:-translate-y-1" strokeWidth={3} />
+                    <div className="relative w-12 h-12 flex items-center justify-center bg-white rounded-full shadow-2xl border-2 border-yellow-500/20 transition-all duration-300 group-hover:scale-110 group-hover:bg-yellow-50">
+                        <ChevronUp className="w-6 h-6 text-yellow-600 transition-transform duration-300 group-hover:-translate-y-1" strokeWidth={3} />
 
-                        {/* Animated outer ring effect similar to design but simplified */}
-                        <div className="absolute inset-0 rounded-full border-2 border-yellow-500/20 animate-ping opacity-0 group-hover:opacity-100" />
+                        {/* Animated outer ring effect */}
+                        <div className="absolute inset-0 rounded-full border-2 border-yellow-500 animate-pulse opacity-50 group-hover:animate-ping" />
                     </div>
                 </motion.button>
             )}

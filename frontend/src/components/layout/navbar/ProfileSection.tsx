@@ -47,8 +47,8 @@ const ProfileSection = () => {
         {/* Profile Modal */}
         <AlertDialog>
           <AlertDialogTrigger asChild>
-            <button type="button">
-              <User className="w-5 h-5 cursor-pointer" />
+            <button type="button" className="cursor-pointer">
+              <User className="w-5 h-5" />
             </button>
           </AlertDialogTrigger>
           {/* 

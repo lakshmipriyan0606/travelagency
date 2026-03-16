@@ -6,6 +6,8 @@ import { Link } from 'react-router-dom';
 import { navbarList } from '../navbar/constant';
 import { WANumber } from '@/lib/utils';
 import AnimatedButton from '@/components/Button/AnimatedButton/AnimatedButton';
+import EnquiryModal from '../herosection/EnquiryModal';
+import { useState } from 'react';
 type IconComponent = React.FC<React.SVGProps<SVGSVGElement>>;
 
 const iconMap: Record<string, IconComponent> = {
@@ -26,6 +28,7 @@ const iconMap: Record<string, IconComponent> = {
 };
 
 export default function Footer() {
+  const [isModalOpen, setIsModalOpen] = useState(false);
   return (
     <footer className="bg-custom-black text-gray-300">
       <div className="max-w-7xl mx-auto px-4 py-12 space-y-10">
@@ -42,14 +45,15 @@ export default function Footer() {
           <div className="absolute top-0 left-0 w-full h-full bg-black/80" />
           <div className="relative z-10 w-full h-full flex items-center px-6 sm:px-12 md:px-20 lg:px-28">
             <div className="flex flex-col items-start text-left gap-6">
-              <h3 className="text-white text-3xl sm:text-4xl lg:text-3xl leading-tight">
-                {footerData.cta.title.replace(',', '')},
-                <br />
-                Especially or You!
+              <h3 className="text-white text-3xl sm:text-4xl lg:text-3xl leading-tight font-semibold">
+                {footerData.cta.title}
               </h3>
+              <p className="text-gray-200 text-sm sm:text-base max-w-xl leading-relaxed">
+                {footerData.cta.description}
+              </p>
               <AnimatedButton
                 buttonText={footerData.cta.buttonText}
-                onClick={() => (window.location.href = footerData.cta.buttonHref)}
+                onClick={() => setIsModalOpen(true)}
                 className="bg-[#FBB03B] hover:bg-yellow-500 text-black font-bold py-3 px-8 rounded-md shadow-lg transition duration-300 text-sm tracking-widest uppercase mt-4 !border-none"
               />
             </div>
@@ -173,6 +177,7 @@ export default function Footer() {
           </div>
         </section>
       </div>
+      <EnquiryModal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} />
     </footer>
   );
 }

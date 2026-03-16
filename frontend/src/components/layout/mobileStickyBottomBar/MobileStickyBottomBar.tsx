@@ -28,7 +28,7 @@ const MobileStickyBottomBar = () => {
                 {/* WhatsApp Button */}
                 <button
                     onClick={handleWhatsAppClick}
-                    className="flex-1 flex items-center justify-center gap-3 h-full hover:bg-white/5 transition-colors"
+                    className="flex-1 flex items-center justify-center gap-3 h-full hover:bg-white/5 transition-colors cursor-pointer"
                 >
                     <img src={whatsappIcon} alt="WhatsApp" className="w-[18px] h-[18px]" />
                     <span className="text-white text-[11px] font-bold tracking-[0.12em] uppercase">WHAT'SUP US</span>

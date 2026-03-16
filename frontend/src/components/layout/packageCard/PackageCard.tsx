@@ -15,9 +15,11 @@ import { useState } from "react";
 import { useMutationAPIQuery } from "@/Hook/useMutationAPIQuery";
 import { DeleteCurrentPackage } from "@/api/admin/auth.api";
 import { UpdateLikePackage } from "@/api/user/api";
+import { useNavigate } from "react-router-dom";
 import { useQueryClient } from "@tanstack/react-query";
 import { WANumber, CurrencySymbol } from "@/lib/utils";
 import { toast } from "react-toastify";
+import EnquiryModal from "../herosection/EnquiryModal";
 
 interface Package {
     _id: string;
@@ -39,6 +41,7 @@ interface PackageCardProps {
     setActive: (active: string) => void;
     refetch?: () => void | any;
     handleLikeUpdate?: (id: string, liked: boolean) => void;
+    isAllPackagePage?: boolean;
 }
 
 type LikePayload = {
@@ -53,8 +56,11 @@ export default function PackageCard({
     setEditPackageId,
     setActive,
     refetch,
-    handleLikeUpdate = () => { }
+    handleLikeUpdate = () => { },
+    isAllPackagePage = false
 }: PackageCardProps) {
+    const navigate = useNavigate();
+    const [isModalOpen, setIsModalOpen] = useState(false);
     useDeviceSize();
 
     const queryClient = useQueryClient();
@@ -230,11 +236,18 @@ export default function PackageCard({
                                                         <span className="sm:hidden text-white font-medium">WhatsApp Us</span>
                                                     </div>
                                                     <AnimatedButton
-                                                        buttonText="CONTACT US"
+                                                        buttonText={isAllPackagePage ? "EXPLORE PACKAGE" : "CONTACT US"}
                                                         className="w-full sm:w-3/4 hover:bg-custom-black"
                                                         borderButtonColor="bg-white"
                                                         textColor="text-white"
                                                         bgColor="bg-custom-black"
+                                                        onClick={() => {
+                                                            if (isAllPackagePage) {
+                                                                navigate(`/package/${offer._id}`);
+                                                            } else {
+                                                                setIsModalOpen(true);
+                                                            }
+                                                        }}
                                                     />
                                                 </Row>
                                             </div>
@@ -242,6 +255,8 @@ export default function PackageCard({
                                     </div>
                                 </SwiperSlide>
                             </div>
+
+                            <EnquiryModal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} />
 
                             {open && (
                                 <DeleteConfirmDialog

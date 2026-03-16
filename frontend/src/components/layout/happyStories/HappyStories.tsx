@@ -32,7 +32,7 @@ const HappyStories = () => {
           <span className="text-[#5E4B8B]">Happy Customers,</span>{" "}
           <span className="text-[#D94E4E]">Happy Stories</span>
         </h2>
-        <button className="bg-[#FFAE00] text-white px-8 py-3 rounded-xl font-semibold hover:bg-opacity-90 transition-all shadow-lg shadow-orange-100">
+        <button className="bg-[#FFAE00] text-white px-8 py-3 rounded-xl font-semibold hover:bg-opacity-90 transition-all shadow-lg shadow-orange-100 cursor-pointer">
           View Instagram
         </button>
       </div>

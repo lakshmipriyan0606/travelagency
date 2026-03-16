@@ -40,7 +40,7 @@ export default function PackageDetailCarousel({
     }, [device, images]);
 
     return (
-        <div className="w-full max-w-6xl mx-auto swiper-action-white mt-[7%]">
+        <div className="w-full max-w-6xl mx-auto swiper-action-white mt-[7%] sm:mt-[0%]">
             {/* MAIN SLIDER */}
             <Swiper
                 modules={[Navigation]}

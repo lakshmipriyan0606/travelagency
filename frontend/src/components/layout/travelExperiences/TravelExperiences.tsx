@@ -50,7 +50,7 @@ const TravelExperiences = () => {
             </p>
 
             <div className="flex flex-row flex-wrap lg:flex-nowrap items-center justify-center md:justify-start gap-4 sm:gap-6 md:gap-8 w-full">
-              <button className="bg-[#FFAE00] text-white px-6 md:px-8 py-3 rounded-xl text-sm md:text-base font-semibold hover:bg-opacity-90 transition-all shadow-lg shadow-orange-100 whitespace-nowrap">
+              <button className="bg-[#FFAE00] text-white px-6 md:px-8 py-3 rounded-xl text-sm md:text-base font-semibold hover:bg-opacity-90 transition-all shadow-lg shadow-orange-100 whitespace-nowrap cursor-pointer">
                 View more Reviews
               </button>
 

@@ -140,7 +140,7 @@ export default function HeroEnquiryForm({
                 !isCustomMobileView ? 'border-none' : 'border border-gray-100',
             ].join(' ')}
         >
-            <p className="font-bold text-center leading-snug">Your Perfect Trip Begins Here!</p>
+            <p className={`font-bold text-center leading-snug ${isCustomMobileView ? 'text-gray-200' : 'text-gray-800'}`}>Your Perfect Trip Begins Here!</p>
             <div className="-mx-2 border-t border-gray-200" />
             <form onSubmit={handleFormSubmit} noValidate>
                 <div className="flex flex-col">
@@ -158,6 +158,8 @@ export default function HeroEnquiryForm({
                                             label={field.label}
                                             options={field.options}
                                             required={field.required}
+                                            labelClassName={isCustomMobileView ? 'text-gray-200' : ''}
+                                            selectedValueClassName={isCustomMobileView ? 'text-gray-200' : ''}
                                         />
                                     )}
                                 </div>
@@ -178,6 +180,7 @@ export default function HeroEnquiryForm({
                                         required
                                         inputClassName="focus-visible:ring-yellow-200 focus-visible:border-yellow-400"
                                         inputProps={{ id: 'hero-name-input' }}
+                                        labelClassName={isCustomMobileView ? 'text-gray-200' : ''}
                                     />
                                 </div>
                             </div>
@@ -193,6 +196,7 @@ export default function HeroEnquiryForm({
                                         type="email"
                                         required
                                         inputClassName="focus-visible:ring-yellow-200 focus-visible:border-yellow-400"
+                                        labelClassName={isCustomMobileView ? 'text-gray-200' : ''}
                                     />
                                 </div>
                             </div>
@@ -207,6 +211,7 @@ export default function HeroEnquiryForm({
                                         label="WhatsApp"
                                         required
                                         mainContainerClassName="mb-0"
+                                        labelClassName={isCustomMobileView ? 'text-gray-200' : ''}
                                     />
                                 </div>
                             </div>
@@ -220,6 +225,8 @@ export default function HeroEnquiryForm({
                                         name="language"
                                         label="Preferred Language"
                                         options={languageOptions}
+                                        labelClassName={isCustomMobileView ? 'text-gray-200' : ''}
+                                        selectedValueClassName={isCustomMobileView ? 'text-gray-200' : ''}
                                     />
                                 </div>
                             </div>

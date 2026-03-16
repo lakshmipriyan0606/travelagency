@@ -195,7 +195,7 @@ export default function FilterSearchBar({
                         setIsFocused(false);
                         onSearch();
                     }}
-                    className="bg-[#f0a500] hover:bg-[#d99500] text-white w-14 flex items-center justify-center transition-colors rounded-br-md md:rounded-r-md md:rounded-br-none"
+                    className="bg-[#f0a500] hover:bg-[#d99500] text-white w-14 flex items-center justify-center transition-colors rounded-br-md md:rounded-r-md md:rounded-br-none cursor-pointer"
                     aria-label="Search"
                 >
                     <Search size={20} />

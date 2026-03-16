@@ -41,7 +41,7 @@ const HorizontalFilterBar: React.FC<HorizontalFilterProps> = ({
                         <button
                             key={group}
                             onClick={() => toggleGroup(group)}
-                            className={`flex items-center gap-2 px-2 py-2.5 text-xs xl:text-[13px] tracking-widest uppercase transition-colors relative
+                            className={`flex items-center gap-2 px-2 py-2.5 text-xs xl:text-[13px] tracking-widest uppercase transition-colors relative cursor-pointer
                                 ${isActive ? "text-gray-900 font-medium" : "text-gray-500 hover:text-gray-900"}
                             `}
                         >
@@ -77,7 +77,7 @@ const HorizontalFilterBar: React.FC<HorizontalFilterProps> = ({
                                             return (
                                                 <button
                                                     onClick={() => field.onChange(!isSelected)}
-                                                    className={`px-6 py-2.5 rounded-full text-xs xl:text-sm tracking-widest uppercase transition-all shadow-sm border
+                                                    className={`px-6 py-2.5 rounded-full text-xs xl:text-sm tracking-widest uppercase transition-all shadow-sm border cursor-pointer
                                                         ${isSelected 
                                                             ? "bg-primary text-white border-primary" 
                                                             : "bg-white text-primary border-primary hover:bg-orange-50"}
@@ -121,7 +121,7 @@ const SortPopup: React.FC<SortPopupProps> = ({ value, onChange, onClose }) => {
                 <button
                     key={opt.value}
                     onClick={() => { onChange(opt.value); onClose(); }}
-                    className={`w-full flex items-center gap-3 px-5 py-3 text-sm text-left transition-colors
+                    className={`w-full flex items-center gap-3 px-5 py-3 text-sm text-left transition-colors cursor-pointer
                         ${value === opt.value
                             ? "bg-primary/10 text-primary font-semibold"
                             : "text-gray-700 hover:bg-gray-50"
@@ -176,7 +176,7 @@ const MobileFilterPanel: React.FC<MobilePanelProps> = ({
                 {/* Panel Header */}
                 <div className="flex items-center justify-between px-4 py-3 border-b border-gray-100">
                     <span className="font-semibold text-gray-800">Filters</span>
-                    <button onClick={onClose} className="p-1 text-gray-500 hover:text-gray-800">
+                    <button onClick={onClose} className="p-1 text-gray-500 hover:text-gray-800 cursor-pointer">
                         <X size={20} />
                     </button>
                 </div>
@@ -189,7 +189,7 @@ const MobileFilterPanel: React.FC<MobilePanelProps> = ({
                             <button
                                 key={group}
                                 onClick={() => setActiveTab(group)}
-                                className={`relative w-full text-left px-3 py-4 text-sm capitalize transition-colors flex items-center justify-between
+                                className={`relative w-full text-left px-3 py-4 text-sm capitalize transition-colors flex items-center justify-between cursor-pointer
                                     ${activeTab === group
                                         ? "font-semibold text-primary bg-white"
                                         : "text-gray-600 hover:bg-white/60"
@@ -266,13 +266,13 @@ const MobileFilterPanel: React.FC<MobilePanelProps> = ({
                 <div className="border-t border-gray-100 p-3 flex gap-3">
                     <button
                         onClick={handleClear}
-                        className="flex-1 py-2.5 rounded-lg border border-gray-200 text-sm text-gray-600 hover:bg-gray-50 transition-colors"
+                        className="flex-1 py-2.5 rounded-lg border border-gray-200 text-sm text-gray-600 hover:bg-gray-50 transition-colors cursor-pointer"
                     >
                         Clear All
                     </button>
                     <button
                         onClick={onClose}
-                        className="flex-1 py-2.5 rounded-lg bg-primary text-white text-sm font-semibold hover:bg-primary/90 transition-colors"
+                        className="flex-1 py-2.5 rounded-lg bg-primary text-white text-sm font-semibold hover:bg-primary/90 transition-colors cursor-pointer"
                     >
                         Apply
                     </button>
@@ -341,7 +341,7 @@ const FilterConfigPage: React.FC<FilterConfigPageProps> = ({
                     {/* FILTERS button */}
                     <button
                         onClick={() => setShowMobileFilter(true)}
-                        className="flex items-center gap-2 bg-primary text-white text-sm font-semibold px-4 py-2 rounded-lg"
+                        className="flex items-center gap-2 bg-primary text-white text-sm font-semibold px-4 py-2 rounded-lg cursor-pointer"
                     >
                         <SlidersHorizontal size={15} />
                         FILTERS
@@ -356,7 +356,7 @@ const FilterConfigPage: React.FC<FilterConfigPageProps> = ({
                     <div className="relative">
                         <button
                             onClick={() => setShowSortPopup((v) => !v)}
-                            className="flex items-center gap-2 bg-primary text-white text-sm font-semibold px-4 py-2 rounded-lg"
+                            className="flex items-center gap-2 bg-primary text-white text-sm font-semibold px-4 py-2 rounded-lg cursor-pointer"
                         >
                             <ArrowUpDown size={15} />
                             SORT
@@ -375,7 +375,7 @@ const FilterConfigPage: React.FC<FilterConfigPageProps> = ({
                     {/* CLEAR FILTER button */}
                     <button
                         onClick={handleClear}
-                        className="ml-auto flex items-center gap-1 bg-pink-100 text-pink-600 text-sm font-semibold px-4 py-2 rounded-lg hover:bg-pink-200 transition-colors"
+                        className="ml-auto flex items-center gap-1 bg-pink-100 text-pink-600 text-sm font-semibold px-4 py-2 rounded-lg hover:bg-pink-200 transition-colors cursor-pointer"
                     >
                         CLEAR FILTER
                     </button>

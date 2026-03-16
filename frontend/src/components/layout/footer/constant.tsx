@@ -8,9 +8,10 @@ export const footerData = {
   whatsapp: GLOBAL_CONFIG.contact.whatsappDisplay,
   email: GLOBAL_CONFIG.contact.email,
   cta: {
-    title: "Personalized Tours to the Highest Standards,",
-    highlight: "Especially for You!",
-    buttonText: "ENQUIRE NOW!",
+    title: "Let's Plan Your Perfect Malaysia Getaway",
+    description: "Travel with confidence through one of the trusted Indian travel agencies in Malaysia, offering personalized tours, local expertise, and seamless travel experiences.",
+    highlight: "Book Your Experience Now!",
+    buttonText: "START YOUR JOURNEY",
     buttonHref: "/#reach-us-section",
     image: footerBg,
   },

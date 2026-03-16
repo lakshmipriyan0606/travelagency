@@ -6,14 +6,11 @@
  * ─────────────────────────────────────────────────────────────────────────────
  */
 
-import { useState } from 'react';
-import whatsappIcon from '@/assets/icons/whatsapp.svg';
-import { WANumber } from '@/lib/utils';
 import HeroEnquiryForm from './HeroEnquiryForm';
-import EnquiryModal from './EnquiryModal';
 import { HeroFormData } from '@/config/formConfig';
 import AnimatedButton from '@/components/Button/AnimatedButton/AnimatedButton';
 import { motion } from 'framer-motion';
+import { useNavigate } from 'react-router-dom';
 
 // ... Scroll indicator (unchanged) ...
 
@@ -23,7 +20,7 @@ const ScrollIndicator = () => {
     };
 
     return (
-        <div className="cursor-pointer z-10 absolute left-[40%] sm:left-[40%] md:left-[37%] rotate-90 scale-150 top-[68%] sm:top-[74%] lg:top-[75%] lg:left-[45%]" onClick={handleScroll}>
+        <div className="cursor-pointer z-10 absolute left-[40%] sm:left-[40%] md:left-[37%] rotate-90 scale-150 top-[72%] sm:top-[74%] lg:top-[75%] lg:left-[45%]" onClick={handleScroll}>
             <svg
                 className="scroll-group"
                 xmlns="http://www.w3.org/2000/svg"
@@ -54,19 +51,11 @@ const ScrollIndicator = () => {
     );
 };
 
-// ─── WhatsApp handler ─────────────────────────────────────────────────────────
-
-const handleSendToWhatsApp = () => {
-    const message =
-        'Hi Sastika Travels I visited your website and would like to know more about your travel packages. Please share the details. Thank you!';
-    const url = `https://wa.me/${WANumber}?text=${encodeURIComponent(message)}`;
-    window.open(url, '_blank');
-};
 
 // ─── HeroSection ──────────────────────────────────────────────────────────────
 
 const HeroSection = () => {
-    const [isModalOpen, setIsModalOpen] = useState(false);
+    const navigate = useNavigate();
 
     const handleFormComplete = (_data: HeroFormData) => {
         // Form is fully submitted and success message shown.
@@ -102,19 +91,11 @@ const HeroSection = () => {
                                 Plan your perfect Malaysia trip with <span className="text-primary font-medium">Sastikaa Travel</span> — a professional travel agency in Malaysia providing city tours, airport transfers, and customized travel packages across Kuala Lumpur, Genting Highland, Langkawi Island, and Penang.
                             </p>
                         </div>
-
                         <div className="flex flex-col items-start gap-4 mt-2 pt-4">
                             <AnimatedButton
-                                buttonText="ENQUIRE NOW!"
-                                className="!px-10 !py-3.5 w-[150px] h-[45px] rounded-sm"
-                                onClick={() => {
-                                    if (window.innerWidth < 768) {
-                                        setIsModalOpen(true);
-                                    } else {
-                                        const formEl = document.getElementById('hero-form-card');
-                                        formEl?.scrollIntoView({ behavior: 'smooth', block: 'center' });
-                                    }
-                                }}
+                                buttonText="EXPLORE PACKAGE"
+                                className="!px-10 !py-3.5 w-[200px] h-[45px] rounded-sm"
+                                onClick={() => navigate('/allpackage')}
                             />
 
                             <div className="">
@@ -128,17 +109,6 @@ const HeroSection = () => {
                     </div>
                 </div>
             </div>
-
-            <div className="hidden sm:block absolute right-4 sm:bottom-19 lg:bottom-24 z-20">
-                <img
-                    src={whatsappIcon}
-                    alt="Chat on WhatsApp"
-                    className="w-12 h-12 cursor-pointer"
-                    onClick={handleSendToWhatsApp}
-                />
-            </div>
-
-            <EnquiryModal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} />
         </div>
     );
 };

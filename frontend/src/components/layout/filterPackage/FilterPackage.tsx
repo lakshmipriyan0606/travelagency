@@ -102,7 +102,7 @@ const SelectedFiltersRow: React.FC<SelectedFiltersProps> = ({
             </div>
             <button
                 onClick={onClearAll}
-                className="text-xs font-semibold text-gray-500 hover:text-red-500 transition-colors border border-gray-200 px-3 py-1.5 rounded-lg whitespace-nowrap"
+                className="text-xs font-semibold text-gray-500 hover:text-red-500 transition-colors border border-gray-200 px-3 py-1.5 rounded-lg whitespace-nowrap cursor-pointer"
             >
                 Clear Filters
             </button>
@@ -315,7 +315,7 @@ const FilterPackage = ({ likePackageOnly = false }: FilterPackageProps) => {
                         <AnimatedButton
                             buttonText={isLoading ? "Loading…" : "Load more"}
                             onClick={() => refetch()}
-                            className="w-[200px]"
+                            className="w-[200px] cursor-pointer"
                             disabled={isLoading}
                         />
                     </div>

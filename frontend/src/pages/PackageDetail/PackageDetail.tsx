@@ -54,6 +54,13 @@ const PackageDetail = () => {
                 />
             </div>
 
+
+            <div className='font-body mt-8 bg-white/50  px-6  rounded-2xl border border-gray-100'>
+                <h1 className='text-bold text-2xl lg:text-3xl text-gray-900 border-l-4 border-primary pl-4'>
+                    {currentPackageList?.data?.packageName}
+                </h1>
+            </div>
+
             {/* Container */}
             <div className="mx-auto p-4 lg:p-8 grid grid-cols-1 lg:grid-cols-12 gap-8">
                 {/* Left 66% - Main Content & Image */}
@@ -61,17 +68,14 @@ const PackageDetail = () => {
                     <PackageDetailCarousel currentPackage={currentPackageList} />
 
                     {/* Mobile Only Header/Booking */}
-                    <div className='lg:hidden mt-6'>
-                        <div className='font-body text-center'>
-                            <h1 className='text-bold text-2xl pb-2'>{currentPackageList?.data?.packageName}</h1>
-                            <h6 className='pb-6'>Book your dream vacation <span className='text-primary'>Today!</span></h6>
-                        </div>
-                        <BookingFomField fieldClassName="text-gray-800" />
+                    <div className='lg:hidden mt-2'>
+                        <BookingFomField fieldClassName="text-gray-200 sm:text-gray-800" />
                     </div>
 
-                    <div className='font-body mt-7'>
-                        <h1 className='text-bold text-xl'>{currentPackageList?.data?.packageName}</h1>
-                        <p className='mt-5 text-sm'>{currentPackageList?.data?.packageDescription}</p>
+                    <div className='font-body bg-white/50 rounded-2xl border border-gray-100'>
+                        <p className='text-gray-600 leading-relaxed text-[15px]'>
+                            {currentPackageList?.data?.packageDescription}
+                        </p>
                     </div>
 
                     <div className="w-full py-9">
@@ -116,11 +120,10 @@ const PackageDetail = () => {
                 {/* Right 33% - Sticky Booking Form */}
                 <div className="hidden lg:block lg:col-span-4">
                     <div className="sticky top-22 bg-white rounded-2xl border border-gray-100">
-                        <div className='font-body text-center mb-6'>
-                            <h1 className='text-bold text-2xl pb-2'>{currentPackageList?.data?.packageName}</h1>
-                            <h6 className='text-gray-800'>Book your dream vacation <span className='text-primary font-medium'>Today!</span></h6>
+                        <div className='font-body text-center'>
+                            <h6 className='text-gray-800 text-xl'>Book your dream vacation <span className='text-primary font-medium'>Today!</span></h6>
                         </div>
-                        <BookingFomField fieldClassName="text-gray-800" />
+                        <BookingFomField fieldClassName="text-gray-200 sm:text-gray-800" />
                     </div>
                 </div>
             </div>

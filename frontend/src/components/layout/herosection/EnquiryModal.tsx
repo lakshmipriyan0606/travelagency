@@ -48,7 +48,7 @@ export default function EnquiryModal({ isOpen, onClose }: EnquiryModalProps) {
                 onClick={(e) => e.stopPropagation()}
             >
                 <button
-                    className="absolute top-3 right-3 z-10 w-8 h-8 rounded-full bg-gray-100 hover:bg-gray-200 flex items-center justify-center text-gray-600"
+                    className="absolute top-3 right-3 z-10 w-8 h-8 rounded-full bg-gray-100 hover:bg-gray-200 flex items-center justify-center text-gray-600 cursor-pointer"
                     onClick={onClose}
                     aria-label="Close enquiry form"
                     type="button"
