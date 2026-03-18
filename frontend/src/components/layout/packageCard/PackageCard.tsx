@@ -104,7 +104,12 @@ export function SinglePackageCard({
     };
 
     const handleToggleLike = (packageId: string, liked: boolean) => {
-        updateLikeMutate({ id: packageId, liked, userId: localStorage.getItem("userId") });
+        const userId = localStorage.getItem("userId");
+        if (!userId) {
+            toast.warn("Please login to like this package");
+            return;
+        }
+        updateLikeMutate({ id: packageId, liked, userId: userId });
     }
 
     const handleSendToWhatsApp = (currPackage: any) => {

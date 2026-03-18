@@ -243,6 +243,10 @@ router.delete("/deletePackage/:id", async (req, res) => {
 router.post("/like", async (req, res) => {
   const { userId, id, liked } = req.body;
 
+  if (!userId) {
+    return res.status(400).json({ message: "User ID is required" });
+  }
+
   try {
     const pkg = await PackageModel.findOne({ _id: id, isDeleted: { $ne: true } });
     console.log("pkg: ", pkg);

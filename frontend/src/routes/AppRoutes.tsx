@@ -60,6 +60,13 @@ const AppRoutes = () => {
         return () => clearTimeout(timer);
     }, [isAdminRoute]);
 
+    useEffect(() => {
+        if (!localStorage.getItem("userId")) {
+            const tempUserId = `user_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+            localStorage.setItem("userId", tempUserId);
+        }
+    }, []);
+
     return (
         <ErrorBoundary FallbackComponent={ErrorFallback} onReset={() => window.location.reload()}>
             <Suspense fallback={<Loading />}>
