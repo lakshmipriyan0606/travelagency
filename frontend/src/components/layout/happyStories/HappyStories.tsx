@@ -1,6 +1,10 @@
 import { CUSTOMER_IMAGES } from "./constant";
 
 const HappyStories = () => {
+  const handleInstagramClick = () => {
+    window.open('https://www.instagram.com/sastikaatravels/', '_blank');
+  };
+
   // Duplicate images to create a seamless infinite loop
   const imagesRow1 = [...CUSTOMER_IMAGES, ...CUSTOMER_IMAGES, ...CUSTOMER_IMAGES];
   const imagesRow2 = [...CUSTOMER_IMAGES, ...CUSTOMER_IMAGES, ...CUSTOMER_IMAGES];
@@ -32,7 +36,10 @@ const HappyStories = () => {
           <span className="text-[#5E4B8B]">Happy Customers,</span>{" "}
           <span className="text-[#D94E4E]">Happy Stories</span>
         </h2>
-        <button className="bg-[#FFAE00] text-white px-8 py-3 rounded-xl font-semibold hover:bg-opacity-90 transition-all shadow-lg shadow-orange-100 cursor-pointer">
+        <button
+          onClick={handleInstagramClick}
+          className="bg-[#FFAE00] text-white px-8 py-3 rounded-xl font-semibold hover:bg-opacity-90 transition-all shadow-lg shadow-orange-100 cursor-pointer"
+        >
           View Instagram
         </button>
       </div>

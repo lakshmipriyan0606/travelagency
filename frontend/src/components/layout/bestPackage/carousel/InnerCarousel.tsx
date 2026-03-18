@@ -38,7 +38,7 @@ export default function InnerCarousel({ images = [], offerId }: InnerCarouselPro
                     {images.map((img, idx) => (
                         <SwiperSlide key={idx} className="h-full">
                             <div
-                                className="h-full w-full bg-cover bg-center relative flex cursor-pointer"
+                                className="h-full w-full bg-cover bg-center relative flex cursor-pointer rounded-t-lg "
                                 style={{ backgroundImage: `url("${img}")` }}
                                 onClick={() => handleNavigation(offerId)}
                             >
@@ -50,11 +50,11 @@ export default function InnerCarousel({ images = [], offerId }: InnerCarouselPro
                         </SwiperSlide>
                     ))}
                 </Swiper>
-                <div className="bottom-2 left-0 right-0 h-6 bg-gradient-to-r from-[#C59435] via-[#F3E79B] to-[#C59435] border-y border-[#D8C27A] flex items-center justify-center shadow-md">
+                {/* <div className="bottom-2 left-0 right-0 h-6 bg-gradient-to-r from-[#C59435] via-[#F3E79B] to-[#C59435] border-y border-[#D8C27A] flex items-center justify-center shadow-md">
                     <span className="text-black font-semibold tracking-[0.35em] uppercase">
                         Exclusive Offer
                     </span>
-                </div>
+                </div> */}
             </div>
 
             {/* Inner navigation arrows */}
