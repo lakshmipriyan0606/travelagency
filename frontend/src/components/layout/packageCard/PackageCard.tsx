@@ -152,7 +152,11 @@ export function SinglePackageCard({
 
             {/* Carousel */}
             <div className="relative">
-                <InnerCarousel images={offer.images} offerId={offer._id} />
+                <InnerCarousel 
+                    images={offer.images} 
+                    offerId={offer._id} 
+                    packageName={offer.packageName} 
+                />
 
                 {/* Discount Ribbon */}
                 <div className="absolute top-0 right-0">
@@ -234,7 +238,11 @@ export function SinglePackageCard({
                             bgColor="bg-custom-black"
                             onClick={() => {
                                 if (isAllPackagePage) {
-                                    navigate(`/package/${offer._id}`);
+                                    const slug = offer.packageName
+                                        .toLowerCase()
+                                        .replace(/[^a-z0-9]+/g, "-")
+                                        .replace(/(^-|-$)/g, "");
+                                    navigate(`/package/${slug}?id=${offer._id}`);
                                 } else {
                                     setIsModalOpen(true);
                                 }

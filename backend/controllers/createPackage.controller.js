@@ -17,6 +17,7 @@ export const createPackage = async (req, res) => {
       country,
       isActive,
       status,
+      activityCategory,
     } = req.body;
 
     const days = JSON.parse(req.body.days);
@@ -112,6 +113,7 @@ export const createPackage = async (req, res) => {
       country,
       isActive: isActive === 'false' ? false : true,
       status: status || 'Active',
+      activityCategory: activityCategory || null,
       createdBy: req.user._id,
     });
     res.status(201).json({
@@ -141,6 +143,7 @@ export const updatePackage = async (req, res) => {
       country,
       isActive,
       status,
+      activityCategory,
     } = req.body;
 
     // parse days: accept object or JSON string
@@ -279,6 +282,7 @@ export const updatePackage = async (req, res) => {
         country,
         isActive: isActive === 'false' ? false : true,
         status,
+        activityCategory: activityCategory || null,
       },
       { new: true, runValidators: true }
     );

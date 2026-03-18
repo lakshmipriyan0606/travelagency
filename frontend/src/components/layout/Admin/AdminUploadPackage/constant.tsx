@@ -21,3 +21,8 @@ export const statusOptions = [
     { value: "Active", label: "Active" },
     { value: "Inactive", label: "Inactive" },
 ];
+
+export const activityCategoryOptions = GLOBAL_CONFIG.activityCategories.map(cat => ({
+    value: cat.value,
+    label: cat.label
+}));

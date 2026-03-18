@@ -70,8 +70,8 @@ export default function PackageDetailCarousel({
                             mainSwiperRef.current?.slideTo(index);
                         }}
                         className={`cursor-pointer transition-all duration-300 rounded-full relative overflow-hidden border-3 ${activeIndex === index
-                            ? "border-yellow-400 scale-110 bottom-2 sm:bottom-13 shadow-md shadow-black/40 w-14 h-14 sm:w-24 sm:h-24"
-                            : "border-black/30 border-1 blur-[1px] hover:opacity-100 bottom-2 sm:bottom-8 shadow-md shadow-black/40"
+                            ? "border-yellow-400 scale-110 bottom-2 sm:bottom-4 shadow-md shadow-black/40 w-14 h-14 sm:w-18 sm:h-18"
+                            : "border-black/30 border-1 blur-[1px] hover:opacity-100 bottom-2 sm:bottom-4 shadow-md shadow-black/40"
                             }`}
                     >
                         <img

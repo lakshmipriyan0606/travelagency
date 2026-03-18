@@ -10,13 +10,22 @@ import { useNavigate } from "react-router-dom";
 interface InnerCarouselProps {
     images: string[];
     offerId: number | string;
+    packageName?: string;
 }
 
-export default function InnerCarousel({ images = [], offerId }: InnerCarouselProps) {
+export default function InnerCarousel({ images = [], offerId, packageName }: InnerCarouselProps) {
     const navigate = useNavigate();
 
     const handleNavigation = (id: number | string) => {
-        navigate(`/package/${id}`);
+        if (packageName) {
+            const slug = packageName
+                .toLowerCase()
+                .replace(/[^a-z0-9]+/g, "-")
+                .replace(/(^-|-$)/g, "");
+            navigate(`/package/${slug}?id=${id}`);
+        } else {
+            navigate(`/package/${id}`);
+        }
     };
 
     const enableLoop = images.length > 1;
@@ -50,11 +59,11 @@ export default function InnerCarousel({ images = [], offerId }: InnerCarouselPro
                         </SwiperSlide>
                     ))}
                 </Swiper>
-                {/* <div className="bottom-2 left-0 right-0 h-6 bg-gradient-to-r from-[#C59435] via-[#F3E79B] to-[#C59435] border-y border-[#D8C27A] flex items-center justify-center shadow-md">
+                <div className="bottom-2 left-0 right-0 h-6 bg-gradient-to-r from-[#C59435] via-[#F3E79B] to-[#C59435] border-y border-[#D8C27A] flex items-center justify-center shadow-md">
                     <span className="text-black font-semibold tracking-[0.35em] uppercase">
                         Exclusive Offer
                     </span>
-                </div> */}
+                </div>
             </div>
 
             {/* Inner navigation arrows */}

@@ -11,9 +11,7 @@ const AdminPanel = lazy(() => import('@/pages/Admin/AdminPanel/AdminPanel'));
 const PackageDetail = lazy(() => import('@/pages/PackageDetail/PackageDetail'));
 const LoginForm = lazy(() => import('@/pages/Admin/login/Login'));
 const NotFound = lazy(() => import('@/pages/NotFound/NotFound'));
-
-
-
+const ActivityPackageList = lazy(() => import('@/pages/Activities/ActivityPackageList'));
 
 const routes: AppRoute[] = [
     {
@@ -29,6 +27,11 @@ const routes: AppRoute[] = [
     {
         path: '/allpackage',
         element: <AllPackage />,
+        isProtectRoute: false,
+    },
+    {
+        path: '/activities',
+        element: <ActivityPackageList />,
         isProtectRoute: false,
     },
     {

@@ -47,8 +47,10 @@ const AdminPanel = () => {
 
     const renderPage = () => {
         switch (active) {
-            case "CreatePackage": return <AdminUploadPackageForm />;
-            case "AllPackages": return <FilterPackage />;
+            case "CreatePackage":
+            case "CreateActivity": return <AdminUploadPackageForm isActivity={active === "CreateActivity"} />;
+            case "AllPackages": return <FilterPackage mode="packages" />;
+            case "AllActivities": return <FilterPackage mode="activities" />;
             case "FormList": return <BookingAdminPage />;
             case "UploadImage": return <UploadImagePage />;
             case "MediaGallery": return <MediaGallery />;
@@ -79,12 +81,14 @@ const AdminPanel = () => {
                         <div>
                             <h1 className="text-lg sm:text-xl font-bold text-neutral-800 tracking-tight">
                                 {active === "AllPackages" && "Package Inventory"}
-                                {active === "CreatePackage" && (editPackageId ? "Edit Package" : "Create New Package")}
+                                {active === "AllActivities" && "Activity Inventory"}
+                                {(active === "CreatePackage" || active === "CreateActivity") && (editPackageId ? "Edit Package" : (active === "CreateActivity" ? "Create New Activity" : "Create New Package"))}
                                 {active === "FormList" && "Booking Requests"}
                                 {active === "UploadImage" && "Media Manager"}
+                                {active === "MediaGallery" && "Media Gallery"}
                             </h1>
                             <p className="text-[10px] sm:text-[11px] text-neutral-400 uppercase tracking-widest font-bold">
-                                Home / {active}
+                                Home / {active === "CreateActivity" ? "Create Activity" : (active === "CreatePackage" ? "Create Package" : active)}
                             </p>
                         </div>
 

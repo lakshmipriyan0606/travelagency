@@ -74,4 +74,20 @@ export const GLOBAL_CONFIG = {
     value: String(i + 1),
     label: `${i + 1} ${i === 0 ? "Person" : "Persons"}`,
   })),
+  // Activity Categories (Unified source of truth)
+  activityCategories: [
+    { value: "Sightseeing", label: "🏛️ Sightseeing", emoji: "🏛️", description: "Explore iconic landmarks and city wonders", gradient: "from-rose-700 to-pink-500" },
+    { value: "Water Sports", label: "🏄 Water Sports", emoji: "🏄", description: "Thrilling adventures on the waves", gradient: "from-cyan-700 to-blue-500" },
+    { value: "Hiking", label: "🥾 Hiking", emoji: "🥾", description: "Trek through scenic mountain trails", gradient: "from-green-800 to-emerald-600" },
+    { value: "Shopping", label: "🛍️ Shopping", emoji: "🛍️", description: "Discover local crafts and premium brands", gradient: "from-purple-700 to-indigo-500" },
+    { value: "Relaxing", label: "🏖️ Relaxing", emoji: "🏖️", description: "Unwind at pristine beaches & resorts", gradient: "from-sky-700 to-cyan-500" },
+    { value: "Boating", label: "⛵ Boating", emoji: "⛵", description: "Sail across stunning waters", gradient: "from-blue-800 to-blue-500" },
+    { value: "Snorkeling", label: "🤿 Snorkeling", emoji: "🤿", description: "Explore vibrant underwater worlds", gradient: "from-teal-700 to-teal-400" },
+    { value: "Safari", label: "🦁 Safari", emoji: "🦁", description: "Witness wildlife in their natural habitat", gradient: "from-orange-700 to-amber-600" },
+    { value: "Adventure", label: "🧗 Adventure", emoji: "🧗", description: "Push limits with thrilling activities", gradient: "from-red-700 to-orange-500" },
+    { value: "Diving", label: "🐠 Diving", emoji: "🐠", description: "Dive deep into crystal-clear waters", gradient: "from-blue-700 to-indigo-600" },
+    { value: "Cycling", label: "🚴 Cycling", emoji: "🚴", description: "Pedal through scenic countryside", gradient: "from-yellow-700 to-amber-500" },
+    { value: "Skiing", label: "⛷️ Skiing", emoji: "⛷️", description: "Glide down snow-capped slopes", gradient: "from-indigo-700 to-blue-400" },
+    { value: "Cultural", label: "🏛️ Cultural", emoji: "🏛️", description: "Immerse in heritage & local traditions", gradient: "from-rose-700 to-pink-500" },
+  ],
 };

@@ -56,6 +56,9 @@ router.get("/", async (req, res) => {
     // Extract filters
     const search = req.query.search;
     const city = req.query.city;
+    const activityCategory = req.query.activityCategory;
+    const onlyActivities = req.query.onlyActivities === 'true';
+    const excludeActivities = req.query.excludeActivities === 'true';
 
     const isAdmin = req.query.isAdmin === 'true';
     const query = isAdmin ? { isDeleted: { $ne: true } } : { isActive: { $ne: false }, isDeleted: { $ne: true } };
@@ -81,6 +84,27 @@ router.get("/", async (req, res) => {
           { location: { $regex: city, $options: "i" } },
           { city: { $regex: city, $options: "i" } }
         ]
+      });
+    }
+
+    // Filter by activity category
+    if (activityCategory) {
+      andConditions.push({ activityCategory: { $regex: activityCategory, $options: "i" } });
+    }
+
+    // Strict separation
+    if (onlyActivities) {
+      andConditions.push({ 
+        activityCategory: { $ne: null, $exists: true, $not: /none/i } 
+      });
+    } else if (excludeActivities) {
+      andConditions.push({ 
+        $or: [
+          { activityCategory: null }, 
+          { activityCategory: { $exists: false } }, 
+          { activityCategory: "" }, 
+          { activityCategory: "none" }
+        ] 
       });
     }
 
@@ -117,6 +141,33 @@ router.get("/", async (req, res) => {
     });
   }
 });
+
+// Get all distinct activity categories that have at least one active package
+// We merge with a predefined list to ensure the Home page always looks rich
+router.get("/activitycategories", async (req, res) => {
+  try {
+    const predefinedCategories = [
+      "Sightseeing", "Water Sports", "Hiking", "Shopping", 
+      "Relaxing", "Boating", "Snorkeling", "Safari", 
+      "Adventure", "Diving", "Cycling", "Skiing", "Cultural"
+    ];
+
+    const dbCategories = await PackageModel.distinct("activityCategory", {
+      activityCategory: { $ne: null, $exists: true, $not: /none/i },
+      isActive: { $ne: false },
+      isDeleted: { $ne: true },
+    });
+
+    // Merge and remove duplicates
+    const allCategories = Array.from(new Set([...dbCategories, ...predefinedCategories])).filter(Boolean);
+
+    res.status(200).json({ data: allCategories, message: "Activity categories fetched successfully" });
+  } catch (error) {
+    res.status(500).json({ message: "Error fetching activity categories", error: error.message });
+  }
+});
+
+
 
 router.get("/likeCount", async (req, res) => {
   try {

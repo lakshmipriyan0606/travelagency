@@ -4,15 +4,23 @@ export const GetBestBackageList = async () => {
   const { data } = await axiosClient.get("packages/bestpackages");
   return data;
 }
-export const GetAllPackageList = async ({ limit = 10, lastId = '', search = '', city = '', isAdmin = false }: { limit?: number; lastId?: string, search?: string, city?: string, isAdmin?: boolean }) => {
+export const GetAllPackageList = async ({ limit = 10, lastId = '', search = '', city = '', isAdmin = false, activityCategory = '', onlyActivities = false, excludeActivities = false }: { limit?: number; lastId?: string, search?: string, city?: string, isAdmin?: boolean, activityCategory?: string, onlyActivities?: boolean, excludeActivities?: boolean }) => {
   const queryParams = new URLSearchParams();
   if (limit) queryParams.append('limit', limit.toString());
   if (lastId) queryParams.append('lastId', lastId);
   if (search) queryParams.append('search', search);
   if (city) queryParams.append('city', city);
   if (isAdmin) queryParams.append('isAdmin', 'true');
+  if (activityCategory) queryParams.append('activityCategory', activityCategory);
+  if (onlyActivities) queryParams.append('onlyActivities', 'true');
+  if (excludeActivities) queryParams.append('excludeActivities', 'true');
 
   const { data } = await axiosClient.get(`packages?${queryParams.toString()}`);
+  return data;
+}
+
+export const GetActivityCategories = async () => {
+  const { data } = await axiosClient.get('packages/activitycategories');
   return data;
 }
 

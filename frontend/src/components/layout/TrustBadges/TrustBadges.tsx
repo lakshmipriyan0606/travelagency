@@ -2,7 +2,7 @@ import { TRUST_BADGES } from "./constant";
 
 const TrustBadges = () => {
   return (
-    <section className="relative z-30 -mt-23 sm:-mt-28 lg:-mt-31 px-10">
+    <section className="relative z-30 py-6 px-10">
       <div className="max-w-7xl mx-auto">
         <div className="bg-custom-black rounded-xl md:rounded-[20px] py-3 lg:py-6 px-4 lg:px-16 flex justify-between md:justify-between items-center gap-x-1 md:gap-x-6 gap-y-4 shadow-xl relative overflow-hidden group">
 

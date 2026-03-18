@@ -3,13 +3,13 @@ import {
   Calendar,
   Image as ImageIcon,
   CheckCircle,
-  TrendingUp,
   Tag,
   Upload,
   X,
   Plus,
   Loader2,
   ArrowRight,
+  Eye,
 } from "lucide-react";
 import { useForm, useFieldArray, FormProvider } from "react-hook-form";
 import { toast } from "react-toastify";
@@ -22,7 +22,7 @@ import { Button } from "@/components/ui/button";
 import { ReusableInput } from "@/components/forms/ReusableInput";
 import { SelectField } from "@/components/forms/SelectField";
 import { ReusableCheckbox } from "@/components/forms/ReusableCheckbox";
-import { packageTypes, rankOptions, statusOptions } from "./constant";
+import { packageTypes, rankOptions, statusOptions, activityCategoryOptions } from "./constant";
 import { destinationOptions } from "@/config/destinations";
 import { ItineraryDaySection } from "./ItineraryDaySection";
 import { useMutationAPIQuery } from "@/Hook/useMutationAPIQuery";
@@ -57,6 +57,7 @@ const formSchema = z.object({
   country: z.string().min(1, "Country is required"),
   isActive: z.boolean().default(true),
   status: z.enum(["Active", "Inactive"]).default("Active"),
+  activityCategory: z.string().optional(),
   days: z.array(daySchema),
 });
 
@@ -184,7 +185,7 @@ const StyledField = ({ children, className }: { children: React.ReactNode, class
   </div>
 );
 
-export default function AdminUploadPackageForm() {
+export default function AdminUploadPackageForm({ isActivity = false }: { isActivity?: boolean }) {
   const context = useContext(AdminPanelContext);
   if (!context) throw new Error("AdminUploadPackageForm must be used within AdminPanelContext");
   const { editPackageId: id, setActive, triggerRefresh } = context;
@@ -248,6 +249,7 @@ export default function AdminUploadPackageForm() {
       country: "Malaysia",
       bestRank: "",
       status: "Active",
+      activityCategory: "",
       days: [{ dayTitle: "", slots: [{ slotType: "", title: "", description: "", imageUrl: "" }] }]
     },
     mode: 'onChange'
@@ -272,6 +274,7 @@ export default function AdminUploadPackageForm() {
       country: pkg.country || "Malaysia",
       isActive: pkg.isActive !== false,
       status: pkg.status || "Active",
+      activityCategory: pkg.activityCategory || "",
       days: (pkg.days || []).map((day: any) => ({
         dayTitle: day.dayTitle || "",
         slots: (day.slots || []).map((slot: any) => ({
@@ -294,7 +297,11 @@ export default function AdminUploadPackageForm() {
     try {
       const formData = new FormData();
       Object.entries(values).forEach(([key, val]) => {
-        if (key !== "days") formData.append(key, val as any);
+        if (key !== "days") {
+          // "none" means the user chose "No Activity" — send empty string to backend
+          const sanitized = key === "activityCategory" && val === "none" ? "" : val;
+          formData.append(key, sanitized as any);
+        }
       });
       formData.append("existingImages", JSON.stringify(mainImageUrls));
       mainImageFiles.forEach(file => formData.append("images", file));
@@ -334,7 +341,7 @@ export default function AdminUploadPackageForm() {
     const fieldsByStep = [
       ["packageName", "packageDescription", "location", "country", "packageType", "daysAndNights"],
       ["price", "offerPrice", "hotelName", "status", "isActive", "isBestPackage", "bestRank"],
-      [], // Media step doesn't have zod fields in this schema
+      [], // Media step
       ["days"]
     ];
 
@@ -355,7 +362,7 @@ export default function AdminUploadPackageForm() {
           <div>
             <h1 className="text-2xl font-black text-neutral-800 tracking-tight flex items-center gap-3">
               <div className="w-1.5 h-8 bg-primary rounded-full" />
-              {id ? "Sync Changes" : "Create Adventure"}
+              {isActivity ? "Create Activity" : (id ? "Sync Changes" : "Create Adventure")}
             </h1>
             <p className="text-[10px] text-neutral-500 mt-1 font-semibold ml-4 uppercase tracking-wider opacity-70">
               Step {activeStep + 1} of {steps.length}: {steps[activeStep].title}
@@ -446,6 +453,24 @@ export default function AdminUploadPackageForm() {
                     <StyledField>
                       <ReusableInput control={control} name="daysAndNights" label="Duration" placeholder="e.g. 3 Days, 2 Nights" required variant="floating" />
                     </StyledField>
+                    {/* Only show activity category if in Create Activity mode OR if editing an existing activity package */}
+                    {(isActivity || (id && data?.data?.activityCategory && data?.data?.activityCategory !== "none")) && (
+                      <StyledField>
+                        <SelectField
+                          control={control}
+                          name="activityCategory"
+                          label="Activity Category"
+                          options={activityCategoryOptions}
+                          variant="floating"
+                          required
+                        />
+                        {!watch("activityCategory") && (
+                          <p className="text-[10px] text-amber-600 font-bold mt-1 animate-pulse">
+                            ⚠️ Please select an activity category for this to show in the Activity section!
+                          </p>
+                        )}
+                      </StyledField>
+                    )}
                   </div>
                 </Card>
               </div>
@@ -481,7 +506,7 @@ export default function AdminUploadPackageForm() {
                 </Card>
 
                 <Card className="p-8 border border-neutral-200/60 shadow-2xl shadow-neutral-200/40 rounded-[32px] bg-white/80 backdrop-blur-md">
-                  <SectionHeader icon={TrendingUp} title="Visibility" subtitle="Platform status" />
+                  <SectionHeader icon={Eye} title="Visibility" subtitle="Platform status" />
                   <div className="space-y-5 mt-6">
                     <StyledField>
                       <SelectField control={control} name="status" label="System Status" options={statusOptions} required variant="floating" />

@@ -13,11 +13,13 @@ import { SlidersHorizontal, ArrowUpDown, X, ChevronDown, ChevronUp } from "lucid
 interface HorizontalFilterProps {
     control: any;
     appliedByGroup: Record<string, number>;
+    packageMode?: string;
 }
 
 const HorizontalFilterBar: React.FC<HorizontalFilterProps> = ({
     control,
     appliedByGroup,
+    packageMode = "all"
 }) => {
     const [activeGroup, setActiveGroup] = useState<string | null>(null);
 
@@ -33,7 +35,12 @@ const HorizontalFilterBar: React.FC<HorizontalFilterProps> = ({
         <div className="hidden md:flex flex-col w-full bg-[#EAEAEA] mb-6 rounded-md overflow-hidden">
             {/* Filter Bar Row */}
             <div className="flex items-center gap-4 flex-wrap px-4 xl:px-8 py-2">
-                {Object.entries(filterConfig).map(([group]) => {
+                {Object.entries(filterConfig)
+                    .filter(([group]) => {
+                        if (packageMode === 'packages' && group === 'activities') return false;
+                        return true;
+                    })
+                    .map(([group]) => {
                     const count = appliedByGroup[group] ?? 0;
                     const isActive = activeGroup === group;
 
@@ -144,6 +151,7 @@ interface MobilePanelProps {
     onClose: () => void;
     handleClear: () => void;
     appliedByGroup: Record<string, number>;
+    packageMode?: string;
 }
 
 const MobileFilterPanel: React.FC<MobilePanelProps> = ({
@@ -151,8 +159,16 @@ const MobileFilterPanel: React.FC<MobilePanelProps> = ({
     onClose,
     handleClear,
     appliedByGroup,
+    packageMode = "all"
 }) => {
-    const [activeTab, setActiveTab] = useState<string>(Object.keys(filterConfig)[0]);
+    const filteredConfigKeys = useMemo(() => {
+        return Object.keys(filterConfig).filter(group => {
+            if (packageMode === 'packages' && group === 'activities') return false;
+            return true;
+        });
+    }, [packageMode]);
+
+    const [activeTab, setActiveTab] = useState<string>(filteredConfigKeys[0]);
 
     return (
         <>
@@ -185,7 +201,7 @@ const MobileFilterPanel: React.FC<MobilePanelProps> = ({
                 <div className="flex flex-1 overflow-hidden">
                     {/* Left: Category Tabs */}
                     <div className="w-[42%] bg-gray-50 border-r border-gray-100 overflow-y-auto">
-                        {Object.keys(filterConfig).map((group) => (
+                        {filteredConfigKeys.map((group) => (
                             <button
                                 key={group}
                                 onClick={() => setActiveTab(group)}
@@ -294,6 +310,7 @@ interface FilterConfigPageProps {
     onClear: () => void;
     /** desktop = sidebar only | mobile = buttons only | both = all (default) */
     mode?: FilterMode;
+    packageMode?: 'packages' | 'activities' | 'all';
 }
 
 const FilterConfigPage: React.FC<FilterConfigPageProps> = ({
@@ -301,6 +318,7 @@ const FilterConfigPage: React.FC<FilterConfigPageProps> = ({
     onSortChange,
     onClear,
     mode = "both",
+    packageMode = "all"
 }) => {
     const { control, watch, reset } = useFormContext<FilterState>();
     const [showMobileFilter, setShowMobileFilter] = useState(false);
@@ -331,6 +349,7 @@ const FilterConfigPage: React.FC<FilterConfigPageProps> = ({
                     <HorizontalFilterBar
                         control={control}
                         appliedByGroup={appliedByGroup}
+                        packageMode={packageMode}
                     />
                 </div>
             )}
@@ -391,6 +410,7 @@ const FilterConfigPage: React.FC<FilterConfigPageProps> = ({
                             onClose={() => setShowMobileFilter(false)}
                             handleClear={handleClear}
                             appliedByGroup={appliedByGroup}
+                            packageMode={packageMode}
                         />
                     )}
                 </AnimatePresence>

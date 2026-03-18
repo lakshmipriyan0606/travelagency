@@ -5,12 +5,15 @@ import PackageDetailCarousel from '@/components/layout/packageDetailCarousel/Pac
 import BookingFomField from '@/components/layout/reachus/BookingFomField'
 import { UseFetchAPIQuery } from '@/Hook/UseFetchAPIQuery'
 import { useEffect, useState } from 'react'
-import { useParams } from 'react-router-dom'
+import { useParams, useSearchParams } from 'react-router-dom'
 import { motion } from 'framer-motion'
 import Breadcrumb from '@/components/common/Breadcrumb/Breadcrumb'
 
 const PackageDetail = () => {
-    const { id } = useParams()
+    const { id: paramId } = useParams();
+    const [searchParams] = useSearchParams();
+    // Support both /package/:id (old) and /package/:name?id=... (new) formats
+    const id = searchParams.get('id') || paramId;
 
     const { data: currentPackageList } = UseFetchAPIQuery({
         key: ["currentPackageDetail", { id }],

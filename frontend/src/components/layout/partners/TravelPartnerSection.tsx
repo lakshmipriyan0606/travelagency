@@ -33,7 +33,7 @@ const shuffledPartners = partners.sort(() => Math.random() - 0.5);
 
 const TravelPartnerSection = () => {
     // Array of logos to repeat in the marquee
-    const logos = [...shuffledPartners, ...shuffledPartners, ...shuffledPartners]; // Triple for better flow
+    const logos = [...shuffledPartners]; // Triple for better flow
 
     return (
         <section className="py-12 bg-white overflow-hidden">

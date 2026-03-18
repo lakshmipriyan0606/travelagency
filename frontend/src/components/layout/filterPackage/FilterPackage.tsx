@@ -34,10 +34,10 @@ const PAGE_SIZE = 5;
 // Breadcrumb builder
 // ─────────────────────────────────────────────────────────────────────────────
 
-const buildBreadcrumb = (filters: FilterState): BreadcrumbItem[] => {
+const buildBreadcrumb = (filters: FilterState, mode: string): BreadcrumbItem[] => {
     const items: BreadcrumbItem[] = [
         { label: "Home", href: "/" },
-        { label: "All Packages", href: "/allpackage" },
+        { label: mode === 'activities' ? "All Activities" : "All Packages", href: mode === 'activities' ? "/activities" : "/allpackage" },
     ];
 
     // Show active package type as last crumb
@@ -45,7 +45,6 @@ const buildBreadcrumb = (filters: FilterState): BreadcrumbItem[] => {
         .find(([, v]) => v)?.[0];
 
     if (activeType) {
-        items[1] = { label: "All Packages", href: "/allpackage" };
         items.push({ label: activeType });
     }
 
@@ -117,9 +116,11 @@ const SelectedFiltersRow: React.FC<SelectedFiltersProps> = ({
 interface FilterPackageProps {
     /** When true, only shows packages the user has liked */
     likePackageOnly?: boolean;
+    /** 'packages' shows standard pkgs, 'activities' shows activity pkgs, 'all' shows everything */
+    mode?: 'packages' | 'activities' | 'all';
 }
 
-const FilterPackage = ({ likePackageOnly = false }: FilterPackageProps) => {
+const FilterPackage = ({ likePackageOnly = false, mode = 'all' }: FilterPackageProps) => {
     const location = useLocation();
     const navigate = useNavigate();
     const context = useContext(AdminPanelContext);
@@ -162,16 +163,22 @@ const FilterPackage = ({ likePackageOnly = false }: FilterPackageProps) => {
 
     // ─── API
     const isAdminMode = context?.isAdmin || false;
-    const queryKey = useMemo(() => ["allPackage", cursor, filters.search, filters.city, isAdminMode], [cursor, filters.search, filters.city, isAdminMode]);
+    const queryKey = useMemo(() => ["allPackage", cursor, filters.search, filters.city, isAdminMode, mode], [cursor, filters.search, filters.city, isAdminMode, mode]);
     const { data, isLoading, isError, refetch } = UseFetchAPIQuery({
         key: queryKey,
-        queryFn: () => GetAllPackageList({
-            limit: PAGE_SIZE,
-            lastId: cursor,
-            search: filters.search,
-            city: filters.city,
-            isAdmin: isAdminMode
-        }),
+        queryFn: () => {
+            const onlyActivities = mode === 'activities';
+            const excludeActivities = mode === 'packages';
+            return GetAllPackageList({
+                limit: PAGE_SIZE,
+                lastId: cursor,
+                search: filters.search,
+                city: filters.city,
+                isAdmin: isAdminMode,
+                onlyActivities,
+                excludeActivities
+            });
+        },
         options: { enabled: false },
     });
 
@@ -182,7 +189,7 @@ const FilterPackage = ({ likePackageOnly = false }: FilterPackageProps) => {
         setHasMore(true);
         lastProcessedCursor.current = "RESET";
         setTimeout(() => refetch(), 0);
-    }, [JSON.stringify(filters.filterConfig), filters.search, filters.city, likePackageOnly]);
+    }, [JSON.stringify(filters.filterConfig), filters.search, filters.city, likePackageOnly, mode]);
 
     // Accumulate pages
     useEffect(() => {
@@ -208,7 +215,7 @@ const FilterPackage = ({ likePackageOnly = false }: FilterPackageProps) => {
         return sortPackages(liked, sort);
     }, [packageList, filters, likePackageOnly, sort]);
 
-    const breadcrumbItems = useMemo(() => buildBreadcrumb(filters), [filters]);
+    const breadcrumbItems = useMemo(() => buildBreadcrumb(filters, mode), [filters, mode]);
 
 
     // ─── Active filter tags removal
@@ -366,6 +373,7 @@ const FilterPackage = ({ likePackageOnly = false }: FilterPackageProps) => {
                         }}
                         onClear={handleClearAll}
                         mode="mobile"
+                        packageMode={mode}
                     />
                 </div>
 
@@ -382,6 +390,7 @@ const FilterPackage = ({ likePackageOnly = false }: FilterPackageProps) => {
                             }}
                             onClear={handleClearAll}
                             mode="desktop"
+                            packageMode={mode}
                         />
                     </div>
 

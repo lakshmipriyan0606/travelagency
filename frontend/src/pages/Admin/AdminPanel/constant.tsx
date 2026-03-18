@@ -6,10 +6,30 @@ export const adminMenu = [
         component: "AllPackages",
     },
     {
+        id: 6,
+        label: "All Activities",
+        icon: "🎾",
+        component: "AllActivities",
+    },
+    {
         id: 2,
-        label: "Create Package",
+        label: "Create New",
         icon: "➕",
-        component: "CreatePackage",
+        component: "CreateNew",
+        children: [
+            {
+                id: 21,
+                label: "Create Package",
+                icon: "📦",
+                component: "CreatePackage",
+            },
+            {
+                id: 22,
+                label: "Create Activity",
+                icon: "✨",
+                component: "CreateActivity",
+            }
+        ]
     },
     {
         id: 3,
