@@ -2,9 +2,17 @@
  * HeroSection
  * ─────────────────────────────────────────────────────────────────────────────
  * Desktop  : left 55% = text + CTA  |  right 45% = HeroEnquiryForm card
- * Mobile   : full-width text + "ENQUIRE NOW" button → opens EnquiryModal
+ * Mobile
  * ─────────────────────────────────────────────────────────────────────────────
  */
+
+import { Swiper, SwiperSlide } from 'swiper/react';
+import { Autoplay, EffectFade, Pagination } from 'swiper/modules';
+
+// Swiper styles
+import 'swiper/css';
+import 'swiper/css/pagination';
+import 'swiper/css/effect-fade';
 
 import HeroEnquiryForm from './HeroEnquiryForm';
 import { HeroFormData } from '@/config/formConfig';
@@ -12,8 +20,13 @@ import AnimatedButton from '@/components/Button/AnimatedButton/AnimatedButton';
 import { motion } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
 
-// ... Scroll indicator (unchanged) ...
+const heroImages = [
+    "https://i.postimg.cc/4d2180r1/Whats_App_Image_2026_03_19_at_12_02_47_AM.jpg",
+    "https://i.postimg.cc/NMCxNnWD/Whats_App_Image_2026_03_19_at_12_03_28_AM.jpg",
+    "https://i.postimg.cc/QtYq6zRk/Whats_App_Image_2026_03_19_at_12_04_07_AM.jpg"
+];
 
+// ... Scroll indicator ...
 const ScrollIndicator = () => {
     const handleScroll = () => {
         window.scrollTo({ top: window.innerHeight, behavior: 'smooth' });
@@ -62,23 +75,75 @@ const HeroSection = () => {
     };
 
     return (
-        <div className="relative w-full h-screen overflow-hidden p-10 rounded-2xl">
-            {/* <video className="absolute inset-0 w-full h-full object-cover rounded-2xl" src={HeroSectionVideoClip} autoPlay loop muted playsInline /> */}
-            <motion.img
-                className="absolute inset-0 w-full h-full object-cover rounded-2xl"
-                src={'https://i.postimg.cc/Pqjn2TdS/view-world-monument-celebrate-world-heritage-day.jpg'}
-                initial={{ scale: 1 }}
-                animate={{ scale: 1.3 }}
-                transition={{
-                    duration: 5,
-                    repeat: Infinity,
-                    repeatType: "reverse",
-                    ease: "linear",
-                }}
-            />
+        <div className="relative w-full h-screen overflow-hidden rounded-3xl">
+            <style>
+                {`
+                .custom-hero-pagination {
+                    bottom: 40px !important;
+                    left: 50% !important;
+                    transform: translateX(-50%) !important;
+                    width: auto !important;
+                    z-index: 100 !important;
+                    display: flex !important;
+                    justify-content: center !important;
+                    gap: 8px !important;
+                }
+                .custom-hero-pagination .swiper-pagination-bullet {
+                    background: white !important;
+                    opacity: 0.4 !important;
+                    width: 12px !important;
+                    height: 12px !important;
+                    margin: 0 !important;
+                    transition: all 0.3s ease !important;
+                    cursor: pointer !important;
+                    pointer-events: auto !important;
+                    border-radius: 50% !important;
+                    border: 1px solid rgba(0,0,0,0.1) !important;
+                }
+                .custom-hero-pagination .swiper-pagination-bullet-active {
+                    background: #f2c12e !important;
+                    opacity: 1 !important;
+                    transform: scale(1.2) !important;
+                }
+                `}
+            </style>
 
-            <div className="absolute inset-0 bg-black/50 z-10 flex items-center rounded-2xl">
-                <div className="w-full h-full flex flex-col md:flex-row items-start md:items-center mt-[38%] md:mt-0 px-6 md:px-12 lg:px-20 gap-6 md:gap-10 rounded-2xl">
+            {/* Swiper Background */}
+            <Swiper
+                modules={[Autoplay, Pagination, EffectFade]}
+                effect="fade"
+                fadeEffect={{ crossFade: true }}
+                speed={1500}
+                autoplay={{ delay: 5000, disableOnInteraction: false }}
+                loop={true}
+                pagination={{
+                    el: '.custom-hero-pagination',
+                    clickable: true,
+                    bulletClass: 'swiper-pagination-bullet',
+                    bulletActiveClass: 'swiper-pagination-bullet-active',
+                }}
+                className="hero-swiper absolute inset-0 w-full h-full rounded-2xl sm:rounded-3xl"
+            >
+                {heroImages.map((src, index) => (
+                    <SwiperSlide key={index}>
+                        <div className="relative w-full h-full overflow-hidden">
+                            <motion.img
+                                src={src}
+                                alt={`Hero ${index + 1}`}
+                                className="w-full h-full object-cover"
+                                initial={{ scale: 1.1 }}
+                                animate={{ scale: 1 }}
+                                transition={{ duration: 5, ease: "linear" }}
+                            />
+                        </div>
+                    </SwiperSlide>
+                ))}
+            </Swiper>
+
+            <div className="custom-hero-pagination absolute bottom-10 left-1/2 -translate-x-1/2 z-20"></div>
+
+            <div className="absolute inset-0 bg-black/40 z-10 flex items-center rounded-2xl sm:rounded-3xl pointer-events-none">
+                <div className="w-full h-full flex flex-col md:flex-row items-start md:items-center mt-[38%] md:mt-0 px-6 md:px-12 lg:px-20 gap-6 md:gap-10 pointer-events-auto">
                     <div className="flex flex-col items-start justify-center text-white text-left w-full md:w-[55%] gap-3 md:gap-6 max-w-[19rem] sm:max-w-[22rem] md:max-w-none sm:pb-10 lg:pb-0">
                         <div className="flex flex-col gap-1">
                             <h1 className="text-[1.8rem] sm:text-2xl lg:text-4xl leading-[1.5] sm:leading-[1.8] md:leading-snug font-semibold text-white">

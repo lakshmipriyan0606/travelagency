@@ -11,10 +11,11 @@ export const rankOptions = [
 ];
 
 export const slotTypeOptions = [
-  { label: "Morning", value: "morning" },
-  { label: "Noon", value: "noon" },
-  { label: "Evening", value: "evening" },
-  { label: "Full Day", value: "fullDay" },
+    { label: "Morning", value: "morning" },
+    { label: "Noon", value: "noon" },
+    { label: "Evening", value: "evening" },
+    { label: "Half Day", value: "halfDay" },
+    { label: "Full Day", value: "fullDay" },
 ];
 
 export const statusOptions = [

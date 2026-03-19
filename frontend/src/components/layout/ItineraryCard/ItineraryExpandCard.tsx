@@ -181,7 +181,7 @@ export default function ItineraryDay({ currentPackage }: ItineraryDayProps) {
                       transition={{ duration: 0.35 }}
                     >
                       <CardContent className="bg-white p-6 space-y-6">
-                        <p className="text-sm text-gray-700 break-words sm:max-w-sm md:max-w-md">
+                        <p className="text-sm text-gray-700 break-words leading-relaxed">
                           {day.description}
                         </p>
 

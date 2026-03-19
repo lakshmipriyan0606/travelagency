@@ -22,7 +22,7 @@ export default function InnerCarousel({ images = [], offerId, packageName }: Inn
                 .toLowerCase()
                 .replace(/[^a-z0-9]+/g, "-")
                 .replace(/(^-|-$)/g, "");
-            navigate(`/package/${slug}?id=${id}`);
+            navigate(`/package/${slug}`);
         } else {
             navigate(`/package/${id}`);
         }

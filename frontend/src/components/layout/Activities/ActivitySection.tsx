@@ -16,9 +16,9 @@ const ActivitySection = () => {
     });
 
     const categories: string[] = data?.data || [];
-
+    console.log(categories);
     // Fallback to global config if API returns nothing or only one (ensure UI is rich)
-    const displayCategories = categories.length > 1
+    const displayCategories = !categories.length
         ? categories
         : GLOBAL_CONFIG.activityCategories.map(c => c.value);
 
@@ -59,22 +59,21 @@ const ActivitySection = () => {
                             const description = configMatch?.description || "Discover amazing adventures";
 
                             // Dynamic Unsplash images for a trendy look (Updated for reliability)
-                            const imageUrl = `https://images.unsplash.com/photo-${
-                                categoryValue === "Hiking" ? "1501555088652-ca21fb3f0581" :
+                            const imageUrl = `https://images.unsplash.com/photo-${categoryValue === "Hiking" ? "1501555088652-ca21fb3f0581" :
                                 categoryValue === "Snorkeling" ? "1544551763-47a0159f37c3" :
-                                categoryValue === "Relaxing" ? "1507525428034-b723cf961d3e" :
-                                categoryValue === "Boating" ? "1544111308-412702a4501a" :
-                                categoryValue === "Sightseeing" ? "1518391846015-55a9cc003b25" :
-                                categoryValue === "Water Sports" ? "1520116468816-95b69f847357" :
-                                categoryValue === "Shopping" ? "1567401893414-76b7b1e5a7a5" :
-                                categoryValue === "Safari" ? "1475066312211-f9e4c19ed8f2" :
-                                categoryValue === "Adventure" ? "1533240332313-0db49b459ad6" :
-                                categoryValue === "Diving" ? "1544552866-d3ed42536cfd" :
-                                categoryValue === "Cycling" ? "1471506480208-35d32e18b86d" :
-                                categoryValue === "Skiing" ? "1551698618-102151046741" :
-                                categoryValue === "Cultural" ? "1467269204044-83717d07c39b" :
-                                "1469474968028-56623f02e42e"
-                            }?auto=format&fit=crop&w=600&q=80`;
+                                    categoryValue === "Relaxing" ? "1507525428034-b723cf961d3e" :
+                                        categoryValue === "Boating" ? "1544111308-412702a4501a" :
+                                            categoryValue === "Sightseeing" ? "1518391846015-55a9cc003b25" :
+                                                categoryValue === "Water Sports" ? "1520116468816-95b69f847357" :
+                                                    categoryValue === "Shopping" ? "1567401893414-76b7b1e5a7a5" :
+                                                        categoryValue === "Safari" ? "1475066312211-f9e4c19ed8f2" :
+                                                            categoryValue === "Adventure" ? "1533240332313-0db49b459ad6" :
+                                                                categoryValue === "Diving" ? "1544552866-d3ed42536cfd" :
+                                                                    categoryValue === "Cycling" ? "1471506480208-35d32e18b86d" :
+                                                                        categoryValue === "Skiing" ? "1551698618-102151046741" :
+                                                                            categoryValue === "Cultural" ? "1467269204044-83717d07c39b" :
+                                                                                "1469474968028-56623f02e42e"
+                                }?auto=format&fit=crop&w=600&q=80`;
 
                             return (
                                 <motion.div

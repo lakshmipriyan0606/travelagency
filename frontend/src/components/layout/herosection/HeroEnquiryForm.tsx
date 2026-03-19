@@ -151,7 +151,7 @@ export default function HeroEnquiryForm({
                                     {iconMap[field.icon]}
                                 </div>
                                 <div className="flex-1 min-w-0">
-                                    {field.options && (
+                                    {field.type === 'select' && field.options ? (
                                         <SelectField
                                             control={control}
                                             name={field.name}
@@ -160,6 +160,16 @@ export default function HeroEnquiryForm({
                                             required={field.required}
                                             labelClassName={isCustomMobileView ? 'text-gray-200' : ''}
                                             selectedValueClassName={isCustomMobileView ? 'text-gray-200' : ''}
+                                        />
+                                    ) : (
+                                        <ReusableInput
+                                            control={control}
+                                            name={field.name}
+                                            label={field.label}
+                                            placeholder={field.placeholder}
+                                            required={field.required}
+                                            labelClassName={isCustomMobileView ? 'text-gray-200' : ''}
+                                            inputClassName={isCustomMobileView ? 'text-gray-200' : ''}
                                         />
                                     )}
                                 </div>

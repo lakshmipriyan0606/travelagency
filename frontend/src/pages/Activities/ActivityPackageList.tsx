@@ -134,14 +134,11 @@ const ActivityPackageList = () => {
     return (
         <div className="min-h-screen bg-white">
             {/* Header */}
-            <div className="px-4 sm:px-8 xl:px-16 pt-4 pb-6">
+            <div className="px-4 sm:px-8 xl:px-16 pt-20 pb-6">
                 <Breadcrumb items={breadcrumbItems} className="mb-3" />
 
                 <div className="flex items-end justify-between mb-6">
                     <div>
-                        <p className="text-xs font-black uppercase tracking-[0.35em] text-primary mb-1">
-                            EXPLORE BY ACTIVITY
-                        </p>
                         <h1 className="text-2xl sm:text-3xl font-black text-gray-900">
                             {activeType ? (
                                 <>
@@ -163,11 +160,10 @@ const ActivityPackageList = () => {
                         onClick={() => {
                             setSearchParams({});
                         }}
-                        className={`px-4 py-2 rounded-full text-xs font-black uppercase tracking-wider transition-all border cursor-pointer ${
-                            !activeType
-                                ? "bg-primary text-white border-primary shadow-md shadow-primary/20"
-                                : "bg-white text-neutral-600 border-neutral-200 hover:border-primary hover:text-primary"
-                        }`}
+                        className={`px-4 py-2 rounded-full text-xs font-black uppercase tracking-wider transition-all border cursor-pointer ${!activeType
+                            ? "bg-primary text-white border-primary shadow-md shadow-primary/20"
+                            : "bg-white text-neutral-600 border-neutral-200 hover:border-primary hover:text-primary"
+                            }`}
                     >
                         All Activities
                     </motion.button>
@@ -177,11 +173,10 @@ const ActivityPackageList = () => {
                             key={value}
                             whileTap={{ scale: 0.95 }}
                             onClick={() => setSearchParams({ type: value })}
-                            className={`px-4 py-2 rounded-full text-xs font-black uppercase tracking-wider transition-all border cursor-pointer ${
-                                activeType === value
-                                    ? "bg-primary text-white border-primary shadow-md shadow-primary/20"
-                                    : "bg-white text-neutral-600 border-neutral-200 hover:border-primary hover:text-primary"
-                            }`}
+                            className={`px-4 py-2 rounded-full text-xs font-black uppercase tracking-wider transition-all border cursor-pointer ${activeType === value
+                                ? "bg-primary text-white border-primary shadow-md shadow-primary/20"
+                                : "bg-white text-neutral-600 border-neutral-200 hover:border-primary hover:text-primary"
+                                }`}
                         >
                             {label}
                         </motion.button>

@@ -27,8 +27,9 @@ import { useContext } from "react";
 import FilterSearchBar from "./FilterSearchBar";
 
 import { MALAYSIA_CITIES } from "@/config/destinations";
+import { PACKAGE_CONFIG } from "@/config/packageConfig";
 
-const PAGE_SIZE = 5;
+const PAGE_SIZE = PACKAGE_CONFIG.INITIAL_LOAD_LIMIT;
 
 // ─────────────────────────────────────────────────────────────────────────────
 // Breadcrumb builder
@@ -265,8 +266,11 @@ const FilterPackage = ({ likePackageOnly = false, mode = 'all' }: FilterPackageP
     const renderContent = () => {
         if (isError && !packageList.length) {
             return (
-                <div className="flex justify-center items-center h-40">
-                    <PackageErrorSkeleton message="Failed to load packages" />
+                <div className="flex justify-center items-center py-10 w-full min-h-[400px]">
+                    <PackageErrorSkeleton
+                        message="Failed to load packages"
+                        onRetry={() => resetAndRefetch()}
+                    />
                 </div>
             );
         }
@@ -337,7 +341,7 @@ const FilterPackage = ({ likePackageOnly = false, mode = 'all' }: FilterPackageP
             <div className="min-h-screen bg-white">
 
                 {/* ── TOP SECTION (Breadcrumb + Search) ── */}
-                <div className="px-4 sm:px-8 xl:px-16 pt-4 pb-2 relative z-40">
+                <div className="px-4 sm:px-8 xl:px-16 pt-20 pb-2 relative z-40">
                     {/* Breadcrumb */}
                     <Breadcrumb items={breadcrumbItems} className="mb-3" />
 

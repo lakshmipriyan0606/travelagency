@@ -1,4 +1,5 @@
 import express from "express";
+import mongoose from "mongoose";
 import { protectRoute, adminOnly } from "../middlewares/auth.middleware.js";
 import { upload } from "../config/multer.js";
 import {
@@ -250,16 +251,49 @@ router.get("/suggestions", async (req, res) => {
   }
 });
 
+
 router.get("/:id", async (req, res) => {
   try {
-    const currentPackage = await PackageModel.findOne({ _id: req.params.id, isDeleted: { $ne: true } });
+    const { id } = req.params;
+    let currentPackage;
+
+    // 1. Check if it's a valid MongoDB ObjectId
+    if (mongoose.isValidObjectId(id)) {
+      currentPackage = await PackageModel.findOne({ 
+        _id: id, 
+        isDeleted: { $ne: true } 
+      });
+    }
+
+    // 2. If not found or not a valid ID, try matching by slug (package name)
+    if (!currentPackage) {
+      const decodedId = decodeURIComponent(id).trim();
+
+      // Create a regex: replace hyphens with .* for fuzzy matching
+      const escapedPattern = decodedId
+        .replace(/[.*+?^${}()|[\]\\]/g, '\\$&') 
+        .replace(/-/g, ".*"); 
+      
+      // Allow for potential leading/trailing whitespace in the database name
+      const slugRegex = new RegExp(`^\\s*${escapedPattern}\\s*$`, "i");
+      
+      currentPackage = await PackageModel.findOne({
+        packageName: { $regex: slugRegex },
+        isDeleted: { $ne: true }
+      });
+    }
+
+    if (!currentPackage) {
+      return res.status(404).json({ message: "Package not found" });
+    }
+
     res.status(200).json({
       data: currentPackage,
-      message: "All best packages fetched successfully",
+      message: "Package fetched successfully",
     });
   } catch (error) {
     res.status(500).json({
-      message: "Error fetching best packages",
+      message: "Error fetching package detail",
       error: error.message,
     });
   }

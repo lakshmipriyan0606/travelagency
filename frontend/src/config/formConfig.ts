@@ -79,9 +79,8 @@ export const heroFormFields: FormFieldConfig[] = [
   {
     name: 'duration',
     label: 'Duration',
-    placeholder: 'Select Duration',
-    type: 'select',
-    options: durationOptions,
+    placeholder: 'e.g., 3 Days, 2 Nights',
+    type: 'text',
     required: true,
     icon: 'Clock',
   },
@@ -129,9 +128,8 @@ export const reachUsFormFields: FormFieldConfig[] = [
   {
     name: 'duration',
     label: 'Duration',
-    placeholder: 'Select Duration',
-    type: 'select',
-    options: durationOptions,
+    placeholder: 'e.g., 3 Days, 2 Nights',
+    type: 'text',
     required: true,
     icon: 'Clock',
   },

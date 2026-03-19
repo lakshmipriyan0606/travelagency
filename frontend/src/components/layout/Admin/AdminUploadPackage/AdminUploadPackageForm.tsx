@@ -20,6 +20,7 @@ import { useDropzone } from "react-dropzone";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { ReusableInput } from "@/components/forms/ReusableInput";
+import { ReusableTextArea } from "@/components/forms/ReusableTextArea";
 import { SelectField } from "@/components/forms/SelectField";
 import { ReusableCheckbox } from "@/components/forms/ReusableCheckbox";
 import { packageTypes, rankOptions, statusOptions, activityCategoryOptions } from "./constant";
@@ -439,7 +440,7 @@ export default function AdminUploadPackageForm({ isActivity = false }: { isActiv
                       <ReusableInput control={control} name="packageName" label="Package Name" required variant="floating" />
                     </StyledField>
                     <StyledField className="md:col-span-2">
-                      <ReusableInput control={control} name="packageDescription" label="Detailed Description" required variant="floating" />
+                      <ReusableTextArea control={control} name="packageDescription" label="Detailed Description" required variant="floating" />
                     </StyledField>
                     <StyledField>
                       <SelectField control={control} name="location" label="Main Location" options={destinationOptions} required variant="floating" />

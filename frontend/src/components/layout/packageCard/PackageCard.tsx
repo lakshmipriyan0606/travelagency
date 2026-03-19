@@ -241,7 +241,7 @@ export function SinglePackageCard({
                                     .toLowerCase()
                                     .replace(/[^a-z0-9]+/g, "-")
                                     .replace(/(^-|-$)/g, "");
-                                navigate(`/package/${slug}?id=${offer._id}`);
+                                navigate(`/package/${slug}`);
                             }}
                         />
                     </Row>

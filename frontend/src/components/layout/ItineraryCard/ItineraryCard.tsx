@@ -96,7 +96,7 @@ const ItineraryCard: React.FC<ItineraryCardProps> = ({ currentPackage }) => {
                         <p className="text-sm font-semibold text-gray-900 uppercase tracking-wide">
                           {slot.time}
                         </p>
-                        <p className={`${descClass} line-clamp-3`}>
+                        <p className={`${descClass}`}>
                           {slot.description ||
                             "No description available."}
                         </p>
