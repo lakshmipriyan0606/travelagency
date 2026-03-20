@@ -16,8 +16,8 @@ export function BestDestination() {
     };
 
     return (
-        <section className="pt-0">
-            <div className='main__container_space_nextContainer'>
+        <section className="main__container_space">
+            <div>
                 <h2 className="text-2xl md:text-3xl lg:text-5xl mb-10 leading-tight">
                     Popular <span className="text-yellow-400">Destinations</span>
                 </h2>

@@ -31,11 +31,11 @@ export default function Footer() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   return (
     <footer className="bg-custom-black text-gray-300">
-      <div className="max-w-7xl mx-auto px-4 py-12 space-y-10">
+      <div className="main__container_space max-w-7xl mx-auto px-4 py-12 space-y-10">
 
         {/* CTA BANNER */}
         <section
-          className="relative max-w-7xl mx-auto rounded-lg overflow-hidden shadow-2xl h-[400px] sm:h-[400px]"
+          className="relative rounded-lg overflow-hidden shadow-2xl h-[400px] sm:h-[400px]"
           style={{
             backgroundImage: `url(${footerData.cta.image})`,
             backgroundSize: 'cover',

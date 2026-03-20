@@ -20,7 +20,7 @@ export default function ReachUs() {
     window.open(url, "_blank");
   };
   return (
-    <div id="reach-us-section" className="relative bg-[#474747] py-10 px-2 overflow-hidden">
+    <div id="reach-us-section" className="   relative bg-[#474747] py-10 px-2 overflow-hidden">
       {/* Background map */}
       <img
         src={MapIcon}
@@ -58,7 +58,7 @@ export default function ReachUs() {
         </div>
 
         {/* RIGHT SECTION */}
-        <div className="text-white">
+        <div className="text-white xl:max-w-md">
           <h2 className="text-2xl md:text-4xl  font-semibold text-center">
             Book Your Dream
           </h2>

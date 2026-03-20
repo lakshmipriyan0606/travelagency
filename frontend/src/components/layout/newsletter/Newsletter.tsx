@@ -59,7 +59,7 @@ export default function Newsletter() {
     };
 
     return (
-        <section className="p-5 py-18">
+        <section className="main__container_space py-18">
             <div className="mx-auto px-4 text-center">
                 <h2 className="text-2xl md:text-3xl font-bold text-gray-800 mb-8">
                     SUBSCRIBE TO OUR NEWSLETTER

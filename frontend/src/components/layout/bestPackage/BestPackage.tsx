@@ -8,11 +8,11 @@ export default function BestPackage() {
     const navigate = useNavigate();
 
     return (
-        <div className=" bg-custom-black relative text-white main__container_space border-b-4 border-primary overflow-hidden">
+        <div className=" bg-custom-black relative text-white border-b-4 border-primary overflow-hidden">
             <div className='absolute z-0 inset-0 w-full h-full pointer-events-none'>
                 {/* <img src={Auroplane} alt="Airplane path graphic" className="w-full h-full object-cover object-right-top" /> */}
             </div>
-            <div className='main__container_space_nextContainer relative z-10'>
+            <div className='main__container_space relative z-10'>
                 <div className="mb-4">
                     <h1 className="main_title mb-2">
                         Welcome to  <span className='

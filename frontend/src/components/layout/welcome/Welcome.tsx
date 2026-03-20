@@ -4,8 +4,8 @@ import Exclimation from '@/assets/icons/Exclimation.svg'
 
 const Welcome = () => {
     return (
-        <section className=" main__container_space">
-            <div className='main__container_space_nextContainer'>
+        <section>
+            <div className='main__container_space'>
                 <h1 className="main_title">Welcome to  <span className="text-primary">Sastikaa Travels!</span></h1>
 
                 <p className="mt-6 text-[14px] sm:text-[16px] lg:text-lg text-justify leading-relaxed">

@@ -16,7 +16,7 @@ const TravelExperiences = () => {
   const handleNext = () => swiperRef.current?.slideNext();
 
   return (
-    <section className="py-4 bg-white overflow-hidden relative">
+    <section className="bg-white overflow-hidden relative">
       {/* Large Quote Icon Background - Positioned as per image */}
       <div className="hidden md:block absolute top-0 -left-[40px] opacity-60 select-none pointer-events-none z-0">
         <img src={quoteIcon} alt="quote" loading="lazy" className="w-64 h-64 md:w-40 md:h-40" />
@@ -27,7 +27,7 @@ const TravelExperiences = () => {
       </div>
 
 
-      <div className="max-w-[1440px] mx-auto px-4 md:px-12 relative z-10">
+      <div className="max-w-[1440px] mx-auto px-4 md:px-12 relative z-10 main__container_space">
         {/* Mobile Top Heading */}
         <div className="block md:hidden text-center mb-4 pt-4 relative z-20">
           <h3 className="font-allura text-[#FCAF16] text-[30px] sm:text-[40px] leading-[1.2] drop-shadow-sm">

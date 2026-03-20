@@ -10,8 +10,8 @@ import arrowRight from '@/assets/icons/rightarrow.svg'
 
 export default function Testimonials() {
     return (
-        <div className='main__container_space bg-custom-black py-16 relative  border-b-4 border-primary'>
-            <div className='main__container_space_nextContainer'>
+        <div className='bg-custom-black py-16 relative  border-b-4 border-primary'>
+            <div className='main__container_space'>
                 <section className="h-[8%] w-full relative">
                     <div className="max-w-7xl mx-auto px-4 relative">
                         <h2 className="text-4xl md:text-5xl font-bold text-primary mb-12">

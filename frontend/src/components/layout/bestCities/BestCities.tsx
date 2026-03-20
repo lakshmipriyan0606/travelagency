@@ -12,8 +12,8 @@ const BestCities = () => {
   const swiperRef = useRef<any>(null);
 
   return (
-    <section className=" main__container_space">
-      <div className='main__container_space_nextContainer'>
+    <section className="main__container_space">
+      <div>
         <h2 className="text-4xl md:text-5xl font-bold  mb-16 text-custom-black">
           Best <span className="text-primary">Cities</span>
         </h2>
