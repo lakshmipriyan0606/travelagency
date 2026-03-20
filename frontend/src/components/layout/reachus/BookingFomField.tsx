@@ -22,7 +22,7 @@ import { CreateBookingForm } from '@/api/user/api';
 import { useMutationAPIQuery } from '@/Hook/useMutationAPIQuery';
 import { showToast } from '@/lib/utils';
 import { MapPin, Calendar, Users, Clock, User, Mail, Phone, Globe } from 'lucide-react';
-import type { ReactElement } from 'react';
+import { useEffect, type ReactElement } from 'react';
 
 // ─── Single dynamic field renderer ───────────────────────────────────────────
 
@@ -88,21 +88,31 @@ const DynamicField = ({ fieldConfig, control, fieldClassName }: DynamicFieldProp
 
 // ─── BookingFomField ──────────────────────────────────────────────────────────
 
-const BookingFomField = ({ fieldClassName = 'text-gray-200', mainClassName }: { fieldClassName?: string, mainClassName?: string }) => {
-    const defaultValues = reachUsFormFields.reduce<Record<string, string>>(
-        (acc, f) => ({ ...acc, [f.name]: '' }),
-        {}
-    ) as ReachUsFormData;
+const BookingFomField = ({ fieldClassName = 'text-gray-200', mainClassName, packageName }: { fieldClassName?: string, mainClassName?: string, packageName?: string }) => {
+    const defaultValues = {
+        ...reachUsFormFields.reduce<Record<string, string>>(
+            (acc, f) => ({ ...acc, [f.name]: '' }),
+            {}
+        ),
+        packageName: packageName || '',
+    } as ReachUsFormData;
 
     const {
         control,
         handleSubmit,
         reset,
+        setValue,
         formState: { isSubmitting },
     } = useForm<ReachUsFormData>({
         resolver: zodResolver(reachUsFormSchema),
         defaultValues,
     });
+
+    useEffect(() => {
+        if (packageName) {
+            setValue('packageName', packageName);
+        }
+    }, [packageName, setValue]);
 
     const { mutate, isPending: isMutating } = useMutationAPIQuery(CreateBookingForm, {
         onSuccess() {

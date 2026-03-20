@@ -29,6 +29,7 @@ interface Booking {
     whatsapp: string;
     city: string;
     destination: string;
+    packageName?: string; // Added
     travelDate: string;
     vacationType?: string;
     noOfPeople?: number;
@@ -51,7 +52,8 @@ export default function BookingAdminPage() {
     const filteredBookings = data?.bookings?.filter(b =>
         (b.name?.toLowerCase() || "").includes(searchQuery.toLowerCase()) ||
         (b.bookingId?.toLowerCase() || "").includes(searchQuery.toLowerCase()) ||
-        (b.destination?.toLowerCase() || "").includes(searchQuery.toLowerCase())
+        (b.destination?.toLowerCase() || "").includes(searchQuery.toLowerCase()) ||
+        (b.packageName?.toLowerCase() || "").includes(searchQuery.toLowerCase()) // Added
     );
 
     const handleWhatsApp = (phone: string, name: string) => {
@@ -135,7 +137,7 @@ export default function BookingAdminPage() {
                                     <div className="col-span-3">
                                         <div className="flex flex-col">
                                             <span className="text-sm font-bold text-neutral-800">#{b.bookingId}</span>
-                                            <span className="text-[11px] text-neutral-400 mt-0.5">{b.destination}</span>
+                                            <span className="text-[11px] text-neutral-400 mt-0.5">{b.packageName ? `Package: ${b.packageName}` : b.destination}</span>
                                         </div>
                                     </div>
                                     <div className="col-span-3">
@@ -214,7 +216,9 @@ export default function BookingAdminPage() {
                                             Booking Request
                                         </span>
                                         <h2 className="text-3xl font-bold mt-3 tracking-tight">#{selected.bookingId}</h2>
-                                        <p className="text-white/80 font-medium mt-1 uppercase text-xs tracking-widest">{selected.destination}</p>
+                                        <p className="text-white/80 font-medium mt-1 uppercase text-xs tracking-widest">
+                                            {selected.packageName ? `Package: ${selected.packageName}` : selected.destination}
+                                        </p>
                                     </div>
                                     <div className="bg-white/20 backdrop-blur-md p-4 rounded-2xl border border-white/20 text-center min-w-[100px]">
                                         <span className="block text-[10px] font-bold uppercase tracking-widest opacity-80 mb-1">Travel Date</span>

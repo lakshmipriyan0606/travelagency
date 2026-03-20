@@ -12,6 +12,7 @@ const BookingSchema = new mongoose.Schema({
   name: { type: String, required: true },
   city: { type: String, default: "" }, // Made optional
   destination: { type: String, required: true },
+  packageName: { type: String, default: "" }, // Added
   vacationType: { type: String, default: "" },
   duration: { type: String, default: "" }, // Added
   language: { type: String, default: "" }, // Added

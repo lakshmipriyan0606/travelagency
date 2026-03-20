@@ -184,6 +184,7 @@ export const reachUsFormSchema = z.object({
     .min(1, 'WhatsApp number is required')
     .regex(/^\+?[0-9]{10,15}$/, 'Invalid WhatsApp number'),
   language: z.string().min(1, 'Please select language'),
+  packageName: z.string().optional(),
 });
 
 export type ReachUsFormData = z.infer<typeof reachUsFormSchema>;

@@ -8,7 +8,7 @@
  */
 
 import { useForm } from 'react-hook-form';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { MapPin, Calendar, Users, Clock, Mail, User } from 'lucide-react';
 import {
@@ -53,7 +53,8 @@ export default function HeroEnquiryForm({
     onComplete,
     compact = false,
     isCustomMobileView = false,
-}: HeroEnquiryFormProps) {
+    packageName = '',
+}: HeroEnquiryFormProps & { packageName?: string }) {
     const [step, setStep] = useState<1 | 2>(1);
     const {
         control,
@@ -61,6 +62,7 @@ export default function HeroEnquiryForm({
         trigger,
         watch,
         reset,
+        setValue,
         clearErrors,
         formState: { errors },
     } = useForm<StepFormData>({
@@ -75,8 +77,15 @@ export default function HeroEnquiryForm({
             email: '',
             whatsapp: '',
             language: '',
+            packageName: packageName || '',
         },
     });
+
+    useEffect(() => {
+        if (packageName) {
+            setValue('packageName', packageName);
+        }
+    }, [packageName, setValue]);
 
     console.log(errors);
 

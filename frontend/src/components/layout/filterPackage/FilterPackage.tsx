@@ -78,34 +78,40 @@ const SelectedFiltersRow: React.FC<SelectedFiltersProps> = ({
     if (!activeTags.length) return null;
 
     return (
-        <div className="flex items-start justify-between gap-3 mb-4 flex-wrap">
-            <div className="flex flex-col gap-2">
-                <span className="text-xs font-semibold text-primary uppercase tracking-widest">
-                    Selected Filters
-                </span>
-                <div className="flex flex-wrap gap-2">
-                    {activeTags.map(({ group, value }) => (
-                        <span
-                            key={`${group}-${value}`}
-                            className="flex items-center gap-1 bg-primary text-white text-xs font-semibold px-3 py-1.5 rounded-full"
-                        >
-                            {value}
-                            <button
-                                onClick={() => onRemove(group, value)}
-                                className="ml-1 hover:opacity-70"
+        <div className="flex flex-col gap-4 mb-6">
+            {/* Dotted Line */}
+            <div className="w-full border-t-2 border-dotted border-gray-300"></div>
+
+            <div className="flex items-start justify-between gap-3 flex-wrap">
+                <div className="flex flex-col gap-2">
+                    <span className="text-xs font-semibold text-primary uppercase tracking-[0.2em]">
+                        Selected Filters
+                    </span>
+                    <div className="flex flex-wrap gap-2">
+                        {activeTags.map(({ group, value }) => (
+                            <span
+                                key={`${group}-${value}`}
+                                className="flex items-center gap-1 bg-primary text-white text-[10px] xl:text-xs font-bold px-4 py-2 rounded-full uppercase tracking-widest"
                             >
-                                <X size={11} />
-                            </button>
-                        </span>
-                    ))}
+                                {value}
+                                <button
+                                    onClick={() => onRemove(group, value)}
+                                    className="ml-1 hover:opacity-70 cursor-pointer"
+                                >
+                                    <X size={12} />
+                                </button>
+                            </span>
+                        ))}
+                    </div>
                 </div>
+                <button
+                    type="button"
+                    onClick={onClearAll}
+                    className="text-[10px] xl:text-xs font-bold text-gray-700 hover:text-red-500 transition-colors bg-[#FFE5E5] px-6 py-3 rounded-md whitespace-nowrap cursor-pointer uppercase tracking-[0.2em]"
+                >
+                    CLEAR FILTERS
+                </button>
             </div>
-            <button
-                onClick={onClearAll}
-                className="text-xs font-semibold text-gray-500 hover:text-red-500 transition-colors border border-gray-200 px-3 py-1.5 rounded-lg whitespace-nowrap cursor-pointer"
-            >
-                Clear Filters
-            </button>
         </div>
     );
 };
@@ -400,8 +406,8 @@ const FilterPackage = ({ likePackageOnly = false, mode = 'all' }: FilterPackageP
 
                     {/* PACKAGE LIST SECTION */}
                     <div className="flex-1 w-full min-w-0">
-                        {/* Selected filters row (laptop only) */}
-                        <div className="hidden md:block">
+                        {/* Selected filters row */}
+                        <div className="w-full">
                             <SelectedFiltersRow
                                 filters={filters}
                                 onRemove={handleRemoveTag}

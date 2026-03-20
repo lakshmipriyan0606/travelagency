@@ -32,34 +32,32 @@ const HorizontalFilterBar: React.FC<HorizontalFilterProps> = ({
     };
 
     return (
-        <div className="hidden md:flex flex-col w-full bg-[#EAEAEA] mb-6 rounded-md overflow-hidden">
+        <div className="hidden md:flex flex-col w-full mb-6 rounded-md overflow-hidden">
             {/* Filter Bar Row */}
-            <div className="flex items-center gap-4 flex-wrap px-4 xl:px-8 py-2">
+            <div className="flex items-center gap-4 flex-wrap px-4 xl:px-8bg-white">
                 {Object.entries(filterConfig)
                     .filter(([group]) => {
                         if (packageMode === 'packages' && group === 'activities') return false;
                         return true;
                     })
                     .map(([group]) => {
-                    const count = appliedByGroup[group] ?? 0;
-                    const isActive = activeGroup === group;
+                        const count = appliedByGroup[group] ?? 0;
+                        const isActive = activeGroup === group;
 
-                    return (
-                        <button
-                            key={group}
-                            onClick={() => toggleGroup(group)}
-                            className={`flex items-center gap-2 px-2 py-2.5 text-xs xl:text-[13px] tracking-widest uppercase transition-colors relative cursor-pointer
-                                ${isActive ? "text-gray-900 font-medium" : "text-gray-500 hover:text-gray-900"}
-                            `}
-                        >
-                            {count > 0 && (
-                                <span className="w-1.5 h-1.5 rounded-full bg-primary flex-shrink-0"></span>
-                            )}
-                            <span>{group.replace(/([A-Z])/g, " $1").trim()}</span>
-                            {isActive ? <ChevronUp size={16} className="text-gray-400" /> : <ChevronDown size={16} className="text-gray-400" />}
-                        </button>
-                    );
-                })}
+                        return (
+                            <button
+                                key={group}
+                                onClick={() => toggleGroup(group)}
+                                className={`flex items-center gap-2 px-3 py-2.5 text-xs xl:text-[13px] tracking-widest uppercase transition-all relative cursor-pointer
+                                    ${isActive ? "text-gray-900 font-bold bg-[#EAEAEA] shadow-[0_-4px_6px_-1px_rgba(0,0,0,0.1),0_-2px_4px_-1px_rgba(0,0,0,0.06)]" : "text-gray-500 hover:text-gray-900"}
+                                `}
+                            >
+                                <span className={`w-1.5 h-1.5 rounded-full flex-shrink-0 transition-opacity ${count > 0 ? "bg-primary opacity-100" : "opacity-0"}`}></span>
+                                <span>{group.replace(/([A-Z])/g, " $1").trim()}</span>
+                                {isActive ? <ChevronUp size={16} className="text-gray-400" /> : <ChevronDown size={16} className="text-gray-400" />}
+                            </button>
+                        );
+                    })}
             </div>
 
             {/* Inline Expansion Panel */}
@@ -70,9 +68,9 @@ const HorizontalFilterBar: React.FC<HorizontalFilterProps> = ({
                         animate={{ opacity: 1, height: "auto" }}
                         exit={{ opacity: 0, height: 0 }}
                         transition={{ duration: 0.2, ease: "easeInOut" }}
-                        className="overflow-hidden bg-[#EAEAEA]"
+                        className="overflow-hidden bg-[#EAEAEA] ml-4 shadow-[0_4px_6px_-1px_rgba(0,0,0,0.1),0_2px_4px_-1px_rgba(0,0,0,0.06)]"
                     >
-                        <div className="px-4 xl:px-8 pb-6 pt-2 w-full flex flex-wrap gap-4">
+                        <div className="px-4 xl:px-8 pb-6 pt-4 w-full flex flex-wrap gap-4">
                             {(filterConfig[activeGroup as keyof typeof filterConfig] as readonly string[]).map((value) => {
                                 return (
                                     <Controller
@@ -84,9 +82,9 @@ const HorizontalFilterBar: React.FC<HorizontalFilterProps> = ({
                                             return (
                                                 <button
                                                     onClick={() => field.onChange(!isSelected)}
-                                                    className={`px-6 py-2.5 rounded-full text-xs xl:text-sm tracking-widest uppercase transition-all shadow-sm border cursor-pointer
-                                                        ${isSelected 
-                                                            ? "bg-primary text-white border-primary" 
+                                                    className={`px-6 py-2 rounded-full text-xs xl:text-sm tracking-widest uppercase transition-all border cursor-pointer
+                                                        ${isSelected
+                                                            ? "bg-primary text-white border-primary"
                                                             : "bg-white text-primary border-primary hover:bg-orange-50"}
                                                     `}
                                                 >
@@ -332,7 +330,7 @@ const FilterConfigPage: React.FC<FilterConfigPageProps> = ({
             map[group] = Object.values(watchedFilters?.[group] ?? {}).filter(Boolean).length;
         });
         return map;
-    }, [watchedFilters]);
+    }, [watchedFilters,watch()]);
 
     const totalApplied = Object.values(appliedByGroup).reduce((a, b) => a + b, 0);
 
@@ -394,9 +392,9 @@ const FilterConfigPage: React.FC<FilterConfigPageProps> = ({
                     {/* CLEAR FILTER button */}
                     <button
                         onClick={handleClear}
-                        className="ml-auto flex items-center gap-1 bg-pink-100 text-pink-600 text-sm font-semibold px-4 py-2 rounded-lg hover:bg-pink-200 transition-colors cursor-pointer"
+                        className="ml-auto flex items-center gap-1 bg-[#FFE5E5] text-gray-700 text-[10px] font-bold px-4 py-2 rounded-md hover:bg-pink-100 transition-colors cursor-pointer uppercase tracking-widest"
                     >
-                        CLEAR FILTER
+                        CLEAR FILTERS
                     </button>
                 </div>
             )}

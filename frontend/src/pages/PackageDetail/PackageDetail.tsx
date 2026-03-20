@@ -145,7 +145,7 @@ const PackageDetail = () => {
 
                             {/* Mobile Only Header/Booking */}
                             <div className='lg:hidden mt-2'>
-                                <BookingFomField fieldClassName="text-gray-200 sm:text-gray-800" />
+                                <BookingFomField fieldClassName="text-gray-200 sm:text-gray-800" packageName={packageName} />
                             </div>
 
                             <div className='font-body bg-white/50 rounded-2xl border border-gray-100'>
@@ -202,7 +202,7 @@ const PackageDetail = () => {
                             <div className='font-body text-center'>
                                 <h1 className='text-gray-800 text-xl font-bold p-3'>Book your dream vacation <span className='text-primary font-medium'>Today!</span></h1>
                             </div>
-                            <BookingFomField fieldClassName="text-gray-200 sm:text-gray-800" />
+                            <BookingFomField fieldClassName="text-gray-200 sm:text-gray-800" packageName={packageName} />
                         </div>
                     </div>
                 )}

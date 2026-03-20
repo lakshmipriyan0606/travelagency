@@ -14,9 +14,10 @@ import { HeroFormData } from '@/config/formConfig';
 interface EnquiryModalProps {
     isOpen: boolean;
     onClose: () => void;
+    packageName?: string;
 }
 
-export default function EnquiryModal({ isOpen, onClose }: EnquiryModalProps) {
+export default function EnquiryModal({ isOpen, onClose, packageName = '' }: EnquiryModalProps) {
     // Lock body scroll while modal is open
     useEffect(() => {
         if (isOpen) {
@@ -56,7 +57,7 @@ export default function EnquiryModal({ isOpen, onClose }: EnquiryModalProps) {
                     <X size={20} />
                 </button>
 
-                <HeroEnquiryForm onComplete={handleComplete} compact />
+                <HeroEnquiryForm onComplete={handleComplete} compact packageName={packageName} />
             </div>
         </div>
     );
