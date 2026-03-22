@@ -87,7 +87,7 @@ const PackageDetail = () => {
             {/* Container */}
             <div className={`mx-auto p-4 lg:p-8 ${!isLoading && !pkg ? 'flex flex-col items-center' : 'grid grid-cols-1 lg:grid-cols-12 gap-8'}`}>
                 {/* Left 66% or Full Width - Main Content & Image */}
-                <div className={`${!isLoading && !pkg ? 'w-full max-w-3xl' : 'lg:col-span-8'} pt-10 sm:pt-0`}>
+                <div className={`${!isLoading && !pkg ? 'w-full max-w-3xl' : 'lg:col-span-8'} pt-0 sm:pt-0`}>
                     {isLoading ? (
                         <div className="space-y-4">
                             <Skeleton className="h-[400px] w-full" />
@@ -145,11 +145,11 @@ const PackageDetail = () => {
 
                             {/* Mobile Only Header/Booking */}
                             <div className='lg:hidden mt-2'>
-                                <BookingFomField fieldClassName="text-gray-200 sm:text-gray-800" packageName={packageName} />
+                                <BookingFomField fieldClassName="text-gray-800 sm:text-gray-800 shadow-xl" packageName={packageName} />
                             </div>
 
                             <div className='font-body bg-white/50 rounded-2xl border border-gray-100'>
-                                <p className='text-gray-600 leading-relaxed text-[15px]'>
+                                <p className='text-gray-600 leading-relaxed text-[15px] py-4 text-justify'>
                                     {pkg?.packageDescription}
                                 </p>
                             </div>

@@ -63,6 +63,11 @@ router.post("/booking/create", async (req, res) => {
     // Perform background tasks (Google Sheets sync and Emails)
     // We don't 'await' these so the user doesn't wait for them to finish
     (async () => {
+      let sheetSyncStatus = 'Pending';
+      let userEmailStatus = 'Pending';
+      let adminEmailStatus = 'Pending';
+      const errorLogs = [];
+
       try {
         const bookingData = {
           bookingId,
@@ -78,85 +83,110 @@ router.post("/booking/create", async (req, res) => {
         };
 
         // 1. Sync to Google Sheets
-        await syncBookingToSheet(bookingData);
+        try {
+          await syncBookingToSheet(bookingData);
+          sheetSyncStatus = 'Success';
+        } catch (err) {
+          sheetSyncStatus = 'Failed';
+          errorLogs.push({ task: 'Google Sheets Sync', message: err.message || 'Unknown error' });
+          console.error(`❌ Sheet sync failed for ${bookingId}:`, err.message);
+        }
 
         const isAdminBooking = process.env.ADMIN_EMAIL && email.toLowerCase().trim() === process.env.ADMIN_EMAIL.toLowerCase().trim();
 
         // 2. Send confirmation to customer (Only if they are NOT the admin)
-        if (!isAdminBooking) {
-          await sendEmail({
-            to: email,
-            subject: `Your Booking Request Received - ${bookingId}`,
-            html: `<h2>Thank You!</h2>
-                   <p>Dear ${name || 'Traveler'},</p>
-                   <p>We have received your booking request (ID: <strong>${bookingId}</strong>) for <strong>${destination || "your destination"}</strong>.</p>
-                   <p>Our travel experts will review your request and contact you shortly at <strong>${whatsapp || email}</strong> to finalize the details.</p>
-                   <p>Thank you for choosing Sastikaa Travels!</p>`,
-          });
+        if (!isAdminBooking && email) {
+          try {
+            await sendEmail({
+              to: email,
+              subject: `Your Booking Request Received - ${bookingId}`,
+              html: `<h2>Thank You!</h2>
+                     <p>Dear ${name || 'Traveler'},</p>
+                     <p>We have received your booking request (ID: <strong>${bookingId}</strong>) for <strong>${destination || "your destination"}</strong>.</p>
+                     <p>Our travel experts will review your request and contact you shortly at <strong>${whatsapp || email}</strong> to finalize the details.</p>
+                     <p>Thank you for choosing Sastikaa Travels!</p>`,
+            });
+            userEmailStatus = 'Success';
+          } catch (err) {
+            userEmailStatus = 'Failed';
+            errorLogs.push({ task: 'User Email', message: err.message || 'Unknown error' });
+            console.error(`❌ User email failed for ${bookingId}:`, err.message);
+          }
+        } else {
+          userEmailStatus = !email ? 'Failed (No Email)' : 'Disabled (Admin)';
         }
 
         // 3. Send detailed notification to admin
         if (process.env.ADMIN_EMAIL) {
-          await sendEmail({
-            to: process.env.ADMIN_EMAIL,
-            subject: `NEW BOOKING ALERT - ${bookingId} (${name || 'New Lead'})`,
-            html: `<h2>New Booking Received!</h2>
-                   <div style="background-color: #f9f9f9; padding: 20px; border-radius: 10px; border: 1px solid #ddd;">
-                     <h3 style="color: #F69520; margin-top: 0;">Inquiry Details</h3>
-                     <p>Booking ID: <strong>${bookingId}</strong></p>
-                     <p>Destination: <strong>${destination || "-"}</strong></p>
-                     ${packageName ? `<p>Package: <strong>${packageName}</strong></p>` : ""}
-                     <p>Travel Month: <strong>${travelMonth || "-"}</strong></p>
-                     <p>No. of People: <strong>${noOfPeople || "-"}</strong></p>
-                     <p>Duration: <strong>${duration || "-"}</strong></p>
-                     <p>Preferred Language: <strong>${language || "-"}</strong></p>
-                     
-                     <h3 style="color: #F69520; border-top: 1px solid #eee; pt-4; margin-top: 20px;">Customer Details</h3>
-                     <p>Name: <strong>${name || "-"}</strong></p>
-                     <p>Email: <strong>${email || "-"}</strong></p>
-                     <p>WhatsApp: <strong>${whatsapp || "-"}</strong></p>
-                   <p>City: <strong>${city || "-"}</strong></p>
-                 </div>`,
-          });
+          try {
+            await sendEmail({
+              to: process.env.ADMIN_EMAIL,
+              subject: `NEW BOOKING ALERT - ${bookingId} (${name || 'New Lead'})`,
+              html: `<h2>New Booking Received!</h2>
+                     <div style="background-color: #f9f9f9; padding: 20px; border-radius: 10px; border: 1px solid #ddd;">
+                       <h3 style="color: #F69520; margin-top: 0;">Inquiry Details</h3>
+                       <p>Booking ID: <strong>${bookingId}</strong></p>
+                       <p>Destination: <strong>${destination || "-"}</strong></p>
+                       ${packageName ? `<p>Package: <strong>${packageName}</strong></p>` : ""}
+                       <p>Travel Month: <strong>${travelMonth || "-"}</strong></p>
+                       <p>No. of People: <strong>${noOfPeople || "-"}</strong></p>
+                       <p>Duration: <strong>${duration || "-"}</strong></p>
+                       <p>Preferred Language: <strong>${language || "-"}</strong></p>
+                       
+                       <h3 style="color: #F69520; border-top: 1px solid #eee; pt-4; margin-top: 20px;">Customer Details</h3>
+                       <p>Name: <strong>${name || "-"}</strong></p>
+                       <p>Email: <strong>${email || "-"}</strong></p>
+                       <p>WhatsApp: <strong>${whatsapp || "-"}</strong></p>
+                     <p>City: <strong>${city || "-"}</strong></p>
+                   </div>`,
+            });
+            adminEmailStatus = 'Success';
+          } catch (err) {
+            adminEmailStatus = 'Failed';
+            errorLogs.push({ task: 'Admin Email', message: err.message || 'Unknown error' });
+            console.error(`❌ Admin email failed for ${bookingId}:`, err.message);
+          }
+        } else {
+          adminEmailStatus = 'Failed (No Admin Configured)';
         }
 
-        // 4. Send WhatsApp Confirmation to User (Using Template)
-        if (whatsapp) {
-          // Meta requires a Template to start a conversation if the user hasn't messaged first
-          // We use the 'hello_world' template as provided in your curl example
-          await sendWhatsAppMessage(whatsapp, "", "template", {
-            name: "hello_world",
-            languageCode: "en_US"
-          });
-          
-          // If you have a 'thanks_for_booking' template, you would use it like this:
-          /*
-          await sendWhatsAppMessage(whatsapp, "", "template", {
-            name: "thanks_for_booking",
-            languageCode: "en_US",
-            components: [
-              {
-                type: "body",
-                parameters: [
-                  { type: "text", text: name || "Traveler" },
-                  { type: "text", text: bookingId },
-                  { type: "text", text: destination || "your destination" }
-                ]
-              }
-            ]
-          });
-          */
+        // 4. Send WhatsApp Confirmation to User
+        try {
+          if (whatsapp) {
+            await sendWhatsAppMessage(whatsapp, "", "template", {
+              name: "hello_world",
+              languageCode: "en_US"
+            });
+          }
+
+          // 5. Send WhatsApp Alert to Admin
+          if (process.env.ADMIN_WHATSAPP) {
+            const adminWaMessage = `*🚨 NEW BOOKING ALERT!* 🚨\n\n*ID:* ${bookingId}\n*Name:* ${name || "-"}\n*WhatsApp:* ${whatsapp || "-"}\n*Destination:* ${destination || "-"}\n${packageName ? `*Package:* ${packageName}\n` : ""}*Month:* ${travelMonth || "-"}\n*Group Size:* ${noOfPeople || "-"}\n*Duration:* ${duration || "-"}\n\n*View details in Admin Panel!* 💼`;
+            await sendWhatsAppMessage(process.env.ADMIN_WHATSAPP, adminWaMessage);
+          }
+        } catch (waErr) {
+          errorLogs.push({ task: 'WhatsApp Alert', message: waErr.message || 'Unknown error' });
+          console.error(`❌ WhatsApp tasks failed for ${bookingId}:`, waErr.message);
         }
 
-        // 5. Send WhatsApp Alert to Admin (Can be custom text if session is open)
-        if (process.env.ADMIN_WHATSAPP) {
-          const adminWaMessage = `*🚨 NEW BOOKING ALERT!* 🚨\n\n*ID:* ${bookingId}\n*Name:* ${name || "-"}\n*WhatsApp:* ${whatsapp || "-"}\n*Destination:* ${destination || "-"}\n${packageName ? `*Package:* ${packageName}\n` : ""}*Month:* ${travelMonth || "-"}\n*Group Size:* ${noOfPeople || "-"}\n*Duration:* ${duration || "-"}\n\n*View details in Admin Panel!* 💼`;
-          await sendWhatsAppMessage(process.env.ADMIN_WHATSAPP, adminWaMessage);
-        }
+        // Save statuses to DB
+        await Booking.findOneAndUpdate(
+          { bookingId },
+          { sheetSyncStatus, userEmailStatus, adminEmailStatus, errorLogs }
+        );
 
         console.log(`🚀 Background tasks for ${bookingId} completed`);
       } catch (bgErr) {
-        console.error(`❌ Background tasks failed for ${bookingId}:`, bgErr.message);
+        console.error(`❌ Background tasks wrapper failed for ${bookingId}:`, bgErr.message);
+        await Booking.findOneAndUpdate(
+          { bookingId },
+          { 
+            sheetSyncStatus: 'Failed', 
+            userEmailStatus: 'Failed', 
+            adminEmailStatus: 'Failed', 
+            errorLogs: [{ task: 'Global Wrapper', message: bgErr.message }] 
+          }
+        ).catch(err => console.error("Could not save fatal error status", err));
       }
     })();
   } catch (err) {
@@ -182,6 +212,10 @@ router.get("/booking/all", async (req, res) => {
       duration: b.duration,
       language: b.language,
       createdAt: b.createdAt,
+      sheetSyncStatus: b.sheetSyncStatus,
+      userEmailStatus: b.userEmailStatus,
+      adminEmailStatus: b.adminEmailStatus,
+      errorLogs: b.errorLogs,
     }));
 
     res.status(200).json({ success: true, bookings: decryptedBookings });

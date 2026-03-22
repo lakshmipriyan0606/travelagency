@@ -6,7 +6,7 @@ const packageSchema = new mongoose.Schema(
     packageDescription: { type: String, required: true },
     packageType: { type: String, required: true },
     daysAndNights: { type: String, required: true },
-    hotelName: { type: String, required: true },
+    hotelName: { type: String },
     price: { type: Number, required: true },
     location: { type: String, required: true },
     country: { type: String, required: true },

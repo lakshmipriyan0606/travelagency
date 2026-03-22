@@ -23,6 +23,16 @@ const BookingSchema = new mongoose.Schema({
   noOfPeople: { type: String, default: "" }, // Changed to String to accommodate e.g. "8 Persons"
 
   createdAt: { type: Date, default: Date.now },
+  
+  // Tracking
+  sheetSyncStatus: { type: String, default: 'Pending' },
+  userEmailStatus: { type: String, default: 'Pending' },
+  adminEmailStatus: { type: String, default: 'Pending' },
+  errorLogs: [{ 
+    task: { type: String }, 
+    message: { type: String }, 
+    timestamp: { type: Date, default: Date.now } 
+  }],
 });
 
 const Booking = mongoose.model("Booking", BookingSchema);

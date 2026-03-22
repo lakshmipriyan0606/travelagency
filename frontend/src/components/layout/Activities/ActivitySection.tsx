@@ -28,18 +28,10 @@ const ActivitySection = () => {
         <section className="bg-white main__container_space border-b border-neutral-100 py-16">
             <div className="main__container_space_nextContainer">
                 {/* Section Header */}
-                <div className="flex items-end justify-between mb-12">
-                    <div>
-                        <div className="flex items-center gap-2 mb-3">
-                            <span className="w-10 h-[2px] bg-primary rounded-full" />
-                            <p className="text-[10px] font-black uppercase tracking-[0.4em] text-primary">
-                                DISCOVER EXPERIENCES
-                            </p>
-                        </div>
-                        <h2 className="text-3xl md:text-5xl font-black text-neutral-900 tracking-tight leading-none">
-                            Explore by <span className="text-primary italic">Experience</span>
-                        </h2>
-                    </div>
+                <div className="flex justify-between gap-5 items-center pb-10 ">
+                    <h2 className="text-2xl md:text-3xl lg:text-5xl leading-tight">
+                        Explore by  <span className="text-yellow-400">Experience</span>
+                    </h2>
                     <button
                         onClick={() => navigate("/activities")}
                         className="hidden sm:flex items-center gap-2 text-[10px] font-black text-neutral-400 hover:text-primary transition-all uppercase tracking-widest group cursor-pointer"

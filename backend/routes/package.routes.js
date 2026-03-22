@@ -36,6 +36,8 @@ router.get("/bestpackages", async (req, res) => {
       };
     });
 
+    finalBestPackages.sort((a, b) => a.bestRank - b.bestRank);
+
     res.status(200).json({
       data: finalBestPackages,
       message: "All best packages fetched successfully",
@@ -64,10 +66,6 @@ router.get("/", async (req, res) => {
     const isAdmin = req.query.isAdmin === 'true';
     const query = isAdmin ? { isDeleted: { $ne: true } } : { isActive: { $ne: false }, isDeleted: { $ne: true } };
     const andConditions = [];
-
-    if (lastId) {
-      andConditions.push({ _id: { $lt: lastId } });
-    }
 
     if (search) {
       andConditions.push({
@@ -113,13 +111,24 @@ router.get("/", async (req, res) => {
       query.$and = andConditions;
     }
 
+    const totalCount = await PackageModel.countDocuments(query);
+
+    // Add pagination condition only for the data fetch
+    if (lastId) {
+      if (query.$and) {
+        query.$and = [...query.$and, { _id: { $lt: lastId } }];
+      } else {
+        query.$and = [{ _id: { $lt: lastId } }];
+      }
+    }
+
     const packages = await PackageModel.find(query)
       .sort({ _id: -1 })
       .limit(limit);
 
     const finalAllPackages = packages.map((pkg) => {
       const userLike = pkg.likes.find(
-        (like) => like.userId.toString() === userId
+        (like) => like.userId?.toString() === userId?.toString()
       );
 
       return {
@@ -131,6 +140,7 @@ router.get("/", async (req, res) => {
 
     res.status(200).json({
       data: finalAllPackages,
+      totalCount,
       nextCursor: packages.length ? packages[packages.length - 1]._id : null,
       hasMore: packages.length === limit,
       message: "Packages fetched successfully",
@@ -252,6 +262,24 @@ router.get("/suggestions", async (req, res) => {
 });
 
 
+// Fetch taken ranks (must be ABOVE the /:id catch-all)
+router.get("/takenRanks", async (req, res) => {
+  try {
+    const packages = await PackageModel.find(
+      { isBestPackage: true, bestRank: { $ne: null }, isDeleted: { $ne: true } },
+      { bestRank: 1, _id: 1, packageName: 1 }
+    );
+    const takenRanks = packages.map(p => ({
+      rank: p.bestRank,
+      packageId: p._id,
+      packageName: p.packageName,
+    }));
+    return res.json({ takenRanks });
+  } catch (error) {
+    return res.status(500).json({ message: error.message });
+  }
+});
+
 router.get("/:id", async (req, res) => {
   try {
     const { id } = req.params;
@@ -306,6 +334,73 @@ router.post(
   upload.any(),
   updatePackage
 );
+
+
+// Quick Rank Update (Admin only)
+router.patch("/updateRank/:id", protectRoute, adminOnly, async (req, res) => {
+  try {
+    const { bestRank } = req.body;
+    const packageId = req.params.id;
+
+    const currentPackage = await PackageModel.findById(packageId);
+    if (!currentPackage) return res.status(404).json({ message: "Package not found" });
+
+    if (bestRank === null || bestRank === "" || bestRank === "0") {
+      // Remove rank
+      currentPackage.isBestPackage = false;
+      currentPackage.bestRank = null;
+      await currentPackage.save();
+      return res.json({ message: "Rank removed", data: currentPackage });
+    }
+
+    // Check if another package holds this rank
+    const existingWithRank = await PackageModel.findOne({
+      bestRank,
+      isBestPackage: true,
+      _id: { $ne: packageId },
+    });
+
+    if (existingWithRank) {
+      if (currentPackage.isBestPackage && currentPackage.bestRank) {
+        // Swap ranks
+        existingWithRank.bestRank = currentPackage.bestRank;
+        await existingWithRank.save();
+      } else {
+        // Demote other
+        existingWithRank.bestRank = null;
+        existingWithRank.isBestPackage = false;
+        await existingWithRank.save();
+      }
+    }
+
+    currentPackage.isBestPackage = true;
+    currentPackage.bestRank = bestRank;
+    await currentPackage.save();
+
+    return res.json({ message: "Rank updated", data: currentPackage });
+  } catch (error) {
+    console.error("Quick rank update error:", error);
+    return res.status(500).json({ message: error.message });
+  }
+});
+
+// Quick Status Toggle (Admin only)
+router.patch("/toggleStatus/:id", protectRoute, adminOnly, async (req, res) => {
+  try {
+    const pkg = await PackageModel.findById(req.params.id);
+    if (!pkg) return res.status(404).json({ message: "Package not found" });
+
+    const newStatus = pkg.status === "Active" ? "Inactive" : "Active";
+    pkg.status = newStatus;
+    pkg.isActive = newStatus === "Active";
+    await pkg.save();
+
+    return res.json({ message: `Package set to ${newStatus}`, data: pkg });
+  } catch (error) {
+    console.error("Toggle status error:", error);
+    return res.status(500).json({ message: error.message });
+  }
+});
 
 router.delete("/deletePackage/:id", async (req, res) => {
   try {

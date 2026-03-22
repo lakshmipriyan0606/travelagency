@@ -1,14 +1,9 @@
 import { GLOBAL_CONFIG } from "@/config/globalConfig";
+import { RANK_SELECT_OPTIONS } from "@/config/rankConfig";
 
 export const packageTypes = GLOBAL_CONFIG.vacationTypes;
 
-export const rankOptions = [
-    { value: "1", label: "1" },
-    { value: "2", label: "2" },
-    { value: "3", label: "3" },
-    { value: "4", label: "4" },
-    { value: "5", label: "5" },
-];
+export const rankOptions = RANK_SELECT_OPTIONS;
 
 export const slotTypeOptions = [
     { label: "Morning", value: "morning" },

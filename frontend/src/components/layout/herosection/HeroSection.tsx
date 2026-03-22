@@ -159,7 +159,7 @@ const HeroSection = () => {
                         <div className="flex flex-col items-start gap-4 mt-2 pt-4">
                             <AnimatedButton
                                 buttonText="EXPLORE PACKAGE"
-                                className="!px-10 !py-3.5 w-[200px] h-[45px] rounded-sm"
+                                className="!px-10 !py-3.5 w-[200px] h-[45px]"
                                 onClick={() => navigate('/allpackage')}
                             />
 

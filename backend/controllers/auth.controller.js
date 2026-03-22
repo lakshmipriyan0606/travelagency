@@ -60,7 +60,12 @@ export const login = async (req, res) => {
       sameSite: isProduction ? "none" : "strict",
     });
 
-    res.json({ msg: "Logged in", user });
+    const decodedToken = jwt.decode(accessToken);
+
+    const userObj = user.toObject();
+    userObj.exp = decodedToken.exp;
+
+    res.json({ msg: "Logged in", user: userObj });
   } catch (err) {
     res.status(500).json({ msg: err.message });
   }
@@ -126,6 +131,7 @@ export const getSession = async (req, res) => {
       user: {
         name: currentUser.name || "",
         email: currentUser.email || "",
+        exp: decoded.exp,
       },
     });
   } catch (err) {

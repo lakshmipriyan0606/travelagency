@@ -1,7 +1,7 @@
 // ─────────────────────────────────────────────────────────────────────────────
 // Filter Configuration
 // ─────────────────────────────────────────────────────────────────────────────
-import { GLOBAL_CONFIG } from "@/config/globalConfig";
+// import { GLOBAL_CONFIG } from "@/config/globalConfig";
 
 /**
  * The master filter configuration.
@@ -9,8 +9,8 @@ import { GLOBAL_CONFIG } from "@/config/globalConfig";
  * Values = array of option strings shown in the UI
  */
 export const filterConfig = {
-    packageType: ["Honeymoon", "Family", "Friends", "Group Tour", "Adventure"],
-    activities: GLOBAL_CONFIG.activityCategories.map(c => c.value),
+    // packageType: ["Honeymoon", "Family", "Friends", "Group Tour", "Adventure"],
+    // activities: GLOBAL_CONFIG.activityCategories.map(c => c.value),
     daysAndNights: ["2 Days, 2 Nights", "3 Days, 2 Nights", "4 Days, 3 Nights", "7 Days, 6 Nights"],
     price: ["Below RM 1K", "RM 1K - RM 3K", "RM 3K - RM 5K", "Above RM 5K"],
 };

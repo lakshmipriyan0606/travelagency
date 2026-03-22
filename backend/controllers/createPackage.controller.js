@@ -263,6 +263,35 @@ export const updatePackage = async (req, res) => {
       });
     }
 
+    // 4.5) Handle Rank Swapping logic
+    const isBestPackageBool = String(isBestPackage) === "true";
+
+    if (isBestPackageBool && bestRank) {
+      const currentPackage = await Package.findById(req.params.id);
+      
+      const existingPackageWithRank = await Package.findOne({ 
+        bestRank, 
+        isBestPackage: true,
+        _id: { $ne: req.params.id }
+      });
+
+      if (existingPackageWithRank) {
+        if (currentPackage && currentPackage.isBestPackage && currentPackage.bestRank) {
+           // Swap ranks
+           existingPackageWithRank.bestRank = currentPackage.bestRank;
+           await existingPackageWithRank.save();
+        } else {
+           // Demote to prevent duplicates
+           existingPackageWithRank.bestRank = null;
+           existingPackageWithRank.isBestPackage = false;
+           await existingPackageWithRank.save();
+        }
+      }
+    } else if (!isBestPackageBool) {
+        // If they turned off the promotion switch ensure bestRank is cleared
+        req.body.bestRank = null;
+    }
+
     // 5) Perform the update
     const updatedPkg = await Package.findByIdAndUpdate(
       req.params.id,

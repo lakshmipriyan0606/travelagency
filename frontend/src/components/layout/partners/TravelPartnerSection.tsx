@@ -29,7 +29,7 @@ const partners = [
 ];
 
 // Shuffle partners to prevent same logos from appearing side-by-side
-const shuffledPartners = partners.sort(() => Math.random() - 0.5);
+const shuffledPartners = partners.sort(() => Math.random() - 0.9);
 
 const TravelPartnerSection = () => {
     // Array of logos to repeat in the marquee

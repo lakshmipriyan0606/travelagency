@@ -44,3 +44,18 @@ export const GetAllBookings = async () => {
   const { data } = await axiosClient.get("/booking/all");
   return data;
 };
+
+export const UpdatePackageRank = async ({ id, bestRank }: { id: string; bestRank: string | null }) => {
+  const { data } = await axiosClient.patch(`/packages/updateRank/${id}`, { bestRank });
+  return data;
+};
+
+export const TogglePackageStatus = async (id: string) => {
+  const { data } = await axiosClient.patch(`/packages/toggleStatus/${id}`);
+  return data;
+};
+
+export const GetTakenRanks = async () => {
+  const { data } = await axiosClient.get("/packages/takenRanks");
+  return data;
+};

@@ -139,7 +139,7 @@ const BookingFomField = ({ fieldClassName = 'text-gray-200', mainClassName, pack
     const loading = isSubmitting || isMutating;
 
     return (
-        <div className={`border border-white/30 rounded-2xl shadow-2xl p-6 sm:p-8 ${mainClassName}`}>
+        <div className={`border border-white/30 rounded-2xl shadow-2xl sm:p-8 ${mainClassName}`}>
             <form onSubmit={handleSubmit(onSubmit)} noValidate>
                 <div className="flex flex-col">
                     {reachUsFormFields.map((fieldConfig) => (

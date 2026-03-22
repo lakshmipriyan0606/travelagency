@@ -1,13 +1,18 @@
 import AdminUploadPackageForm from '@/components/layout/Admin/AdminUploadPackage/AdminUploadPackageForm'
-import { useState, createContext } from 'react'
+import { useState, createContext, useEffect } from 'react'
 import Sidebar from './SideNavbar/SideNavbar'
 import FilterPackage from '@/components/layout/filterPackage/FilterPackage'
-import { useSelector } from 'react-redux'
+import { useSelector, useDispatch } from 'react-redux'
+import { useNavigate } from 'react-router-dom'
+import { logout } from '@/store/authSlice'
+import { logoutAPI } from '@/api/admin/auth.api'
+import { LogOut, Clock } from 'lucide-react'
 import BookingAdminPage from './BookingList/BookingList'
 import { UseFetchAPIQuery } from "@/Hook/UseFetchAPIQuery";
 import { GetAllPackageList } from "@/api/user/api";
 import UploadImagePage from "./UploadImage/UploadImage";
 import MediaGallery from "./MediaGallery/MediaGallery";
+import { useQueryClient } from '@tanstack/react-query'
 
 interface FilterPackageProps {
     isAdmin: boolean;
@@ -29,12 +34,53 @@ export const AdminPanelContext = createContext<FilterPackageProps | null>(null);
 const AdminPanel = () => {
     const { user } = useSelector((state: any) => state?.auth);
     const isAdmin = user?.role === "admin" || false;
-
+    console.log(user)
     const [active, setActive] = useState("AllPackages");
     const [editPackageId, setEditPackageId] = useState<string | null>(null);
     const [refreshCount, setRefreshCount] = useState(0);
+    const [timeLeft, setTimeLeft] = useState("");
+    const [showLogoutModal, setShowLogoutModal] = useState(false);
+    const queryClient = useQueryClient();
 
-    const triggerRefresh = () => setRefreshCount(prev => prev + 1);
+    const dispatch = useDispatch();
+    const navigate = useNavigate();
+
+    useEffect(() => {
+        if (!user?.user?.exp) return;
+
+        const updateTimer = () => {
+            const now = Math.floor(Date.now() / 1000);
+            const remaining = user.user.exp - now;
+
+            if (remaining <= 0) {
+                setTimeLeft("Expired");
+                // Optional: auto logout
+            } else {
+                const minutes = Math.floor(remaining / 60);
+                const seconds = remaining % 60;
+                setTimeLeft(`${minutes}:${seconds.toString().padStart(2, '0')}`);
+            }
+        };
+
+        updateTimer();
+        const interval = setInterval(updateTimer, 1000);
+        return () => clearInterval(interval);
+    }, [user?.exp]);
+
+    const handleLogout = async () => {
+        try {
+            await logoutAPI();
+        } catch (error) {
+            console.error("Logout API failed", error);
+        }
+        dispatch(logout());
+        navigate("/admin/login");
+    };
+
+    const triggerRefresh = () => {
+        queryClient.invalidateQueries({ queryKey: ["allPackage"] });
+        setRefreshCount(prev => prev + 1);
+    }
 
     const packageAPIDetail = UseFetchAPIQuery({
         key: ["allPackage"],
@@ -95,11 +141,25 @@ const AdminPanel = () => {
                         <div className="flex items-center gap-3 sm:gap-4">
                             <div className="hidden sm:flex flex-col items-end mr-2 text-right">
                                 <span className="text-sm font-bold text-neutral-800 leading-none">{user?.name || "Administrator"}</span>
-                                <span className="text-[10px] text-primary font-bold uppercase tracking-widest leading-none mt-1">System Online</span>
+                                {timeLeft ? (
+                                    <span className={`text-[10px] font-bold flex items-center gap-1 mt-1 ${timeLeft === 'Expired' ? 'text-red-500' : 'text-amber-600'}`}>
+                                        <Clock size={10} /> {timeLeft === 'Expired' ? 'Session Expired' : `Expires in: ${timeLeft}`}
+                                    </span>
+                                ) : (
+                                    <span className="text-[10px] text-primary font-bold uppercase tracking-widest leading-none mt-1">System Online</span>
+                                )}
                             </div>
                             <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-full bg-neutral-100 border border-neutral-200 flex items-center justify-center text-neutral-800 font-bold shadow-sm">
                                 {user?.name?.[0]?.toUpperCase() || "A"}
                             </div>
+                            {/* New Sign Out Button */}
+                            <button
+                                onClick={() => setShowLogoutModal(true)}
+                                title="Sign Out"
+                                className="hidden sm:flex w-8 h-8 sm:w-10 sm:h-10 rounded-full bg-red-50 hover:bg-red-100 text-red-500 flex items-center justify-center transition-colors border border-red-100 shadow-sm group relative cursor-pointer"
+                            >
+                                <LogOut size={16} className="group-hover:scale-110 transition-transform" />
+                            </button>
                         </div>
                     </header>
 
@@ -109,6 +169,34 @@ const AdminPanel = () => {
                         </div>
                     </div>
                 </main>
+
+                {/* Logout Confirmation Modal */}
+                {showLogoutModal && (
+                    <div className="fixed inset-0 z-[9999] bg-black/40 backdrop-blur-sm flex items-center justify-center p-4">
+                        <div className="bg-white rounded-3xl p-6 sm:p-8 max-w-sm w-full shadow-2xl animate-in zoom-in-95 duration-200">
+                            <div className="w-16 h-16 bg-red-50 border border-red-100 rounded-full flex items-center justify-center mx-auto mb-5 text-red-500 shadow-inner">
+                                <LogOut size={24} />
+                            </div>
+                            <h3 className="text-xl font-black text-center text-neutral-800 mb-2 tracking-tight">Log Out?</h3>
+                            <p className="text-center text-neutral-500 text-sm mb-8 font-medium">Are you sure you want to end your current session?</p>
+
+                            <div className="flex gap-3">
+                                <button
+                                    onClick={() => setShowLogoutModal(false)}
+                                    className="flex-1 py-3.5 px-4 bg-neutral-100 hover:bg-neutral-200 cursor-pointer text-neutral-600 rounded-xl font-bold text-sm transition-all"
+                                >
+                                    Cancel
+                                </button>
+                                <button
+                                    onClick={handleLogout}
+                                    className="flex-1 py-3.5 px-4 bg-red-500 hover:bg-red-600 cursor-pointer text-white rounded-xl font-bold text-sm shadow-lg shadow-red-500/30 transition-all hover:-translate-y-0.5"
+                                >
+                                    Log Out
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                )}
             </div>
         </AdminPanelContext.Provider>
     )

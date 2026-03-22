@@ -5,7 +5,7 @@ import whatsappIcon from "@/assets/icons/whatsapp.svg";
 import { useDeviceSize } from "@/Hook/UseDevice";
 import InnerCarousel from "../bestPackage/carousel/InnerCarousel";
 import locationIcon from "@/assets/icons/location.svg";
-import { Heart, Pencil, Trash2 } from "lucide-react";
+import { Heart, Pencil, Trash2, Crown } from "lucide-react";
 import dateIcon from "@/assets/icons/date.svg";
 import starIcon from "@/assets/icons/Star.svg";
 
@@ -13,13 +13,15 @@ import { AnimatePresence, motion } from "framer-motion";
 import { DeleteConfirmDialog } from "../DeleteConfirmDialog/DeleteConfirmDialog";
 import { useState } from "react";
 import { useMutationAPIQuery } from "@/Hook/useMutationAPIQuery";
-import { DeleteCurrentPackage } from "@/api/admin/auth.api";
+import { DeleteCurrentPackage, UpdatePackageRank, TogglePackageStatus, GetTakenRanks } from "@/api/admin/auth.api";
 import { UpdateLikePackage } from "@/api/user/api";
 import { useNavigate } from "react-router-dom";
 import { useQueryClient } from "@tanstack/react-query";
 import { WANumber, CurrencySymbol } from "@/lib/utils";
 import { toast } from "react-toastify";
 import EnquiryModal from "../herosection/EnquiryModal";
+import { RANK_OPTIONS } from "@/config/rankConfig";
+import { UseFetchAPIQuery } from "@/Hook/UseFetchAPIQuery";
 
 const calculateDiscountPercentage = (price: number, offerPrice: number) => {
     if (!price || !offerPrice || price <= offerPrice) return 0;
@@ -38,6 +40,8 @@ export interface Package {
     userLiked: boolean;
     isActive?: boolean;
     status?: string;
+    isBestPackage?: boolean;
+    bestRank?: number | string | null;
 }
 
 interface PackageCardProps {
@@ -71,7 +75,23 @@ export function SinglePackageCard({
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [open, setOpen] = useState(false);
     const [deleteId, setDeleteId] = useState<string | null>(null);
+    const [showRankPicker, setShowRankPicker] = useState(false);
     const queryClient = useQueryClient();
+
+    // Fetch taken ranks when admin opens rank picker
+    const { data: takenRanksData } = UseFetchAPIQuery({
+        key: ["takenRanks"],
+        queryFn: GetTakenRanks,
+        options: { enabled: isAdmin },
+    });
+
+    // Compute available ranks: show all from config, but mark taken ones
+    const takenRanks: { rank: number; packageId: string; packageName: string }[] = takenRanksData?.takenRanks || [];
+    const availableRanks = RANK_OPTIONS.filter(rank => {
+        const taken = takenRanks.find(t => String(t.rank) === String(rank));
+        // Show if: not taken, OR taken by THIS package (so it stays highlighted)
+        return !taken || taken.packageId === offer._id;
+    });
 
     const { mutate: DeleteMutate } = useMutationAPIQuery(DeleteCurrentPackage, {
         onSuccess: () => {
@@ -94,6 +114,31 @@ export function SinglePackageCard({
             },
         }
     );
+
+    const { mutate: updateRankMutate } = useMutationAPIQuery(UpdatePackageRank, {
+        onSuccess: () => {
+            toast.success("Rank updated successfully!");
+            queryClient.invalidateQueries({ queryKey: ["allPackage"] });
+            queryClient.invalidateQueries({ queryKey: ["bestPackage"] });
+            queryClient.invalidateQueries({ queryKey: ["takenRanks"] });
+            refetch?.();
+            setShowRankPicker(false);
+        },
+        onError: (error: any) => {
+            toast.error(error?.message || "Failed to update rank");
+        },
+    });
+
+    const { mutate: toggleStatusMutate } = useMutationAPIQuery(TogglePackageStatus, {
+        onSuccess: (data: any) => {
+            toast.success(data?.message || "Status updated!");
+            queryClient.invalidateQueries({ queryKey: ["allPackage"] });
+            refetch?.();
+        },
+        onError: (error: any) => {
+            toast.error(error?.message || "Failed to toggle status");
+        },
+    });
 
     const handleDelete = () => {
         if (deleteId) {
@@ -150,6 +195,67 @@ export function SinglePackageCard({
                 </div>
             )}
 
+            {/* Quick Rank Medal Badge (Admin Only) */}
+            {isAdmin && (
+                <div className="absolute top-2 left-25 z-40">
+                    <button
+                        onClick={(e) => {
+                            e.stopPropagation();
+                            setShowRankPicker(!showRankPicker);
+                        }}
+                        className="relative group cursor-pointer"
+                        title={offer.bestRank ? `Rank ${offer.bestRank}` : 'Set Rank'}
+                    >
+                        {/* Medal Body */}
+                        <div className={`w-10 h-10 rounded-full flex items-center justify-center text-sm font-black shadow-lg border-2 transition-all active:scale-90 ${offer.isBestPackage && offer.bestRank
+                            ? 'bg-gradient-to-br from-amber-300 via-yellow-400 to-amber-500 border-amber-600/40 text-amber-900'
+                            : 'bg-white/90 backdrop-blur-md border-neutral-200 text-neutral-400 hover:border-amber-300'
+                            }`}>
+                            {offer.isBestPackage && offer.bestRank ? offer.bestRank : <Crown size={15} />}
+                        </div>
+                    </button>
+
+                    <AnimatePresence>
+                        {showRankPicker && (
+                            <motion.div
+                                initial={{ opacity: 0, y: -5, scale: 0.9 }}
+                                animate={{ opacity: 1, y: 0, scale: 1 }}
+                                exit={{ opacity: 0, y: -5, scale: 0.9 }}
+                                className="absolute top-12 right-0 bg-white rounded-2xl shadow-2xl border border-neutral-200 p-2 flex flex-col gap-1.5 min-w-[44px] z-50"
+                            >
+                                {availableRanks.map((rank) => (
+                                    <button
+                                        key={rank}
+                                        onClick={(e) => {
+                                            e.stopPropagation();
+                                            updateRankMutate({ id: offer._id, bestRank: String(rank) });
+                                        }}
+                                        className={`w-9 h-9 rounded-xl text-xs font-bold transition-all hover:scale-110 cursor-pointer ${String(offer.bestRank) === String(rank)
+                                            ? 'bg-gradient-to-br from-amber-300 to-amber-500 text-amber-900 shadow-md ring-2 ring-amber-400/30'
+                                            : 'bg-neutral-100 text-neutral-600 hover:bg-amber-100 hover:text-amber-700'
+                                            }`}
+                                    >
+                                        {rank}
+                                    </button>
+                                ))}
+                                {offer.isBestPackage && offer.bestRank && (
+                                    <button
+                                        onClick={(e) => {
+                                            e.stopPropagation();
+                                            updateRankMutate({ id: offer._id, bestRank: null });
+                                        }}
+                                        className="w-9 h-9 rounded-xl text-[9px] font-bold bg-red-50 text-red-500 hover:bg-red-100 transition-all cursor-pointer"
+                                        title="Remove Rank"
+                                    >
+                                        ✕
+                                    </button>
+                                )}
+                            </motion.div>
+                        )}
+                    </AnimatePresence>
+                </div>
+            )}
+
             {/* Carousel */}
             <div className="relative">
                 <InnerCarousel
@@ -166,14 +272,22 @@ export function SinglePackageCard({
                     <div className="absolute top-9 -right-1 h-5 w-2 bg-red-500 brightness-90 rotate-[60deg]"></div>
                 </div>
 
-                {/* Status Badge (Admin Only) */}
+                {/* Status Toggle Badge (Admin Only) */}
                 {isAdmin && (
-                    <div className={`absolute top-16 right-3 z-30 text-white text-[9px] uppercase font-black px-3 py-1 rounded-full shadow-xl backdrop-blur-md border border-white/20 ${offer.status === 'Inactive' ? 'bg-rose-500/90' : 'bg-emerald-500/90'} tracking-tighter`}>
+                    <button
+                        onClick={(e) => {
+                            e.stopPropagation();
+                            toggleStatusMutate(offer._id);
+                        }}
+                        title={`Click to ${offer.status === 'Inactive' ? 'Activate' : 'Deactivate'}`}
+                        className={`absolute top-16 right-3 z-30 text-white text-[9px] uppercase font-black px-3 py-1 rounded-full shadow-xl backdrop-blur-md border border-white/20 cursor-pointer transition-all hover:scale-105 active:scale-95 ${offer.status === 'Inactive' ? 'bg-rose-500/90 hover:bg-rose-600' : 'bg-emerald-500/90 hover:bg-emerald-600'
+                            } tracking-tighter`}
+                    >
                         <div className="flex items-center gap-1.5">
                             <div className={`w-1.5 h-1.5 rounded-full bg-white ${offer.status !== 'Inactive' ? 'animate-pulse' : ''}`} />
                             {offer.status || 'Active'}
                         </div>
-                    </div>
+                    </button>
                 )}
             </div>
 
@@ -285,7 +399,7 @@ export default function PackageCard({
     useDeviceSize();
 
     return (
-        <div className={isAdmin ? "grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6" : "grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6"}>
+        <div className={isAdmin ? "grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6" : "grid grid-cols-1 sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6"}>
             <AnimatePresence mode="popLayout">
                 {filterList.map((offer) => (
                     <motion.div

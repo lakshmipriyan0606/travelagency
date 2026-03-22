@@ -3,6 +3,7 @@ import { adminMenu } from "../constant";
 import { LogOut, Package, ClipboardList, Image as ImageIcon, ChevronDown, Sparkles, Activity, PlusCircle } from "lucide-react";
 import { useDispatch } from "react-redux";
 import { logout } from "@/store/authSlice";
+import { logoutAPI } from "@/api/admin/auth.api";
 import { useNavigate } from "react-router-dom";
 import { useState } from "react";
 
@@ -42,7 +43,12 @@ export default function Sidebar({ active, onChange }: SidebarProps) {
         setExpandedMenus(prev => ({ ...prev, [id]: !prev[id] }));
     };
 
-    const handleLogout = () => {
+    const handleLogout = async () => {
+        try {
+            await logoutAPI();
+        } catch (error) {
+            console.error("Logout API failed", error);
+        }
         dispatch(logout());
         navigate("/admin/login");
     };
@@ -146,15 +152,6 @@ export default function Sidebar({ active, onChange }: SidebarProps) {
                 </div>
             </div>
 
-            <div className="hidden lg:flex mt-auto p-6 pt-0 flex-col">
-                <button
-                    onClick={handleLogout}
-                    className="flex items-center gap-4 px-6 py-4 w-full rounded-2xl text-neutral-500 hover:text-red-500 hover:bg-red-50 transition-all duration-300 group"
-                >
-                    <LogOut size={20} className="group-hover:rotate-12 transition-transform" />
-                    <span className="font-semibold text-[15px]">Sign Out</span>
-                </button>
-            </div>
         </aside>
     );
 }

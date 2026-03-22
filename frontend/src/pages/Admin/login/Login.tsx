@@ -20,6 +20,7 @@ const LoginForm = () => {
                 user: {
                     name: data.user.name,
                     email: data.user.email,
+                    exp: data.user.exp,
                 },
                 role: data.user.role,
                 isLoggedIn: true,

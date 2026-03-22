@@ -34,6 +34,10 @@ interface Booking {
     vacationType?: string;
     noOfPeople?: number;
     createdAt?: string;
+    sheetSyncStatus?: string;
+    userEmailStatus?: string;
+    adminEmailStatus?: string;
+    errorLogs?: { task: string; message: string; timestamp: string }[];
 }
 
 interface BookingResponse {
@@ -235,7 +239,7 @@ export default function BookingAdminPage() {
                                 </div>
                             </div>
 
-                            <div className="p-8 pt-10 grid grid-cols-2 gap-8 text-neutral-700">
+                            <div className="p-8 pt-10 grid grid-cols-1 md:grid-cols-2 gap-8 text-neutral-700 max-h-[70vh] overflow-y-auto custom-scrollbar">
                                 <section className="space-y-6">
                                     <div>
                                         <h4 className="text-[11px] font-bold text-neutral-400 uppercase tracking-widest mb-3">Customer Information</h4>
@@ -305,6 +309,54 @@ export default function BookingAdminPage() {
                                         </button>
                                     </div>
                                 </section>
+
+                                {/* New Integration Status Section */}
+                                <section className="space-y-6 md:col-span-2 mt-4 pt-6 border-t border-neutral-100">
+                                    <div>
+                                        <h4 className="text-[11px] font-bold text-neutral-400 uppercase tracking-widest mb-3">System Integrations</h4>
+                                        <div className="bg-neutral-50 rounded-2xl p-5 border border-neutral-100 space-y-4">
+                                            
+                                            {/* Status Row */}
+                                            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                                                {[
+                                                    { label: 'Google Sheet', status: selected.sheetSyncStatus },
+                                                    { label: 'User Email', status: selected.userEmailStatus },
+                                                    { label: 'Admin Email', status: selected.adminEmailStatus }
+                                                ].map((integration, idx) => (
+                                                    <div key={idx} className="bg-white p-3.5 rounded-xl border border-neutral-100 shadow-sm flex justify-between items-center sm:flex-col sm:items-start sm:gap-2">
+                                                        <span className="text-[10px] font-bold text-neutral-400 uppercase tracking-widest">{integration.label}</span>
+                                                        <span className={`px-2 py-0.5 text-[10px] font-bold rounded-full uppercase tracking-widest ${
+                                                            integration.status === 'Success' ? 'bg-green-100 text-green-700' :
+                                                            integration.status?.includes('Failed') ? 'bg-red-100 text-red-700' :
+                                                            integration.status?.includes('Disabled') ? 'bg-neutral-200 text-neutral-600' :
+                                                            'bg-orange-100 text-orange-700'
+                                                        }`}>
+                                                            {integration.status || 'Pending'}
+                                                        </span>
+                                                    </div>
+                                                ))}
+                                            </div>
+
+                                            {/* Error Logs */}
+                                            {selected.errorLogs && selected.errorLogs.length > 0 && (
+                                                <div className="mt-4 p-4 bg-red-50/50 border border-red-100 rounded-xl space-y-3">
+                                                    <h5 className="text-[10px] font-bold text-red-500 uppercase tracking-widest mb-2 flex items-center gap-1">
+                                                        <Info size={12} /> Error Logs
+                                                    </h5>
+                                                    <div className="space-y-2">
+                                                        {selected.errorLogs.map((log, idx) => (
+                                                            <div key={idx} className="bg-white/80 p-2.5 rounded-lg border border-red-100/50 text-xs text-red-800">
+                                                                <span className="font-bold">{log.task}:</span> {log.message}
+                                                            </div>
+                                                        ))}
+                                                    </div>
+                                                </div>
+                                            )}
+
+                                        </div>
+                                    </div>
+                                </section>
+
                             </div>
                         </div>
                     )}

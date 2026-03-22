@@ -1,7 +1,7 @@
 import { FormProvider, useForm } from "react-hook-form";
 import { useEffect, useMemo, useRef, useState, useCallback } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
-import { X } from "lucide-react";
+import { X, Search } from "lucide-react";
 
 import {
     FilterState,
@@ -28,6 +28,7 @@ import FilterSearchBar from "./FilterSearchBar";
 
 import { MALAYSIA_CITIES } from "@/config/destinations";
 import { PACKAGE_CONFIG } from "@/config/packageConfig";
+import { GLOBAL_CONFIG } from "@/config/globalConfig";
 
 const PAGE_SIZE = PACKAGE_CONFIG.INITIAL_LOAD_LIMIT;
 
@@ -107,7 +108,7 @@ const SelectedFiltersRow: React.FC<SelectedFiltersProps> = ({
                 <button
                     type="button"
                     onClick={onClearAll}
-                    className="text-[10px] xl:text-xs font-bold text-gray-700 hover:text-red-500 transition-colors bg-[#FFE5E5] px-6 py-3 rounded-md whitespace-nowrap cursor-pointer uppercase tracking-[0.2em]"
+                    className="hidden md:block text-[10px] xl:text-xs font-bold text-gray-700 hover:text-red-500 transition-colors bg-[#FFE5E5] px-6 py-3 rounded-md whitespace-nowrap cursor-pointer uppercase tracking-[0.2em]"
                 >
                     CLEAR FILTERS
                 </button>
@@ -136,6 +137,7 @@ const FilterPackage = ({ likePackageOnly = false, mode = 'all' }: FilterPackageP
     const [packageList, setPackageList] = useState<any[]>([]);
     const [cursor, setCursor] = useState("");
     const [hasMore, setHasMore] = useState(true);
+    const [totalCount, setTotalCount] = useState(0);
     const lastProcessedCursor = useRef<string | null>(null);
 
     // ── Local search input (not in form, to avoid triggering URL updates on every keystroke)
@@ -194,13 +196,18 @@ const FilterPackage = ({ likePackageOnly = false, mode = 'all' }: FilterPackageP
         setPackageList([]);
         setCursor("");
         setHasMore(true);
+        setTotalCount(0);
         lastProcessedCursor.current = "RESET";
         setTimeout(() => refetch(), 0);
     }, [JSON.stringify(filters.filterConfig), filters.search, filters.city, likePackageOnly, mode]);
 
     // Accumulate pages
+    const dataProcessedRef = useRef<any>(null);
+
     useEffect(() => {
-        if (data && lastProcessedCursor.current !== cursor) {
+        if (data && data !== dataProcessedRef.current) {
+            dataProcessedRef.current = data;
+            
             if (data.data?.length) {
                 setPackageList((prev) => {
                     const newPkgs = data.data.filter(
@@ -209,11 +216,14 @@ const FilterPackage = ({ likePackageOnly = false, mode = 'all' }: FilterPackageP
                     return [...prev, ...newPkgs];
                 });
             }
-            lastProcessedCursor.current = cursor;
-            if (data.nextCursor) setCursor(data.nextCursor);
+            
+            if (data.nextCursor) {
+                setCursor(data.nextCursor);
+            }
+            if (data.totalCount !== undefined) setTotalCount(data.totalCount);
             setHasMore(data.hasMore || false);
         }
-    }, [data, cursor]);
+    }, [data]);
 
     // ─── Computed
     const filteredPackages = useMemo(() => {
@@ -249,14 +259,16 @@ const FilterPackage = ({ likePackageOnly = false, mode = 'all' }: FilterPackageP
         setSort("default");
     }, [reset]);
 
-    const handleSearch = () => {
-        setValue("search", searchInput);
+    const handleSearch = (customSearch?: string) => {
+        const valueToSearch = typeof customSearch === 'string' ? customSearch : searchInput;
+        setValue("search", valueToSearch);
     };
 
     const resetAndRefetch = useCallback(() => {
         setPackageList([]);
         setCursor("");
         setHasMore(true);
+        setTotalCount(0);
         lastProcessedCursor.current = "RESET";
         setTimeout(() => refetch(), 0);
     }, [refetch]);
@@ -267,6 +279,18 @@ const FilterPackage = ({ likePackageOnly = false, mode = 'all' }: FilterPackageP
             resetAndRefetch();
         }
     }, [context?.refreshCount, resetAndRefetch]);
+
+    const citiesFromConfig = GLOBAL_CONFIG.destinations.map((d: { value: string }) => d.value);
+
+    const groupedPackages = useMemo(() => {
+        const groups: Record<string, any[]> = {};
+        filteredPackages.forEach((pkg) => {
+            const city = pkg.location || "Other";
+            if (!groups[city]) groups[city] = [];
+            groups[city].push(pkg);
+        });
+        return groups;
+    }, [filteredPackages]);
 
     // ─── Render helpers
     const renderContent = () => {
@@ -289,9 +313,25 @@ const FilterPackage = ({ likePackageOnly = false, mode = 'all' }: FilterPackageP
             );
         }
 
-        return (
-            <>
-                {filteredPackages.length > 0 ? (
+        if (filteredPackages.length === 0 && !isLoading) {
+            return (
+                <NoDataFound
+                    message="No Packages Found"
+                    subMessage="Try adjusting your filters or search criteria."
+                />
+            );
+        }
+
+        // If a specific city is selected, only show those packages (no grouping needed)
+        if (filters.city) {
+            return (
+                <section key={filters.city} className="mb-10 animate-in fade-in slide-in-from-bottom-4 duration-500">
+                    <div className="flex items-center gap-3 mb-6">
+                        <div className="h-8 w-1.5 bg-primary rounded-full shadow-sm"></div>
+                        <h2 className="text-2xl font-black text-gray-900 tracking-tight uppercase">
+                            {filters.city} <span className="text-primary font-medium ml-2">({filteredPackages.length})</span>
+                        </h2>
+                    </div>
                     <PackageCard
                         filterList={filteredPackages}
                         isAdmin={context?.isAdmin || false}
@@ -306,16 +346,68 @@ const FilterPackage = ({ likePackageOnly = false, mode = 'all' }: FilterPackageP
                             );
                         }}
                     />
-                ) : !isLoading && !hasMore ? (
-                    <NoDataFound
-                        message="No Packages Found"
-                        subMessage="Try adjusting your filters or search criteria."
-                    />
-                ) : !isLoading && hasMore && packageList.length > 0 ? (
-                    <div className="text-center py-10 text-zinc-400">
-                        No matches in this batch — try loading more!
-                    </div>
-                ) : null}
+                </section>
+            );
+        }
+
+        // Default: Group by City
+        return (
+            <div className="space-y-16">
+                {citiesFromConfig.map((cityName: string) => {
+                    const packages = groupedPackages[cityName] || [];
+                    if (packages.length === 0) return null;
+
+                    return (
+                        <section key={cityName} className="animate-in fade-in slide-in-from-bottom-4 duration-500">
+                            <div className="flex items-center gap-3 mb-6">
+                                <div className="h-8 w-1.5 bg-primary rounded-full shadow-sm"></div>
+                                <h2 className="text-2xl font-black text-gray-900 tracking-tight uppercase">
+                                    {cityName} <span className="text-primary font-medium ml-2">({packages.length})</span>
+                                </h2>
+                            </div>
+                            <PackageCard
+                                filterList={packages}
+                                isAdmin={context?.isAdmin || false}
+                                setEditPackageId={context?.setEditPackageId || (() => { })}
+                                setActive={context?.setActive || (() => { })}
+                                refetch={resetAndRefetch}
+                                handleLikeUpdate={(id, liked) => {
+                                    setPackageList((prev) =>
+                                        prev.map((pkg) =>
+                                            pkg._id === id ? { ...pkg, userLiked: liked } : pkg
+                                        )
+                                    );
+                                }}
+                            />
+                        </section>
+                    );
+                })}
+
+                {/* Handle packages that don't match known cities */}
+                {groupedPackages["Other"]?.length > 0 && (
+                    <section key="Other" className="animate-in fade-in slide-in-from-bottom-4 duration-500">
+                         <div className="flex items-center gap-3 mb-6">
+                            <div className="h-8 w-1.5 bg-gray-400 rounded-full shadow-sm"></div>
+                            <h2 className="text-2xl font-black text-gray-900 tracking-tight uppercase">
+                                Other Locations <span className="text-gray-400 font-medium ml-2">({groupedPackages["Other"].length})</span>
+                            </h2>
+                        </div>
+                        <PackageCard
+                            filterList={groupedPackages["Other"]}
+                            isAdmin={context?.isAdmin || false}
+                            setEditPackageId={context?.setEditPackageId || (() => { })}
+                            setActive={context?.setActive || (() => { })}
+                            refetch={resetAndRefetch}
+                            handleLikeUpdate={(id, liked) => {
+                                setPackageList((prev) =>
+                                    prev.map((pkg) =>
+                                        pkg._id === id ? { ...pkg, userLiked: liked } : pkg
+                                    )
+                                );
+                            }}
+                        />
+                    </section>
+                )}
 
                 {isLoading && packageList.length > 0 && (
                     <div className={isAdminMode ? "grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 mt-6" : "grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mt-6"}>
@@ -327,7 +419,7 @@ const FilterPackage = ({ likePackageOnly = false, mode = 'all' }: FilterPackageP
                         Failed to load more packages. Please try again.
                     </div>
                 )}
-                {hasMore && (
+                {hasMore && packageList.length < totalCount && (
                     <div className="text-center py-6">
                         <AnimatedButton
                             buttonText={isLoading ? "Loading…" : "Load more"}
@@ -337,7 +429,7 @@ const FilterPackage = ({ likePackageOnly = false, mode = 'all' }: FilterPackageP
                         />
                     </div>
                 )}
-            </>
+            </div>
         );
     };
 
@@ -360,7 +452,7 @@ const FilterPackage = ({ likePackageOnly = false, mode = 'all' }: FilterPackageP
                     </h2>
 
                     {/* Search bar row */}
-                    <div className="mb-4">
+                    <div className="mb-4 relative z-50">
                         <FilterSearchBar
                             country={filters.country}
                             setCountry={(val) => setValue("country", val)}
@@ -415,15 +507,40 @@ const FilterPackage = ({ likePackageOnly = false, mode = 'all' }: FilterPackageP
                             />
                         </div>
 
-                        {/* Result count */}
-                        <div className="flex items-center justify-between mb-6 border-b border-gray-100 pb-2">
-                            <h3 className="text-xl font-bold text-gray-800">
-                                {filteredPackages.length}{" "}
-                                <span className="font-normal text-gray-500 text-lg">
-                                    Package{filteredPackages.length !== 1 ? "s" : ""} found
-                                    {filters.city ? ` in ${filters.city}` : ""}
+                        {/* Result count - Redesigned */}
+                        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-6 mb-10 pb-6 border-b border-gray-100">
+                            <div className="flex items-center gap-5">
+                                <div className="flex items-center justify-center w-14 h-14 rounded-2xl bg-primary/5 border border-primary/10 shadow-sm shrink-0">
+                                    <Search className="text-primary w-6 h-6 stroke-[2.5]" />
+                                </div>
+                                <div className="flex flex-col">
+                                    <span className="text-[10px] font-black text-primary uppercase tracking-[0.25em] mb-1">
+                                        Search Results
+                                    </span>
+                                    <h3 className="text-2xl font-black text-gray-900 tracking-tight leading-none">
+                                        Showing {filteredPackages.length}{" "}
+                                        <span className="text-gray-400 font-medium tracking-tighter text-xl">
+                                            / {totalCount} Packages Found
+                                        </span>
+                                    </h3>
+                                    {filters.city && (
+                                        <div className="flex items-center gap-2 mt-2">
+                                            <div className="w-1.5 h-1.5 rounded-full bg-primary animate-pulse" />
+                                            <span className="text-xs font-bold text-gray-500 uppercase tracking-widest">
+                                                Exploring in <span className="text-primary">{filters.city}</span>
+                                            </span>
+                                        </div>
+                                    )}
+                                </div>
+                            </div>
+
+                            {/* Optional: Add a subtle badge for the active mode */}
+                            <div className="hidden lg:flex items-center gap-2 px-4 py-2 bg-gray-50 rounded-full border border-gray-100">
+                                <div className="w-2 h-2 rounded-full bg-green-500" />
+                                <span className="text-[10px] font-bold text-gray-400 uppercase tracking-widest whitespace-nowrap">
+                                    {mode === 'activities' ? 'Activity Filter Active' : 'Package Filter Active'}
                                 </span>
-                            </h3>
+                            </div>
                         </div>
 
                         {renderContent()}
