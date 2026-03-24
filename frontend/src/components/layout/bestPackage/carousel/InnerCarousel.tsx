@@ -47,7 +47,7 @@ export default function InnerCarousel({ images = [], offerId, packageName }: Inn
                 >
                     {images.map((img: any, idx) => {
                         let imageUrl = "";
-                        let imageAlt = "";
+                        // let imageAlt = "";
 
                         if (typeof img === 'string') {
                             imageUrl = img;
@@ -57,7 +57,7 @@ export default function InnerCarousel({ images = [], offerId, packageName }: Inn
                                 imageUrl = Object.values(img).filter(v => typeof v === 'string').join('');
                             } else {
                                 imageUrl = img.url || "";
-                                imageAlt = img.alt || "";
+                                // imageAlt = img.alt || "";
                             }
                         }
 
