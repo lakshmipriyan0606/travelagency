@@ -95,7 +95,7 @@ export const SlotFieldSection = ({ control, dayIndex, slotIndex, removeSlot }: S
 
                              {imagePreview ? (
                                 <div className="absolute inset-0 group/img">
-                                    <img src={imagePreview} className="w-full h-full object-cover transition-transform duration-700 group-hover/img:scale-110" alt="Slot" />
+                                    <img src={imagePreview} className="w-full h-full object-cover transition-transform duration-700 group-hover/img:scale-110" alt={watch(`days.${dayIndex}.slots.${slotIndex}.imageAlt`) || "Slot"} />
                                     <div className="absolute inset-0 bg-black/40 opacity-0 group-hover/img:opacity-100 transition-opacity flex items-center justify-center">
                                         <div {...getRootProps()} className="cursor-pointer">
                                             <input {...getInputProps()} />
@@ -123,7 +123,16 @@ export const SlotFieldSection = ({ control, dayIndex, slotIndex, removeSlot }: S
                                 </div>
                              )}
                         </div>
+                        <div className="mt-2 text-left">
+                            <ReusableInput
+                                control={control}
+                                name={`days.${dayIndex}.slots.${slotIndex}.imageAlt`}
+                                label="Image Alt Text"
+                                placeholder="Descriptive text for SEO"
+                            />
+                        </div>
                     </div>
+
                 </div>
             </div>
         </div>

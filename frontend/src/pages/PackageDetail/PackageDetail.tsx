@@ -8,10 +8,12 @@ import { useEffect, useState } from 'react'
 import { useParams, useSearchParams, useNavigate } from 'react-router-dom'
 import { motion } from 'framer-motion'
 import Breadcrumb from '@/components/common/Breadcrumb/Breadcrumb'
+import { Helmet } from 'react-helmet-async'
 
 import noDataImg from '@/assets/image/no-data-clean.png'
 
 const PackageDetail = () => {
+
     const navigate = useNavigate();
     const { id: paramId } = useParams();
     const [searchParams] = useSearchParams();
@@ -52,7 +54,15 @@ const PackageDetail = () => {
 
     return (
         <div>
+            {pkg && (
+                <Helmet>
+                    <title>{pkg.seo?.title || `${pkg.packageName} | Travel Agency`}</title>
+                    <meta name="description" content={pkg.seo?.description || pkg.packageDescription} />
+                    <meta name="keywords" content={pkg.seo?.keywords || "travel, tour, adventure"} />
+                </Helmet>
+            )}
             {/* Breadcrumb */}
+
             <div className="px-4 sm:px-8 lg:px-8 pt-20 sm:pt-24">
                 <Breadcrumb
                     items={[
@@ -124,7 +134,7 @@ const PackageDetail = () => {
                                 Let’s discover something even better for your next trip.
                             </p>
 
-                            <div className="flex flex-col sm:flex-row gap-5 mt-14 w-full max-w-lg justify-center">
+                            <div className="flex flex-col sm:flex-row gap-5 mt-3 w-full max-w-lg justify-center">
                                 <button
                                     onClick={() => navigate('/allpackage')}
                                     className="px-10 py-5 bg-primary text-black font-black rounded-2xl hover:bg-opacity-90 transition-all shadow-[0_15px_35px_rgba(242,193,46,0.4)] active:scale-95 uppercase tracking-extrawide text-sm whitespace-nowrap cursor-pointer"

@@ -37,6 +37,7 @@ const slotSchema = z.object({
   title: z.string(),
   description: z.string(),
   imageUrl: z.any().optional(),
+  imageAlt: z.string().optional(), // Added imageAlt
 });
 
 const daySchema = z.object({
@@ -60,22 +61,29 @@ const formSchema = z.object({
   status: z.enum(["Active", "Inactive"]).default("Active"),
   activityCategory: z.string().optional(),
   days: z.array(daySchema),
+  seo: z.object({ // Added SEO
+    title: z.string().optional(),
+    description: z.string().optional(),
+    keywords: z.string().optional(),
+  }).optional(),
 });
+
 
 type FormData = z.infer<typeof formSchema>;
 
 interface MainImagesUploaderProps {
-  mainImageFiles: File[];
-  setMainImageFiles: React.Dispatch<React.SetStateAction<File[]>>;
-  mainImageUrls: string[];
-  setMainImageUrls: React.Dispatch<React.SetStateAction<string[]>>;
+  mainImageFiles: { file: File; alt: string }[];
+  setMainImageFiles: React.Dispatch<React.SetStateAction<{ file: File; alt: string }[]>>;
+  mainImageUrls: { url: string; alt: string }[];
+  setMainImageUrls: React.Dispatch<React.SetStateAction<{ url: string; alt: string }[]>>;
 }
 
 function MainImagesUploader({ mainImageFiles, setMainImageFiles, mainImageUrls, setMainImageUrls }: MainImagesUploaderProps) {
   const [urlInput, setUrlInput] = useState("");
 
   const onDrop = useCallback((acceptedFiles: File[]) => {
-    setMainImageFiles(prev => [...prev, ...acceptedFiles]);
+    const newFiles = acceptedFiles.map(file => ({ file, alt: "" }));
+    setMainImageFiles(prev => [...prev, ...newFiles]);
   }, [setMainImageFiles]);
 
   const { getRootProps, getInputProps, isDragActive } = useDropzone({
@@ -85,16 +93,24 @@ function MainImagesUploader({ mainImageFiles, setMainImageFiles, mainImageUrls, 
 
   const handleAddUrl = () => {
     if (!urlInput.trim()) return;
-    setMainImageUrls(prev => [...prev, urlInput.trim()]);
+    setMainImageUrls(prev => [...prev, { url: urlInput.trim(), alt: "" }]);
     setUrlInput("");
   };
 
-  const removeFile = (file: File) => {
-    setMainImageFiles(prev => prev.filter(f => f !== file));
+  const removeFile = (index: number) => {
+    setMainImageFiles(prev => prev.filter((_, i) => i !== index));
   };
 
-  const removeUrl = (url: string) => {
-    setMainImageUrls(prev => prev.filter(u => u !== url));
+  const removeUrl = (index: number) => {
+    setMainImageUrls(prev => prev.filter((_, i) => i !== index));
+  };
+
+  const updateUrlAlt = (index: number, alt: string) => {
+    setMainImageUrls(prev => prev.map((item, i) => i === index ? { ...item, alt } : item));
+  };
+
+  const updateFileAlt = (index: number, alt: string) => {
+    setMainImageFiles(prev => prev.map((item, i) => i === index ? { ...item, alt } : item));
   };
 
   return (
@@ -133,33 +149,55 @@ function MainImagesUploader({ mainImageFiles, setMainImageFiles, mainImageUrls, 
       </div>
 
       {(mainImageUrls.length > 0 || mainImageFiles.length > 0) && (
-        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
-          {mainImageUrls.map((url) => (
-            <div key={url} className="relative aspect-square group rounded-2xl overflow-hidden shadow-sm border border-neutral-200">
-              <img src={url} alt="Gallery" className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110" />
-              <button
-                type="button"
-                onClick={() => removeUrl(url)}
-                className="absolute top-2 right-2 w-7 h-7 bg-black/50 backdrop-blur-md rounded-full text-white flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all hover:bg-red-500"
-              >
-                <X size={14} />
-              </button>
-              <span className="absolute bottom-2 left-2 px-2 py-0.5 bg-emerald-500 text-white text-[8px] font-black rounded uppercase tracking-tighter shadow-sm">By URL</span>
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
+          {mainImageUrls.map((item, idx) => (
+            <div key={idx} className="relative group rounded-2xl overflow-hidden shadow-sm border border-neutral-200 bg-white">
+              <div className="aspect-video relative">
+                <img src={item.url} alt="Gallery" className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110" />
+                <button
+                  type="button"
+                  onClick={() => removeUrl(idx)}
+                  className="absolute top-2 right-2 w-7 h-7 bg-black/50 backdrop-blur-md rounded-full text-white flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all hover:bg-red-500 z-10"
+                >
+                  <X size={14} />
+                </button>
+                <span className="absolute bottom-2 left-2 px-2 py-0.5 bg-emerald-500 text-white text-[8px] font-black rounded uppercase tracking-tighter shadow-sm z-10">By URL</span>
+              </div>
+              <div className="p-2">
+                <input
+                  type="text"
+                  placeholder="Image Alt Text..."
+                  value={item.alt}
+                  onChange={(e) => updateUrlAlt(idx, e.target.value)}
+                  className="w-full text-[10px] border border-neutral-100 rounded-lg px-2 py-1.5 focus:border-primary outline-none transition-all"
+                />
+              </div>
             </div>
           ))}
 
-          {mainImageFiles.map((file) => (
-            <div key={file.name} className="relative aspect-square group rounded-2xl overflow-hidden shadow-sm border border-neutral-200">
-              <img src={URL.createObjectURL(file)} alt="Gallery" className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110" />
-              <div className="absolute inset-0 bg-primary/10 pointer-events-none" />
-              <button
-                type="button"
-                onClick={() => removeFile(file)}
-                className="absolute top-2 right-2 w-7 h-7 bg-black/50 backdrop-blur-md rounded-full text-white flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all hover:bg-red-500"
-              >
-                <X size={14} />
-              </button>
-              <span className="absolute bottom-2 left-2 px-2 py-0.5 bg-primary text-white text-[8px] font-black rounded uppercase tracking-tighter shadow-sm">Uploaded</span>
+          {mainImageFiles.map((item, idx) => (
+            <div key={idx} className="relative group rounded-2xl overflow-hidden shadow-sm border border-neutral-200 bg-white">
+              <div className="aspect-video relative">
+                <img src={URL.createObjectURL(item.file)} alt="Gallery" className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110" />
+                <div className="absolute inset-0 bg-primary/10 pointer-events-none" />
+                <button
+                  type="button"
+                  onClick={() => removeFile(idx)}
+                  className="absolute top-2 right-2 w-7 h-7 bg-black/50 backdrop-blur-md rounded-full text-white flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all hover:bg-red-500 z-10"
+                >
+                  <X size={14} />
+                </button>
+                <span className="absolute bottom-2 left-2 px-2 py-0.5 bg-primary text-white text-[8px] font-black rounded uppercase tracking-tighter shadow-sm z-10">Uploaded</span>
+              </div>
+              <div className="p-2">
+                <input
+                  type="text"
+                  placeholder="Image Alt Text..."
+                  value={item.alt}
+                  onChange={(e) => updateFileAlt(idx, e.target.value)}
+                  className="w-full text-[10px] border border-neutral-100 rounded-lg px-2 py-1.5 focus:border-primary outline-none transition-all"
+                />
+              </div>
             </div>
           ))}
         </div>
@@ -167,6 +205,7 @@ function MainImagesUploader({ mainImageFiles, setMainImageFiles, mainImageUrls, 
     </div>
   );
 }
+
 
 const SectionHeader = ({ icon: Icon, title, subtitle }: { icon: any, title: string, subtitle?: string }) => (
   <div className="flex items-center gap-3 justify-center pt-4">
@@ -191,8 +230,8 @@ export default function AdminUploadPackageForm({ isActivity = false }: { isActiv
   if (!context) throw new Error("AdminUploadPackageForm must be used within AdminPanelContext");
   const { editPackageId: id, setActive, triggerRefresh } = context;
 
-  const [mainImageFiles, setMainImageFiles] = useState<File[]>([]);
-  const [mainImageUrls, setMainImageUrls] = useState<string[]>([]);
+  const [mainImageFiles, setMainImageFiles] = useState<{ file: File; alt: string }[]>([]);
+  const [mainImageUrls, setMainImageUrls] = useState<{ url: string; alt: string }[]>([]);
   const [activeStep, setActiveStep] = useState(0);
 
   const steps = [
@@ -207,7 +246,7 @@ export default function AdminUploadPackageForm({ isActivity = false }: { isActiv
       toast.success("Package created successfully!");
       reset();
       setActive("AllPackages");
-      triggerRefresh?.(); 
+      triggerRefresh?.();
     },
     onError: (error: any) => {
       toast.error(error?.message || "Failed to create package");
@@ -251,10 +290,12 @@ export default function AdminUploadPackageForm({ isActivity = false }: { isActiv
       bestRank: "",
       status: "Active",
       activityCategory: "",
-      days: [{ dayTitle: "", slots: [{ slotType: "", title: "", description: "", imageUrl: "" }] }]
+      days: [{ dayTitle: "", slots: [{ slotType: "", title: "", description: "", imageUrl: "", imageAlt: "" }] }],
+      seo: { title: "", description: "", keywords: "" }
     },
     mode: 'onChange'
   });
+
 
   const { control, handleSubmit, watch, reset, formState } = methods;
 
@@ -283,10 +324,16 @@ export default function AdminUploadPackageForm({ isActivity = false }: { isActiv
           title: slot.title || "",
           description: slot.description || "",
           imageUrl: slot.imageUrl || "",
+          imageAlt: slot.imageAlt || "",
         })),
       })),
+      seo: {
+        title: pkg.seo?.title || "",
+        description: pkg.seo?.description || "",
+        keywords: pkg.seo?.keywords || "",
+      }
     });
-    setMainImageUrls(pkg.images || []);
+    setMainImageUrls(pkg.images?.map((img: any) => typeof img === 'string' ? { url: img, alt: "" } : img) || []);
     setMainImageFiles([]);
   }, [id, data?.data, reset]);
 
@@ -298,14 +345,21 @@ export default function AdminUploadPackageForm({ isActivity = false }: { isActiv
     try {
       const formData = new FormData();
       Object.entries(values).forEach(([key, val]) => {
-        if (key !== "days") {
+        if (key !== "days" && key !== "seo") {
           // "none" means the user chose "No Activity" — send empty string to backend
           const sanitized = key === "activityCategory" && val === "none" ? "" : val;
           formData.append(key, sanitized as any);
         }
       });
+
+      formData.append("seo", JSON.stringify(values.seo));
       formData.append("existingImages", JSON.stringify(mainImageUrls));
-      mainImageFiles.forEach(file => formData.append("images", file));
+
+      const newFiles = mainImageFiles.map(f => f.file);
+      const newAlts = mainImageFiles.map(f => f.alt);
+
+      newFiles.forEach(file => formData.append("images", file));
+      formData.append("mainImageAlts", JSON.stringify(newAlts));
 
       const daysClean = values.days.map((day: any) => ({
         dayTitle: day.dayTitle,
@@ -314,6 +368,7 @@ export default function AdminUploadPackageForm({ isActivity = false }: { isActiv
           title: slot.title,
           description: slot.description,
           imageUrl: slot.imageUrl instanceof File ? undefined : slot.imageUrl,
+          imageAlt: slot.imageAlt,
         }))
       }));
       formData.append("days", JSON.stringify(daysClean));
@@ -335,6 +390,7 @@ export default function AdminUploadPackageForm({ isActivity = false }: { isActiv
       console.error("Submission error:", error);
     }
   };
+
 
   const nextStep = async (e?: React.MouseEvent) => {
     e?.preventDefault();
@@ -474,8 +530,25 @@ export default function AdminUploadPackageForm({ isActivity = false }: { isActiv
                     )}
                   </div>
                 </Card>
+
+                {/* SEO Configuration */}
+                <Card className="p-6 border border-neutral-200/60 shadow-xl shadow-neutral-200/30 rounded-[24px] overflow-hidden bg-white/80 backdrop-blur-md transition-all mt-6">
+                  <SectionHeader icon={Tag} title="SEO Configuration" subtitle="Optimize your package for search engines" />
+                  <div className="grid grid-cols-1 gap-1 mt-2">
+                    <StyledField>
+                      <ReusableInput control={control} name="seo.title" label="SEO Title" variant="floating" />
+                    </StyledField>
+                    <StyledField>
+                      <ReusableTextArea control={control} name="seo.description" label="SEO Description" variant="floating" />
+                    </StyledField>
+                    <StyledField>
+                      <ReusableInput control={control} name="seo.keywords" label="SEO Keywords" variant="floating" />
+                    </StyledField>
+                  </div>
+                </Card>
               </div>
             )}
+
 
             {activeStep === 1 && (
               <div className="animate-in fade-in slide-in-from-right-4 duration-500 grid grid-cols-1 lg:grid-cols-3 gap-2">
@@ -552,7 +625,7 @@ export default function AdminUploadPackageForm({ isActivity = false }: { isActiv
                   <SectionHeader icon={Calendar} title="Journey Roadmap" subtitle="Day-by-day experience plan" />
                   <Button
                     type="button"
-                    onClick={() => addDay({ dayTitle: "", slots: [{ slotType: "", title: "", description: "", imageUrl: "" }] })}
+                    onClick={() => addDay({ dayTitle: "", slots: [{ slotType: "", title: "", description: "", imageUrl: "", imageAlt: "" }] })}
                     className="bg-neutral-800 text-white hover:bg-neutral-900 rounded-xl font-bold text-[10px] gap-2 py-4 px-6 shadow-lg shadow-neutral-200 transition-all hover:-translate-y-0.5 active:translate-y-0 border border-neutral-700 uppercase tracking-wider"
                   >
                     <Plus size={14} /> Add Day

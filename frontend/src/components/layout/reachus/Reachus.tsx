@@ -69,7 +69,7 @@ export default function ReachUs() {
           </div>
 
           <div className='sm:hidden'>
-            <HeroEnquiryForm onComplete={() => { }} compact isCustomMobileView={true} packageName={''} />
+            <HeroEnquiryForm onComplete={() => { }} compact packageName={''} />
           </div>
         </div>
 

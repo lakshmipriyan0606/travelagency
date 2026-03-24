@@ -5,8 +5,10 @@ interface TimeSlot {
   time: string;
   description?: string;
   icon?: string;
+  iconAlt?: string; // Added iconAlt
   onlyDuration?: boolean;
 }
+
 
 interface Day {
   title: string;
@@ -88,9 +90,10 @@ const ItineraryCard: React.FC<ItineraryCardProps> = ({ currentPackage }) => {
                     >
                       <img
                         src={slot?.icon || ""}
-                        alt=""
+                        alt={slot?.iconAlt || ""}
                         className="rounded-full w-12 h-12 object-cover shrink-0 border border-gray-200"
                       />
+
 
                       <div className="flex-1 min-w-0">
                         <p className="text-sm font-semibold text-gray-900 uppercase tracking-wide">

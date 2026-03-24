@@ -8,10 +8,11 @@ import arrowRight from "@/assets/icons/rightarrow.svg";
 import { useNavigate } from "react-router-dom";
 
 interface InnerCarouselProps {
-    images: string[];
+    images: { url: string; alt: string }[] | string[];
     offerId: number | string;
     packageName?: string;
 }
+
 
 export default function InnerCarousel({ images = [], offerId, packageName }: InnerCarouselProps) {
     const navigate = useNavigate();
@@ -44,21 +45,39 @@ export default function InnerCarousel({ images = [], offerId, packageName }: Inn
                     slidesPerView={1}
                     className="h-64 md:h-72"
                 >
-                    {images.map((img, idx) => (
-                        <SwiperSlide key={idx} className="h-full">
-                            <div
-                                className="h-full w-full bg-cover bg-center relative flex cursor-pointer rounded-t-lg "
-                                style={{ backgroundImage: `url("${img}")` }}
-                                onClick={() => handleNavigation(offerId)}
-                            >
+                    {images.map((img: any, idx) => {
+                        let imageUrl = "";
+                        let imageAlt = "";
 
-                                {/* ---------- EXCLUSIVE OFFER BAR (bottom) ---------- */}
+                        if (typeof img === 'string') {
+                            imageUrl = img;
+                        } else if (img && typeof img === 'object') {
+                            // If it's the corrupted format {0: 'h', 1: 't', ...}, recover it
+                            if (img[0] === 'h' && !img.url) {
+                                imageUrl = Object.values(img).filter(v => typeof v === 'string').join('');
+                            } else {
+                                imageUrl = img.url || "";
+                                imageAlt = img.alt || "";
+                            }
+                        }
+
+                        return (
+                            <SwiperSlide key={idx} className="h-full">
+                                <div
+                                    className="h-full w-full bg-cover bg-center relative flex cursor-pointer rounded-t-lg "
+                                    style={{ backgroundImage: `url("${imageUrl}")` }}
+                                    onClick={() => handleNavigation(offerId)}
+                                >
+
+                                    {/* ---------- EXCLUSIVE OFFER BAR (bottom) ---------- */}
 
 
-                            </div>
-                        </SwiperSlide>
-                    ))}
+                                </div>
+                            </SwiperSlide>
+                        );
+                    })}
                 </Swiper>
+
                 <div className="bottom-2 left-0 right-0 h-6 bg-gradient-to-r from-[#C59435] via-[#F3E79B] to-[#C59435] border-y border-[#D8C27A] flex items-center justify-center shadow-md">
                     <span className="text-black font-semibold tracking-[0.35em] uppercase">
                         Exclusive Offer

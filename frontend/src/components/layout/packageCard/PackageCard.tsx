@@ -2,7 +2,6 @@
 
 import AnimatedButton from "@/components/Button/AnimatedButton/AnimatedButton";
 import whatsappIcon from "@/assets/icons/whatsapp.svg";
-import { useDeviceSize } from "@/Hook/UseDevice";
 import InnerCarousel from "../bestPackage/carousel/InnerCarousel";
 import locationIcon from "@/assets/icons/location.svg";
 import { Heart, Pencil, Trash2, Crown } from "lucide-react";
@@ -31,7 +30,7 @@ const calculateDiscountPercentage = (price: number, offerPrice: number) => {
 export interface Package {
     _id: string;
     packageName: string;
-    images: string[];
+    images: { url: string; alt: string }[];
     location: string;
     daysAndNights: string;
     hotelName: string;
@@ -42,7 +41,13 @@ export interface Package {
     status?: string;
     isBestPackage?: boolean;
     bestRank?: number | string | null;
+    seo?: {
+        title?: string;
+        description?: string;
+        keywords?: string;
+    };
 }
+
 
 interface PackageCardProps {
     offer: Package;
@@ -53,6 +58,7 @@ interface PackageCardProps {
     handleLikeUpdate?: (id: string, liked: boolean) => void;
     isAllPackagePage?: boolean;
     className?: string;
+    takenRanks?: { rank: number; packageId: string; packageName: string }[];
 }
 
 type LikePayload = {
@@ -69,7 +75,8 @@ export function SinglePackageCard({
     refetch,
     handleLikeUpdate = () => { },
     isAllPackagePage = false,
-    className = ""
+    className = "",
+    takenRanks = []
 }: PackageCardProps) {
     const navigate = useNavigate();
     const [isModalOpen, setIsModalOpen] = useState(false);
@@ -78,17 +85,9 @@ export function SinglePackageCard({
     const [showRankPicker, setShowRankPicker] = useState(false);
     const queryClient = useQueryClient();
 
-    // Fetch taken ranks when admin opens rank picker
-    const { data: takenRanksData } = UseFetchAPIQuery({
-        key: ["takenRanks"],
-        queryFn: GetTakenRanks,
-        options: { enabled: isAdmin },
-    });
-
-    // Compute available ranks: show all from config, but mark taken ones
-    const takenRanks: { rank: number; packageId: string; packageName: string }[] = takenRanksData?.takenRanks || [];
+    // Fetch taken ranks passed from parent or fallback to empty
     const availableRanks = RANK_OPTIONS.filter(rank => {
-        const taken = takenRanks.find(t => String(t.rank) === String(rank));
+        const taken = (takenRanks || []).find((t: any) => String(t.rank) === String(rank));
         // Show if: not taken, OR taken by THIS package (so it stays highlighted)
         return !taken || taken.packageId === offer._id;
     });
@@ -396,7 +395,14 @@ export default function PackageCard({
     handleLikeUpdate = () => { },
     isAllPackagePage = false
 }: PackageGridProps) {
-    useDeviceSize();
+    // Fetch taken ranks once for the entire grid (admin only)
+    const { data: takenRanksData } = UseFetchAPIQuery({
+        key: ["takenRanks"],
+        queryFn: GetTakenRanks,
+        options: { enabled: isAdmin },
+    });
+
+    const takenRanks = takenRanksData?.takenRanks || [];
 
     return (
         <div className={isAdmin ? "grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6" : "grid grid-cols-1 sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6"}>
@@ -421,6 +427,7 @@ export default function PackageCard({
                                 handleLikeUpdate={handleLikeUpdate}
                                 isAllPackagePage={isAllPackagePage}
                                 className="shadow-xl border border-white"
+                                takenRanks={takenRanks}
                             />
                         </div>
                     </motion.div>

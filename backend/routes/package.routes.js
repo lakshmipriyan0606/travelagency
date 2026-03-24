@@ -10,6 +10,23 @@ import PackageModel from "../models/Package.model.js";
 import { fetchPackagesFromSheet } from "../services/googleSheets.service.js";
 const router = express.Router();
 
+// Helper to recover images from corrupted object format {0:'h', 1: 't', ...} or legacy strings
+const sanitizeImageObjects = (images) => {
+  return (images || []).map(img => {
+    if (typeof img === 'string') return { url: img, alt: "" };
+    if (img && typeof img === 'object') {
+      if (img.url) return { url: img.url, alt: img.alt || "" };
+      // Check for numeric keys corruption (e.g. {0: 'h', 1: 't', ...})
+      if (img[0] === 'h' && !img.url) {
+        const recoveredUrl = Object.values(img).filter(val => typeof val === 'string').join('');
+        return { url: recoveredUrl, alt: "" };
+      }
+      return img;
+    }
+    return { url: "", alt: "" };
+  });
+};
+
 router.post(
   "/create",
   protectRoute,
@@ -25,16 +42,20 @@ router.get("/bestpackages", async (req, res) => {
       isBestPackage: true,
       isActive: { $ne: false },
       isDeleted: { $ne: true } 
-    });
+    }).lean();
 
     const finalBestPackages = bestPackages.map((pkg) => {
-      const userLike = pkg.likes.find((like) => like.userId === userId);
+      const userLike = (pkg.likes || []).find((like) => like.userId === userId);
+      const pkgObj = pkg;
+      
       return {
-        ...pkg.toObject(),
+        ...pkgObj,
+        images: sanitizeImageObjects(pkgObj.images),
         hotelName: pkg.hotelName || (pkg.rating ? `${pkg.rating} Stars Hotel` : ""),
         userLiked: userLike ? userLike.liked : false,
       };
     });
+
 
     finalBestPackages.sort((a, b) => a.bestRank - b.bestRank);
 
@@ -124,19 +145,23 @@ router.get("/", async (req, res) => {
 
     const packages = await PackageModel.find(query)
       .sort({ _id: -1 })
-      .limit(limit);
+      .limit(limit)
+      .lean();
 
     const finalAllPackages = packages.map((pkg) => {
-      const userLike = pkg.likes.find(
+      const userLike = (pkg.likes || []).find(
         (like) => like.userId?.toString() === userId?.toString()
       );
+      const pkgObj = pkg;
 
       return {
-        ...pkg.toObject(),
+        ...pkgObj,
+        images: sanitizeImageObjects(pkgObj.images),
         hotelName: pkg.hotelName || (pkg.rating ? `${pkg.rating} Stars Hotel` : ""),
         userLiked: userLike ? userLike.liked : false,
       };
     });
+
 
     res.status(200).json({
       data: finalAllPackages,
@@ -290,7 +315,7 @@ router.get("/:id", async (req, res) => {
       currentPackage = await PackageModel.findOne({ 
         _id: id, 
         isDeleted: { $ne: true } 
-      });
+      }).lean();
     }
 
     // 2. If not found or not a valid ID, try matching by slug (package name)
@@ -308,17 +333,21 @@ router.get("/:id", async (req, res) => {
       currentPackage = await PackageModel.findOne({
         packageName: { $regex: slugRegex },
         isDeleted: { $ne: true }
-      });
+      }).lean();
     }
 
     if (!currentPackage) {
       return res.status(404).json({ message: "Package not found" });
     }
 
+    const pkgObj = currentPackage;
+    pkgObj.images = sanitizeImageObjects(pkgObj.images);
+
     res.status(200).json({
-      data: currentPackage,
+      data: pkgObj,
       message: "Package fetched successfully",
     });
+
   } catch (error) {
     res.status(500).json({
       message: "Error fetching package detail",

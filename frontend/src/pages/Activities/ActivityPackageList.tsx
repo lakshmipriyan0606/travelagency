@@ -11,8 +11,10 @@ import Breadcrumb from "@/components/common/Breadcrumb/Breadcrumb";
 import { GLOBAL_CONFIG } from "@/config/globalConfig";
 import { activityCategoryOptions } from "@/components/layout/Admin/AdminUploadPackage/constant";
 import { motion } from "framer-motion";
+import { Helmet } from "react-helmet-async";
 
 const PAGE_SIZE = 8;
+
 
 // ... constants ...
 
@@ -133,7 +135,14 @@ const ActivityPackageList = () => {
 
     return (
         <div className="min-h-screen bg-white">
+            <Helmet>
+                <title>{activeType ? `${activeType} Activities & Tours | Travel Agency` : "All Adventure Activities & Tours | Travel Agency"}</title>
+                <meta name="description" content={activeType ? `Explore our curated ${activeType} packages and adventure tours. Book your next journey today.` : "Discover a wide range of travel activities and adventure tours from snorkeling to hiking."} />
+                <meta name="keywords" content={`travel, activities, ${activeType.toLowerCase()}, tours, adventure`} />
+            </Helmet>
+
             {/* Header */}
+
             <div className="px-4 sm:px-8 xl:px-16 pt-20 pb-6">
                 <Breadcrumb items={breadcrumbItems} className="mb-3" />
 

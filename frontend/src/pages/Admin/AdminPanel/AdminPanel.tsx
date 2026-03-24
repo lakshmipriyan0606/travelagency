@@ -31,30 +31,19 @@ interface FilterPackageProps {
 
 export const AdminPanelContext = createContext<FilterPackageProps | null>(null);
 
-const AdminPanel = () => {
-    const { user } = useSelector((state: any) => state?.auth);
-    const isAdmin = user?.role === "admin" || false;
-    console.log(user)
-    const [active, setActive] = useState("AllPackages");
-    const [editPackageId, setEditPackageId] = useState<string | null>(null);
-    const [refreshCount, setRefreshCount] = useState(0);
+// Isolated Timer Component to prevent full AdminPanel re-renders every second
+const SessionTimer = ({ expiry }: { expiry: number }) => {
     const [timeLeft, setTimeLeft] = useState("");
-    const [showLogoutModal, setShowLogoutModal] = useState(false);
-    const queryClient = useQueryClient();
-
-    const dispatch = useDispatch();
-    const navigate = useNavigate();
 
     useEffect(() => {
-        if (!user?.user?.exp) return;
+        if (!expiry) return;
 
         const updateTimer = () => {
             const now = Math.floor(Date.now() / 1000);
-            const remaining = user.user.exp - now;
+            const remaining = expiry - now;
 
             if (remaining <= 0) {
                 setTimeLeft("Expired");
-                // Optional: auto logout
             } else {
                 const minutes = Math.floor(remaining / 60);
                 const seconds = remaining % 60;
@@ -65,7 +54,28 @@ const AdminPanel = () => {
         updateTimer();
         const interval = setInterval(updateTimer, 1000);
         return () => clearInterval(interval);
-    }, [user?.exp]);
+    }, [expiry]);
+
+    if (!timeLeft) return <span className="text-[10px] text-primary font-bold uppercase tracking-widest leading-none mt-1">System Online</span>;
+
+    return (
+        <span className={`text-[10px] font-bold flex items-center gap-1 mt-1 ${timeLeft === 'Expired' ? 'text-red-500' : 'text-amber-600'}`}>
+            <Clock size={10} /> {timeLeft === 'Expired' ? 'Session Expired' : `Expires in: ${timeLeft}`}
+        </span>
+    );
+};
+
+const AdminPanel = () => {
+    const { user } = useSelector((state: any) => state?.auth);
+    const isAdmin = user?.role === "admin" || false;
+    const [active, setActive] = useState("AllPackages");
+    const [editPackageId, setEditPackageId] = useState<string | null>(null);
+    const [refreshCount, setRefreshCount] = useState(0);
+    const [showLogoutModal, setShowLogoutModal] = useState(false);
+    
+    const queryClient = useQueryClient();
+    const dispatch = useDispatch();
+    const navigate = useNavigate();
 
     const handleLogout = async () => {
         try {
@@ -89,7 +99,6 @@ const AdminPanel = () => {
             lastId: ''
         }),
     });
-
 
     const renderPage = () => {
         switch (active) {
@@ -141,13 +150,7 @@ const AdminPanel = () => {
                         <div className="flex items-center gap-3 sm:gap-4">
                             <div className="hidden sm:flex flex-col items-end mr-2 text-right">
                                 <span className="text-sm font-bold text-neutral-800 leading-none">{user?.name || "Administrator"}</span>
-                                {timeLeft ? (
-                                    <span className={`text-[10px] font-bold flex items-center gap-1 mt-1 ${timeLeft === 'Expired' ? 'text-red-500' : 'text-amber-600'}`}>
-                                        <Clock size={10} /> {timeLeft === 'Expired' ? 'Session Expired' : `Expires in: ${timeLeft}`}
-                                    </span>
-                                ) : (
-                                    <span className="text-[10px] text-primary font-bold uppercase tracking-widest leading-none mt-1">System Online</span>
-                                )}
+                                <SessionTimer expiry={user?.user?.exp} />
                             </div>
                             <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-full bg-neutral-100 border border-neutral-200 flex items-center justify-center text-neutral-800 font-bold shadow-sm">
                                 {user?.name?.[0]?.toUpperCase() || "A"}

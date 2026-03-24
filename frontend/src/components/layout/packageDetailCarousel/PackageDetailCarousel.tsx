@@ -7,7 +7,7 @@ import { useDeviceSize } from "@/Hook/UseDevice";
 import type { Swiper as SwiperType } from "swiper";
 
 interface PackageData {
-    images?: string[];
+    images?: { url: string; alt: string }[];
 }
 
 interface CurrentPackage {
@@ -21,10 +21,10 @@ interface PackageDetailCarouselProps {
 export default function PackageDetailCarousel({
     currentPackage,
 }: PackageDetailCarouselProps) {
-    const images: string[] = currentPackage?.data?.images || [];
+    const images = currentPackage?.data?.images || [];
 
     const [activeIndex, setActiveIndex] = useState<number>(0);
-    const [renderImages, setRenderImages] = useState<string[]>(images);
+    const [renderImages, setRenderImages] = useState<{ url: string; alt: string }[]>(images);
 
     const mainSwiperRef = useRef<SwiperType | null>(null);
     const device = useDeviceSize();
@@ -52,8 +52,8 @@ export default function PackageDetailCarousel({
                 {renderImages.map((img, index) => (
                     <SwiperSlide key={index}>
                         <img
-                            src={img}
-                            alt=""
+                            src={typeof img === 'string' ? img : img.url}
+                            alt={typeof img === 'string' ? "" : img.alt}
                             className="w-full h-[580px] md:h-[580px] lg:h-[620px] object-cover"
                         />
                     </SwiperSlide>
@@ -75,8 +75,8 @@ export default function PackageDetailCarousel({
                             }`}
                     >
                         <img
-                            src={img}
-                            alt=""
+                            src={typeof img === 'string' ? img : img.url}
+                            alt={typeof img === 'string' ? "" : img.alt}
                             className="w-12 h-12 sm:w-19 sm:h-19 object-cover rounded-full aspect-square"
                         />
                     </div>
@@ -85,3 +85,4 @@ export default function PackageDetailCarousel({
         </div>
     );
 }
+

@@ -18,9 +18,11 @@ export const createPackage = async (req, res) => {
       isActive,
       status,
       activityCategory,
+      seo, // Added SEO
     } = req.body;
 
     const days = JSON.parse(req.body.days);
+    const parsedSeo = seo ? JSON.parse(seo) : {}; // Parse SEO
 
     const uploadFile = (file) => {
       return new Promise((resolve, reject) => {
@@ -40,16 +42,26 @@ export const createPackage = async (req, res) => {
 
     // existing images sent from frontend (EDIT mode)
     if (req.body.existingImages) {
-      mainImages = JSON.parse(req.body.existingImages); // URLs
+      mainImages = JSON.parse(req.body.existingImages); // [{url, alt}]
     }
 
     // new uploaded files
     const newMainFiles = req.files.filter((f) => f.fieldname === "images");
+    const mainImageAlts = req.body.mainImageAlts ? JSON.parse(req.body.mainImageAlts) : [];
 
-    for (const file of newMainFiles) {
-      const url = await uploadFile(file);
-      mainImages.push(url);
+    for (let i = 0; i < newMainFiles.length; i++) {
+        const file = newMainFiles[i];
+        const url = await uploadFile(file);
+        mainImages.push({
+            url: url || "",
+            alt: mainImageAlts[i] || ""
+        });
     }
+
+    // Ensure mainImages is always an array of {url, alt} objects
+    mainImages = mainImages.map(img => 
+        typeof img === 'string' ? { url: img, alt: "" } : (img.url ? img : { url: "", alt: "" })
+    );
 
     // -----------------------------
     // SLOT IMAGES — URL + File Support
@@ -114,8 +126,10 @@ export const createPackage = async (req, res) => {
       isActive: isActive === 'false' ? false : true,
       status: status || 'Active',
       activityCategory: activityCategory || null,
+      seo: parsedSeo,
       createdBy: req.user._id,
     });
+
     res.status(201).json({
       message: "Package created successfully",
       data: pkg,
@@ -144,6 +158,7 @@ export const updatePackage = async (req, res) => {
       isActive,
       status,
       activityCategory,
+      seo, // Added SEO
     } = req.body;
 
     // parse days: accept object or JSON string
@@ -160,6 +175,8 @@ export const updatePackage = async (req, res) => {
       }
     }
 
+    const parsedSeo = seo ? (typeof seo === "string" ? JSON.parse(seo) : seo) : {}; // Parse SEO
+
     // parse existingImages: accept array or JSON string
     let existingImages = [];
     if (req.body.existingImages) {
@@ -168,7 +185,7 @@ export const updatePackage = async (req, res) => {
           existingImages = JSON.parse(req.body.existingImages);
         } catch (e) {
           // If it's a single string (one URL), wrap it
-          existingImages = [req.body.existingImages];
+          existingImages = [{ url: req.body.existingImages, alt: "" }];
         }
       } else if (Array.isArray(req.body.existingImages)) {
         existingImages = req.body.existingImages;
@@ -205,15 +222,27 @@ export const updatePackage = async (req, res) => {
 
     // Upload all incoming files with fieldname 'images' (could be multiple)
     const newMainFiles = fileMap["images"] || [];
-    for (const f of newMainFiles) {
+    const mainImageAlts = req.body.mainImageAlts ? JSON.parse(req.body.mainImageAlts) : [];
+
+    for (let i = 0; i < newMainFiles.length; i++) {
+      const f = newMainFiles[i];
       try {
         const url = await uploadFile(f, "travel_packages/main");
-        if (url) mainImages.push(url);
+        if (url) mainImages.push({
+            url: url,
+            alt: mainImageAlts[i] || ""
+        });
       } catch (err) {
         console.error("Main image upload failed:", err.message || err);
-        // optionally continue or return error. Continue so other images/slots still process.
       }
     }
+
+    // Sanitize any potential corrupted strings or objects
+    const sanitizedMainImages = mainImages.map(img => {
+      if (typeof img === 'string') return { url: img, alt: "" };
+      if (img && typeof img === 'object' && img.url) return img;
+      return null;
+    }).filter(Boolean);
 
     // 4) SLOT IMAGES: iterate days and slots; replace only when new file exists
     const transformedDays = [];
@@ -247,7 +276,6 @@ export const updatePackage = async (req, res) => {
               `Slot upload failed for ${fieldName}:`,
               err.message || err
             );
-            // keep whatever slot.imageUrl was provided (or empty string)
           }
         }
 
@@ -306,15 +334,17 @@ export const updatePackage = async (req, res) => {
         offerPrice,
         isBestPackage,
         bestRank,
-        images: mainImages,
+        images: sanitizedMainImages,
         days: transformedDays,
         country,
         isActive: isActive === 'false' ? false : true,
         status,
         activityCategory: activityCategory || null,
+        seo: parsedSeo,
       },
       { new: true, runValidators: true }
     );
+
 
     if (!updatedPkg) {
       return res.status(404).json({ message: "Package not found" });

@@ -207,7 +207,7 @@ const FilterPackage = ({ likePackageOnly = false, mode = 'all' }: FilterPackageP
     useEffect(() => {
         if (data && data !== dataProcessedRef.current) {
             dataProcessedRef.current = data;
-            
+
             if (data.data?.length) {
                 setPackageList((prev) => {
                     const newPkgs = data.data.filter(
@@ -216,7 +216,7 @@ const FilterPackage = ({ likePackageOnly = false, mode = 'all' }: FilterPackageP
                     return [...prev, ...newPkgs];
                 });
             }
-            
+
             if (data.nextCursor) {
                 setCursor(data.nextCursor);
             }
@@ -361,7 +361,7 @@ const FilterPackage = ({ likePackageOnly = false, mode = 'all' }: FilterPackageP
                         <section key={cityName} className="animate-in fade-in slide-in-from-bottom-4 duration-500">
                             <div className="flex items-center gap-3 mb-6">
                                 <div className="h-8 w-1.5 bg-primary rounded-full shadow-sm"></div>
-                                <h2 className="text-2xl font-black text-gray-900 tracking-tight uppercase">
+                                <h2 className="text-2xl text-gray-900  uppercase">
                                     {cityName} <span className="text-primary font-medium ml-2">({packages.length})</span>
                                 </h2>
                             </div>
@@ -386,7 +386,7 @@ const FilterPackage = ({ likePackageOnly = false, mode = 'all' }: FilterPackageP
                 {/* Handle packages that don't match known cities */}
                 {groupedPackages["Other"]?.length > 0 && (
                     <section key="Other" className="animate-in fade-in slide-in-from-bottom-4 duration-500">
-                         <div className="flex items-center gap-3 mb-6">
+                        <div className="flex items-center gap-3 mb-6">
                             <div className="h-8 w-1.5 bg-gray-400 rounded-full shadow-sm"></div>
                             <h2 className="text-2xl font-black text-gray-900 tracking-tight uppercase">
                                 Other Locations <span className="text-gray-400 font-medium ml-2">({groupedPackages["Other"].length})</span>
@@ -517,7 +517,7 @@ const FilterPackage = ({ likePackageOnly = false, mode = 'all' }: FilterPackageP
                                     <span className="text-[10px] font-black text-primary uppercase tracking-[0.25em] mb-1">
                                         Search Results
                                     </span>
-                                    <h3 className="text-2xl font-black text-gray-900 tracking-tight leading-none">
+                                    <h3 className="text-2xl">
                                         Showing {filteredPackages.length}{" "}
                                         <span className="text-gray-400 font-medium tracking-tighter text-xl">
                                             / {totalCount} Packages Found

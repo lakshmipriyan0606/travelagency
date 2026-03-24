@@ -8,6 +8,7 @@ import { formatItineraryExpandData } from "./constant";
 interface ScheduleSlot {
   time: string;
   image: string;
+  imageAlt?: string; // Added imageAlt
   detail?: string;
 }
 
@@ -17,6 +18,7 @@ interface DayData {
   description: string;
   schedule: ScheduleSlot[];
 }
+
 
 interface ItineraryDayProps {
   currentPackage?: {
@@ -205,8 +207,9 @@ export default function ItineraryDay({ currentPackage }: ItineraryDayProps) {
                                   <img
                                     src={slot.image}
                                     className="h-[180px] sm:h-[350px] w-full rounded-lg object-cover"
-                                    alt="schedule"
+                                    alt={slot.imageAlt || slot.detail || "schedule"}
                                   />
+
 
                                   <p className="text-sm text-gray-600 leading-relaxed">
                                     {slot.detail ||

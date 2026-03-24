@@ -9,6 +9,8 @@ import TravelExperiences from "@/components/layout/travelExperiences/TravelExper
 import HappyStories from "@/components/layout/happyStories/HappyStories";
 import ActivitySection from "@/components/layout/Activities/ActivitySection";
 import { createContext, useMemo } from "react"
+import { Helmet } from "react-helmet-async";
+
 
 export interface HomeContextType {
 }
@@ -24,7 +26,13 @@ const Home = () => {
 
   return (
     <HomeContext.Provider value={contextValue}>
+      <Helmet>
+        <title>Travel Agency | Best Tour Packages & Adventure Activities</title>
+        <meta name="description" content="Book your dream vacation with our premium travel agency. Explore exclusive tour packages, adventure activities, and unforgettable experiences across Malaysia and beyond." />
+        <meta name="keywords" content="travel agency, tour packages, adventure, vacation, tourism" />
+      </Helmet>
       <div className="min-h-screen bg-background-black">
+
         <div className="pt-16 sm:pt-20 md:pt-17 lg:pt-22 px-4">
           <HeroSection />
         </div>

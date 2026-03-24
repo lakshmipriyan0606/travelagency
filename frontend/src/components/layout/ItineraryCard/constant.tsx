@@ -116,6 +116,7 @@ export interface Slot {
   title?: string;        // <- backend has title, so make it optional here
   description: string;
   imageUrl?: string;
+  imageAlt?: string;     // Added imageAlt
 }
 
 export interface DayData {
@@ -128,6 +129,7 @@ export interface TimeSlot {
   time: string;
   description?: string;
   icon?: string;
+  iconAlt?: string;      // Added iconAlt
   onlyDuration?: boolean;
 }
 
@@ -152,6 +154,7 @@ export interface ScheduleItem {
   time: string;
   detail: string;
   image: string;
+  imageAlt?: string;     // Added imageAlt
 }
 
 export interface ItineraryDay {
@@ -172,6 +175,7 @@ export const handleSlotFormat = (
     time: item.slotType,
     description: item.description,
     icon: item.imageUrl || "",
+    iconAlt: item.imageAlt || "", // Added iconAlt
   }));
 
   // Add onlyDuration object ONLY ONCE at top
@@ -221,6 +225,7 @@ export const formatItineraryExpandData = (daysList: DayData[] = []): ItineraryDa
         : "N/A",
       detail: slot.title || slot.description || "No details available.",
       image: slot.imageUrl || "",
+      imageAlt: slot.imageAlt || "", // Added imageAlt
     }));
 
     return {
@@ -231,3 +236,4 @@ export const formatItineraryExpandData = (daysList: DayData[] = []): ItineraryDa
     };
   });
 };
+

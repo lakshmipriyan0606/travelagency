@@ -69,7 +69,7 @@ export const ItineraryDaySection = ({
           <button
             type="button"
             onClick={() =>
-              addSlot({ slotType: "", title: "", description: "", imageUrl: "" })
+              addSlot({ slotType: "", title: "", description: "", imageUrl: "", imageAlt: "" })
             }
             className="group/btn flex items-center gap-2 py-2.5 px-5 rounded-xl bg-neutral-50 text-neutral-500 hover:bg-primary/10 hover:text-primary border border-neutral-100 transition-all font-bold text-[9px] uppercase tracking-widest shadow-sm"
           >
