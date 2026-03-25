@@ -1,6 +1,6 @@
 import { motion, AnimatePresence } from "framer-motion";
 import { adminMenu } from "../constant";
-import { LogOut, Package, ClipboardList, Image as ImageIcon, ChevronDown, Sparkles, Activity, PlusCircle } from "lucide-react";
+import { LogOut, Package, ClipboardList, Image as ImageIcon, ChevronDown, Sparkles, Activity, PlusCircle, FileText, PenTool } from "lucide-react";
 import { useDispatch } from "react-redux";
 import { logout } from "@/store/authSlice";
 import { logoutAPI } from "@/api/admin/auth.api";
@@ -20,7 +20,9 @@ const iconMap: Record<string, any> = {
     "UploadImage": <ImageIcon size={20} />,
     "MediaGallery": <ImageIcon size={20} />,
     "AllActivities": <Activity size={20} />,
+    "AllBlogs": <FileText size={20} />,
     "CreateNew": <PlusCircle size={20} />,
+    "CreateBlog": <PenTool size={18} />,
 };
 
 export default function Sidebar({ active, onChange }: SidebarProps) {

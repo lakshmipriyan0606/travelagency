@@ -12,6 +12,12 @@ export const adminMenu = [
         component: "AllActivities",
     },
     {
+        id: 7,
+        label: "All Blogs",
+        icon: "📝",
+        component: "AllBlogs",
+    },
+    {
         id: 2,
         label: "Create New",
         icon: "➕",
@@ -28,6 +34,12 @@ export const adminMenu = [
                 label: "Create Activity",
                 icon: "✨",
                 component: "CreateActivity",
+            },
+            {
+                id: 23,
+                label: "Create Blog",
+                icon: "✍️",
+                component: "CreateBlog",
             }
         ]
     },

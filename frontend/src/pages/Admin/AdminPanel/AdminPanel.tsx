@@ -13,6 +13,8 @@ import { GetAllPackageList } from "@/api/user/api";
 import UploadImagePage from "./UploadImage/UploadImage";
 import MediaGallery from "./MediaGallery/MediaGallery";
 import { useQueryClient } from '@tanstack/react-query'
+import BlogAdminList from '@/components/layout/Admin/Blog/BlogAdminList'
+import BlogForm from '@/components/layout/Admin/Blog/BlogForm'
 
 interface FilterPackageProps {
     isAdmin: boolean;
@@ -106,6 +108,8 @@ const AdminPanel = () => {
             case "CreateActivity": return <AdminUploadPackageForm isActivity={active === "CreateActivity"} />;
             case "AllPackages": return <FilterPackage mode="packages" />;
             case "AllActivities": return <FilterPackage mode="activities" />;
+            case "AllBlogs": return <BlogAdminList />;
+            case "CreateBlog": return <BlogForm />;
             case "FormList": return <BookingAdminPage />;
             case "UploadImage": return <UploadImagePage />;
             case "MediaGallery": return <MediaGallery />;
@@ -137,7 +141,9 @@ const AdminPanel = () => {
                             <h1 className="text-lg sm:text-xl font-bold text-neutral-800 tracking-tight">
                                 {active === "AllPackages" && "Package Inventory"}
                                 {active === "AllActivities" && "Activity Inventory"}
+                                {active === "AllBlogs" && "Blog Manager"}
                                 {(active === "CreatePackage" || active === "CreateActivity") && (editPackageId ? "Edit Package" : (active === "CreateActivity" ? "Create New Activity" : "Create New Package"))}
+                                {active === "CreateBlog" && (editPackageId ? "Edit Blog" : "Create New Blog")}
                                 {active === "FormList" && "Booking Requests"}
                                 {active === "UploadImage" && "Media Manager"}
                                 {active === "MediaGallery" && "Media Gallery"}

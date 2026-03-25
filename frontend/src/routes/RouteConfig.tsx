@@ -12,6 +12,8 @@ const PackageDetail = lazy(() => import('@/pages/PackageDetail/PackageDetail'));
 const LoginForm = lazy(() => import('@/pages/Admin/login/Login'));
 const NotFound = lazy(() => import('@/pages/NotFound/NotFound'));
 const ActivityPackageList = lazy(() => import('@/pages/Activities/ActivityPackageList'));
+const BlogListPage = lazy(() => import('@/pages/Blog/BlogListPage'));
+const BlogDetailPage = lazy(() => import('@/pages/Blog/BlogDetailPage'));
 
 const routes: AppRoute[] = [
     {
@@ -42,6 +44,16 @@ const routes: AppRoute[] = [
     {
         path: '/admin/register',
         element: <RegisterForm />,
+        isProtectRoute: false,
+    },
+    {
+        path: '/blogs',
+        element: <BlogListPage />,
+        isProtectRoute: false,
+    },
+    {
+        path: '/blogs/:slug',
+        element: <BlogDetailPage />,
         isProtectRoute: false,
     },
     {

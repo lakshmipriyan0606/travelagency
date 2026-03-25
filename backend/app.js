@@ -7,6 +7,7 @@ import packageRoute from "./routes/package.routes.js";
 import bookingRoute from "./routes/bookingForm.route.js";
 import newsletterRoute from "./routes/newsletter.routes.js";
 import uploadRoutes from "./routes/upload.routes.js";
+import blogRoutes from "./routes/blog.routes.js";
 
 const app = express();
 
@@ -45,5 +46,6 @@ app.use("/api/packages", packageRoute);
 app.use("/api", bookingRoute);
 app.use("/api/newsletter", newsletterRoute);
 app.use("/api/upload", uploadRoutes);
+app.use("/api/blogs", blogRoutes);
 
 export default app;
