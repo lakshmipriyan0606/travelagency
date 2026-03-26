@@ -14,6 +14,7 @@ const NotFound = lazy(() => import('@/pages/NotFound/NotFound'));
 const ActivityPackageList = lazy(() => import('@/pages/Activities/ActivityPackageList'));
 const BlogListPage = lazy(() => import('@/pages/Blog/BlogListPage'));
 const BlogDetailPage = lazy(() => import('@/pages/Blog/BlogDetailPage'));
+const Contact = lazy(() => import('@/pages/Contact/Contact'));
 
 const routes: AppRoute[] = [
     {
@@ -57,6 +58,11 @@ const routes: AppRoute[] = [
         isProtectRoute: false,
     },
     {
+        path: '/contact',
+        element: <Contact />,
+        isProtectRoute: false,
+    },
+    {
         path: '/admin/login',
         element: <NonProtectedRoute />,
         children: [{ path: '', element: <LoginForm /> }],
@@ -64,7 +70,7 @@ const routes: AppRoute[] = [
     },
     {
         path: '/admin/adminpanel',
-        element: <ProtectedRoute allowedRoles={["admin"]} />,
+        element: <ProtectedRoute allowedRoles={["admin", "superadmin"]} />,
         isProtectRoute: false,
         children: [
             { path: "", element: <AdminPanel /> },

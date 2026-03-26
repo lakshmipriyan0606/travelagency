@@ -21,4 +21,9 @@ export const navbarList: NavbarConfigList[] = [
         path: '/blogs',
         key: 'blog',
     },
+    {
+        name: 'Contact',
+        path: '/contact',
+        key: 'contact',
+    },
 ]

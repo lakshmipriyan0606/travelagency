@@ -8,6 +8,7 @@ import {
 } from "../controllers/createPackage.controller.js";
 import PackageModel from "../models/Package.model.js";
 import { fetchPackagesFromSheet } from "../services/googleSheets.service.js";
+import { cacheResponse, bustCacheByPrefix } from "../middlewares/cache.middleware.js";
 const router = express.Router();
 
 // Helper to recover images from corrupted object format {0:'h', 1: 't', ...} or legacy strings
@@ -31,10 +32,11 @@ router.post(
   "/create",
   protectRoute,
   adminOnly,
-  upload.any(), // receive all files
+  upload.any(),
+  (req, res, next) => { bustCacheByPrefix("packages:"); next(); },
   createPackage
 );
-router.get("/bestpackages", async (req, res) => {
+router.get("/bestpackages", cacheResponse("packages:best", 300), async (req, res) => {
   try {
     const userId = req?.headers?.userid;
     console.log('userId: ', userId);
@@ -71,7 +73,7 @@ router.get("/bestpackages", async (req, res) => {
   }
 });
 
-router.get("/", async (req, res) => {
+router.get("/", cacheResponse((req) => `packages:list:${JSON.stringify(req.query)}`, 120), async (req, res) => {
   try {
     const userId = req?.headers?.userid;
     const limit = parseInt(req.query.limit) || 10;
@@ -180,7 +182,7 @@ router.get("/", async (req, res) => {
 
 // Get all distinct activity categories that have at least one active package
 // We merge with a predefined list to ensure the Home page always looks rich
-router.get("/activitycategories", async (req, res) => {
+router.get("/activitycategories", cacheResponse("packages:activitycategories", 600), async (req, res) => {
   try {
     const predefinedCategories = [
       "Sightseeing", "Water Sports", "Hiking", "Shopping", 
@@ -232,7 +234,7 @@ router.get("/likeCount", async (req, res) => {
   }
 });
 
-router.get("/suggestions", async (req, res) => {
+router.get("/suggestions", cacheResponse((req) => `packages:suggestions:${req.query.q || ""}`, 60), async (req, res) => {
   try {
     const q = (req.query.q || "").trim();
     if (!q) {
@@ -361,12 +363,13 @@ router.post(
   protectRoute,
   adminOnly,
   upload.any(),
+  (req, res, next) => { bustCacheByPrefix("packages:"); next(); },
   updatePackage
 );
 
 
 // Quick Rank Update (Admin only)
-router.patch("/updateRank/:id", protectRoute, adminOnly, async (req, res) => {
+router.patch("/updateRank/:id", protectRoute, adminOnly, (req, res, next) => { bustCacheByPrefix("packages:"); next(); }, async (req, res) => {
   try {
     const { bestRank } = req.body;
     const packageId = req.params.id;
@@ -414,7 +417,7 @@ router.patch("/updateRank/:id", protectRoute, adminOnly, async (req, res) => {
 });
 
 // Quick Status Toggle (Admin only)
-router.patch("/toggleStatus/:id", protectRoute, adminOnly, async (req, res) => {
+router.patch("/toggleStatus/:id", protectRoute, adminOnly, (req, res, next) => { bustCacheByPrefix("packages:"); next(); }, async (req, res) => {
   try {
     const pkg = await PackageModel.findById(req.params.id);
     if (!pkg) return res.status(404).json({ message: "Package not found" });
@@ -431,7 +434,7 @@ router.patch("/toggleStatus/:id", protectRoute, adminOnly, async (req, res) => {
   }
 });
 
-router.delete("/deletePackage/:id", async (req, res) => {
+router.delete("/deletePackage/:id", protectRoute, adminOnly, (req, res, next) => { bustCacheByPrefix("packages:"); next(); }, async (req, res) => {
   try {
     const deletedPackage = await PackageModel.findByIdAndUpdate(
       req.params.id,

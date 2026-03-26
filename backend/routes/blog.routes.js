@@ -10,28 +10,31 @@ import {
 } from "../controllers/blog.controller.js";
 import { protectRoute } from "../middlewares/auth.middleware.js";
 import { upload } from "../config/multer.js";
+import { cacheResponse, bustCacheByPrefix } from "../middlewares/cache.middleware.js";
 
 const router = express.Router();
 
 // Public routes
-router.get("/", getAllBlogs);
-router.get("/:slug", getBlogBySlug);
-router.post("/:id/like", toggleLike);
+router.get("/", cacheResponse("blogs:list", 300), getAllBlogs);
+router.get("/:slug", cacheResponse((req) => `blogs:slug:${req.params.slug}`, 300), getBlogBySlug);
+router.post("/:id/like", (req, res, next) => { bustCacheByPrefix("blogs:"); next(); }, toggleLike);
 
 // Admin routes (Protected)
 router.get("/admin/:id", protectRoute, getBlogById);
 router.post(
   "/",
   protectRoute,
-  upload.any(), // Accept fields & multiple optional files like thumbnailImage and bannerImage
+  upload.any(),
+  (req, res, next) => { bustCacheByPrefix("blogs:"); next(); },
   createBlog
 );
 router.put(
   "/:id",
   protectRoute,
   upload.any(),
+  (req, res, next) => { bustCacheByPrefix("blogs:"); next(); },
   updateBlog
 );
-router.delete("/:id", protectRoute, deleteBlog);
+router.delete("/:id", protectRoute, (req, res, next) => { bustCacheByPrefix("blogs:"); next(); }, deleteBlog);
 
 export default router;

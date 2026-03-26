@@ -1,7 +1,7 @@
 import { motion, AnimatePresence } from "framer-motion";
 import { adminMenu } from "../constant";
 import { LogOut, Package, ClipboardList, Image as ImageIcon, ChevronDown, Sparkles, Activity, PlusCircle, FileText, PenTool } from "lucide-react";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { logout } from "@/store/authSlice";
 import { logoutAPI } from "@/api/admin/auth.api";
 import { useNavigate } from "react-router-dom";
@@ -28,6 +28,9 @@ const iconMap: Record<string, any> = {
 export default function Sidebar({ active, onChange }: SidebarProps) {
     const dispatch = useDispatch();
     const navigate = useNavigate();
+    const { user } = useSelector((state: any) => state?.auth);
+    const role = user?.role;
+    const isSuperAdmin = role === "superadmin";
 
     // Track which parent menus are expanded
     const [expandedMenus, setExpandedMenus] = useState<Record<number, boolean>>(() => {
@@ -69,7 +72,9 @@ export default function Sidebar({ active, onChange }: SidebarProps) {
                 </div>
 
                 <nav className="flex flex-row lg:flex-col items-center lg:items-stretch gap-1.5 overflow-x-auto no-scrollbar pb-1 lg:pb-0 w-full">
-                    {adminMenu.map((item) => {
+                    {adminMenu
+                        .filter((item) => (item.component === "MetricsDashboard" ? isSuperAdmin : true))
+                        .map((item) => {
                         const hasChildren = item.children && item.children.length > 0;
                         const isExpanded = expandedMenus[item.id];
                         const isAnyChildActive = item.children?.some(child => child.component === active);

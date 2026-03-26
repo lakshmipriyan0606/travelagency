@@ -1,5 +1,11 @@
 export const adminMenu = [
     {
+        id: 100,
+        label: "System Dashboard",
+        icon: "📊",
+        component: "MetricsDashboard",
+    },
+    {
         id: 1,
         label: "All Packages",
         icon: "📦",

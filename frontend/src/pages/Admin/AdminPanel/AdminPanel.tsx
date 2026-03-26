@@ -15,6 +15,7 @@ import MediaGallery from "./MediaGallery/MediaGallery";
 import { useQueryClient } from '@tanstack/react-query'
 import BlogAdminList from '@/components/layout/Admin/Blog/BlogAdminList'
 import BlogForm from '@/components/layout/Admin/Blog/BlogForm'
+import MetricsDashboard from './Dashboard/MetricsDashboard'
 
 interface FilterPackageProps {
     isAdmin: boolean;
@@ -69,7 +70,8 @@ const SessionTimer = ({ expiry }: { expiry: number }) => {
 
 const AdminPanel = () => {
     const { user } = useSelector((state: any) => state?.auth);
-    const isAdmin = user?.role === "admin" || false;
+    const isAdmin = user?.role === "admin" || user?.role === "superadmin" || false;
+    const isSuperAdmin = user?.role === "superadmin";
     const [active, setActive] = useState("AllPackages");
     const [editPackageId, setEditPackageId] = useState<string | null>(null);
     const [refreshCount, setRefreshCount] = useState(0);
@@ -104,6 +106,19 @@ const AdminPanel = () => {
 
     const renderPage = () => {
         switch (active) {
+            case "MetricsDashboard":
+                return isSuperAdmin ? (
+                    <MetricsDashboard />
+                ) : (
+                    <div className="p-10">
+                        <div className="bg-white border border-neutral-200 rounded-2xl p-6 shadow-sm">
+                            <h2 className="text-xl font-black text-neutral-800">Access denied</h2>
+                            <p className="text-neutral-500 font-medium mt-1">
+                                System Dashboard is available for Super Admin only.
+                            </p>
+                        </div>
+                    </div>
+                );
             case "CreatePackage":
             case "CreateActivity": return <AdminUploadPackageForm isActivity={active === "CreateActivity"} />;
             case "AllPackages": return <FilterPackage mode="packages" />;
