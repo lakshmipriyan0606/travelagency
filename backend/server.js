@@ -7,6 +7,7 @@ import app from "./app.js";
 // ── Start Email Worker (Agenda / MongoDB Job Queue) ───────────────────
 import { workerReady } from "./workers/email.worker.js";
 import { agendaReady } from "./config/agenda.js";
+import { markAgendaWorkerStarted } from "./config/queueRuntime.js";
 
 connectDB();
 
@@ -21,6 +22,7 @@ const server = app.listen(PORT, async () => {
   agenda = await agendaReady;
   await workerReady;
   await agenda.start();
+  markAgendaWorkerStarted(agenda);
   console.log("📬 Email job queue (Agenda) started");
 });
 

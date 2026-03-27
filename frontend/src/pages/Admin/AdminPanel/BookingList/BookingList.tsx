@@ -45,6 +45,23 @@ interface BookingResponse {
     bookings: Booking[];
 }
 
+const SHOW_WHATSAPP_ERRORS =
+    String(import.meta.env.VITE_SHOW_WHATSAPP_ERRORS || "false").toLowerCase() === "true";
+
+const normalizeErrorMessage = (raw: string): string => {
+    const trimmed = String(raw || "").trim();
+    if (!trimmed) return "Unknown error";
+    try {
+        const parsed = JSON.parse(trimmed);
+        if (parsed?.error?.message) return String(parsed.error.message);
+        return JSON.stringify(parsed);
+    } catch {
+        return trimmed;
+    }
+};
+
+const isWhatsAppTask = (task?: string) => String(task || "").toLowerCase().includes("whatsapp");
+
 function bookingHasIntegrationFailures(b: Booking): boolean {
     const statuses = [b.sheetSyncStatus, b.userEmailStatus, b.adminEmailStatus];
     return statuses.some(
@@ -60,6 +77,13 @@ export default function BookingAdminPage() {
         key: ["allBookings"],
         queryFn: GetAllBookings,
     });
+
+    const visibleErrorLogs = (selected?.errorLogs || []).filter(
+        (log) => SHOW_WHATSAPP_ERRORS || !isWhatsAppTask(log.task)
+    );
+    const hiddenWhatsAppErrorCount = (selected?.errorLogs || []).filter(
+        (log) => !SHOW_WHATSAPP_ERRORS && isWhatsAppTask(log.task)
+    ).length;
 
     const filteredBookings = data?.bookings?.filter(b =>
         (b.name?.toLowerCase() || "").includes(searchQuery.toLowerCase()) ||
@@ -357,18 +381,25 @@ export default function BookingAdminPage() {
                                             </div>
 
                                             {/* Error Logs */}
-                                            {selected.errorLogs && selected.errorLogs.length > 0 && (
+                                            {visibleErrorLogs.length > 0 && (
                                                 <div className="mt-4 p-4 bg-red-50/50 border border-red-100 rounded-xl space-y-3">
                                                     <h5 className="text-[10px] font-bold text-red-500 uppercase tracking-widest mb-2 flex items-center gap-1">
                                                         <Info size={12} /> Error Logs
                                                     </h5>
                                                     <div className="space-y-2">
-                                                        {selected.errorLogs.map((log, idx) => (
-                                                            <div key={idx} className="bg-white/80 p-2.5 rounded-lg border border-red-100/50 text-xs text-red-800">
-                                                                <span className="font-bold">{log.task}:</span> {log.message}
+                                                        {visibleErrorLogs.map((log, idx) => (
+                                                            <div key={idx} className="bg-white/80 p-2.5 rounded-lg border border-red-100/50 text-xs text-red-800 break-words">
+                                                                <span className="font-bold">{log.task}:</span> {normalizeErrorMessage(log.message)}
                                                             </div>
                                                         ))}
                                                     </div>
+                                                    {hiddenWhatsAppErrorCount > 0 && (
+                                                        <p className="text-[11px] text-red-500 font-medium">
+                                                            {hiddenWhatsAppErrorCount} WhatsApp error
+                                                            {hiddenWhatsAppErrorCount > 1 ? "s" : ""} hidden by default.
+                                                            Set <code className="mx-1">VITE_SHOW_WHATSAPP_ERRORS=true</code> to display.
+                                                        </p>
+                                                    )}
                                                 </div>
                                             )}
 

@@ -29,3 +29,24 @@ export const fetchMetrics = async () => {
   });
   return response.data;
 };
+
+export const fetchQueueHealth = async () => {
+  const remoteBase = normalizeBase(import.meta.env.VITE_METRICS_API_BASE_URL);
+  const token = import.meta.env.VITE_METRICS_TOKEN;
+
+  if (remoteBase && token) {
+    const client = axios.create({
+      baseURL: remoteBase,
+      withCredentials: false,
+    });
+    const response = await client.get("admin/queue/health", {
+      headers: { "x-metrics-token": token },
+    });
+    return response.data;
+  }
+
+  const response = await axiosClient.get("admin/queue/health", {
+    headers: token ? { "x-metrics-token": token } : undefined,
+  });
+  return response.data;
+};

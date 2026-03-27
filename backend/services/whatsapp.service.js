@@ -6,6 +6,7 @@ import https from "https";
  */
 export const sendWhatsAppMessage = async (to, message, type = "text", templateOptions = {}) => {
   return new Promise((resolve, reject) => {
+    const timeoutMs = 15000;
     // If credentials are not provided, we just log the message for development
     if (!process.env.WHATSAPP_TOKEN || !process.env.WHATSAPP_PHONE_NUMBER_ID) {
       console.log(`\n--- 📱 WHATSAPP MESSAGE (DEVELOPMENT MODE) ---`);
@@ -81,6 +82,10 @@ export const sendWhatsAppMessage = async (to, message, type = "text", templateOp
     req.on("error", (error) => {
       console.error("❌ WhatsApp Service Error:", error.message);
       reject(error);
+    });
+
+    req.setTimeout(timeoutMs, () => {
+      req.destroy(new Error(`WhatsApp request timeout after ${timeoutMs / 1000}s`));
     });
 
     req.write(data);

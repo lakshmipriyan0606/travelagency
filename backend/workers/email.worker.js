@@ -1,46 +1,70 @@
 import { agendaReady } from "../config/agenda.js";
 import dotenv from "dotenv";
 import { getMailTransporter } from "../services/mailerTransport.js";
+import { processBookingIntegrations } from "../services/bookingIntegration.service.js";
 
 dotenv.config();
 
 // Wait for Agenda to be ready, then define all jobs
 export const workerReady = agendaReady.then((agenda) => {
   // ── Job: Send Booking Notification Email ─────────────────────────────
-  agenda.define("send booking email", { priority: "high", concurrency: 2 }, async (job) => {
-    const { to, subject, html } = job.attrs.data;
-    await getMailTransporter().sendMail({
-      from: `"Sastikaa Travels" <${process.env.GMAIL_USER}>`,
-      to,
-      subject,
-      html,
-    });
-    console.log(`[EmailWorker] ✅ Booking email sent to: ${to}`);
-  });
+  agenda.define(
+    "send booking email",
+    async (job) => {
+      const { to, subject, html } = job.attrs.data;
+      await getMailTransporter().sendMail({
+        from: `"Sastikaa Travels" <${process.env.GMAIL_USER}>`,
+        to,
+        subject,
+        html,
+      });
+      console.log(`[EmailWorker] ✅ Booking email sent to: ${to}`);
+    },
+    { priority: "high", concurrency: 2 }
+  );
 
   // ── Job: Send Newsletter Welcome Email ───────────────────────────────
-  agenda.define("send welcome email", { priority: "normal", concurrency: 5 }, async (job) => {
-    const { to, subject, html } = job.attrs.data;
-    await getMailTransporter().sendMail({
-      from: `"Sastikaa Travels" <${process.env.GMAIL_USER}>`,
-      to,
-      subject,
-      html,
-    });
-    console.log(`[EmailWorker] ✅ Welcome email sent to: ${to}`);
-  });
+  agenda.define(
+    "send welcome email",
+    async (job) => {
+      const { to, subject, html } = job.attrs.data;
+      await getMailTransporter().sendMail({
+        from: `"Sastikaa Travels" <${process.env.GMAIL_USER}>`,
+        to,
+        subject,
+        html,
+      });
+      console.log(`[EmailWorker] ✅ Welcome email sent to: ${to}`);
+    },
+    { priority: "normal", concurrency: 5 }
+  );
 
   // ── Job: Send Contact / Enquiry Email ────────────────────────────────
-  agenda.define("send enquiry email", { priority: "normal", concurrency: 3 }, async (job) => {
-    const { to, subject, html } = job.attrs.data;
-    await getMailTransporter().sendMail({
-      from: `"Sastikaa Travels" <${process.env.GMAIL_USER}>`,
-      to,
-      subject,
-      html,
-    });
-    console.log(`[EmailWorker] ✅ Enquiry email sent to: ${to}`);
-  });
+  agenda.define(
+    "send enquiry email",
+    async (job) => {
+      const { to, subject, html } = job.attrs.data;
+      await getMailTransporter().sendMail({
+        from: `"Sastikaa Travels" <${process.env.GMAIL_USER}>`,
+        to,
+        subject,
+        html,
+      });
+      console.log(`[EmailWorker] ✅ Enquiry email sent to: ${to}`);
+    },
+    { priority: "normal", concurrency: 3 }
+  );
+
+  // ── Job: Process Booking Integrations (sheet + mails + whatsapp) ─────
+  agenda.define(
+    "process booking integrations",
+    async (job) => {
+      const payload = job.attrs.data;
+      await processBookingIntegrations(payload);
+      console.log(`[EmailWorker] ✅ Booking integrations processed: ${payload.bookingId}`);
+    },
+    { priority: "high", concurrency: 3 }
+  );
 
   // ── Global error handler for all jobs ────────────────────────────────
   agenda.on("fail", (err, job) => {

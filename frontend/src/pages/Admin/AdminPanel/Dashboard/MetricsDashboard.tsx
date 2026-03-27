@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState, type ReactNode } from 'react';
-import { fetchMetrics } from '@/api/admin/metrics.api';
+import { fetchMetrics, fetchQueueHealth } from '@/api/admin/metrics.api';
 import {
     LineChart,
     Line,
@@ -13,7 +13,7 @@ import {
     AreaChart,
     Area
 } from 'recharts';
-import { Activity, Cpu, Database, Globe } from 'lucide-react';
+import { Activity, Cpu, Database, Globe, ShieldCheck, ShieldX, Clock3 } from 'lucide-react';
 import {
     type MetricsRange,
     type MetricsSample,
@@ -34,6 +34,21 @@ interface MetricItem {
     help: string;
     type: string;
     values: MetricValue[];
+}
+
+interface QueueFailure {
+    name: string;
+    failCount: number;
+    lastFinishedAt: string | null;
+    reason: string | null;
+}
+
+interface QueueHealth {
+    healthy: boolean;
+    mongoConnected: boolean;
+    agendaWorkerStarted: boolean;
+    agendaMarkedStartedAt: string | null;
+    recentFailures: QueueFailure[];
 }
 
 const normalizeMetricsArray = (data: unknown): MetricItem[] => {
@@ -57,6 +72,7 @@ const MetricsDashboard = () => {
     const [samples, setSamples] = useState<MetricsSample[]>(() => getInitialHistory());
     const [range, setRange] = useState<MetricsRange>('day');
     const [isLoading, setIsLoading] = useState(true);
+    const [queueHealth, setQueueHealth] = useState<QueueHealth | null>(null);
 
     const chartData = useMemo(() => buildChartData(samples, range), [samples, range]);
 
@@ -90,6 +106,15 @@ const MetricsDashboard = () => {
                     const merged = mergeSample(prev, sample);
                     persistSamples(merged);
                     return merged;
+                });
+
+                const queueRaw = await fetchQueueHealth();
+                setQueueHealth({
+                    healthy: Boolean(queueRaw?.healthy),
+                    mongoConnected: Boolean(queueRaw?.mongoConnected),
+                    agendaWorkerStarted: Boolean(queueRaw?.agendaWorkerStarted),
+                    agendaMarkedStartedAt: queueRaw?.agendaMarkedStartedAt || null,
+                    recentFailures: Array.isArray(queueRaw?.recentFailures) ? queueRaw.recentFailures : [],
                 });
             } catch (error) {
                 console.error("Failed to load metrics", error);
@@ -223,6 +248,69 @@ const MetricsDashboard = () => {
                         <h3 className="text-xl font-black text-neutral-800">{formatUptime(uptime)}</h3>
                     </div>
                 </div>
+            </div>
+
+            <div className="bg-white p-6 rounded-2xl shadow-sm border border-neutral-100">
+                <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+                    <div>
+                        <h3 className="text-lg font-bold text-neutral-800">Booking Queue Health</h3>
+                        <p className="text-xs text-neutral-500 mt-1">
+                            Tracks worker processing for booking mail and Google Sheet sync.
+                        </p>
+                    </div>
+                    <span
+                        className={`inline-flex items-center gap-2 px-3 py-1.5 rounded-full text-xs font-bold uppercase tracking-wider ${
+                            queueHealth?.healthy
+                                ? 'bg-green-100 text-green-700'
+                                : 'bg-red-100 text-red-700'
+                        }`}
+                    >
+                        {queueHealth?.healthy ? <ShieldCheck size={14} /> : <ShieldX size={14} />}
+                        {queueHealth?.healthy ? 'Healthy' : 'Needs Attention'}
+                    </span>
+                </div>
+
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-3 mt-4">
+                    <div className="rounded-xl border border-neutral-100 bg-neutral-50 p-3">
+                        <p className="text-[10px] font-bold uppercase tracking-widest text-neutral-500">Mongo Connection</p>
+                        <p className={`mt-1 text-sm font-bold ${queueHealth?.mongoConnected ? 'text-green-700' : 'text-red-700'}`}>
+                            {queueHealth?.mongoConnected ? 'Connected' : 'Disconnected'}
+                        </p>
+                    </div>
+                    <div className="rounded-xl border border-neutral-100 bg-neutral-50 p-3">
+                        <p className="text-[10px] font-bold uppercase tracking-widest text-neutral-500">Agenda Worker</p>
+                        <p className={`mt-1 text-sm font-bold ${queueHealth?.agendaWorkerStarted ? 'text-green-700' : 'text-red-700'}`}>
+                            {queueHealth?.agendaWorkerStarted ? 'Started' : 'Not Started'}
+                        </p>
+                    </div>
+                    <div className="rounded-xl border border-neutral-100 bg-neutral-50 p-3">
+                        <p className="text-[10px] font-bold uppercase tracking-widest text-neutral-500">Worker Started At</p>
+                        <p className="mt-1 text-sm font-bold text-neutral-700 inline-flex items-center gap-1">
+                            <Clock3 size={13} className="text-neutral-500" />
+                            {queueHealth?.agendaMarkedStartedAt
+                                ? new Date(queueHealth.agendaMarkedStartedAt).toLocaleString()
+                                : 'N/A'}
+                        </p>
+                    </div>
+                </div>
+
+                {queueHealth?.recentFailures?.length ? (
+                    <div className="mt-4 rounded-xl border border-red-100 bg-red-50/50 p-3">
+                        <p className="text-[10px] font-bold uppercase tracking-widest text-red-600 mb-2">Recent Queue Failures</p>
+                        <div className="space-y-2">
+                            {queueHealth.recentFailures.slice(0, 5).map((f, idx) => (
+                                <div key={`${f.name}-${idx}`} className="rounded-lg border border-red-100 bg-white p-2.5">
+                                    <p className="text-xs font-bold text-red-700">{f.name} (fails: {f.failCount})</p>
+                                    <p className="text-[11px] text-red-800 mt-0.5">{f.reason || 'Unknown reason'}</p>
+                                </div>
+                            ))}
+                        </div>
+                    </div>
+                ) : (
+                    <p className="mt-4 text-xs text-green-700 bg-green-50 border border-green-100 rounded-xl px-3 py-2">
+                        No recent queue failures.
+                    </p>
+                )}
             </div>
 
             {chartData.length === 0 && (

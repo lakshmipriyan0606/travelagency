@@ -15,6 +15,7 @@ import blogRoutes from "./routes/blog.routes.js";
 import { globalLimiter, authLimiter, apiLimiter } from "./middlewares/rateLimiter.middleware.js";
 import { register, httpRequestCounter, publicHttpRequestCounter, httpRequestDuration } from "./config/metrics.js";
 import { protectRoute, superAdminOnly } from "./middlewares/auth.middleware.js";
+import { getQueuePublicSnapshot, getQueueHealthDetail } from "./config/queueRuntime.js";
 
 const app = express();
 
@@ -37,7 +38,8 @@ app.use((req, res, next) => {
     const isInternalMetricsPath =
       path === "/metrics" ||
       path === "/health" ||
-      path.startsWith("/api/admin/metrics");
+      path.startsWith("/api/admin/metrics") ||
+      path.startsWith("/api/admin/queue");
 
     const isAdminApi = path.startsWith("/api/admin");
 
@@ -115,6 +117,40 @@ app.get("/api/admin/metrics", async (req, res, next) => {
   }
 });
 
+// ── Agenda / booking queue health (admin or metrics token) ───────────
+app.get("/api/admin/queue/health", async (req, res, next) => {
+  const token = req.headers["x-metrics-token"];
+  if (process.env.METRICS_TOKEN && token === process.env.METRICS_TOKEN) {
+    return next();
+  }
+  return protectRoute(req, res, () => superAdminOnly(req, res, next));
+}, async (req, res) => {
+  try {
+    const detail = await getQueueHealthDetail();
+    const healthy =
+      detail.mongoConnected &&
+      detail.agendaWorkerStarted &&
+      typeof detail.note !== "string";
+    res.status(200).json({
+      healthy,
+      ...detail,
+      hints: {
+        ifAgendaWorkerFalse:
+          "Server did not finish agenda.start(); check deploy/restart and server logs.",
+        ifRecentFailures:
+          "See recentFailures.reason — common fix: update Agenda job define() order (handler before options).",
+        ifMongoFalse: "Check MONGO_URI and Atlas network access.",
+      },
+    });
+  } catch (error) {
+    console.error("Queue health error:", error);
+    res.status(500).json({
+      healthy: false,
+      message: error.message || "Failed to read queue health",
+    });
+  }
+});
+
 // ── Health Check ──────────────────────────────────────────────────────
 app.get("/health", (req, res) => {
   res.status(200).json({
@@ -122,6 +158,7 @@ app.get("/health", (req, res) => {
     uptime: process.uptime().toFixed(2) + "s",
     timestamp: new Date().toISOString(),
     memory: process.memoryUsage(),
+    queue: getQueuePublicSnapshot(),
   });
 });
 
