@@ -14,7 +14,8 @@ import {
     ExternalLink,
     ChevronRight,
     Search,
-    Filter
+    Filter,
+    AlertTriangle
 } from "lucide-react";
 import { GetAllBookings } from "@/api/admin/auth.api";
 import whatsappIcon from "@/assets/icons/whatsapp.svg";
@@ -42,6 +43,13 @@ interface Booking {
 
 interface BookingResponse {
     bookings: Booking[];
+}
+
+function bookingHasIntegrationFailures(b: Booking): boolean {
+    const statuses = [b.sheetSyncStatus, b.userEmailStatus, b.adminEmailStatus];
+    return statuses.some(
+        (s) => s && String(s).includes("Failed")
+    );
 }
 
 export default function BookingAdminPage() {
@@ -139,8 +147,19 @@ export default function BookingAdminPage() {
                                     className="grid grid-cols-12 gap-4 px-6 py-5 items-center hover:bg-neutral-50/50 transition-colors group"
                                 >
                                     <div className="col-span-3">
-                                        <div className="flex flex-col">
-                                            <span className="text-sm font-bold text-neutral-800">#{b.bookingId}</span>
+                                        <div className="flex flex-col gap-1">
+                                            <div className="flex items-center gap-2">
+                                                <span className="text-sm font-bold text-neutral-800">#{b.bookingId}</span>
+                                                {bookingHasIntegrationFailures(b) && (
+                                                    <span
+                                                        className="inline-flex items-center gap-0.5 px-1.5 py-0.5 rounded-md bg-amber-50 text-amber-800 border border-amber-200 text-[10px] font-bold uppercase tracking-wide"
+                                                        title="Email or Google Sheet reported a failure — open details for error logs"
+                                                    >
+                                                        <AlertTriangle className="w-3 h-3 shrink-0" />
+                                                        Issue
+                                                    </span>
+                                                )}
+                                            </div>
                                             <span className="text-[11px] text-neutral-400 mt-0.5">{b.packageName ? `Package: ${b.packageName}` : b.destination}</span>
                                         </div>
                                     </div>

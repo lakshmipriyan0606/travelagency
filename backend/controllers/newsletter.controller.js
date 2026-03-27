@@ -1,5 +1,5 @@
 import Newsletter from "../models/newsletter.model.js";
-import { sendEmail } from "../services/email.service.js";
+import { sendWelcomeEmail } from "../services/email.service.js";
 
 export const subscribeNewsletter = async (req, res) => {
   try {
@@ -20,7 +20,7 @@ export const subscribeNewsletter = async (req, res) => {
     const newSubscriber = await Newsletter.create({ email });
 
     // 4. Send confirmation mail
-    await sendEmail({
+    await sendWelcomeEmail({
       to: email,
       subject: "Welcome to Our Newsletter 🎉",
       html: `

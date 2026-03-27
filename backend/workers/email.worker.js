@@ -1,22 +1,15 @@
 import { agendaReady } from "../config/agenda.js";
-import nodemailer from "nodemailer";
 import dotenv from "dotenv";
-dotenv.config();
+import { getMailTransporter } from "../services/mailerTransport.js";
 
-const transporter = nodemailer.createTransport({
-  service: "gmail",
-  auth: {
-    user: process.env.GMAIL_USER,
-    pass: process.env.GMAIL_APP_PASSWORD,
-  },
-});
+dotenv.config();
 
 // Wait for Agenda to be ready, then define all jobs
 export const workerReady = agendaReady.then((agenda) => {
   // ── Job: Send Booking Notification Email ─────────────────────────────
   agenda.define("send booking email", { priority: "high", concurrency: 2 }, async (job) => {
     const { to, subject, html } = job.attrs.data;
-    await transporter.sendMail({
+    await getMailTransporter().sendMail({
       from: `"Sastikaa Travels" <${process.env.GMAIL_USER}>`,
       to,
       subject,
@@ -28,7 +21,7 @@ export const workerReady = agendaReady.then((agenda) => {
   // ── Job: Send Newsletter Welcome Email ───────────────────────────────
   agenda.define("send welcome email", { priority: "normal", concurrency: 5 }, async (job) => {
     const { to, subject, html } = job.attrs.data;
-    await transporter.sendMail({
+    await getMailTransporter().sendMail({
       from: `"Sastikaa Travels" <${process.env.GMAIL_USER}>`,
       to,
       subject,
@@ -40,7 +33,7 @@ export const workerReady = agendaReady.then((agenda) => {
   // ── Job: Send Contact / Enquiry Email ────────────────────────────────
   agenda.define("send enquiry email", { priority: "normal", concurrency: 3 }, async (job) => {
     const { to, subject, html } = job.attrs.data;
-    await transporter.sendMail({
+    await getMailTransporter().sendMail({
       from: `"Sastikaa Travels" <${process.env.GMAIL_USER}>`,
       to,
       subject,
