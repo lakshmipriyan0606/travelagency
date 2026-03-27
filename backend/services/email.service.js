@@ -1,5 +1,5 @@
 import { agendaReady } from "../config/agenda.js";
-import { getMailTransporter } from "./mailerTransport.js";
+import { sendTransactionalEmail } from "./mailerTransport.js";
 
 /**
  * Queue a booking notification email (legacy / other callers).
@@ -17,18 +17,7 @@ export const sendEmail = async ({ to, subject, html }) => {
  * and so mail is not lost when the HTTP response ends background work.
  */
 export const sendBookingEmailNow = async ({ to, subject, html }) => {
-  if (!process.env.GMAIL_USER || !process.env.GMAIL_APP_PASSWORD) {
-    throw new Error(
-      "Gmail is not configured: set GMAIL_USER and GMAIL_APP_PASSWORD on the server"
-    );
-  }
-  const transporter = getMailTransporter();
-  await transporter.sendMail({
-    from: `"Sastikaa Travels" <${process.env.GMAIL_USER}>`,
-    to,
-    subject,
-    html,
-  });
+  await sendTransactionalEmail({ to, subject, html });
   console.log(`[EmailService] 📧 Booking email sent to: ${to}`);
 };
 

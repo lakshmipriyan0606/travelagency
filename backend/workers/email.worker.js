@@ -1,6 +1,6 @@
 import { agendaReady } from "../config/agenda.js";
 import dotenv from "dotenv";
-import { getMailTransporter } from "../services/mailerTransport.js";
+import { sendTransactionalEmail } from "../services/mailerTransport.js";
 import { processBookingIntegrations } from "../services/bookingIntegration.service.js";
 
 dotenv.config();
@@ -12,12 +12,7 @@ export const workerReady = agendaReady.then((agenda) => {
     "send booking email",
     async (job) => {
       const { to, subject, html } = job.attrs.data;
-      await getMailTransporter().sendMail({
-        from: `"Sastikaa Travels" <${process.env.GMAIL_USER}>`,
-        to,
-        subject,
-        html,
-      });
+      await sendTransactionalEmail({ to, subject, html });
       console.log(`[EmailWorker] ✅ Booking email sent to: ${to}`);
     },
     { priority: "high", concurrency: 2 }
@@ -28,12 +23,7 @@ export const workerReady = agendaReady.then((agenda) => {
     "send welcome email",
     async (job) => {
       const { to, subject, html } = job.attrs.data;
-      await getMailTransporter().sendMail({
-        from: `"Sastikaa Travels" <${process.env.GMAIL_USER}>`,
-        to,
-        subject,
-        html,
-      });
+      await sendTransactionalEmail({ to, subject, html });
       console.log(`[EmailWorker] ✅ Welcome email sent to: ${to}`);
     },
     { priority: "normal", concurrency: 5 }
@@ -44,12 +34,7 @@ export const workerReady = agendaReady.then((agenda) => {
     "send enquiry email",
     async (job) => {
       const { to, subject, html } = job.attrs.data;
-      await getMailTransporter().sendMail({
-        from: `"Sastikaa Travels" <${process.env.GMAIL_USER}>`,
-        to,
-        subject,
-        html,
-      });
+      await sendTransactionalEmail({ to, subject, html });
       console.log(`[EmailWorker] ✅ Enquiry email sent to: ${to}`);
     },
     { priority: "normal", concurrency: 3 }
