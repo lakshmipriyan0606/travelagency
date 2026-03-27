@@ -1,26 +1,30 @@
 import axios from "axios";
+import axiosClient from "../axiosClient";
+
+function normalizeBase(url: string | undefined) {
+  return (url || "").replace(/\/$/, "");
+}
 
 export const fetchMetrics = async () => {
-  // Production metrics should come from the production backend, even when the admin panel runs locally.
-  // Configure with:
-  // - VITE_METRICS_API_BASE_URL=https://<your-prod-backend>/api
-  // Fallback order:
-  // - VITE_METRICS_API_BASE_URL
-  // - VITE_API_BASE_URL
-  // - Render default (this repo already references it in backend CORS allowlist)
-  const baseURL =
-    import.meta.env.VITE_METRICS_API_BASE_URL ||
-    import.meta.env.VITE_API_BASE_URL ||
-    "https://travelagency-1-odma.onrender.com/api";
-
-  const metricsClient = axios.create({
-    baseURL,
-    // Avoid cross-origin cookie/CORS headaches; metrics endpoint is not user-session scoped.
-    withCredentials: false,
-  });
-
+  const remoteBase = normalizeBase(import.meta.env.VITE_METRICS_API_BASE_URL);
   const token = import.meta.env.VITE_METRICS_TOKEN;
-  const response = await metricsClient.get("admin/metrics", {
+
+  // Call a *different* metrics host only when you have a shared secret (session cookies will not exist there).
+  // If VITE_METRICS_API_BASE_URL is set to the raw API host but VITE_API_BASE_URL is your site proxy
+  // (e.g. sastikaatravel.com/api), cookies live on the site — calling Render directly would always 401.
+  if (remoteBase && token) {
+    const client = axios.create({
+      baseURL: remoteBase,
+      withCredentials: false,
+    });
+    const response = await client.get("admin/metrics", {
+      headers: { "x-metrics-token": token },
+    });
+    return response.data;
+  }
+
+  // Same host as login/session (withCredentials) — fixes 401 when admin UI is proxied on the main domain.
+  const response = await axiosClient.get("admin/metrics", {
     headers: token ? { "x-metrics-token": token } : undefined,
   });
   return response.data;
