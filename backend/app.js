@@ -12,7 +12,7 @@ import uploadRoutes from "./routes/upload.routes.js";
 import blogRoutes from "./routes/blog.routes.js";
 
 // Infrastructure Middleware
-import { globalLimiter, authLimiter, apiLimiter, bookingLimiter } from "./middlewares/rateLimiter.middleware.js";
+import { globalLimiter, authLimiter, apiLimiter } from "./middlewares/rateLimiter.middleware.js";
 import { register, httpRequestCounter, publicHttpRequestCounter, httpRequestDuration } from "./config/metrics.js";
 import { protectRoute, superAdminOnly } from "./middlewares/auth.middleware.js";
 
@@ -128,7 +128,8 @@ app.get("/health", (req, res) => {
 // ── Routes with targeted rate limiters ───────────────────────────────
 app.use("/api/admin", authLimiter, authRoutes);
 app.use("/api/packages", apiLimiter, packageRoute);
-app.use("/api", bookingLimiter, bookingRoute);
+// bookingLimiter is applied only on POST /booking/create (see bookingForm.route.js)
+app.use("/api", bookingRoute);
 app.use("/api/newsletter", newsletterRoute);
 app.use("/api/upload", uploadRoutes);
 app.use("/api/blogs", apiLimiter, blogRoutes);

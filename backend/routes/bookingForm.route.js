@@ -5,11 +5,12 @@ import { sendWhatsAppMessage } from "../services/whatsapp.service.js";
 import { v4 as uuidv4 } from "uuid";
 import { encryptValue, decryptValue } from "../utils/crypto.js";
 import { syncBookingToSheet } from "../services/googleSheets.service.js";
+import { bookingLimiter } from "../middlewares/rateLimiter.middleware.js";
 
 const router = express.Router();
 
-// Create booking
-router.post("/booking/create", async (req, res) => {
+// Create booking (strict limit — only this route, not GET /booking/all)
+router.post("/booking/create", bookingLimiter, async (req, res) => {
   try {
     const {
       city,
