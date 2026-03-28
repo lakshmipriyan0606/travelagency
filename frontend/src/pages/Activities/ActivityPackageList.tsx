@@ -148,7 +148,7 @@ const ActivityPackageList = () => {
 
                 <div className="flex items-end justify-between mb-6">
                     <div>
-                        <h1 className="text-2xl sm:text-3xl font-black text-gray-900">
+                        <h1 className="text-2xl sm:text-3xl text-gray-800">
                             {activeType ? (
                                 <>
                                     {GLOBAL_CONFIG.activityCategories.find(c => c.value === activeType)?.emoji ?? "🌍"}{" "}

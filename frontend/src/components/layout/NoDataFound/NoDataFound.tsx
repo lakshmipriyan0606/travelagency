@@ -11,7 +11,7 @@ const NoDataFound = ({
     subMessage = "We couldn't find any packages matching your current filters. Try adjusting your search or clearing the filters."
 }: NoDataFoundProps) => {
     return (
-        <motion.div 
+        <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5, ease: "easeOut" }}
@@ -23,14 +23,14 @@ const NoDataFound = ({
                     <SearchX className="w-12 h-12 text-neutral-400" />
                 </div>
             </div>
-            
-            <h3 className="text-2xl font-bold text-neutral-800 mb-3 tracking-tight">
+
+            <h3 className="text-2xl text-neutral-800 mb-3 tracking-tight">
                 {message}
             </h3>
             <p className="text-neutral-500 max-w-sm leading-relaxed text-sm">
                 {subMessage}
             </p>
-            
+
             <motion.button
                 whileHover={{ scale: 1.02 }}
                 whileTap={{ scale: 0.98 }}
