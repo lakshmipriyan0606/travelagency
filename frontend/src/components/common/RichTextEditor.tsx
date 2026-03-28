@@ -22,7 +22,19 @@ import {
   Redo,
   Link as LinkIcon
 } from 'lucide-react'
-import { useCallback, useEffect } from 'react'
+import { useEffect, useState, useRef } from 'react'
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogFooter,
+} from '../ui/dialog'
+import { Input } from '../ui/input'
+import { Button } from '../ui/button'
+import { showToast } from '@/lib/utils'
+import axiosClient from '@/api/axiosClient'
+import { Loader2, Upload } from 'lucide-react'
 
 interface RichTextEditorProps {
   content: string
@@ -30,42 +42,46 @@ interface RichTextEditorProps {
   placeholder?: string
 }
 
-const MenuBar = ({ editor }: { editor: any }) => {
+const MenuBar = ({ editor, onOpenPrompt }: { editor: any, onOpenPrompt: (config: any) => void }) => {
   if (!editor) {
     return null
   }
 
-  const addImage = useCallback(() => {
-    const url = window.prompt('URL of the image:')
-    if (url) {
-      editor.chain().focus().setImage({ src: url }).run()
-    }
-  }, [editor])
+  const addImage = () => {
+    onOpenPrompt({
+      title: 'Insert Image',
+      placeholder: 'https://example.com/image.jpg',
+      initialValue: '',
+      showUpload: true,
+      onSave: (url: string) => {
+        if (url) {
+          editor.chain().focus().setImage({ src: url }).run()
+        }
+      }
+    })
+  }
 
-  const addLink = useCallback(() => {
+  const addLink = () => {
     const previousUrl = editor.getAttributes('link').href
-    const url = window.prompt('URL:', previousUrl)
-
-    // cancelled
-    if (url === null) {
-      return
-    }
-
-    // empty
-    if (url === '') {
-      editor.chain().focus().extendMarkRange('link').unsetLink().run()
-      return
-    }
-
-    // update link
-    editor.chain().focus().extendMarkRange('link').setLink({ href: url }).run()
-  }, [editor])
+    onOpenPrompt({
+      title: 'Edit Link',
+      placeholder: 'https://example.com',
+      initialValue: previousUrl || '',
+      onSave: (url: string) => {
+        if (url === '') {
+          editor.chain().focus().extendMarkRange('link').unsetLink().run()
+        } else if (url) {
+          editor.chain().focus().extendMarkRange('link').setLink({ href: url }).run()
+        }
+      }
+    })
+  }
 
   const toggleBtnClass = (isActive: boolean) =>
     `p-2 rounded-md transition-colors ${isActive ? 'bg-primary/20 text-primary' : 'text-neutral-600 hover:bg-neutral-100'}`
 
   return (
-    <div className="flex flex-wrap items-center gap-1 p-2 border-b border-neutral-200 bg-neutral-50 rounded-t-xl">
+    <div className="flex flex-wrap items-center gap-1 p-2 border-b border-neutral-200 bg-white/95 backdrop-blur-md sticky top-20 z-20 rounded-t-xl">
       <button
         type="button"
         onClick={() => editor.chain().focus().toggleHeading({ level: 1 }).run()}
@@ -230,6 +246,56 @@ const MenuBar = ({ editor }: { editor: any }) => {
 }
 
 const RichTextEditor = ({ content, onChange }: RichTextEditorProps) => {
+  const [promptConfig, setPromptConfig] = useState<{
+    isOpen: boolean;
+    title: string;
+    placeholder: string;
+    initialValue: string;
+    onSave: (val: string) => void;
+    showUpload?: boolean;
+  }>({
+    isOpen: false,
+    title: '',
+    placeholder: '',
+    initialValue: '',
+    onSave: () => {},
+    showUpload: false,
+  })
+
+  const [promptValue, setPromptValue] = useState('')
+  const [isUploading, setIsUploading] = useState(false)
+  const fileInputRef = useRef<HTMLInputElement>(null)
+
+  const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0]
+    if (!file) return
+
+    try {
+      setIsUploading(true)
+      const formData = new FormData()
+      formData.append('image', file)
+      
+      const { data } = await axiosClient.post('/upload/image', formData, {
+        headers: { 'Content-Type': 'multipart/form-data' }
+      })
+
+      if (data?.url) {
+        setPromptValue(data.url)
+        showToast({ type: 'success', content: 'Image uploaded successfully' })
+      }
+    } catch (err) {
+      showToast({ type: 'error', content: 'Image upload failed' })
+    } finally {
+      setIsUploading(false)
+      if (fileInputRef.current) fileInputRef.current.value = ''
+    }
+  }
+
+  const handleSavePrompt = () => {
+    promptConfig.onSave(promptValue)
+    setPromptConfig(prev => ({ ...prev, isOpen: false }))
+  }
+
   const editor = useEditor({
     extensions: [
       StarterKit,
@@ -268,9 +334,94 @@ const RichTextEditor = ({ content, onChange }: RichTextEditorProps) => {
   }, [content, editor])
 
   return (
-    <div className="border border-neutral-200 rounded-xl overflow-hidden focus-within:ring-2 focus-within:ring-primary/20 focus-within:border-primary transition-all">
-      <MenuBar editor={editor} />
+    <div className="relative border border-neutral-200 rounded-xl overflow-visible focus-within:ring-2 focus-within:ring-primary/20 focus-within:border-primary transition-all">
+      <MenuBar 
+        editor={editor} 
+        onOpenPrompt={(config) => setPromptConfig({ ...config, isOpen: true })} 
+      />
       <EditorContent editor={editor} />
+
+      <Dialog open={promptConfig.isOpen} onOpenChange={(open) => setPromptConfig(prev => ({ ...prev, isOpen: open }))}>
+        <DialogContent className="sm:max-w-md bg-white shadow-2xl border-neutral-200">
+          <DialogHeader>
+            <DialogTitle>{promptConfig.title}</DialogTitle>
+          </DialogHeader>
+          <div className="py-4 space-y-4">
+            <div className="space-y-2">
+              <label className="text-[10px] font-bold text-neutral-400 uppercase tracking-widest pl-1">
+                {promptConfig.showUpload ? 'Image URL' : 'Link URL'}
+              </label>
+              <Input
+                value={promptValue}
+                onChange={(e) => setPromptValue(e.target.value)}
+                placeholder={promptConfig.placeholder}
+                className="w-full"
+                autoFocus
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter') {
+                    handleSavePrompt()
+                  }
+                }}
+              />
+            </div>
+
+            {promptConfig.showUpload && (
+              <div className="relative pt-2">
+                <div className="absolute inset-0 flex items-center">
+                  <span className="w-full border-t border-neutral-100" />
+                </div>
+                <div className="relative flex justify-center text-xs uppercase">
+                  <span className="bg-white px-2 text-neutral-400 font-bold tracking-widest">or</span>
+                </div>
+              </div>
+            )}
+
+            {promptConfig.showUpload && (
+              <div className="flex justify-center pt-2">
+                <input
+                  type="file"
+                  ref={fileInputRef}
+                  onChange={handleFileUpload}
+                  className="hidden"
+                  accept="image/*"
+                />
+                <Button
+                  type="button"
+                  variant="outline"
+                  className="w-full h-12 rounded-xl border-dashed border-neutral-300 hover:border-primary hover:bg-neutral-50 gap-2 font-bold"
+                  onClick={() => fileInputRef.current?.click()}
+                  disabled={isUploading}
+                >
+                  {isUploading ? (
+                    <Loader2 className="w-4 h-4 animate-spin text-primary" />
+                  ) : (
+                    <Upload size={16} className="text-primary" />
+                  )}
+                  {isUploading ? 'Uploading Media...' : 'Browse Local Media'}
+                </Button>
+              </div>
+            )}
+          </div>
+          <DialogFooter className="sm:justify-end border-t pt-4">
+            <Button
+              type="button"
+              variant="secondary"
+              className="px-6 rounded-xl font-bold"
+              onClick={() => setPromptConfig(prev => ({ ...prev, isOpen: false }))}
+            >
+              Cancel
+            </Button>
+            <Button 
+              type="button" 
+              className="px-8 rounded-xl font-bold"
+              onClick={handleSavePrompt}
+              disabled={isUploading}
+            >
+              Apply Changes
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   )
 }

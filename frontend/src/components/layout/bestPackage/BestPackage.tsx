@@ -1,11 +1,9 @@
 import 'swiper/css';
 import 'swiper/css/navigation';
 import 'swiper/css/pagination';
-// import Auroplane from '@/assets/icons/Auroplane.svg';
 import OuterCarousel from './carousel/OuterCarousel';
-import { useNavigate } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 export default function BestPackage() {
-    const navigate = useNavigate();
 
     return (
         <div className=" bg-custom-black relative text-white border-b-4 border-primary overflow-hidden">
@@ -22,8 +20,10 @@ export default function BestPackage() {
 
                 <OuterCarousel />
 
-                <div className="text-center mt-12 text-primary/80 hover:text-primary cursor-pointer font-semibold tracking-[0.35em] uppercase" onClick={() => navigate('/allpackage')}>
-                    VIEW ALL
+                <div className="text-center mt-12">
+                    <Link to="/allpackage" className="text-primary/80 hover:text-primary font-semibold tracking-[0.35em] uppercase transition-all inline-block">
+                        VIEW ALL
+                    </Link>
                 </div>
             </div>
         </div>

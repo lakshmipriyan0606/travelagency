@@ -41,7 +41,7 @@ const TravelExperiences = () => {
             <h3 className="hidden md:block font-allura text-[#FCAF16] text-3xl md:text-5xl mb-4">
               Our Customers Love
             </h3>
-            <h2 className="text-[26px] sm:text-3xl md:text-4xl lg:text-5xl font-medium md:font-bold text-[#2B2B2B] mb-4 md:mb-8 leading-tight">
+            <h2 className="text-[26px] sm:text-3xl md:text-4xl lg:text-5xl font-medium text-[#2B2B2B] mb-4 md:mb-8">
               Travel <span className="text-[#FCAF16] md:text-[#2B2B2B]">Experiences</span>
             </h2>
             <p className="text-[#666666] mb-8 md:mb-10 max-w-[320px] md:max-w-sm leading-relaxed font-roboto text-[11.5px] sm:text-sm md:text-base">

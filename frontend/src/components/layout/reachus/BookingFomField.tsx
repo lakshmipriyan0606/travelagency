@@ -157,7 +157,7 @@ const BookingFomField = ({ fieldClassName = 'text-gray-200', mainClassName, pack
                         type="submit"
                         disabled={loading}
                         buttonText={loading ? 'Submitting...' : 'Book Your Destination!'}
-                        className="w-full !px-10 !py-3.5 rounded-md"
+                        className="w-full !px-10 !py-3.5"
                     />
                 </div>
             </form>

@@ -4,6 +4,7 @@ import { Provider } from "react-redux";
 import { store } from "./store/store";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { HelmetProvider } from "react-helmet-async";
+import AppToastContainer from "./components/AppToastContainer/AppToastContainer";
 
 const queryClient = new QueryClient();
 
@@ -14,6 +15,7 @@ function App() {
         <Provider store={store}>
           <BrowserRouter>
             <AppRoutes />
+            <AppToastContainer />
           </BrowserRouter>
         </Provider>
       </QueryClientProvider>

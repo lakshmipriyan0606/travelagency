@@ -93,18 +93,12 @@ const ActivitySection = () => {
 
                                     {/* Content */}
                                     <div className="absolute inset-x-0 bottom-0 p-6 transform transition-transform duration-500 group-hover:-translate-y-2">
-                                        <h3 className="text-xl font-black text-white mb-1 tracking-tight">
+                                        <h3 className="text-xl text-white mb-1">
                                             {categoryValue}
                                         </h3>
-                                        <p className="text-[10px] text-white/70 font-bold uppercase tracking-widest line-clamp-2 leading-relaxed mb-4">
+                                        <p className="text-[10px] text-white/70 uppercase mb-4">
                                             {description}
                                         </p>
-                                        <div className="flex items-center gap-2">
-                                            <div className="h-[2px] w-0 group-hover:w-8 bg-primary transition-all duration-500 rounded-full" />
-                                            <span className="text-[9px] font-black uppercase tracking-widest text-primary opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap">
-                                                Discover Now
-                                            </span>
-                                        </div>
                                     </div>
                                 </motion.div>
                             );

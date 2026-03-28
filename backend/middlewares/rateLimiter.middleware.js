@@ -8,7 +8,7 @@ const rateLimitResponse = (message) => ({
 // ── 1. Global Limiter — applies to all routes ────────────────────────
 export const globalLimiter = rateLimit({
   windowMs: 15 * 60 * 1000, // 15 minutes
-  max: 300,
+  max: 1000,
   standardHeaders: true,
   legacyHeaders: false,
   message: rateLimitResponse("Too many requests. Please try again in 15 minutes."),
@@ -27,7 +27,7 @@ export const authLimiter = rateLimit({
 // ── 3. API Limiter — packages & blogs public endpoints ───────────────
 export const apiLimiter = rateLimit({
   windowMs: 15 * 60 * 1000,
-  max: 150,
+  max: 600,
   standardHeaders: true,
   legacyHeaders: false,
   message: rateLimitResponse("API rate limit exceeded. Please slow down."),

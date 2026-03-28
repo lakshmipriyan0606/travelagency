@@ -4,7 +4,7 @@ import { getPublicBlogs, toggleBlogLike } from "../../api/admin/blog.api";
 import BlogCard, { BlogCardSkeleton } from "../../components/layout/blog/BlogCard";
 import BlogEmptyState from "../../components/layout/blog/BlogEmptyState";
 import { Search } from "lucide-react";
-import toast from "react-hot-toast";
+import { showToast } from "../../lib/utils";
 import { Helmet } from "react-helmet-async";
 import Breadcrumb from "../../components/common/Breadcrumb/Breadcrumb";
 
@@ -26,16 +26,16 @@ const BlogListPage = () => {
     },
     onError: () => {
       if (!userId || userId.startsWith("user_")) {
-        toast.error("Please login to like a blog post.");
+        showToast({ type: "error", content: "Please login to like a blog post." });
       } else {
-        toast.error("Failed to like blog post.");
+        showToast({ type: "error", content: "Failed to like blog post." });
       }
     },
   });
 
   const handleLike = (id: string) => {
     if (!userId) {
-      toast.error("Please login to like a blog post.");
+      showToast({ type: "error", content: "Please login to like a blog post." });
       return;
     }
     toggleLikeMutation.mutate(id);

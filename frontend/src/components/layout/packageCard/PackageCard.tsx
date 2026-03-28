@@ -14,7 +14,6 @@ import { useState } from "react";
 import { useMutationAPIQuery } from "@/Hook/useMutationAPIQuery";
 import { DeleteCurrentPackage, UpdatePackageRank, TogglePackageStatus, GetTakenRanks } from "@/api/admin/auth.api";
 import { UpdateLikePackage } from "@/api/user/api";
-import { useNavigate } from "react-router-dom";
 import { useQueryClient } from "@tanstack/react-query";
 import { WANumber, CurrencySymbol } from "@/lib/utils";
 import { toast } from "react-toastify";
@@ -78,7 +77,6 @@ export function SinglePackageCard({
     className = "",
     takenRanks = []
 }: PackageCardProps) {
-    const navigate = useNavigate();
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [open, setOpen] = useState(false);
     const [deleteId, setDeleteId] = useState<string | null>(null);
@@ -349,13 +347,10 @@ export function SinglePackageCard({
                             borderButtonColor="bg-white"
                             textColor="text-white"
                             bgColor="bg-custom-black"
-                            onClick={() => {
-                                const slug = offer.packageName
-                                    .toLowerCase()
-                                    .replace(/[^a-z0-9]+/g, "-")
-                                    .replace(/(^-|-$)/g, "");
-                                navigate(`/package/${slug}`);
-                            }}
+                            to={`/package/${offer.packageName
+                                .toLowerCase()
+                                .replace(/[^a-z0-9]+/g, "-")
+                                .replace(/(^-|-$)/g, "")}`}
                         />
                     </Row>
                 </div>

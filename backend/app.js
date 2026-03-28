@@ -18,6 +18,8 @@ import { protectRoute, superAdminOnly } from "./middlewares/auth.middleware.js";
 import { getQueuePublicSnapshot, getQueueHealthDetail } from "./config/queueRuntime.js";
 
 const app = express();
+app.set("trust proxy", 1);
+
 
 // ── Prometheus: record every request ─────────────────────────────────
 app.use((req, res, next) => {

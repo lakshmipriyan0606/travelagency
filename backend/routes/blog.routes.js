@@ -15,7 +15,7 @@ import { cacheResponse, bustCacheByPrefix } from "../middlewares/cache.middlewar
 const router = express.Router();
 
 // Public routes
-router.get("/", cacheResponse("blogs:list", 300), getAllBlogs);
+router.get("/", cacheResponse((req) => `blogs:list:${JSON.stringify(req.query)}`, 300), getAllBlogs);
 router.get("/:slug", cacheResponse((req) => `blogs:slug:${req.params.slug}`, 300), getBlogBySlug);
 router.post("/:id/like", (req, res, next) => { bustCacheByPrefix("blogs:"); next(); }, toggleLike);
 

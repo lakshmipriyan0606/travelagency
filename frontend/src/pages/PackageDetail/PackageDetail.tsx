@@ -5,7 +5,7 @@ import PackageDetailCarousel from '@/components/layout/packageDetailCarousel/Pac
 import BookingFomField from '@/components/layout/reachus/BookingFomField'
 import { UseFetchAPIQuery } from '@/Hook/UseFetchAPIQuery'
 import { useEffect, useState } from 'react'
-import { useParams, useSearchParams, useNavigate } from 'react-router-dom'
+import { useParams, useSearchParams, Link } from 'react-router-dom'
 import { motion } from 'framer-motion'
 import Breadcrumb from '@/components/common/Breadcrumb/Breadcrumb'
 import { Helmet } from 'react-helmet-async'
@@ -14,7 +14,6 @@ import noDataImg from '@/assets/image/no-data-clean.png'
 
 const PackageDetail = () => {
 
-    const navigate = useNavigate();
     const { id: paramId } = useParams();
     const [searchParams] = useSearchParams();
     // Support both /package/:id (old) and /package/:name?id=... (new) formats
@@ -135,18 +134,18 @@ const PackageDetail = () => {
                             </p>
 
                             <div className="flex flex-col sm:flex-row gap-5 mt-3 w-full max-w-lg justify-center">
-                                <button
-                                    onClick={() => navigate('/allpackage')}
-                                    className="px-10 py-5 bg-primary text-black font-black rounded-2xl hover:bg-opacity-90 transition-all shadow-[0_15px_35px_rgba(242,193,46,0.4)] active:scale-95 uppercase tracking-extrawide text-sm whitespace-nowrap cursor-pointer"
+                                <Link
+                                    to="/allpackage"
+                                    className="px-10 py-5 bg-primary text-black font-black rounded-2xl hover:bg-opacity-90 transition-all shadow-[0_15px_35_rgba(242,193,46,0.4)] active:scale-95 uppercase tracking-extrawide text-sm whitespace-nowrap cursor-pointer flex items-center justify-center"
                                 >
                                     Explore All Packages
-                                </button>
-                                <button
-                                    onClick={() => navigate('/')}
-                                    className="px-10 py-5 bg-white text-slate-800 border-2 border-slate-100 font-black rounded-2xl hover:bg-slate-50 hover:border-slate-200 transition-all active:scale-95 uppercase tracking-extrawide text-sm whitespace-nowrap cursor-pointer"
+                                </Link>
+                                <Link
+                                    to="/"
+                                    className="px-10 py-5 bg-white text-slate-800 border-2 border-slate-100 font-black rounded-2xl hover:bg-slate-50 hover:border-slate-200 transition-all active:scale-95 uppercase tracking-extrawide text-sm whitespace-nowrap cursor-pointer flex items-center justify-center"
                                 >
                                     Back to Home
-                                </button>
+                                </Link>
                             </div>
                         </motion.div>
                     ) : (
@@ -210,7 +209,7 @@ const PackageDetail = () => {
                     <div className="hidden lg:block lg:col-span-4">
                         <div className="sticky top-22 bg-white rounded-2xl border border-gray-100">
                             <div className='font-body text-center'>
-                                <h1 className='text-gray-800 text-xl font-bold p-3'>Book your dream vacation <span className='text-primary font-medium'>Today!</span></h1>
+                                <h1 className='text-gray-800 text-xl p-3'>Book your dream vacation <span className='text-primary font-medium'>Today!</span></h1>
                             </div>
                             <BookingFomField fieldClassName="text-gray-200 sm:text-gray-800" packageName={packageName} />
                         </div>

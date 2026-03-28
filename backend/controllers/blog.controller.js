@@ -23,17 +23,27 @@ export const createBlog = async (req, res) => {
   try {
     const {
       title,
-      slug,
       category,
       author,
       miniDescription,
       content,
+      slug,
       status,
       thumbnailImageAlt,
       thumbnailImageUrl,
       bannerImageAlt,
       bannerImageUrl,
+      faqs,
     } = req.body;
+
+    let parsedFaqs = [];
+    if (faqs) {
+      try {
+        parsedFaqs = typeof faqs === "string" ? JSON.parse(faqs) : faqs;
+      } catch (e) {
+        console.error("Error parsing FAQs:", e);
+      }
+    }
 
     const blogData = {
       title,
@@ -45,6 +55,7 @@ export const createBlog = async (req, res) => {
       slug: slug || title.toLowerCase().trim().replace(/[^\w\s-]/g, '').replace(/[\s_-]+/g, '-').replace(/^-+|-+$/g, ''),
       createdBy: req.user._id,
       likes: [],
+      faqs: parsedFaqs,
     };
 
     const files = Array.isArray(req.files) ? req.files : [];
@@ -173,11 +184,21 @@ export const updateBlog = async (req, res) => {
       thumbnailImageUrl,
       bannerImageAlt,
       bannerImageUrl,
+      faqs,
     } = req.body;
 
     const blogToUpdate = await Blog.findById(id);
     if (!blogToUpdate || blogToUpdate.isDeleted) {
       return res.status(404).json({ message: "Blog not found" });
+    }
+
+    let parsedFaqs = blogToUpdate.faqs;
+    if (faqs) {
+      try {
+        parsedFaqs = typeof faqs === "string" ? JSON.parse(faqs) : faqs;
+      } catch (e) {
+        console.error("Error parsing FAQs:", e);
+      }
     }
 
     const updateData = {
@@ -188,6 +209,7 @@ export const updateBlog = async (req, res) => {
       content,
       status: status || blogToUpdate.status,
       slug: (slug || blogToUpdate.slug).toLowerCase().trim().replace(/[^\w\s-]/g, '').replace(/[\s_-]+/g, '-').replace(/^-+|-+$/g, ''),
+      faqs: parsedFaqs,
     };
 
     const files = Array.isArray(req.files) ? req.files : [];

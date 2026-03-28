@@ -13,7 +13,7 @@ export const footerData = {
     highlight: "Book Your Experience Now!",
     buttonText: "START YOUR JOURNEY",
     buttonHref: "/#reach-us-section",
-    image: 'https://i.postimg.cc/Ss1GZPwV/Whats_App_Image_2026_03_18_at_11_57_28_PM.jpg',
+    image: 'https://i.postimg.cc/2SpSJPd3/pexels-kuala-lumpur-1283140-jpg.jpg',
   },
   linkColumns: [
     {

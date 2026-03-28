@@ -1,4 +1,5 @@
 import { Button } from "@/components/ui/button";
+import { Link } from "react-router-dom";
 
 interface BorderAnimatedButtonProps {
   buttonText: string;
@@ -9,6 +10,9 @@ interface BorderAnimatedButtonProps {
   onClick?: any;
   disabled?: boolean;
   type?: "button" | "submit" | "reset";
+  asChild?: boolean;
+  to?: string;
+  children?: React.ReactNode;
 }
 
 export default function AnimatedButton({
@@ -19,15 +23,13 @@ export default function AnimatedButton({
   borderButtonColor = 'bg-black',
   onClick,
   disabled,
-  type = "button"
+  type = "button",
+  asChild = false,
+  to,
+  children
 }: BorderAnimatedButtonProps) {
-  return (
-    <Button
-      type={type}
-      className={`relative p-2 cursor-pointer font-semibold tracking-widest overflow-hidden group ${bgColor} ${textColor} ${className}`}
-      onClick={onClick}
-      disabled={disabled}
-    >
+  const content = (
+    <>
       <span className="relative z-10">{buttonText}</span>
 
       {/* Horizontal lines */}
@@ -45,7 +47,26 @@ export default function AnimatedButton({
       <span
         className={`absolute bottom-[2px] left-[2px] w-[0.5px] h-6 ${borderButtonColor} transition-all duration-500 delay-150 group-hover:h-[calc(100%-4px)]`}
       ></span>
-    </Button>
+    </>
+  );
 
+  return (
+    <Button
+      asChild={asChild || !!to}
+      type={type}
+      className={`relative p-2 cursor-pointer font-semibold tracking-widest overflow-hidden group ${bgColor} ${textColor} ${className}`}
+      onClick={onClick}
+      disabled={disabled}
+    >
+      {asChild ? (
+        children
+      ) : to ? (
+        <Link to={to} className="w-full h-full flex items-center justify-center">
+          {content}
+        </Link>
+      ) : (
+        content
+      )}
+    </Button>
   );
 }

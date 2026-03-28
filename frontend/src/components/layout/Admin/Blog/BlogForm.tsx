@@ -1,11 +1,11 @@
 import { useState, useEffect, useContext, useCallback } from "react";
-import { useForm, Controller } from "react-hook-form";
+import { useForm, Controller, useFieldArray } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useDropzone } from "react-dropzone";
-import toast from "react-hot-toast";
-import { Loader2, ArrowLeft, Image as ImageIcon } from "lucide-react";
+import { showToast } from "../../../../lib/utils";
+import { Loader2, ArrowLeft, Image as ImageIcon, Plus, Trash2 } from "lucide-react";
 import { AdminPanelContext } from "../../../../pages/Admin/AdminPanel/AdminPanel";
 import { createBlog, updateBlog, getBlogById } from "../../../../api/admin/blog.api";
 import RichTextEditor from "../../../common/RichTextEditor";
@@ -21,6 +21,10 @@ const blogSchema = z.object({
   thumbnailImageAlt: z.string().optional(),
   bannerImageUrl: z.string().optional(),
   bannerImageAlt: z.string().optional(),
+  faqs: z.array(z.object({
+    question: z.string().min(5, "Question must be at least 5 characters"),
+    answer: z.string().min(5, "Answer must be at least 5 characters"),
+  })).optional(),
 });
 
 type BlogFormValues = z.infer<typeof blogSchema>;
@@ -63,7 +67,13 @@ const BlogForm = () => {
       thumbnailImageAlt: "",
       bannerImageUrl: "",
       bannerImageAlt: "",
+      faqs: [],
     },
+  });
+
+  const { fields, append, remove } = useFieldArray({
+    control,
+    name: "faqs",
   });
 
   const { data: blogData, isLoading: isLoadingBlog } = useQuery({
@@ -96,6 +106,11 @@ const BlogForm = () => {
         author: blog.author,
         miniDescription: blog.miniDescription,
         content: blog.content,
+        thumbnailImageUrl: blog.thumbnailImage?.url || "",
+        thumbnailImageAlt: blog.thumbnailImage?.alt || "",
+        bannerImageUrl: blog.bannerImage?.url || "",
+        bannerImageAlt: blog.bannerImage?.alt || "",
+        faqs: blog.faqs || [],
       });
       setStatus(blog.status as "Draft" | "Published");
       if (blog.thumbnailImage?.url) {
@@ -106,13 +121,6 @@ const BlogForm = () => {
         setBannerPreview(blog.bannerImage.url);
         if (!blog.bannerImage.url.includes("cloudinary")) setBannerMode("url");
       }
-      reset({
-        ...blog,
-        thumbnailImageUrl: blog.thumbnailImage?.url || "",
-        thumbnailImageAlt: blog.thumbnailImage?.alt || "",
-        bannerImageUrl: blog.bannerImage?.url || "",
-        bannerImageAlt: blog.bannerImage?.alt || "",
-      });
     }
   }, [blogData, reset]);
 
@@ -120,9 +128,16 @@ const BlogForm = () => {
     mutationFn: async (data: { values: BlogFormValues, submitStatus: "Draft" | "Published" }) => {
       const formData = new FormData();
       Object.entries(data.values).forEach(([key, value]) => {
+        if (key === "faqs") return; // Skip faqs here, handle specifically below
         if (value !== undefined && value !== null) formData.append(key, value as string);
       });
       formData.append("status", data.submitStatus);
+
+      if (data.values.faqs && data.values.faqs.length > 0) {
+        formData.append("faqs", JSON.stringify(data.values.faqs));
+      } else {
+        formData.append("faqs", "[]");
+      }
 
       if (thumbnailFile) formData.append("thumbnailImage", thumbnailFile);
       if (bannerFile) formData.append("bannerImage", bannerFile);
@@ -133,13 +148,25 @@ const BlogForm = () => {
         return createBlog(formData);
       }
     },
-    onSuccess: () => {
-      toast.success(editBlogId ? "Blog updated successfully!" : "Blog created successfully!");
+    onSuccess: (_, variables) => {
+      const isDraft = variables.submitStatus === "Draft";
+      const action = editBlogId ? "updated" : "created";
+      
+      showToast({
+        type: "success",
+        content: isDraft 
+          ? `Blog ${action} and saved as draft!` 
+          : `Blog ${action} and published successfully!`
+      });
+
       queryClient.invalidateQueries({ queryKey: ["adminBlogs"] });
       setActive?.("AllBlogs");
     },
     onError: (error: any) => {
-      toast.error(error?.response?.data?.error || error.message || "Something went wrong!");
+      showToast({
+        type: "error",
+        content: error?.response?.data?.error || error.message || "Something went wrong!"
+      });
     },
   });
 
@@ -171,7 +198,7 @@ const BlogForm = () => {
 
   const onSubmit = (values: BlogFormValues, submitStatus: "Draft" | "Published") => {
     if (!thumbnailPreview && !thumbnailFile && !editBlogId) {
-      toast.error("Thumbnail image is required");
+      showToast({ type: "error", content: "Thumbnail image is required" });
       return;
     }
     mutation.mutate({ values, submitStatus });
@@ -409,6 +436,64 @@ const BlogForm = () => {
             )}
           />
           {errors.content && <p className="text-red-500 text-xs mt-1">{errors.content.message}</p>}
+        </div>
+
+        {/* FAQ Section */}
+        <div className="space-y-6 pt-8 border-t border-neutral-100">
+          <div className="flex items-center justify-between">
+            <div>
+              <h3 className="text-lg font-bold text-neutral-800">9. Blog FAQs (Optional)</h3>
+              <p className="text-xs text-neutral-500 mt-1">Add common questions and answers for this blog post.</p>
+            </div>
+            <button
+              type="button"
+              onClick={() => append({ question: "", answer: "" })}
+              className="flex items-center gap-2 px-4 py-2 bg-primary/10 text-primary rounded-xl font-bold text-xs hover:bg-primary/20 transition-all border border-primary/20 group"
+            >
+              <Plus size={16} className="group-hover:rotate-90 transition-transform" />
+              ADD FAQ
+            </button>
+          </div>
+
+          <div className="space-y-4">
+            {fields.map((field, index) => (
+              <div key={field.id} className="p-5 bg-neutral-50 rounded-2xl border border-neutral-200 relative animate-in slide-in-from-right duration-300">
+                <button
+                  type="button"
+                  onClick={() => remove(index)}
+                  className="absolute top-4 right-4 text-neutral-400 hover:text-red-500 transition-colors"
+                >
+                  <Trash2 size={18} />
+                </button>
+                <div className="grid grid-cols-1 gap-4">
+                  <div className="space-y-1">
+                    <label className="text-[10px] font-black text-neutral-400 uppercase tracking-widest pl-1">Question {index + 1}</label>
+                    <input
+                      {...register(`faqs.${index}.question` as const)}
+                      className="w-full px-4 py-3 rounded-xl border border-neutral-300 focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all outline-none"
+                      placeholder="Enter the question here..."
+                    />
+                    {errors.faqs?.[index]?.question && <p className="text-red-500 text-[10px] mt-1">{errors.faqs[index].question?.message}</p>}
+                  </div>
+                  <div className="space-y-1">
+                    <label className="text-[10px] font-black text-neutral-400 uppercase tracking-widest pl-1">Answer {index + 1}</label>
+                    <textarea
+                      {...register(`faqs.${index}.answer` as const)}
+                      rows={2}
+                      className="w-full px-4 py-3 rounded-xl border border-neutral-300 focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all outline-none resize-none"
+                      placeholder="Enter the answer here..."
+                    />
+                    {errors.faqs?.[index]?.answer && <p className="text-red-500 text-[10px] mt-1">{errors.faqs[index].answer?.message}</p>}
+                  </div>
+                </div>
+              </div>
+            ))}
+            {fields.length === 0 && (
+              <div className="text-center py-10 border-2 border-dashed border-neutral-200 rounded-2xl bg-neutral-50/50">
+                <p className="text-neutral-400 text-sm font-medium italic">No FAQs added yet. Click 'ADD FAQ' to start.</p>
+              </div>
+            )}
+          </div>
         </div>
 
         {/* Action Buttons */}

@@ -28,16 +28,16 @@ const Breadcrumb = ({ items, className = "" }: BreadcrumbProps) => {
                         {!isLast && item.href ? (
                             <Link
                                 to={item.href}
-                                className="text-gray-400 hover:text-primary transition-colors duration-200 capitalize"
+                                className="text-gray-400 hover:text-primary transition-colors duration-200"
                             >
                                 {item.label}
                             </Link>
                         ) : isLast ? (
-                            <span className="text-primary font-medium capitalize">
+                            <span className="text-primary font-medium">
                                 {item.label}
                             </span>
                         ) : (
-                            <span className="text-gray-400 capitalize">{item.label}</span>
+                            <span className="text-gray-400">{item.label}</span>
                         )}
 
                         {!isLast && (

@@ -39,10 +39,12 @@ export default function Footer() {
           style={{
             backgroundImage: `url(${footerData.cta.image})`,
             backgroundSize: 'cover',
-            backgroundPosition: 'center',
+            backgroundPosition: 'center center',
+            backgroundRepeat: 'no-repeat',
+
           }}
         >
-          <div className="absolute top-0 left-0 w-full h-full bg-black/60" />
+          <div className="absolute top-0 left-0 w-full h-full bg-black/50" />
           <div className="relative z-10 w-full h-full flex items-center px-6 sm:px-12 md:px-20 lg:px-28">
             <div className="flex flex-col items-start text-left gap-6">
               <h3 className="text-white text-3xl sm:text-4xl lg:text-3xl leading-tight font-semibold">
@@ -54,7 +56,7 @@ export default function Footer() {
               <AnimatedButton
                 buttonText={footerData.cta.buttonText}
                 onClick={() => setIsModalOpen(true)}
-                className="bg-[#FBB03B] hover:bg-yellow-500 text-black font-bold py-3 px-8 rounded-md shadow-lg transition duration-300 text-sm tracking-widest uppercase mt-4 !border-none"
+                className="bg-[#FBB03B] hover:bg-yellow-500 text-black font-bold py-3 px-8 shadow-lg transition duration-300 text-sm tracking-widest uppercase mt-4 !border-none"
               />
             </div>
           </div>
@@ -70,9 +72,15 @@ export default function Footer() {
                 <ul className="space-y-2 text-gray-400">
                   {col.items.map((item) => (
                     <li key={item.label}>
-                      <a href={item.href} className="hover:text-primary transition-colors">
-                        {item.label}
-                      </a>
+                      {item.href.startsWith("/") ? (
+                        <Link to={item.href} className="hover:text-primary transition-colors">
+                          {item.label}
+                        </Link>
+                      ) : (
+                        <a href={item.href} className="hover:text-primary transition-colors">
+                          {item.label}
+                        </a>
+                      )}
                     </li>
                   ))}
                 </ul>
@@ -158,12 +166,21 @@ export default function Footer() {
             <div className="flex flex-wrap justify-center">
               {footerData.links.map((link, i) => (
                 <span key={link.name} className=''>
-                  <a
-                    href={link.href}
-                    className="hover:text-primary transition-colors"
-                  >
-                    {link.name}
-                  </a>
+                  {link.href.startsWith("/") ? (
+                    <Link
+                      to={link.href}
+                      className="hover:text-primary transition-colors"
+                    >
+                      {link.name}
+                    </Link>
+                  ) : (
+                    <a
+                      href={link.href}
+                      className="hover:text-primary transition-colors"
+                    >
+                      {link.name}
+                    </a>
+                  )}
                   {i < footerData.links.length - 1 && (
                     <span className="inline mx-2">
                       |

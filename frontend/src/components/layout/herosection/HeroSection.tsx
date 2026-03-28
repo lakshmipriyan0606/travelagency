@@ -18,7 +18,6 @@ import HeroEnquiryForm from './HeroEnquiryForm';
 import { HeroFormData } from '@/config/formConfig';
 import AnimatedButton from '@/components/Button/AnimatedButton/AnimatedButton';
 import { motion } from 'framer-motion';
-import { useNavigate } from 'react-router-dom';
 
 const heroImages = [
     "https://i.postimg.cc/4d2180r1/Whats_App_Image_2026_03_19_at_12_02_47_AM.jpg",
@@ -68,8 +67,6 @@ const ScrollIndicator = () => {
 // ─── HeroSection ──────────────────────────────────────────────────────────────
 
 const HeroSection = () => {
-    const navigate = useNavigate();
-
     const handleFormComplete = (_data: HeroFormData) => {
         // Form is fully submitted and success message shown.
     };
@@ -160,7 +157,7 @@ const HeroSection = () => {
                             <AnimatedButton
                                 buttonText="EXPLORE PACKAGE"
                                 className="!px-10 !py-3.5 w-[200px] h-[45px]"
-                                onClick={() => navigate('/allpackage')}
+                                to="/allpackage"
                             />
 
                             <div className="">

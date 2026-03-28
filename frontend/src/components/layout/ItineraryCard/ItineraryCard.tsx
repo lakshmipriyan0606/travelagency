@@ -63,7 +63,7 @@ const ItineraryCard: React.FC<ItineraryCardProps> = ({ currentPackage }) => {
         return (
           <div key={index} className={cardContainer}>
             <div className={cardHeader}>
-              <h2 className="text-lg font-bold text-gray-800">
+              <h2 className="text-lg text-gray-800">
                 {dayData?.day?.title}
               </h2>
             </div>

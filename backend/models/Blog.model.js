@@ -25,6 +25,12 @@ const blogSchema = new mongoose.Schema(
         liked: { type: Boolean, required: true },
       },
     ],
+    faqs: [
+      {
+        question: { type: String, required: true },
+        answer: { type: String, required: true },
+      },
+    ],
     isDeleted: { type: Boolean, default: false },
     createdBy: {
       type: mongoose.Schema.Types.ObjectId,

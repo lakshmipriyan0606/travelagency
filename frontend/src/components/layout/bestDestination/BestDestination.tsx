@@ -1,9 +1,8 @@
 import { bestPackageList } from "./constant";
 import badgeBackground from "@/assets/icons/badgeBackground.svg";
-import { useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
 
 export function BestDestination() {
-    const navigate = useNavigate();
 
     const handleColSpan = (index: number) => {
         const map: Record<number, string> = {
@@ -27,13 +26,14 @@ export function BestDestination() {
                         const aspect =
                             index === 0 || index === 3 ? "sm:aspect-[1/1]" : "sm:aspect-[2/1]";
                         return (
-                            <div
+                            <Link
                                 key={index}
-                                onClick={() => navigate(`/allpackage?city=${encodeURIComponent(title)}`)}
+                                to={`/allpackage?city=${encodeURIComponent(title)}`}
                                 className={`
                             ${handleColSpan(index)}
                             rounded-[15px] relative overflow-hidden group 
                             cursor-pointer ${aspect}
+                            block
                         `}
                             >
                                 <img
@@ -98,7 +98,7 @@ export function BestDestination() {
                                         )}
                                     </div>
                                 </div>
-                            </div>
+                            </Link>
                         );
                     })}
                 </div>
