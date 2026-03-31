@@ -228,7 +228,7 @@ const StyledField = ({ children, className }: { children: React.ReactNode, class
 export default function AdminUploadPackageForm({ isActivity = false }: { isActivity?: boolean }) {
   const context = useContext(AdminPanelContext);
   if (!context) throw new Error("AdminUploadPackageForm must be used within AdminPanelContext");
-  const { editPackageId: id, setActive, triggerRefresh } = context;
+  const { editId: id, setActive, triggerRefresh } = context;
 
   const [mainImageFiles, setMainImageFiles] = useState<{ file: File; alt: string }[]>([]);
   const [mainImageUrls, setMainImageUrls] = useState<{ url: string; alt: string }[]>([]);

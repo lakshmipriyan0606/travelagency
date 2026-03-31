@@ -19,7 +19,7 @@ import { NiceSelect } from "@/components/common/NiceSelect";
 const BlogAdminList = () => {
   const context = useContext(AdminPanelContext);
   const setActive = context?.setActive;
-  const setEditBlogId = context?.setEditPackageId; // Using the same context state
+  const setEditId = context?.setEditId;
 
   const queryClient = useQueryClient();
   const [search, setSearch] = useState("");
@@ -69,7 +69,7 @@ const BlogAdminList = () => {
   };
 
   const handleEdit = (id: string) => {
-    setEditBlogId?.(id);
+    setEditId?.(id);
     setActive?.("CreateBlog");
   };
 
@@ -82,7 +82,7 @@ const BlogAdminList = () => {
         </div>
         <button
           onClick={() => {
-            setEditBlogId?.(null);
+            setEditId?.(null);
             setActive?.("CreateBlog");
           }}
           className="flex items-center gap-2 px-5 py-2.5 bg-primary text-white rounded-xl font-bold hover:bg-primary/90 transition-all shadow-lg shadow-primary/20"

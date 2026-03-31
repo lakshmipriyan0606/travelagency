@@ -16,11 +16,17 @@ import { useQueryClient } from '@tanstack/react-query'
 import BlogAdminList from '@/components/layout/Admin/Blog/BlogAdminList'
 import BlogForm from '@/components/layout/Admin/Blog/BlogForm'
 import MetricsDashboard from './Dashboard/MetricsDashboard'
+import ReviewAdminList from '@/components/layout/Admin/Review/ReviewAdminList'
+import ReviewForm from '@/components/layout/Admin/Review/ReviewForm'
+import StoryAdminList from '@/components/layout/Admin/Story/StoryAdminList'
+import StoryForm from '@/components/layout/Admin/Story/StoryForm'
+import DestinationAdminList from '@/components/layout/Admin/Destination/DestinationAdminList'
+import DestinationForm from '@/components/layout/Admin/Destination/DestinationForm'
 
-interface FilterPackageProps {
+export interface AdminPanelContextType {
     isAdmin: boolean;
-    editPackageId: string | null;
-    setEditPackageId: (id: string | null) => void;
+    editId: string | null;
+    setEditId: (id: string | null) => void;
     setActive: (active: string) => void;
     packageAPIDetail?: {
         data: any;
@@ -32,7 +38,7 @@ interface FilterPackageProps {
     refreshCount?: number;
 }
 
-export const AdminPanelContext = createContext<FilterPackageProps | null>(null);
+export const AdminPanelContext = createContext<AdminPanelContextType | null>(null);
 
 // Isolated Timer Component to prevent full AdminPanel re-renders every second
 const SessionTimer = ({ expiry }: { expiry: number }) => {
@@ -73,7 +79,7 @@ const AdminPanel = () => {
     const isAdmin = user?.role === "admin" || user?.role === "superadmin" || false;
     const isSuperAdmin = user?.role === "superadmin";
     const [active, setActive] = useState("AllPackages");
-    const [editPackageId, setEditPackageId] = useState<string | null>(null);
+    const [editId, setEditId] = useState<string | null>(null);
     const [refreshCount, setRefreshCount] = useState(0);
     const [showLogoutModal, setShowLogoutModal] = useState(false);
     
@@ -126,6 +132,12 @@ const AdminPanel = () => {
             case "AllBlogs": return <BlogAdminList />;
             case "CreateBlog": return <BlogForm />;
             case "FormList": return <BookingAdminPage />;
+            case "AllReviews": return <ReviewAdminList />;
+            case "CreateReview": return <ReviewForm editReviewId={editId} />;
+            case "AllStories": return <StoryAdminList />;
+            case "CreateStory": return <StoryForm />;
+            case "AllDestinations": return <DestinationAdminList />;
+            case "CreateDestination": return <DestinationForm />;
             case "UploadImage": return <UploadImagePage />;
             case "MediaGallery": return <MediaGallery />;
             default: return <div>Page Not Found</div>;
@@ -134,8 +146,8 @@ const AdminPanel = () => {
 
     const contextValues = {
         isAdmin,
-        editPackageId,
-        setEditPackageId,
+        editId,
+        setEditId,
         setActive,
         packageAPIDetail,
         triggerRefresh,
@@ -147,7 +159,7 @@ const AdminPanel = () => {
             <div className='flex flex-col lg:flex-row bg-neutral-50 min-h-screen font-sans selection:bg-primary/30'>
                 <Sidebar active={active} onChange={(data) => {
                     setActive(data);
-                    setEditPackageId(null);
+                    setEditId(null);
                 }} />
 
                 <main className="flex-1 flex flex-col min-w-0">
@@ -157,11 +169,14 @@ const AdminPanel = () => {
                                 {active === "AllPackages" && "Package Inventory"}
                                 {active === "AllActivities" && "Activity Inventory"}
                                 {active === "AllBlogs" && "Blog Manager"}
-                                {(active === "CreatePackage" || active === "CreateActivity") && (editPackageId ? "Edit Package" : (active === "CreateActivity" ? "Create New Activity" : "Create New Package"))}
-                                {active === "CreateBlog" && (editPackageId ? "Edit Blog" : "Create New Blog")}
+                                {(active === "CreatePackage" || active === "CreateActivity") && (editId ? "Edit Package" : (active === "CreateActivity" ? "Create New Activity" : "Create New Package"))}
+                                {active === "CreateBlog" && (editId ? "Edit Blog" : "Create New Blog")}
                                 {active === "FormList" && "Booking Requests"}
                                 {active === "UploadImage" && "Media Manager"}
                                 {active === "MediaGallery" && "Media Gallery"}
+                                {active === "AllDestinations" && "Popular Destinations (Elite 4)"}
+                                {active === "CreateDestination" && (editId ? "Edit Destination" : "Add to Elite 4")}
+                                {active === "CreateStory" && "Create New Marquee Story"}
                             </h1>
                             <p className="text-[10px] sm:text-[11px] text-neutral-400 uppercase tracking-widest font-bold">
                                 Home / {active === "CreateActivity" ? "Create Activity" : (active === "CreatePackage" ? "Create Package" : active)}

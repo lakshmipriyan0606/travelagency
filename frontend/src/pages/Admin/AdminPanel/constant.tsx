@@ -6,24 +6,6 @@ export const adminMenu = [
         component: "MetricsDashboard",
     },
     {
-        id: 1,
-        label: "All Packages",
-        icon: "📦",
-        component: "AllPackages",
-    },
-    {
-        id: 6,
-        label: "All Activities",
-        icon: "🎾",
-        component: "AllActivities",
-    },
-    {
-        id: 7,
-        label: "All Blogs",
-        icon: "📝",
-        component: "AllBlogs",
-    },
-    {
         id: 2,
         label: "Create New",
         icon: "➕",
@@ -46,8 +28,62 @@ export const adminMenu = [
                 label: "Create Blog",
                 icon: "✍️",
                 component: "CreateBlog",
+            },
+            {
+                id: 24,
+                label: "Create Review",
+                icon: "🌟",
+                component: "CreateReview",
+            },
+            {
+                id: 25,
+                label: "Create Story",
+                icon: "📸",
+                component: "CreateStory",
+            },
+            {
+                id: 26,
+                label: "Create Destination",
+                icon: "📍",
+                component: "CreateDestination",
             }
         ]
+    },
+    {
+        id: 11,
+        label: "All Destinations",
+        icon: "🗺️",
+        component: "AllDestinations",
+    },
+    {
+        id: 1,
+        label: "All Packages",
+        icon: "📦",
+        component: "AllPackages",
+    },
+    {
+        id: 6,
+        label: "All Activities",
+        icon: "🎾",
+        component: "AllActivities",
+    },
+    {
+        id: 7,
+        label: "All Blogs",
+        icon: "📝",
+        component: "AllBlogs",
+    },
+    {
+        id: 8,
+        label: "All Reviews",
+        icon: "⭐",
+        component: "AllReviews",
+    },
+    {
+        id: 9,
+        label: "All Stories",
+        icon: "🖼️",
+        component: "AllStories",
     },
     {
         id: 3,
@@ -60,5 +96,5 @@ export const adminMenu = [
         label: "Media Gallery",
         icon: "🖼️",
         component: "MediaGallery",
-    },
+    }
 ];

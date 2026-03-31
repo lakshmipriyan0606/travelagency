@@ -10,6 +10,9 @@ import bookingRoute from "./routes/bookingForm.route.js";
 import newsletterRoute from "./routes/newsletter.routes.js";
 import uploadRoutes from "./routes/upload.routes.js";
 import blogRoutes from "./routes/blog.routes.js";
+import reviewRoutes from "./routes/review.routes.js";
+import storyRoutes from "./routes/story.routes.js";
+import destinationRoutes from "./routes/destination.routes.js";
 
 // Infrastructure Middleware
 import { globalLimiter, authLimiter, apiLimiter } from "./middlewares/rateLimiter.middleware.js";
@@ -172,5 +175,8 @@ app.use("/api", bookingRoute);
 app.use("/api/newsletter", newsletterRoute);
 app.use("/api/upload", uploadRoutes);
 app.use("/api/blogs", apiLimiter, blogRoutes);
+app.use("/api/reviews", apiLimiter, reviewRoutes);
+app.use("/api/stories", storyRoutes);
+app.use("/api/destinations", destinationRoutes);
 
 export default app;

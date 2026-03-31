@@ -335,7 +335,7 @@ const FilterPackage = ({ likePackageOnly = false, mode = 'all' }: FilterPackageP
                     <PackageCard
                         filterList={filteredPackages}
                         isAdmin={context?.isAdmin || false}
-                        setEditPackageId={context?.setEditPackageId || (() => { })}
+                        setEditPackageId={context?.setEditId || (() => { })}
                         setActive={context?.setActive || (() => { })}
                         refetch={resetAndRefetch}
                         handleLikeUpdate={(id, liked) => {
@@ -368,7 +368,7 @@ const FilterPackage = ({ likePackageOnly = false, mode = 'all' }: FilterPackageP
                             <PackageCard
                                 filterList={packages}
                                 isAdmin={context?.isAdmin || false}
-                                setEditPackageId={context?.setEditPackageId || (() => { })}
+                                setEditPackageId={context?.setEditId || (() => { })}
                                 setActive={context?.setActive || (() => { })}
                                 refetch={resetAndRefetch}
                                 handleLikeUpdate={(id, liked) => {
@@ -395,7 +395,7 @@ const FilterPackage = ({ likePackageOnly = false, mode = 'all' }: FilterPackageP
                         <PackageCard
                             filterList={groupedPackages["Other"]}
                             isAdmin={context?.isAdmin || false}
-                            setEditPackageId={context?.setEditPackageId || (() => { })}
+                            setEditPackageId={context?.setEditId || (() => { })}
                             setActive={context?.setActive || (() => { })}
                             refetch={resetAndRefetch}
                             handleLikeUpdate={(id, liked) => {

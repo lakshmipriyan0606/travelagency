@@ -6,7 +6,7 @@ import { Check, Loader2, X } from "lucide-react";
 import { showToast } from "@/lib/utils";
 import axiosClient from "@/api/axiosClient";
 
-export default function UploadImagePage() {
+export default function UploadImagePage({ folder = "uploads" }: { folder?: string }) {
   const [file, setFile] = useState<File | null>(null);
   const [preview, setPreview] = useState<string | null>(null);
   const [uploading, setUploading] = useState(false);
@@ -47,6 +47,7 @@ export default function UploadImagePage() {
       setUploading(true);
       const form = new FormData();
       form.append("image", file);
+      form.append("folder", folder); // Use the prop-passed folder
       const { data } = await axiosClient.post("/upload/image", form, {
         headers: { "Content-Type": "multipart/form-data" },
       });

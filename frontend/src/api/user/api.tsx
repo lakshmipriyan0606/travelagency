@@ -47,3 +47,10 @@ export const subscribeNewsletter = async (payload: object) => {
   const { data } = await axiosClient.post("newsletter/subscribe", payload);
   return data;
 }
+
+export const GetAllReviews = async () => {
+  const { data } = await axiosClient.get("reviews", {
+    params: { status: "Published" },
+  });
+  return data;
+}

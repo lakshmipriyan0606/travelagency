@@ -31,8 +31,9 @@ type BlogFormValues = z.infer<typeof blogSchema>;
 
 const BlogForm = () => {
   const context = useContext(AdminPanelContext);
-  const editBlogId = context?.editPackageId; // repurposing editPackageId for blog as well
+  const editBlogId = context?.editId;
   const setActive = context?.setActive;
+  const setEditId = context?.setEditId;
   const queryClient = useQueryClient();
 
   const [thumbnailFile, setThumbnailFile] = useState<File | null>(null);
@@ -160,6 +161,7 @@ const BlogForm = () => {
       });
 
       queryClient.invalidateQueries({ queryKey: ["adminBlogs"] });
+      setEditId?.(null);
       setActive?.("AllBlogs");
     },
     onError: (error: any) => {
@@ -212,7 +214,10 @@ const BlogForm = () => {
     <div className="bg-white rounded-2xl shadow-sm border border-neutral-200 p-6 md:p-8 animate-in fade-in duration-300">
       <div className="flex items-center gap-4 mb-8">
         <button
-          onClick={() => setActive?.("AllBlogs")}
+          onClick={() => {
+            setEditId?.(null);
+            setActive?.("AllBlogs");
+          }}
           className="p-2 hover:bg-neutral-100 rounded-full transition-colors text-neutral-600"
         >
           <ArrowLeft size={20} />

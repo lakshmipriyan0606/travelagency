@@ -4,16 +4,25 @@ import { Navigation } from "swiper/modules";
 import "swiper/css";
 import "swiper/css/navigation";
 import { motion } from "framer-motion";
-import { ChevronLeft, ChevronRight } from "lucide-react";
-import { TRAVEL_EXPERIENCES } from "./constant";
+import { ChevronLeft, ChevronRight, Star, MapPin } from "lucide-react";
+import { GetAllReviews } from "@/api/user/api";
+import { useQuery } from "@tanstack/react-query";
 import quoteIcon from "@/assets/icons/quoteIcon.svg";
 
 const TravelExperiences = () => {
   const [activeIndex, setActiveIndex] = useState(0);
   const swiperRef = useRef<any>(null);
 
+  const { data: reviews = [], isLoading } = useQuery({
+    queryKey: ["publicReviews"],
+    queryFn: GetAllReviews,
+  });
+
   const handlePrev = () => swiperRef.current?.slidePrev();
   const handleNext = () => swiperRef.current?.slideNext();
+
+  if (isLoading) return null; // Or a skeleton loader
+  if (reviews.length === 0) return null;
 
   return (
     <section className="bg-white overflow-hidden relative">
@@ -44,7 +53,7 @@ const TravelExperiences = () => {
             <h2 className="text-[26px] sm:text-3xl md:text-4xl lg:text-5xl font-medium text-[#2B2B2B] mb-4 md:mb-8">
               Travel <span className="text-[#FCAF16] md:text-[#2B2B2B]">Experiences</span>
             </h2>
-            <p className="text-[#666666] mb-8 md:mb-10 max-w-[320px] md:max-w-sm leading-relaxed font-roboto text-[11.5px] sm:text-sm md:text-base">
+            <p className="text-[#666666] mb-8 md:mb-10 max-w-[320px] md:max-w-sm  font-roboto text-[11.5px] sm:text-sm md:text-base">
               Discover what our valued customers have to say about their unforgettable experiences.
               Read genuine reviews and testimonials showcasing the joy and satisfaction of their journeys with us.
             </p>
@@ -87,7 +96,7 @@ const TravelExperiences = () => {
               <button
                 onClick={handleNext}
                 className="md:hidden absolute right-0 top-[45%] -translate-y-1/2 z-20 w-8 h-8 rounded-full bg-[#FFF7E6] text-[#FCAF16] flex items-center justify-center shadow-sm disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
-                disabled={activeIndex === TRAVEL_EXPERIENCES.length - 1}
+                disabled={activeIndex === reviews.length - 1}
               >
                 <ChevronRight size={20} />
               </button>
@@ -106,10 +115,10 @@ const TravelExperiences = () => {
                 }}
                 className="testimonial-swiper"
               >
-                {TRAVEL_EXPERIENCES.map((exp, idx) => {
-                  const nextExp = TRAVEL_EXPERIENCES[(idx + 1) % TRAVEL_EXPERIENCES.length];
+                {reviews.map((exp: any, idx: number) => {
+                  const nextExp = reviews[(idx + 1) % reviews.length];
                   return (
-                    <SwiperSlide key={exp.id}>
+                    <SwiperSlide key={exp._id || idx}>
                       <div className="flex lg:grid lg:grid-cols-2 flex-col gap-x-6 gap-y-6 lg:gap-y-0 py-8 px-2 max-w-sm md:max-w-md lg:max-w-none mx-auto lg:mx-0">
 
                         {/* Column 1 */}
@@ -118,7 +127,7 @@ const TravelExperiences = () => {
                           {/* Image Card (Top) */}
                           <div className="w-full aspect-[4/3] rounded-[24px] overflow-hidden shadow-lg">
                             <img
-                              src={exp.image}
+                              src={exp.profileImage?.url}
                               alt={exp.name}
                               loading="lazy"
                               className="w-full h-full object-cover object-center"
@@ -128,13 +137,27 @@ const TravelExperiences = () => {
                           {/* Text Card (Bottom) */}
                           <div className="bg-white p-5 md:p-8 rounded-2xl md:rounded-[24px] shadow-[0_10px_30px_rgba(0,0,0,0.06)] md:shadow-[0_20px_50px_rgba(0,0,0,0.06)] border border-gray-200 md:border-gray-300 flex flex-col h-[230px] sm:h-[260px] md:h-[350px]">
 
-                            <p className="text-[#666666] text-sm md:text-base italic font-roboto leading-relaxed sm:max-h-[270px] custom-scrollbar pr-2 overflow-hidden">
-                              "{exp.text}"
+                            <div className="flex items-center gap-1 mb-2">
+                              {[...Array(5)].map((_, i) => (
+                                <Star
+                                  key={i}
+                                  size={14}
+                                  className={i < exp.rating ? "text-amber-400 fill-amber-400" : "text-neutral-200"}
+                                />
+                              ))}
+                            </div>
+                            <p className="text-[#666666] text-sm md:text-base italic font-roboto line-clamp-6 md:line-clamp-[8] mb-4">
+                              "{exp.content}"
                             </p>
+
+                            <div className="flex items-center gap-2 text-neutral-400 text-xs mb-4">
+                              <MapPin size={12} className="text-primary/60" />
+                              <span className="font-medium tracking-tight uppercase">{exp.location}</span>
+                            </div>
 
                             <div className="flex items-center gap-4 mt-auto pt-6 bg-white z-10">
                               <img
-                                src={exp.image}
+                                src={exp.profileImage?.url}
                                 alt={exp.name}
                                 loading="lazy"
                                 className="w-12 h-12 rounded-full object-cover object-center flex-shrink-0"
@@ -152,13 +175,27 @@ const TravelExperiences = () => {
                           {/* Text Card (Top) */}
                           <div className="bg-white p-6 md:p-8 rounded-[24px] shadow-[0_20px_50px_rgba(0,0,0,0.06)] border border-gray-300 flex flex-col h-[280px] lg:h-[320px]">
 
-                            <p className="text-[#666666] text-sm md:text-base italic font-roboto leading-relaxed overflow-hidden custom-scrollbar pr-2">
-                              "{nextExp.text}"
+                            <div className="flex items-center gap-1 mb-2">
+                              {[...Array(5)].map((_, i) => (
+                                <Star
+                                  key={i}
+                                  size={14}
+                                  className={i < nextExp.rating ? "text-amber-400 fill-amber-400" : "text-neutral-200"}
+                                />
+                              ))}
+                            </div>
+                            <p className="text-[#666666] text-sm md:text-base italic font-roboto line-clamp-6 md:line-clamp-[8] mb-4">
+                              "{nextExp.content}"
                             </p>
+
+                            <div className="flex items-center gap-2 text-neutral-400 text-xs mb-4">
+                              <MapPin size={12} className="text-primary/60" />
+                              <span className="font-medium tracking-tight uppercase">{nextExp.location}</span>
+                            </div>
 
                             <div className="flex items-center gap-4 mt-auto pt-6 bg-white z-10">
                               <img
-                                src={nextExp.image}
+                                src={nextExp.profileImage?.url}
                                 alt={nextExp.name}
                                 loading="lazy"
                                 className="w-12 h-12 rounded-full object-cover object-center flex-shrink-0"
@@ -172,7 +209,7 @@ const TravelExperiences = () => {
                           {/* Image Card (Bottom) */}
                           <div className="w-full aspect-[4/3] rounded-[24px] overflow-hidden shadow-lg">
                             <img
-                              src={nextExp.image}
+                              src={nextExp.profileImage?.url}
                               alt={nextExp.name}
                               loading="lazy"
                               className="w-full h-full object-cover object-center"
@@ -192,7 +229,7 @@ const TravelExperiences = () => {
 
             {/* Mobile Dot Pagination */}
             <div className="flex md:hidden items-center justify-center gap-[5px] mt-6">
-              {TRAVEL_EXPERIENCES.map((_, idx) => (
+              {reviews.map((_: any, idx: number) => (
                 <div
                   key={idx}
                   className={`rounded-full transition-all duration-300 ${activeIndex === idx ? 'w-[5px] h-[5px] bg-[#FCAF16]' : 'w-[5px] h-[5px] bg-gray-300'}`}
@@ -206,7 +243,7 @@ const TravelExperiences = () => {
         <div className="hidden md:flex flex-row items-center justify-between lg:justify-end w-full max-w-sm md:max-w-full mx-auto lg:mr-32 gap-4 sm:gap-6 mt-4 px-2">
           {/* Number on left */}
           <span className="text-[#FCAF16] font-bold text-base sm:text-lg whitespace-nowrap">
-            {String(activeIndex + 1).padStart(2, '0')}/{String(TRAVEL_EXPERIENCES.length).padStart(2, '0')}
+            {String(activeIndex + 1).padStart(2, '0')}/{String(reviews.length).padStart(2, '0')}
           </span>
 
           {/* Progress Bar (middle) */}
@@ -214,7 +251,7 @@ const TravelExperiences = () => {
             <motion.div
               className="absolute top-0 left-0 h-full bg-[#FCAF16]"
               initial={false}
-              animate={{ width: `${((activeIndex + 1) / TRAVEL_EXPERIENCES.length) * 100}%` }}
+              animate={{ width: `${((activeIndex + 1) / reviews.length) * 100}%` }}
               transition={{ duration: 0.4, ease: "easeOut" }}
             />
           </div>
@@ -231,7 +268,7 @@ const TravelExperiences = () => {
             <button
               onClick={handleNext}
               className="w-10 h-10 sm:w-14 sm:h-14 rounded-full flex items-center justify-center text-[#FCAF16] hover:bg-[#FCAF16] hover:text-white transition-all bg-[#FFF7E6] shadow-sm disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
-              disabled={activeIndex === TRAVEL_EXPERIENCES.length - 1}
+              disabled={activeIndex === reviews.length - 1}
             >
               <ChevronRight className="w-5 h-5 sm:w-7 sm:h-7" />
             </button>

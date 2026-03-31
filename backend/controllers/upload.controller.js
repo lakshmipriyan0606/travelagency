@@ -6,9 +6,10 @@ export const uploadImage = async (req, res) => {
       return res.status(400).json({ message: "No image provided" });
     }
 
+    const folder = req.body.folder || req.query.folder || "uploads";
     const url = await new Promise((resolve, reject) => {
       const stream = cloudinary.uploader.upload_stream(
-        { folder: "uploads" },
+        { folder: folder },
         (err, result) => {
           if (err) return reject(err);
           resolve(result && result.secure_url ? result.secure_url : null);
@@ -29,11 +30,13 @@ export const uploadImage = async (req, res) => {
 
 export const getAllImages = async (req, res) => {
   try {
-    // Note: Cloudinary Admin API might require specific permissions or be rate-limited
-    // We use the search API or resources API
+    const { folder } = req.query;
+    // Prefix logic: if folder is provided, use it. Otherwise, defaults to current site structure.
+    const prefix = folder ? `${folder}/` : ""; 
+
     const result = await cloudinary.api.resources({
       type: "upload",
-      prefix: "uploads/", // Only images from our 'uploads' folder
+      prefix: prefix, 
       max_results: 100,
     });
 
