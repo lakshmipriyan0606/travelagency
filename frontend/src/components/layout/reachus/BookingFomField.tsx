@@ -45,7 +45,7 @@ const IconMap: Record<FormFieldConfig['icon'], ReactElement> = {
 
 const DynamicField = ({ fieldConfig, control, fieldClassName }: DynamicFieldProps) => {
     return (
-        <div className="flex items-center gap-3">
+        <div className="flex items-center gap-3 py-1.5">
             <div className="flex-none w-9 h-9 rounded-full bg-yellow-50/90 border border-yellow-200 flex items-center justify-center">
                 {IconMap[fieldConfig.icon]}
             </div>

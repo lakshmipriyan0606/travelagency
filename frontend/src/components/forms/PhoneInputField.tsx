@@ -46,14 +46,14 @@ export const PhoneInputField = ({
             className={cn(
               "!border-none !ring-0 !shadow-none bg-transparent p-0 h-auto w-full",
               "focus:!outline-none focus:!ring-0 focus:!border-none",
-              "transition-all duration-300 font-body text-gray-500 text-sm",
+              "transition-all duration-300 font-body text-sm",
               inputClassName,
-              error && "text-red-400",
+              error ? "!text-red-500" : "text-gray-500",
             )}
           />
 
           {error && (
-            <p className="mt-1 text-xs text-red-400">{error.message}</p>
+            <p className="mt-1 text-xs text-red-500">{error.message}</p>
           )}
         </div>
       )}

@@ -114,10 +114,10 @@ export const SelectField = ({
                   "!border-none !ring-0 !shadow-none bg-transparent p-0 h-auto w-full",
                   "focus:!outline-none focus:!ring-0 focus:!border-none",
                   "[&_svg]:!hidden transition-all duration-300",
-                  "text-sm placeholder:text-gray-400 cursor-pointer",
+                  "text-sm data-[placeholder]:text-gray-400 cursor-pointer",
                   textColor,
                   selectedValueClassName,
-                  error && "text-red-400"
+                  error && "data-[placeholder]:!text-red-500"
                 )}
               >
                 <SelectValue placeholder={error ? error.message : label || "Select Option"} />

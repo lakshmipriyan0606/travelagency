@@ -377,30 +377,6 @@ const About = () => {
             </motion.div>
           ))}
         </motion.div>
-
-        {/* Final CTA - High Impact Yellow */}
-        <motion.div
-          initial="initial"
-          whileInView="animate"
-          variants={fadeInUpVariants}
-          transition={fadeInUpTransition as any}
-          viewport={{ once: true, margin: "-100px" }}
-          className="max-w-6xl mx-auto px-4 mt-40 text-center"
-        >
-          <div className="bg-primary rounded-[4rem] p-16 md:p-28 relative overflow-hidden shadow-2xl shadow-primary/30">
-            <div className="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/cubes.png')] opacity-10" />
-            <div className="relative z-10">
-              <h3 className="text-4xl md:text-7xl font-black text-black mb-10 leading-[0.9] tracking-tighter uppercase font-heading">Ready to elevate <br /> your travel portfolio?</h3>
-              <motion.button
-                whileHover={{ scale: 1.05, boxShadow: "0 30px 60px rgba(0,0,0,0.3)" }}
-                whileTap={{ scale: 0.95 }}
-                className="bg-black text-primary px-14 py-6 rounded-full font-black text-2xl shadow-2xl transition-all font-heading"
-              >
-                Start Partnership
-              </motion.button>
-            </div>
-          </div>
-        </motion.div>
       </section>
     </div>
   );
