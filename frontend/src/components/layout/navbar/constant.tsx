@@ -7,6 +7,11 @@ export const navbarList: NavbarConfigList[] = [
         key: 'Home'
     },
     {
+        name: 'About',
+        path: '/about',
+        key: 'about',
+    },
+    {
         name: 'Package',
         path: '/allpackage',
         key: 'allPackage',

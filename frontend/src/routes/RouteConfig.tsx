@@ -15,11 +15,17 @@ const ActivityPackageList = lazy(() => import('@/pages/Activities/ActivityPackag
 const BlogListPage = lazy(() => import('@/pages/Blog/BlogListPage'));
 const BlogDetailPage = lazy(() => import('@/pages/Blog/BlogDetailPage'));
 const Contact = lazy(() => import('@/pages/Contact/Contact'));
+const About = lazy(() => import('@/pages/About/About'));
 
 const routes: AppRoute[] = [
     {
         path: '/',
         element: <Home />,
+        isProtectRoute: false,
+    },
+    {
+        path: '/about',
+        element: <About />,
         isProtectRoute: false,
     },
     {

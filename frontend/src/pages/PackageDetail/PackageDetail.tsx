@@ -11,6 +11,7 @@ import Breadcrumb from '@/components/common/Breadcrumb/Breadcrumb'
 import { Helmet } from 'react-helmet-async'
 
 import noDataImg from '@/assets/image/no-data-clean.png'
+import SuggestedProducts from '@/components/layout/suggestedProducts/SuggestedProducts'
 
 const PackageDetail = () => {
 
@@ -216,6 +217,21 @@ const PackageDetail = () => {
                     </div>
                 )}
             </div>
+
+            {/* Suggested Products Section */}
+            {pkg && (
+                <div className="px-4 sm:px-8 lg:px-12 pb-16">
+                    <SuggestedProducts 
+                        currentPackageId={pkg._id}
+                        activityCategory={pkg.activityCategory}
+                        packageType={pkg.packageType}
+                        location={pkg.location}
+                        onlyActivities={!!pkg.activityCategory}
+                        excludeActivities={!pkg.activityCategory}
+                        title="You might also like"
+                    />
+                </div>
+            )}
         </div>
     )
 }

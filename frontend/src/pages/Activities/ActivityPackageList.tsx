@@ -12,6 +12,7 @@ import { GLOBAL_CONFIG } from "@/config/globalConfig";
 import { activityCategoryOptions } from "@/components/layout/Admin/AdminUploadPackage/constant";
 import { motion } from "framer-motion";
 import { Helmet } from "react-helmet-async";
+import SuggestedProducts from "@/components/layout/suggestedProducts/SuggestedProducts";
 
 const PAGE_SIZE = 8;
 
@@ -213,6 +214,15 @@ const ActivityPackageList = () => {
                 </div>
 
                 {renderContent()}
+            </div>
+
+            {/* Suggested Products Section */}
+            <div className="px-4 sm:px-8 xl:px-16 pb-16">
+                <SuggestedProducts 
+                    activityCategory={activeType}
+                    onlyActivities={true}
+                    title={activeType ? `More ${activeType} Experiences` : "You might also like"}
+                />
             </div>
         </div>
     );
