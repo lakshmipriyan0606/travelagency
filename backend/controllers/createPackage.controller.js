@@ -18,11 +18,30 @@ export const createPackage = async (req, res) => {
       isActive,
       status,
       activityCategory,
+      operatingHours,
+      languages,
+      isInstantConfirmation,
+      isNonRefundable,
+      highlights,
       seo, // Added SEO
     } = req.body;
 
-    const days = JSON.parse(req.body.days);
+    const days = JSON.parse(req.body.days || "[]");
     const parsedSeo = seo ? JSON.parse(seo) : {}; // Parse SEO
+    // Parse highlights: can be a JSON string, a plain array, or a string
+    let parsedHighlights = [];
+    if (highlights) {
+      if (Array.isArray(highlights)) {
+        parsedHighlights = highlights;
+      } else if (typeof highlights === "string") {
+        try {
+          parsedHighlights = JSON.parse(highlights);
+        } catch (e) {
+          // If not JSON, it might be a comma-separated string if sent incorrectly
+          parsedHighlights = highlights.split(",").filter(Boolean);
+        }
+      }
+    }
 
     const uploadFile = (file) => {
       return new Promise((resolve, reject) => {
@@ -127,6 +146,11 @@ export const createPackage = async (req, res) => {
       status: status || 'Active',
       activityCategory: activityCategory || null,
       seo: parsedSeo,
+      operatingHours: operatingHours || "",
+      languages: languages || "",
+      isInstantConfirmation: isInstantConfirmation === 'true' || isInstantConfirmation === true,
+      isNonRefundable: isNonRefundable === 'true' || isNonRefundable === true,
+      highlights: parsedHighlights,
       createdBy: req.user._id,
     });
 
@@ -158,6 +182,11 @@ export const updatePackage = async (req, res) => {
       isActive,
       status,
       activityCategory,
+      operatingHours,
+      languages,
+      isInstantConfirmation,
+      isNonRefundable,
+      highlights,
       seo, // Added SEO
     } = req.body;
 
@@ -176,6 +205,7 @@ export const updatePackage = async (req, res) => {
     }
 
     const parsedSeo = seo ? (typeof seo === "string" ? JSON.parse(seo) : seo) : {}; // Parse SEO
+    const parsedHighlights = highlights ? (typeof highlights === "string" ? JSON.parse(highlights) : highlights) : [];
 
     // parse existingImages: accept array or JSON string
     let existingImages = [];
@@ -341,6 +371,11 @@ export const updatePackage = async (req, res) => {
         status,
         activityCategory: activityCategory || null,
         seo: parsedSeo,
+        operatingHours: operatingHours || "",
+        languages: languages || "",
+        isInstantConfirmation: isInstantConfirmation === 'true' || isInstantConfirmation === true,
+        isNonRefundable: isNonRefundable === 'true' || isNonRefundable === true,
+        highlights: parsedHighlights,
       },
       { new: true, runValidators: true }
     );

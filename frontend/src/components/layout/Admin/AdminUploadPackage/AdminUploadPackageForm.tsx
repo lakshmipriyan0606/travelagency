@@ -30,6 +30,8 @@ import { useMutationAPIQuery } from "@/Hook/useMutationAPIQuery";
 import { CreatePackage, UpdatePackage, GetCurrentPackageDetail } from "@/api/admin/auth.api";
 import { UseFetchAPIQuery } from "@/Hook/UseFetchAPIQuery";
 import { AdminPanelContext } from "@/pages/Admin/AdminPanel/AdminPanel";
+import { HighlightsSection } from "./HighlightsSection";
+import { Clock, ShieldCheck, List } from "lucide-react";
 
 // ... schemas remain the same ...
 const slotSchema = z.object({
@@ -61,6 +63,11 @@ const formSchema = z.object({
   status: z.enum(["Active", "Inactive"]).default("Active"),
   activityCategory: z.string().optional(),
   days: z.array(daySchema),
+  operatingHours: z.string().optional(),
+  isInstantConfirmation: z.boolean().default(false),
+  isNonRefundable: z.boolean().default(false),
+  languages: z.string().optional(),
+  highlights: z.array(z.object({ item: z.string() })).default([]),
   seo: z.object({ // Added SEO
     title: z.string().optional(),
     description: z.string().optional(),
@@ -225,7 +232,7 @@ const StyledField = ({ children, className }: { children: React.ReactNode, class
   </div>
 );
 
-export default function AdminUploadPackageForm({ isActivity = false }: { isActivity?: boolean }) {
+export default function AdminUploadPackageForm({ isActivity: isActivityProp = false }: { isActivity?: boolean }) {
   const context = useContext(AdminPanelContext);
   if (!context) throw new Error("AdminUploadPackageForm must be used within AdminPanelContext");
   const { editId: id, setActive, triggerRefresh } = context;
@@ -234,11 +241,45 @@ export default function AdminUploadPackageForm({ isActivity = false }: { isActiv
   const [mainImageUrls, setMainImageUrls] = useState<{ url: string; alt: string }[]>([]);
   const [activeStep, setActiveStep] = useState(0);
 
+  const methods = useForm<FormData>({
+    resolver: zodResolver(formSchema) as any,
+    defaultValues: {
+      packageName: "",
+      packageDescription: "",
+      location: "",
+      packageType: "",
+      daysAndNights: "",
+      hotelName: "",
+      price: "",
+      offerPrice: "",
+      isBestPackage: false,
+      isActive: true,
+      country: "Malaysia",
+      bestRank: "",
+      status: "Active",
+      activityCategory: "",
+      days: [{ dayTitle: "", slots: [{ slotType: "", title: "", description: "", imageUrl: "", imageAlt: "" }] }],
+      operatingHours: "",
+      isInstantConfirmation: false,
+      isNonRefundable: false,
+      languages: "",
+      highlights: [],
+      seo: { title: "", description: "", keywords: "" }
+    },
+    mode: 'onChange'
+  });
+
+  const { control, handleSubmit, watch, reset, formState } = methods;
+
+  // Reactive check for activity type - ensures UI updates when category changes
+  const watchActivityCategory = watch("activityCategory");
+  const isActivity = isActivityProp || (watchActivityCategory && watchActivityCategory !== "" && watchActivityCategory !== "none");
+
   const steps = [
     { title: "Core Details", subtitle: "Identity & Location", icon: Package },
     { title: "Pricing & Visibility", subtitle: "Rates & Status", icon: Tag },
     { title: "Media Gallery", subtitle: "Visual Assets", icon: ImageIcon },
-    { title: "Journey Roadmap", subtitle: "Daily Itinerary", icon: Calendar },
+    { title: isActivity ? "Activity Highlights" : "Journey Roadmap", subtitle: isActivity ? "Key Features" : "Daily Itinerary", icon: isActivity ? List : Calendar },
   ];
 
   const createMutation = useMutationAPIQuery(CreatePackage, {
@@ -273,32 +314,6 @@ export default function AdminUploadPackageForm({ isActivity = false }: { isActiv
     options: { enabled: !!id }
   });
 
-  const methods = useForm<FormData>({
-    resolver: zodResolver(formSchema) as any,
-    defaultValues: {
-      packageName: "",
-      packageDescription: "",
-      location: "",
-      packageType: "",
-      daysAndNights: "",
-      hotelName: "",
-      price: "",
-      offerPrice: "",
-      isBestPackage: false,
-      isActive: true,
-      country: "Malaysia",
-      bestRank: "",
-      status: "Active",
-      activityCategory: "",
-      days: [{ dayTitle: "", slots: [{ slotType: "", title: "", description: "", imageUrl: "", imageAlt: "" }] }],
-      seo: { title: "", description: "", keywords: "" }
-    },
-    mode: 'onChange'
-  });
-
-
-  const { control, handleSubmit, watch, reset, formState } = methods;
-
   useEffect(() => {
     if (!id || !data?.data) return;
     const pkg = data.data;
@@ -317,6 +332,11 @@ export default function AdminUploadPackageForm({ isActivity = false }: { isActiv
       isActive: pkg.isActive !== false,
       status: pkg.status || "Active",
       activityCategory: pkg.activityCategory || "",
+      operatingHours: pkg.operatingHours || "",
+      isInstantConfirmation: pkg.isInstantConfirmation === true || pkg.isInstantConfirmation === "true",
+      isNonRefundable: pkg.isNonRefundable === true || pkg.isNonRefundable === "true",
+      languages: pkg.languages || "",
+      highlights: (pkg.highlights || []).map((h: string) => typeof h === 'string' ? { item: h } : { item: "" }),
       days: (pkg.days || []).map((day: any) => ({
         dayTitle: day.dayTitle || "",
         slots: (day.slots || []).map((slot: any) => ({
@@ -345,7 +365,8 @@ export default function AdminUploadPackageForm({ isActivity = false }: { isActiv
     try {
       const formData = new FormData();
       Object.entries(values).forEach(([key, val]) => {
-        if (key !== "days" && key !== "seo") {
+        const excludeFields = ["days", "seo", "highlights", "operatingHours", "languages", "isInstantConfirmation", "isNonRefundable"];
+        if (!excludeFields.includes(key)) {
           // "none" means the user chose "No Activity" — send empty string to backend
           const sanitized = key === "activityCategory" && val === "none" ? "" : val;
           formData.append(key, sanitized as any);
@@ -372,6 +393,11 @@ export default function AdminUploadPackageForm({ isActivity = false }: { isActiv
         }))
       }));
       formData.append("days", JSON.stringify(daysClean));
+      formData.append("highlights", JSON.stringify(values.highlights.map((h: { item: string }) => h.item)));
+      formData.append("operatingHours", values.operatingHours || "");
+      formData.append("languages", values.languages || "");
+      formData.append("isInstantConfirmation", values.isInstantConfirmation ? "true" : "false");
+      formData.append("isNonRefundable", values.isNonRefundable ? "true" : "false");
 
       values.days.forEach((day: any, dIndex: number) => {
         day.slots.forEach((slot: any, sIndex: number) => {
@@ -510,8 +536,8 @@ export default function AdminUploadPackageForm({ isActivity = false }: { isActiv
                     <StyledField>
                       <ReusableInput control={control} name="daysAndNights" label="Duration" placeholder="e.g. 3 Days, 2 Nights" required variant="floating" />
                     </StyledField>
-                    {/* Only show activity category if in Create Activity mode OR if editing an existing activity package */}
-                    {(isActivity || (id && data?.data?.activityCategory && data?.data?.activityCategory !== "none")) && (
+                    {/* Show activity category if in Create Activity mode OR if this is an activity package */}
+                    {isActivity && (
                       <StyledField>
                         <SelectField
                           control={control}
@@ -600,6 +626,20 @@ export default function AdminUploadPackageForm({ isActivity = false }: { isActiv
                     )}
                   </div>
                 </Card>
+
+                {isActivity && (
+                  <Card className="p-8 border border-neutral-200/60 shadow-2xl shadow-neutral-200/40 rounded-[32px] bg-white/80 backdrop-blur-md mt-6">
+                    <SectionHeader icon={ShieldCheck} title="Service Terms" subtitle="Redemption Details" />
+                    <div className="space-y-4 mt-6">
+                      <StyledField>
+                        <ReusableCheckbox control={control} name="isInstantConfirmation" label="Instant Confirmation" />
+                      </StyledField>
+                      <StyledField>
+                        <ReusableCheckbox control={control} name="isNonRefundable" label="Non Refundable" />
+                      </StyledField>
+                    </div>
+                  </Card>
+                )}
               </div>
             )}
 
@@ -621,28 +661,48 @@ export default function AdminUploadPackageForm({ isActivity = false }: { isActiv
 
             {activeStep === 3 && (
               <div className="animate-in fade-in slide-in-from-right-4 duration-500 space-y-6">
-                <div className="flex items-center justify-between px-4">
-                  <SectionHeader icon={Calendar} title="Journey Roadmap" subtitle="Day-by-day experience plan" />
-                  <Button
-                    type="button"
-                    onClick={() => addDay({ dayTitle: "", slots: [{ slotType: "", title: "", description: "", imageUrl: "", imageAlt: "" }] })}
-                    className="bg-neutral-800 text-white hover:bg-neutral-900 rounded-xl font-bold text-[10px] gap-2 py-4 px-6 shadow-lg shadow-neutral-200 transition-all hover:-translate-y-0.5 active:translate-y-0 border border-neutral-700 uppercase tracking-wider"
-                  >
-                    <Plus size={14} /> Add Day
-                  </Button>
-                </div>
+                {isActivity ? (
+                  <div className="space-y-6">
+                    <Card className="p-6 border border-neutral-200/60 shadow-xl shadow-neutral-200/30 rounded-[24px] overflow-hidden bg-white/80 backdrop-blur-md transition-all">
+                      <SectionHeader icon={Clock} title="Logistics" subtitle="Working hours & languages" />
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
+                        <StyledField>
+                          <ReusableInput control={control} name="operatingHours" label="Operating Hours" placeholder="e.g. 08:00 AM To 02:00 PM" variant="floating" />
+                        </StyledField>
+                        <StyledField>
+                          <ReusableInput control={control} name="languages" label="Languages" placeholder="e.g. English, Arabic" variant="floating" />
+                        </StyledField>
+                      </div>
+                    </Card>
 
-                <div className="space-y-6">
-                  {dayFields.map((day, index) => (
-                    <ItineraryDaySection key={day.id} control={control} dayIndex={index} removeDay={removeDay} />
-                  ))}
-                  {dayFields.length === 0 && (
-                    <div className="text-center py-12 border-2 border-dashed border-neutral-100 rounded-[24px] bg-neutral-50/50">
-                      <Calendar size={32} className="mx-auto text-neutral-200 mb-3" />
-                      <p className="text-neutral-400 font-semibold uppercase tracking-wider text-[9px]">No days added yet</p>
+                    <HighlightsSection control={control} />
+                  </div>
+                ) : (
+                  <>
+                    <div className="flex items-center justify-between px-4">
+                      <SectionHeader icon={Calendar} title="Journey Roadmap" subtitle="Day-by-day experience plan" />
+                      <Button
+                        type="button"
+                        onClick={() => addDay({ dayTitle: "", slots: [{ slotType: "", title: "", description: "", imageUrl: "", imageAlt: "" }] })}
+                        className="bg-neutral-800 text-white hover:bg-neutral-900 rounded-xl font-bold text-[10px] gap-2 py-4 px-6 shadow-lg shadow-neutral-200 transition-all hover:-translate-y-0.5 active:translate-y-0 border border-neutral-700 uppercase tracking-wider"
+                      >
+                        <Plus size={14} /> Add Day
+                      </Button>
                     </div>
-                  )}
-                </div>
+
+                    <div className="space-y-6">
+                      {dayFields.map((day, index) => (
+                        <ItineraryDaySection key={day.id} control={control} dayIndex={index} removeDay={removeDay} />
+                      ))}
+                      {dayFields.length === 0 && (
+                        <div className="text-center py-12 border-2 border-dashed border-neutral-100 rounded-[24px] bg-neutral-50/50">
+                          <Calendar size={32} className="mx-auto text-neutral-200 mb-3" />
+                          <p className="text-neutral-400 font-semibold uppercase tracking-wider text-[9px]">No days added yet</p>
+                        </div>
+                      )}
+                    </div>
+                  </>
+                )}
               </div>
             )}
           </div>

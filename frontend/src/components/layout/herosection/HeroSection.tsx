@@ -159,10 +159,6 @@ const HeroSection = () => {
                                 className="!px-10 !py-3.5 w-[200px] h-[45px]"
                                 to="/allpackage"
                             />
-
-                            <div className="">
-                                <ScrollIndicator />
-                            </div>
                         </div>
                     </div>
 

@@ -12,6 +12,7 @@ import { Helmet } from 'react-helmet-async'
 
 import noDataImg from '@/assets/image/no-data-clean.png'
 import SuggestedProducts from '@/components/layout/suggestedProducts/SuggestedProducts'
+import { Clock, Zap, ShieldCheck, Globe } from 'lucide-react'
 
 const PackageDetail = () => {
 
@@ -83,7 +84,7 @@ const PackageDetail = () => {
                     <motion.h1
                         initial={{ opacity: 0, y: -10 }}
                         animate={{ opacity: 1, y: 0 }}
-                        className='text-bold text-2xl lg:text-4xl text-red-600 border-x-4 border-red-500 px-10 py-3 italic font-black text-center tracking-tighter'
+                        className='text-bold text-2xl lg:text-4xl text-red-600 border-x-4 border-red-500 px-10 py-3 italic  text-center tracking-tighter'
                     >
                         Package Not Found
                     </motion.h1>
@@ -127,7 +128,7 @@ const PackageDetail = () => {
                                 />
                             </motion.div>
 
-                            <h2 className="text-3xl lg:text-4xl font-black text-slate-900 mb-6 tracking-tight leading-tight">
+                            <h2 className="text-3xl lg:text-4xl  text-slate-900 mb-6 tracking-tight leading-tight">
                                 This package is <span className="text-primary italic">no longer available.</span>
                             </h2>
                             <p className="text-slate-500 max-w-md mx-auto leading-relaxed text-lg font-medium opacity-90">
@@ -137,13 +138,13 @@ const PackageDetail = () => {
                             <div className="flex flex-col sm:flex-row gap-5 mt-3 w-full max-w-lg justify-center">
                                 <Link
                                     to="/allpackage"
-                                    className="px-10 py-5 bg-primary text-black font-black rounded-2xl hover:bg-opacity-90 transition-all shadow-[0_15px_35_rgba(242,193,46,0.4)] active:scale-95 uppercase tracking-extrawide text-sm whitespace-nowrap cursor-pointer flex items-center justify-center"
+                                    className="px-10 py-5 bg-primary text-black  rounded-2xl hover:bg-opacity-90 transition-all shadow-[0_15px_35_rgba(242,193,46,0.4)] active:scale-95 uppercase tracking-extrawide text-sm whitespace-nowrap cursor-pointer flex items-center justify-center"
                                 >
                                     Explore All Packages
                                 </Link>
                                 <Link
                                     to="/"
-                                    className="px-10 py-5 bg-white text-slate-800 border-2 border-slate-100 font-black rounded-2xl hover:bg-slate-50 hover:border-slate-200 transition-all active:scale-95 uppercase tracking-extrawide text-sm whitespace-nowrap cursor-pointer flex items-center justify-center"
+                                    className="px-10 py-5 bg-white text-slate-800 border-2 border-slate-100  rounded-2xl hover:bg-slate-50 hover:border-slate-200 transition-all active:scale-95 uppercase tracking-extrawide text-sm whitespace-nowrap cursor-pointer flex items-center justify-center"
                                 >
                                     Back to Home
                                 </Link>
@@ -158,48 +159,117 @@ const PackageDetail = () => {
                                 <BookingFomField fieldClassName="text-gray-800 sm:text-gray-800 shadow-xl" packageName={packageName} />
                             </div>
 
-                            <div className='font-body bg-white/50 rounded-2xl border border-gray-100'>
-                                <p className='text-gray-600 leading-relaxed text-[15px] py-4 text-justify'>
-                                    {pkg?.packageDescription}
-                                </p>
-                            </div>
+                            {pkg && pkg.activityCategory ? (
+                                <div className="space-y-8 mt-6 font-body">
+                                    {/* Info Bar */}
+                                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 bg-white/80 backdrop-blur-md rounded-3xl border border-gray-100 p-6 shadow-sm">
+                                        <div className="flex items-start gap-3">
+                                            <div className="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center text-primary shrink-0">
+                                                <Clock size={20} />
+                                            </div>
+                                            <div>
+                                                <p className="text-[11px] font-bold text-gray-400 uppercase tracking-wider">Operating Hours</p>
+                                                <p className="text-sm font-semibold text-gray-800">{pkg.operatingHours || "N/A"}</p>
+                                            </div>
+                                        </div>
 
-                            <div className="w-full py-9">
+                                        <div className="flex items-start gap-3">
+                                            <div className="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center text-primary shrink-0">
+                                                <Zap size={20} />
+                                            </div>
+                                            <div>
+                                                <p className="text-[11px] font-bold text-gray-400 uppercase tracking-wider">Instant Confirmation</p>
+                                                <p className="text-sm font-semibold text-gray-800">{pkg.isInstantConfirmation ? "Instant tour confirmation" : "Confirmation needed"}</p>
+                                            </div>
+                                        </div>
 
-                                {/* ----------- TAB BUTTONS ----------- */}
-                                <div className="flex pb-2 font-semibold bg-gray-200 rounded-lg p-1 w-fit">
-                                    {tabberConfig.map((tab) => (
-                                        <button
-                                            key={tab.id}
-                                            onClick={() => setActiveTab(tab.id)}
-                                            className="relative px-4 py-2 cursor-pointer"
-                                        >
-                                            {/* Animated Active Background */}
-                                            {activeTab === tab.id && (
-                                                <motion.div
-                                                    layoutId="activeTab"
-                                                    transition={{ type: "spring", stiffness: 300, damping: 25 }}
-                                                    className="absolute inset-0 bg-primary rounded-md"
-                                                />
-                                            )}
+                                        <div className="flex items-start gap-3">
+                                            <div className="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center text-primary shrink-0">
+                                                <ShieldCheck size={20} />
+                                            </div>
+                                            <div>
+                                                <p className="text-[11px] font-bold text-gray-400 uppercase tracking-wider">Cancellation</p>
+                                                <p className="text-sm font-semibold text-gray-800">{pkg.isNonRefundable ? "Non Refundable" : "Free Cancellation"}</p>
+                                            </div>
+                                        </div>
 
-                                            {/* Tab Text */}
-                                            <span
-                                                className={`relative z-10 text-black`}
-                                            >
-                                                {tab.text}
-                                            </span>
-                                        </button>
-                                    ))}
+                                        <div className="flex items-start gap-3">
+                                            <div className="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center text-primary shrink-0">
+                                                <Globe size={20} />
+                                            </div>
+                                            <div>
+                                                <p className="text-[11px] font-bold text-gray-400 uppercase tracking-wider">Language</p>
+                                                <p className="text-sm font-semibold text-gray-800">{pkg.languages || "English"}</p>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    {/* Main Content Area */}
+                                    <div className="bg-white/50 rounded-[2.5rem] border border-gray-100 p-8 lg:p-10 shadow-sm space-y-12">
+                                        {/* Overview Section */}
+                                        <section>
+                                            <div className="flex items-center gap-4 mb-6">
+                                                <div className="w-1.5 h-8 bg-primary rounded-full shadow-[0_0_15px_rgba(252,175,22,0.4)]" />
+                                                <h2 className="text-3xl font-heading  text-gray-900 tracking-tight">Overview</h2>
+                                            </div>
+                                            <p className="text-gray-600 leading-relaxed text-lg text-justify font-medium">
+                                                {pkg.packageDescription}
+                                            </p>
+                                        </section>
+
+                                        {/* Highlights Section */}
+                                        {pkg.highlights && pkg.highlights.length > 0 && (
+                                            <section>
+                                                <div className="flex items-center gap-4 mb-6">
+                                                    <div className="w-1.5 h-8 bg-primary rounded-full shadow-[0_0_15px_rgba(252,175,22,0.4)]" />
+                                                    <h2 className="text-3xl font-heading text-gray-900 tracking-tight">Highlights</h2>
+                                                </div>
+                                                <ul className="grid grid-cols-1 gap-y-4 gap-x-8">
+                                                    {pkg.highlights.map((highlight: string, idx: number) => (
+                                                        <li key={idx} className="flex items-start gap-3 group px-5">
+                                                            <div className="mt-1.5 w-2 h-2 rounded-full bg-primary shadow-[0_0_8px_rgba(252,175,22,0.6)] shrink-0 transition-transform group-hover:scale-125" />
+                                                            <span className="text-gray-700 text-base">{highlight}</span>
+                                                        </li>
+                                                    ))}
+                                                </ul>
+                                            </section>
+                                        )}
+                                    </div>
                                 </div>
+                            ) : (
+                                <>
+                                    <div className='font-body bg-white/50 rounded-2xl border border-gray-100 mt-6'>
+                                        <p className='text-gray-600 leading-relaxed text-[15px] py-4 text-justify px-4'>
+                                            {pkg?.packageDescription}
+                                        </p>
+                                    </div>
 
-
-                                {/* ----------- TAB CONTENT ----------- */}
-                                <div className="mt-4">
-                                    {tabberConfig.find((tab) => tab.id === activeTab)?.component}
-                                </div>
-
-                            </div>
+                                    <div className="w-full py-9">
+                                        {/* ----------- TAB BUTTONS ----------- */}
+                                        <div className="flex pb-2 font-semibold bg-gray-200 rounded-lg p-1 w-fit">
+                                            {tabberConfig.map((tab) => (
+                                                <button
+                                                    key={tab.id}
+                                                    onClick={() => setActiveTab(tab.id)}
+                                                    className="relative px-4 py-2 cursor-pointer"
+                                                >
+                                                    {activeTab === tab.id && (
+                                                        <motion.div
+                                                            layoutId="activeTab"
+                                                            transition={{ type: "spring", stiffness: 300, damping: 25 }}
+                                                            className="absolute inset-0 bg-primary rounded-md"
+                                                        />
+                                                    )}
+                                                    <span className={`relative z-10 text-black`}>{tab.text}</span>
+                                                </button>
+                                            ))}
+                                        </div>
+                                        <div className="mt-4">
+                                            {tabberConfig.find((tab) => tab.id === activeTab)?.component}
+                                        </div>
+                                    </div>
+                                </>
+                            )}
                         </>
                     )}
 
@@ -221,7 +291,7 @@ const PackageDetail = () => {
             {/* Suggested Products Section */}
             {pkg && (
                 <div className="px-4 sm:px-8 lg:px-12 pb-16">
-                    <SuggestedProducts 
+                    <SuggestedProducts
                         currentPackageId={pkg._id}
                         activityCategory={pkg.activityCategory}
                         packageType={pkg.packageType}

@@ -70,7 +70,7 @@ export default function SuggestedProducts({
 
     const suggestList = useMemo(() => {
         let list = relatedData?.data || [];
-        
+
         // If related list is too small (e.g., only the current package), use best packages
         if (list.length <= 1 && bestData?.data) {
             list = bestData.data;
@@ -98,10 +98,10 @@ export default function SuggestedProducts({
     return (
         <section className={`py-12 px-4 sm:px-0 ${className}`}>
             <div className="flex items-center justify-between mb-8 border-l-4 border-primary pl-4">
-                <h2 className="text-2xl sm:text-3xl font-black text-gray-900 tracking-tight uppercase">
+                <h2 className="text-2xl sm:text-3xl text-gray-900 tracking-tight uppercase">
                     {title}
                 </h2>
-                
+
                 <div className="flex gap-2">
                     <button
                         ref={(node) => setPrevEl(node)}

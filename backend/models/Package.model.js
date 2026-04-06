@@ -40,12 +40,17 @@ const packageSchema = new mongoose.Schema(
         imageAlt: { type: String, default: "" }
       }]
     }],
+    languages: { type: String, default: "" },
     likes: [
       {
         userId: { type: String, required: true },
         liked: { type: Boolean, required: true },
       },
     ],
+    operatingHours: { type: String, default: "" },
+    isInstantConfirmation: { type: Boolean, default: false },
+    isNonRefundable: { type: Boolean, default: false },
+    highlights: [{ type: String, default: "" }],
 
   },
   { timestamps: true }

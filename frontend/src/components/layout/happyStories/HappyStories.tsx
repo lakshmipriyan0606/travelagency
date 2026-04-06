@@ -55,9 +55,9 @@ const HappyStories = () => {
 
       {/* Middle Section: Text and Button */}
       <div className="max-w-7xl mx-auto px-4 w-full flex flex-col md:flex-row items-center justify-center gap-6 md:gap-12">
-        <h2 className="text-2xl md:text-4xl font-black text-center tracking-tight">
+        <h2 className="text-2xl md:text-4xl text-center tracking-tight">
           <span className="text-neutral-800">Happy Customers,</span>{" "}
-          <span className="text-primary italic">Happy Stories</span>
+          <span className="text-primary">Happy Stories</span>
         </h2>
         <button
           onClick={handleInstagramClick}

@@ -34,18 +34,18 @@ export default function AnimatedButton({
 
       {/* Horizontal lines */}
       <span
-        className={`absolute top-[2px] right-[2px] w-[35%] h-[0.5px] ${borderButtonColor} transition-all duration-500 group-hover:w-[calc(100%-4px)]`}
+        className={`absolute top-[2px] right-[2px] w-[35%] h-[0.5px] ${borderButtonColor} transition-all duration-500 group-hover:w-[calc(100%-4px)] hidden md:block`}
       ></span>
       <span
-        className={`absolute bottom-[2.3px] left-[2px] w-[35%] h-[0.5px] ${borderButtonColor} transition-all duration-500 group-hover:w-[calc(100%-4px)]`}
+        className={`absolute bottom-[2.3px] left-[2px] w-[35%] h-[0.5px] ${borderButtonColor} transition-all duration-500 group-hover:w-[calc(100%-4px)] hidden md:block`}
       ></span>
 
       {/* Vertical lines */}
       <span
-        className={`absolute top-[2px] right-[2.5px] w-[0.5px] h-6 ${borderButtonColor} transition-all duration-500 delay-150 group-hover:h-[calc(100%-4px)]`}
+        className={`absolute top-[2px] right-[2.5px] w-[0.5px] h-6 ${borderButtonColor} transition-all duration-500 delay-150 group-hover:h-[calc(100%-4px)] hidden md:block`}
       ></span>
       <span
-        className={`absolute bottom-[2px] left-[2px] w-[0.5px] h-6 ${borderButtonColor} transition-all duration-500 delay-150 group-hover:h-[calc(100%-4px)]`}
+        className={`absolute bottom-[2px] left-[2px] w-[0.5px] h-6 ${borderButtonColor} transition-all duration-500 delay-150 group-hover:h-[calc(100%-4px)] hidden md:block`}
       ></span>
     </>
   );
@@ -54,7 +54,7 @@ export default function AnimatedButton({
     <Button
       asChild={asChild || !!to}
       type={type}
-      className={`relative p-2 cursor-pointer font-semibold tracking-widest overflow-hidden group ${bgColor} ${textColor} ${className}`}
+      className={`relative p-2 cursor-pointer font-semibold tracking-widest overflow-hidden group shadow-none border-none ${bgColor} ${textColor} ${className}`}
       onClick={onClick}
       disabled={disabled}
     >
