@@ -26,42 +26,42 @@ const heroImages = [
 ];
 
 // ... Scroll indicator ...
-const ScrollIndicator = () => {
-    const handleScroll = () => {
-        window.scrollTo({ top: window.innerHeight, behavior: 'smooth' });
-    };
+// const ScrollIndicator = () => {
+//     const handleScroll = () => {
+//         window.scrollTo({ top: window.innerHeight, behavior: 'smooth' });
+//     };
 
-    return (
-        <div className="cursor-pointer z-10 absolute left-[40%] sm:left-[40%] md:left-[37%] rotate-90 scale-150 top-[72%] sm:top-[74%] lg:top-[75%] lg:left-[45%]" onClick={handleScroll}>
-            <svg
-                className="scroll-group"
-                xmlns="http://www.w3.org/2000/svg"
-                width="74"
-                height="40"
-                viewBox="0 0 74 40"
-            >
-                <g>
-                    <circle className="circle-static" fill="none" cx="71%" cy="50%" r="24%" />
-                    <circle className="circle-animated" fill="none" strokeWidth="2" cx="71%" cy="50%" r="24%" />
-                </g>
-                <polygon
-                    className="scroll-arrow"
-                    points="
-            49.525,14.265 48.898,15.044 54.481,19.541
-            6.444,19.541 6.444,20.541 54.464,20.541
-            48.901,24.954 49.522,25.737 56.7,20.044
-          "
-                />
-                <defs>
-                    <linearGradient id="scroll-gradient" x1="100%" y1="50%" x2="0%" y2="50%">
-                        <stop offset="0%" stopOpacity="0.3" />
-                        <stop offset="100%" stopOpacity="1" />
-                    </linearGradient>
-                </defs>
-            </svg>
-        </div>
-    );
-};
+//     return (
+//         <div className="cursor-pointer z-10 absolute left-[40%] sm:left-[40%] md:left-[37%] rotate-90 scale-150 top-[72%] sm:top-[74%] lg:top-[75%] lg:left-[45%]" onClick={handleScroll}>
+//             <svg
+//                 className="scroll-group"
+//                 xmlns="http://www.w3.org/2000/svg"
+//                 width="74"
+//                 height="40"
+//                 viewBox="0 0 74 40"
+//             >
+//                 <g>
+//                     <circle className="circle-static" fill="none" cx="71%" cy="50%" r="24%" />
+//                     <circle className="circle-animated" fill="none" strokeWidth="2" cx="71%" cy="50%" r="24%" />
+//                 </g>
+//                 <polygon
+//                     className="scroll-arrow"
+//                     points="
+//             49.525,14.265 48.898,15.044 54.481,19.541
+//             6.444,19.541 6.444,20.541 54.464,20.541
+//             48.901,24.954 49.522,25.737 56.7,20.044
+//           "
+//                 />
+//                 <defs>
+//                     <linearGradient id="scroll-gradient" x1="100%" y1="50%" x2="0%" y2="50%">
+//                         <stop offset="0%" stopOpacity="0.3" />
+//                         <stop offset="100%" stopOpacity="1" />
+//                     </linearGradient>
+//                 </defs>
+//             </svg>
+//         </div>
+//     );
+// };
 
 
 // ─── HeroSection ──────────────────────────────────────────────────────────────
