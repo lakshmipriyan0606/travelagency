@@ -19,6 +19,7 @@ interface ReusableInputProps {
   className?: string;
   inputProps?: React.InputHTMLAttributes<HTMLInputElement>;
   variant?: "classic" | "floating";
+  icon?: React.ElementType;
 }
 
 export const ReusableInput = ({
@@ -34,6 +35,7 @@ export const ReusableInput = ({
   className,
   inputProps,
   variant = "classic",
+  icon: Icon,
 }: ReusableInputProps) => {
   return (
     <Controller
@@ -46,7 +48,6 @@ export const ReusableInput = ({
               <Input
                 {...field}
                 type={type}
-                placeholder={placeholder || " "}
                 className={cn(
                   `peer w-full pt-5 pb-1 px-3 h-12
                    border border-gray-200 rounded-lg
@@ -54,11 +55,18 @@ export const ReusableInput = ({
                    focus:outline-none focus:ring-1 focus:ring-yellow-50/1
                    focus:border-yellow-400
                    transition-all duration-300 font-body`,
+                  Icon && "pr-10",
                   inputClassName,
                   error && "border-red-500 focus:border-red-500/2 focus:ring-red-500"
                 )}
                 {...inputProps}
               />
+
+              {Icon && (
+                <div className="absolute right-3 top-[41%] -translate-y-1/2 text-gray-400">
+                  <Icon size={18} />
+                </div>
+              )}
 
               {label && (
                 <label

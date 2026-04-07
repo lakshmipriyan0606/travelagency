@@ -11,21 +11,23 @@ interface InnerCarouselProps {
     images: { url: string; alt: string }[] | string[];
     offerId: number | string;
     packageName?: string;
+    isActivity?: boolean;
 }
 
 
-export default function InnerCarousel({ images = [], offerId, packageName }: InnerCarouselProps) {
+export default function InnerCarousel({ images = [], offerId, packageName, isActivity }: InnerCarouselProps) {
     const navigate = useNavigate();
 
     const handleNavigation = (id: number | string) => {
+        const baseRoute = isActivity ? "/activity" : "/package";
         if (packageName) {
             const slug = packageName
                 .toLowerCase()
                 .replace(/[^a-z0-9]+/g, "-")
                 .replace(/(^-|-$)/g, "");
-            navigate(`/package/${slug}`);
+            navigate(`${baseRoute}/${slug}`);
         } else {
-            navigate(`/package/${id}`);
+            navigate(`${baseRoute}/${id}`);
         }
     };
 

@@ -4,7 +4,7 @@ import AnimatedButton from "@/components/Button/AnimatedButton/AnimatedButton";
 import whatsappIcon from "@/assets/icons/whatsapp.svg";
 import InnerCarousel from "../bestPackage/carousel/InnerCarousel";
 import locationIcon from "@/assets/icons/location.svg";
-import { Heart, Pencil, Trash2, Crown } from "lucide-react";
+import { Heart, Pencil, Trash2, Crown, Clock } from "lucide-react";
 import dateIcon from "@/assets/icons/date.svg";
 import starIcon from "@/assets/icons/Star.svg";
 
@@ -45,6 +45,7 @@ export interface Package {
         description?: string;
         keywords?: string;
     };
+    activityCategory?: string;
 }
 
 
@@ -83,9 +84,12 @@ export function SinglePackageCard({
     const [showRankPicker, setShowRankPicker] = useState(false);
     const queryClient = useQueryClient();
 
-    // Fetch taken ranks passed from parent or fallback to empty
+    const isActivity = !!(offer.activityCategory && offer.activityCategory !== "" && offer.activityCategory !== "none");
+
     const availableRanks = RANK_OPTIONS.filter(rank => {
-        const taken = (takenRanks || []).find((t: any) => String(t.rank) === String(rank));
+        const taken = (takenRanks || []).find((t: any) => 
+            String(t.rank) === String(rank) && !!t.isActivity === isActivity
+        );
         // Show if: not taken, OR taken by THIS package (so it stays highlighted)
         return !taken || taken.packageId === offer._id;
     });
@@ -259,15 +263,18 @@ export function SinglePackageCard({
                     images={offer.images}
                     offerId={offer._id}
                     packageName={offer.packageName}
+                    isActivity={isActivity}
                 />
 
                 {/* Discount Ribbon */}
-                <div className="absolute top-0 right-0">
-                    <div className="absolute top-5 -right-3 z-20 bg-red-500 text-white font-bold px-4 py-0 w-max">
-                        <em className="relative z-10">{calculateDiscountPercentage(offer?.price, offer?.offerPrice)}% OFF</em>
+                {!isActivity && (
+                    <div className="absolute top-0 right-0">
+                        <div className="absolute top-5 -right-3 z-20 bg-red-500 text-white font-bold px-4 py-0 w-max">
+                            <em className="relative z-10">{calculateDiscountPercentage(offer?.price, offer?.offerPrice)}% OFF</em>
+                        </div>
+                        <div className="absolute top-9 -right-1 h-5 w-2 bg-red-500 brightness-90 rotate-[60deg]"></div>
                     </div>
-                    <div className="absolute top-9 -right-1 h-5 w-2 bg-red-500 brightness-90 rotate-[60deg]"></div>
-                </div>
+                )}
 
                 {/* Status Toggle Badge (Admin Only) */}
                 {isAdmin && (
@@ -322,17 +329,20 @@ export function SinglePackageCard({
                         </motion.button>
                     </Row>
 
-                    <IconText icon={dateIcon} text={offer.daysAndNights} />
+                    <IconText icon={isActivity ? <Clock size={18} className="text-gray-500" /> : dateIcon} text={offer.daysAndNights} />
                 </div>
 
-                {/* Pricing */}
                 <div className="mt-auto flex flex-col gap-3 pt-2">
-                    <Row>
-                        <span className="font-semibold">From</span>
-                        <PriceStrike original={Number(offer?.price)} final={offer.offerPrice} />
-                    </Row>
-
-                    <Divider />
+                    {/* Pricing */}
+                    {!isActivity && (
+                        <>
+                            <Row>
+                                <span className="font-semibold">From</span>
+                                <PriceStrike original={Number(offer?.price)} final={offer.offerPrice} />
+                            </Row>
+                            <Divider />
+                        </>
+                    )}
 
                     <Row className="gap-3 mt-1">
                         <img
@@ -342,12 +352,12 @@ export function SinglePackageCard({
                             onClick={() => handleSendToWhatsApp(offer)}
                         />
                         <AnimatedButton
-                            buttonText={isAllPackagePage ? "EXPLORE PACKAGE" : "CONTACT US"}
+                            buttonText={isActivity ? "EXPLORE ACTIVITY" : (isAllPackagePage ? "EXPLORE PACKAGE" : "EXPLORE PACKAGE")}
                             className="flex-1 hover:bg-custom-black py-2.5"
                             borderButtonColor="bg-white"
                             textColor="text-white"
                             bgColor="bg-custom-black"
-                            to={`/package/${offer.packageName
+                            to={`${isActivity ? "/activity" : "/package"}/${offer.packageName
                                 .toLowerCase()
                                 .replace(/[^a-z0-9]+/g, "-")
                                 .replace(/(^-|-$)/g, "")}`}

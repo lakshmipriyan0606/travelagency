@@ -51,11 +51,11 @@ const formSchema = z.object({
   packageName: z.string().min(1, "Required"),
   packageDescription: z.string().min(1, "Required"),
   location: z.string().min(1, "Required"),
-  packageType: z.string().min(1, "Required"),
+  packageType: z.string().optional(),
   daysAndNights: z.string().min(1, "Required"),
-  hotelName: z.string().min(1, "Required"),
+  hotelName: z.string().optional(),
   price: z.string().min(1, "Required"),
-  offerPrice: z.string().min(1, "Required"),
+  offerPrice: z.string().optional(),
   isBestPackage: z.boolean(),
   bestRank: z.string().optional(),
   country: z.string().min(1, "Country is required"),
@@ -275,12 +275,18 @@ export default function AdminUploadPackageForm({ isActivity: isActivityProp = fa
   const watchActivityCategory = watch("activityCategory");
   const isActivity = isActivityProp || (watchActivityCategory && watchActivityCategory !== "" && watchActivityCategory !== "none");
 
-  const steps = [
-    { title: "Core Details", subtitle: "Identity & Location", icon: Package },
+  // Steps are defined only in actualSteps/filteredSteps below
+  const actualSteps = [
+    { title: "Core Details", subtitle: "Identity & Location", icon: isActivity ? List : Package },
     { title: "Pricing & Visibility", subtitle: "Rates & Status", icon: Tag },
     { title: "Media Gallery", subtitle: "Visual Assets", icon: ImageIcon },
-    { title: isActivity ? "Activity Highlights" : "Journey Roadmap", subtitle: isActivity ? "Key Features" : "Daily Itinerary", icon: isActivity ? List : Calendar },
+    { title: isActivity ? "Activity Highlights" : "Journey Roadmap", subtitle: isActivity ? "Key Features" : "Daily Itinerary", icon: isActivity ? Clock : Calendar },
   ];
+
+  const filteredSteps = actualSteps.filter((step) => {
+    if (isActivity && step.title === "Pricing & Visibility") return false;
+    return true;
+  });
 
   const createMutation = useMutationAPIQuery(CreatePackage, {
     onSuccess: () => {
@@ -359,13 +365,13 @@ export default function AdminUploadPackageForm({ isActivity: isActivityProp = fa
 
   const onSubmit = async (values: any) => {
     // SECURITY: Ensure we are absolutely on the last step before submitting
-    const isLastStep = activeStep === steps.length - 1;
+    const isLastStep = activeStep === filteredSteps.length - 1;
     if (!isLastStep) return;
 
     try {
       const formData = new FormData();
       Object.entries(values).forEach(([key, val]) => {
-        const excludeFields = ["days", "seo", "highlights", "operatingHours", "languages", "isInstantConfirmation", "isNonRefundable"];
+        const excludeFields = ["days", "seo", "highlights", "operatingHours", "languages", "isInstantConfirmation", "isNonRefundable", "images"];
         if (!excludeFields.includes(key)) {
           // "none" means the user chose "No Activity" — send empty string to backend
           const sanitized = key === "activityCategory" && val === "none" ? "" : val;
@@ -420,16 +426,19 @@ export default function AdminUploadPackageForm({ isActivity: isActivityProp = fa
 
   const nextStep = async (e?: React.MouseEvent) => {
     e?.preventDefault();
-    // Only validate the fields in the current step if needed, or validate all for simplicity
-    const fieldsByStep = [
-      ["packageName", "packageDescription", "location", "country", "packageType", "daysAndNights"],
-      ["price", "offerPrice", "hotelName", "status", "isActive", "isBestPackage", "bestRank"],
-      [], // Media step
-      ["days"]
-    ];
+    const fieldsByTitle: Record<string, string[]> = {
+      "Core Details": isActivity ? 
+        ["packageName", "packageDescription", "location", "country", "daysAndNights", "activityCategory"] : 
+        ["packageName", "packageDescription", "location", "country", "packageType", "daysAndNights", "activityCategory", "price"],
+      "Pricing & Visibility": ["price", "offerPrice", "hotelName", "status", "isActive", "isBestPackage", "bestRank"],
+      "Media Gallery": [],
+      "Activity Highlights": ["operatingHours"],
+      "Journey Roadmap": ["days"]
+    };
 
-    const isStepValid = await methods.trigger(fieldsByStep[activeStep] as any);
-    if (isStepValid) setActiveStep(prev => Math.min(prev + 1, steps.length - 1));
+    const currentTitle = filteredSteps[activeStep].title;
+    const isStepValid = await methods.trigger(fieldsByTitle[currentTitle] as any);
+    if (isStepValid) setActiveStep(prev => Math.min(prev + 1, filteredSteps.length - 1));
   };
 
   const prevStep = () => setActiveStep(prev => Math.max(prev - 1, 0));
@@ -448,7 +457,7 @@ export default function AdminUploadPackageForm({ isActivity: isActivityProp = fa
               {isActivity ? "Create Activity" : (id ? "Sync Changes" : "Create Adventure")}
             </h1>
             <p className="text-[10px] text-neutral-500 mt-1 font-semibold ml-4 uppercase tracking-wider opacity-70">
-              Step {activeStep + 1} of {steps.length}: {steps[activeStep].title}
+              Step {activeStep + 1} of {filteredSteps.length}: {filteredSteps[activeStep].title}
             </p>
           </div>
           <div className="flex items-center gap-3">
@@ -471,10 +480,10 @@ export default function AdminUploadPackageForm({ isActivity: isActivityProp = fa
             <div className="absolute top-1/2 left-0 w-full h-0.5 bg-neutral-100 -translate-y-1/2 z-0" />
             <div
               className="absolute top-1/2 left-0 h-0.5 bg-primary -translate-y-1/2 z-0 transition-all duration-500"
-              style={{ width: `${(activeStep / (steps.length - 1)) * 100}%` }}
+              style={{ width: `${(activeStep / (filteredSteps.length - 1)) * 100}%` }}
             />
 
-            {steps.map((step, idx) => {
+            {filteredSteps.map((step, idx) => {
               const Icon = step.icon;
               const isCompleted = activeStep > idx;
               const isActive = activeStep === idx;
@@ -512,14 +521,14 @@ export default function AdminUploadPackageForm({ isActivity: isActivityProp = fa
           }}
         >
           <div className="px-4">
-            {activeStep === 0 && (
+            {filteredSteps[activeStep].title === "Core Details" && (
               <div className="animate-in fade-in slide-in-from-right-4 duration-500">
                 {/* General Information */}
                 <Card className="p-6 border border-neutral-200/60 shadow-xl shadow-neutral-200/30 rounded-[24px] overflow-hidden bg-white/80 backdrop-blur-md transition-all">
                   <SectionHeader icon={Package} title="General Information" subtitle="Define the core identity of this travel package" />
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-1 mt-2">
                     <StyledField className="md:col-span-2">
-                      <ReusableInput control={control} name="packageName" label="Package Name" required variant="floating" />
+                      <ReusableInput control={control} name="packageName" label={isActivity ? "Activity Name" : "Package Name"} required variant="floating" />
                     </StyledField>
                     <StyledField className="md:col-span-2">
                       <ReusableTextArea control={control} name="packageDescription" label="Detailed Description" required variant="floating" />
@@ -530,12 +539,30 @@ export default function AdminUploadPackageForm({ isActivity: isActivityProp = fa
                     <StyledField>
                       <ReusableInput control={control} name="country" label="Country" required variant="floating" />
                     </StyledField>
+                    {!isActivity && (
+                      <StyledField>
+                        <SelectField control={control} name="packageType" label="Category" options={packageTypes} required variant="floating" />
+                      </StyledField>
+                    )}
                     <StyledField>
-                      <SelectField control={control} name="packageType" label="Category" options={packageTypes} required variant="floating" />
+                      <ReusableInput control={control} name="daysAndNights" label="Duration" placeholder="e.g. 4 hours" required variant="floating" icon={isActivity ? Clock : Calendar} />
                     </StyledField>
-                    <StyledField>
-                      <ReusableInput control={control} name="daysAndNights" label="Duration" placeholder="e.g. 3 Days, 2 Nights" required variant="floating" />
-                    </StyledField>
+                    {isActivity ? (
+                      <>
+                        <StyledField>
+                          <ReusableCheckbox control={control} name="isBestPackage" label="Promoted" />
+                        </StyledField>
+                        {watch("isBestPackage") && (
+                          <StyledField>
+                            <SelectField control={control} name="bestRank" label="Promotion Rank" options={rankOptions} required variant="floating" />
+                          </StyledField>
+                        )}
+                      </>
+                    ) : (
+                      <StyledField>
+                        <ReusableCheckbox control={control} name="isBestPackage" label="Promoted" />
+                      </StyledField>
+                    )}
                     {/* Show activity category if in Create Activity mode OR if this is an activity package */}
                     {isActivity && (
                       <StyledField>
@@ -576,7 +603,7 @@ export default function AdminUploadPackageForm({ isActivity: isActivityProp = fa
             )}
 
 
-            {activeStep === 1 && (
+            {filteredSteps[activeStep].title === "Pricing & Visibility" && (
               <div className="animate-in fade-in slide-in-from-right-4 duration-500 grid grid-cols-1 lg:grid-cols-3 gap-2">
                 <Card className="lg:col-span-2 p-6 border border-neutral-200/60 shadow-xl shadow-neutral-200/30 rounded-[24px] bg-white/80 backdrop-blur-md">
                   <SectionHeader icon={Tag} title="Pricing Details" subtitle="Set the value and competitive offers" />
@@ -643,7 +670,7 @@ export default function AdminUploadPackageForm({ isActivity: isActivityProp = fa
               </div>
             )}
 
-            {activeStep === 2 && (
+            {filteredSteps[activeStep].title === "Media Gallery" && (
               <div className="animate-in fade-in slide-in-from-right-4 duration-500">
                 <Card className="p-8 border border-neutral-200/60 shadow-2xl shadow-neutral-200/40 rounded-[32px] bg-white/80 backdrop-blur-md">
                   <SectionHeader icon={ImageIcon} title="Main Image" subtitle="High-quality visuals for your package" />
@@ -659,7 +686,7 @@ export default function AdminUploadPackageForm({ isActivity: isActivityProp = fa
               </div>
             )}
 
-            {activeStep === 3 && (
+            {(filteredSteps[activeStep].title === "Activity Highlights" || filteredSteps[activeStep].title === "Journey Roadmap") && (
               <div className="animate-in fade-in slide-in-from-right-4 duration-500 space-y-6">
                 {isActivity ? (
                   <div className="space-y-6">
@@ -720,7 +747,7 @@ export default function AdminUploadPackageForm({ isActivity: isActivityProp = fa
                 </button>
               )}
 
-              {activeStep < steps.length - 1 ? (
+              {activeStep < filteredSteps.length - 1 ? (
                 <button
                   type="button"
                   onClick={(e) => nextStep(e)}

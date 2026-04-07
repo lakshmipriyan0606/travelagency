@@ -1,13 +1,13 @@
 import { BestDestination } from "@/components/layout/bestDestination/BestDestination";
 import BestPackage from "@/components/layout/bestPackage/BestPackage";
-import ReachUs from "@/components/layout/reachus/Reachus";
+import BestActivitiesSection from "@/components/layout/BestActivities/BestActivitiesSection";
 import HeroSection from "@/components/layout/herosection/HeroSection";
 import TravelPartnerSection from "@/components/layout/partners/TravelPartnerSection";
 import Welcome from "@/components/layout/welcome/Welcome";
+import ReachUs from "@/components/layout/reachus/Reachus";
 import TrustBadges from "@/components/layout/TrustBadges/TrustBadges";
 import TravelExperiences from "@/components/layout/travelExperiences/TravelExperiences";
 import HappyStories from "@/components/layout/happyStories/HappyStories";
-import ActivitySection from "@/components/layout/Activities/ActivitySection";
 import { createContext, useMemo } from "react"
 import { Helmet } from "react-helmet-async";
 
@@ -40,7 +40,7 @@ const Home = () => {
         <BestDestination />
         <Welcome />
         <BestPackage />
-        <ActivitySection />
+        <BestActivitiesSection />
         <TravelExperiences />
         <TravelPartnerSection />
         <ReachUs />

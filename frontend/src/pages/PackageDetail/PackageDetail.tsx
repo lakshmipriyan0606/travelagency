@@ -68,8 +68,8 @@ const PackageDetail = () => {
                 <Breadcrumb
                     items={[
                         { label: "Home", href: "/" },
-                        { label: "All Packages", href: "/allpackage" },
-                        ...(packageType ? [{ label: packageType }] : (isLoading ? [{ label: "Loading..." }] : [])),
+                        { label: pkg?.activityCategory ? "All Activities" : "All Packages", href: pkg?.activityCategory ? "/activities" : "/allpackage" },
+                        ...(pkg?.activityCategory ? [{ label: pkg.activityCategory }] : (packageType ? [{ label: packageType }] : (isLoading ? [{ label: "Loading..." }] : []))),
                         ...(packageName ? [{ label: packageName }] : []),
                     ]}
                     className="text-gray-300"
@@ -86,7 +86,7 @@ const PackageDetail = () => {
                         animate={{ opacity: 1, y: 0 }}
                         className='text-bold text-2xl lg:text-4xl text-red-600 border-x-4 border-red-500 px-10 py-3 italic  text-center tracking-tighter'
                     >
-                        Package Not Found
+                        Activity Not Found
                     </motion.h1>
                 ) : (
                     <h1 className='text-bold text-2xl lg:text-3xl text-gray-900 border-l-4 border-primary pl-4'>
@@ -129,7 +129,7 @@ const PackageDetail = () => {
                             </motion.div>
 
                             <h2 className="text-3xl lg:text-4xl  text-slate-900 mb-6 tracking-tight leading-tight">
-                                This package is <span className="text-primary italic">no longer available.</span>
+                                This {pkg?.activityCategory ? "activity" : "package"} is <span className="text-primary italic">no longer available.</span>
                             </h2>
                             <p className="text-slate-500 max-w-md mx-auto leading-relaxed text-lg font-medium opacity-90">
                                 Let’s discover something even better for your next trip.
@@ -137,10 +137,10 @@ const PackageDetail = () => {
 
                             <div className="flex flex-col sm:flex-row gap-5 mt-3 w-full max-w-lg justify-center">
                                 <Link
-                                    to="/allpackage"
+                                    to={pkg?.activityCategory ? "/activities" : "/allpackage"}
                                     className="px-10 py-5 bg-primary text-black  rounded-2xl hover:bg-opacity-90 transition-all shadow-[0_15px_35_rgba(242,193,46,0.4)] active:scale-95 uppercase tracking-extrawide text-sm whitespace-nowrap cursor-pointer flex items-center justify-center"
                                 >
-                                    Explore All Packages
+                                    Explore All {pkg?.activityCategory ? "Activities" : "Packages"}
                                 </Link>
                                 <Link
                                     to="/"
@@ -280,7 +280,7 @@ const PackageDetail = () => {
                     <div className="hidden lg:block lg:col-span-4">
                         <div className="sticky top-22 bg-white rounded-2xl border border-gray-100">
                             <div className='font-body text-center'>
-                                <h1 className='text-gray-800 text-xl p-3'>Book your dream vacation <span className='text-primary font-medium'>Today!</span></h1>
+                                <h1 className='text-gray-800 text-xl p-3'>Book your dream {pkg?.activityCategory ? "experience" : "vacation"} <span className='text-primary font-medium'>Today!</span></h1>
                             </div>
                             <BookingFomField fieldClassName="text-gray-200 sm:text-gray-800" packageName={packageName} />
                         </div>

@@ -23,14 +23,6 @@ export const footerData = {
         href: "/allpackage"
       })),
     },
-    {
-      title: "Popular Packages",
-      items: [
-        { label: "Group Package", href: "/allpackage" },
-        { label: "Honeymoon Package", href: "/allpackage" },
-        { label: "Wedding Package", href: "/allpackage" },
-      ],
-    },
   ],
   social: [
     { name: "Facebook", href: "#", icon: "Facebook" },

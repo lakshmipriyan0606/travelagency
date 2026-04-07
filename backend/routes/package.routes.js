@@ -36,7 +36,7 @@ router.post(
   (req, res, next) => { bustCacheByPrefix("packages:"); next(); },
   createPackage
 );
-router.get("/bestpackages", cacheResponse("packages:best", 300), async (req, res) => {
+router.get("/bestpackages", cacheResponse((req) => `packages:best:${req.headers.userid || 'anon'}`, 300), async (req, res) => {
   try {
     const userId = req?.headers?.userid;
     console.log('userId: ', userId);
@@ -73,7 +73,40 @@ router.get("/bestpackages", cacheResponse("packages:best", 300), async (req, res
   }
 });
 
-router.get("/", cacheResponse((req) => `packages:list:${JSON.stringify(req.query)}`, 120), async (req, res) => {
+router.get("/bestactivities", cacheResponse((req) => `packages:bestactivities:${req.headers.userid || 'anon'}`, 300), async (req, res) => {
+  try {
+    const userId = req?.headers?.userid;
+    const bestActivities = await PackageModel.find({
+      isBestPackage: true,
+      isActive: { $ne: false },
+      isDeleted: { $ne: true },
+      activityCategory: { $ne: null, $exists: true, $not: /^(none|)$/i }
+    }).lean();
+
+    const finalBestActivities = bestActivities.map((pkg) => {
+      const userLike = (pkg.likes || []).find((like) => like.userId === userId);
+      return {
+        ...pkg,
+        images: sanitizeImageObjects(pkg.images),
+        userLiked: userLike ? userLike.liked : false,
+      };
+    });
+
+    finalBestActivities.sort((a, b) => (a.bestRank || 99) - (b.bestRank || 99));
+
+    res.status(200).json({
+      data: finalBestActivities,
+      message: "All best activities fetched successfully",
+    });
+  } catch (error) {
+    res.status(500).json({
+      message: "Error fetching best activities",
+      error: error.message,
+    });
+  }
+});
+
+router.get("/", cacheResponse((req) => `packages:list:${req.headers.userid || 'anon'}:${JSON.stringify(req.query)}`, 120), async (req, res) => {
   try {
     const userId = req?.headers?.userid;
     const limit = parseInt(req.query.limit) || 10;
@@ -294,12 +327,13 @@ router.get("/takenRanks", async (req, res) => {
   try {
     const packages = await PackageModel.find(
       { isBestPackage: true, bestRank: { $ne: null }, isDeleted: { $ne: true } },
-      { bestRank: 1, _id: 1, packageName: 1 }
+      { bestRank: 1, _id: 1, packageName: 1, activityCategory: 1 }
     );
     const takenRanks = packages.map(p => ({
       rank: p.bestRank,
       packageId: p._id,
       packageName: p.packageName,
+      isActivity: !!(p.activityCategory && p.activityCategory !== "" && p.activityCategory !== "none")
     }));
     return res.json({ takenRanks });
   } catch (error) {
@@ -385,12 +419,27 @@ router.patch("/updateRank/:id", protectRoute, adminOnly, (req, res, next) => { b
       return res.json({ message: "Rank removed", data: currentPackage });
     }
 
-    // Check if another package holds this rank
-    const existingWithRank = await PackageModel.findOne({
+    // Check if another package holds this rank WITHIN THE SAME CATEGORY (Activity vs Package)
+    const isCurrentActivity = !!(currentPackage.activityCategory && currentPackage.activityCategory !== "" && currentPackage.activityCategory !== "none");
+
+    const conflictQuery = {
       bestRank,
       isBestPackage: true,
       _id: { $ne: packageId },
-    });
+    };
+
+    if (isCurrentActivity) {
+      conflictQuery.activityCategory = { $ne: null, $exists: true, $not: /none/i };
+    } else {
+      conflictQuery.$or = [
+        { activityCategory: null },
+        { activityCategory: { $exists: false } },
+        { activityCategory: "" },
+        { activityCategory: "none" }
+      ];
+    }
+
+    const existingWithRank = await PackageModel.findOne(conflictQuery);
 
     if (existingWithRank) {
       if (currentPackage.isBestPackage && currentPackage.bestRank) {
@@ -461,23 +510,30 @@ router.post("/like", async (req, res) => {
 
   try {
     const pkg = await PackageModel.findOne({ _id: id, isDeleted: { $ne: true } });
-    console.log("pkg: ", pkg);
 
     if (!pkg) return res.status(404).json({ message: "Package not found" });
 
     const userIndex = pkg.likes.findIndex((like) => like.userId === userId);
-    console.log("userIndex: ", userIndex);
 
+    let updatedLikes;
     if (userIndex >= 0) {
       pkg.likes[userIndex].liked = liked;
+      updatedLikes = pkg.likes;
     } else {
-      pkg.likes.push({ userId, liked });
+      updatedLikes = [...pkg.likes, { userId, liked }];
     }
 
-    await pkg.save();
+    // Use findByIdAndUpdate with $set to avoid triggering full schema validation
+    // (which would fail on legacy documents with missing image URLs)
+    await PackageModel.findByIdAndUpdate(
+      id,
+      { $set: { likes: updatedLikes } },
+      { new: true, runValidators: false }
+    );
 
-    res.json({ message: "Updated", likes: pkg.likes });
+    res.json({ message: "Updated", likes: updatedLikes });
   } catch (err) {
+    console.error("Like update error:", err);
     res.status(500).json({ message: "Server Error", error: err });
   }
 });

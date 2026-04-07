@@ -4,6 +4,11 @@ export const GetBestBackageList = async () => {
   const { data } = await axiosClient.get("packages/bestpackages");
   return data;
 }
+
+export const GetBestActivitiesList = async () => {
+  const { data } = await axiosClient.get("packages/bestactivities");
+  return data;
+}
 export const GetAllPackageList = async ({ limit = 10, lastId = '', search = '', city = '', isAdmin = false, activityCategory = '', onlyActivities = false, excludeActivities = false }: { limit?: number; lastId?: string, search?: string, city?: string, isAdmin?: boolean, activityCategory?: string, onlyActivities?: boolean, excludeActivities?: boolean }) => {
   const queryParams = new URLSearchParams();
   if (limit) queryParams.append('limit', limit.toString());

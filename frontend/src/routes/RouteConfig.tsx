@@ -34,6 +34,11 @@ const routes: AppRoute[] = [
         isProtectRoute: false,
     },
     {
+        path: '/activity/:id',
+        element: <PackageDetail />,
+        isProtectRoute: false,
+    },
+    {
         path: '/allpackage',
         element: <AllPackage />,
         isProtectRoute: false,

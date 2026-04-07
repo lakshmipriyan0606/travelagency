@@ -1,6 +1,41 @@
 import Package from "../models/Package.model.js";
 import cloudinary from "../config/cloudinary.js";
 
+// Helper: upload buffer to cloudinary using upload_stream
+const uploadFile = (file, folder = "travel_packages") =>
+  new Promise((resolve, reject) => {
+    try {
+      const stream = cloudinary.uploader.upload_stream(
+        { folder },
+        (err, result) => {
+          if (err) return reject(err);
+          resolve(result && result.secure_url ? result.secure_url : null);
+        }
+      );
+      stream.end(file.buffer);
+    } catch (err) {
+      reject(err);
+    }
+  });
+
+// Helper: Consistent image sanitization
+const sanitizeImagesArray = (arr) => {
+  if (!Array.isArray(arr)) return [];
+  return arr.map(img => {
+    if (typeof img === 'string') {
+      const url = img.trim();
+      return (url && url.startsWith('http')) ? { url, alt: "" } : null;
+    }
+    if (img && typeof img === 'object' && typeof img.url === 'string') {
+      const url = img.url.trim();
+      if (url && url.startsWith('http')) {
+         return { url, alt: (img.alt || "").toString() };
+      }
+    }
+    return null;
+  }).filter(Boolean);
+};
+
 export const createPackage = async (req, res) => {
   try {
     const {
@@ -23,150 +58,100 @@ export const createPackage = async (req, res) => {
       isInstantConfirmation,
       isNonRefundable,
       highlights,
-      seo, // Added SEO
+      seo,
     } = req.body;
 
-    const days = JSON.parse(req.body.days || "[]");
-    const parsedSeo = seo ? JSON.parse(seo) : {}; // Parse SEO
-    // Parse highlights: can be a JSON string, a plain array, or a string
-    let parsedHighlights = [];
-    if (highlights) {
-      if (Array.isArray(highlights)) {
-        parsedHighlights = highlights;
-      } else if (typeof highlights === "string") {
-        try {
-          parsedHighlights = JSON.parse(highlights);
-        } catch (e) {
-          // If not JSON, it might be a comma-separated string if sent incorrectly
-          parsedHighlights = highlights.split(",").filter(Boolean);
-        }
-      }
-    }
+    const isActivity = activityCategory && activityCategory !== "" && activityCategory !== "none";
 
-    const uploadFile = (file) => {
-      return new Promise((resolve, reject) => {
-        cloudinary.uploader
-          .upload_stream({ folder: "travel_packages" }, (err, result) => {
-            if (err) reject(err);
-            else resolve(result.secure_url);
-          })
-          .end(file.buffer);
-      });
-    };
-
-    // -----------------------------
-    // MAIN IMAGES — URL + File Support
-    // -----------------------------
+    // 1) Parse existing images and upload new ones
     let mainImages = [];
-
-    // existing images sent from frontend (EDIT mode)
     if (req.body.existingImages) {
-      mainImages = JSON.parse(req.body.existingImages); // [{url, alt}]
+      mainImages = JSON.parse(req.body.existingImages);
     }
 
-    // new uploaded files
-    const newMainFiles = req.files.filter((f) => f.fieldname === "images");
+    const newMainFiles = (req.files || []).filter((f) => f.fieldname === "images");
     const mainImageAlts = req.body.mainImageAlts ? JSON.parse(req.body.mainImageAlts) : [];
 
     for (let i = 0; i < newMainFiles.length; i++) {
-        const file = newMainFiles[i];
-        const url = await uploadFile(file);
-        mainImages.push({
-            url: url || "",
-            alt: mainImageAlts[i] || ""
-        });
+        const url = await uploadFile(newMainFiles[i], "travel_packages/main");
+        if (url) mainImages.push({ url, alt: mainImageAlts[i] || "" });
     }
 
-    // Ensure mainImages is always an array of {url, alt} objects
-    mainImages = mainImages.map(img => 
-        typeof img === 'string' ? { url: img, alt: "" } : (img.url ? img : { url: "", alt: "" })
-    );
+    const sanitizedMainImages = sanitizeImagesArray(mainImages);
 
-    // -----------------------------
-    // SLOT IMAGES — URL + File Support
-    // -----------------------------
+    // 2) Parse Days and Slot Images
+    const daysRaw = JSON.parse(req.body.days || "[]");
     const transformedDays = [];
-
-    for (let d = 0; d < days.length; d++) {
-      const day = days[d];
+    for (let d = 0; d < daysRaw.length; d++) {
+      const day = daysRaw[d] || {};
+      const slots = Array.isArray(day.slots) ? day.slots : [];
       const newSlots = [];
 
-      for (let s = 0; s < day.slots.length; s++) {
-        const slot = day.slots[s];
-
-        const slotFile = req.files.find(
-          (f) => f.fieldname === `slotImage_${d}_${s}`
-        );
-
+      for (let s = 0; s < slots.length; s++) {
+        const slot = slots[s] || {};
+        const slotFile = (req.files || []).find(f => f.fieldname === `slotImage_${d}_${s}`);
         let slotImageUrl = slot.imageUrl || "";
 
         if (slotFile) {
-          slotImageUrl = await uploadFile(slotFile);
+          const url = await uploadFile(slotFile, "travel_packages/slots");
+          if (url) slotImageUrl = url;
         }
-
-        newSlots.push({
-          ...slot,
-          imageUrl: slotImageUrl,
-        });
+        newSlots.push({ ...slot, imageUrl: slotImageUrl || "" });
       }
-
-      transformedDays.push({
-        ...day,
-        slots: newSlots,
-      });
+      transformedDays.push({ ...day, slots: newSlots });
     }
 
-    // SAVE PACKAGE
-    if (isBestPackage && bestRank) {
-      const existingPackage = await Package.findOne({ bestRank });
-
-      if (existingPackage) {
-        existingPackage.bestRank = null;
-        existingPackage.isBestPackage = false;
-        await existingPackage.save();
-      }
-    }
-
-    // Step 4: Create new package
-    const pkg = await Package.create({
+    // 3) Create and Save
+    const pkg = new Package({
       packageName,
       packageDescription,
-      packageType,
+      packageType: isActivity ? "" : packageType,
       location,
       daysAndNights,
-      hotelName,
-      price,
-      offerPrice,
-      isBestPackage: isBestPackage || false,
-      bestRank: bestRank || null,
-      images: mainImages,
+      hotelName: isActivity ? "" : hotelName,
+      price: Number(price) || 0,
+      offerPrice: isActivity ? 0 : (Number(offerPrice) || 0),
+      isBestPackage: isBestPackage === 'true' || isBestPackage === true,
+      bestRank: bestRank ? Number(bestRank) : null,
+      images: sanitizedMainImages,
       days: transformedDays,
       country,
-      isActive: isActive === 'false' ? false : true,
+      isActive: isActive !== 'false',
       status: status || 'Active',
-      activityCategory: activityCategory || null,
-      seo: parsedSeo,
+      activityCategory: isActivity ? activityCategory : null,
+      seo: seo ? JSON.parse(seo) : {},
       operatingHours: operatingHours || "",
       languages: languages || "",
       isInstantConfirmation: isInstantConfirmation === 'true' || isInstantConfirmation === true,
       isNonRefundable: isNonRefundable === 'true' || isNonRefundable === true,
-      highlights: parsedHighlights,
+      highlights: highlights ? JSON.parse(highlights) : [],
       createdBy: req.user._id,
     });
 
-    res.status(201).json({
-      message: "Package created successfully",
-      data: pkg,
-    });
+    // Handle bestRank rank swap if needed
+    if (pkg.isBestPackage && pkg.bestRank) {
+      const existing = await Package.findOne({ bestRank: pkg.bestRank });
+      if (existing) {
+        existing.isBestPackage = false;
+        existing.bestRank = null;
+        await existing.save();
+      }
+    }
+
+    await pkg.save();
+    res.status(201).json({ message: "Package created successfully", data: pkg });
+
   } catch (error) {
-    console.error("Create package error:", error.message);
+    console.error("Create package error:", error);
     res.status(500).json({ error: error.message });
   }
 };
 
 export const updatePackage = async (req, res) => {
   try {
-    // 1) Parse incoming fields safely
+    const pkg = await Package.findById(req.params.id);
+    if (!pkg) return res.status(404).json({ message: "Package not found" });
+
     const {
       packageType,
       location,
@@ -187,210 +172,94 @@ export const updatePackage = async (req, res) => {
       isInstantConfirmation,
       isNonRefundable,
       highlights,
-      seo, // Added SEO
+      seo,
     } = req.body;
 
-    // parse days: accept object or JSON string
-    let days = [];
-    if (req.body.days) {
-      if (typeof req.body.days === "string") {
-        try {
-          days = JSON.parse(req.body.days);
-        } catch (e) {
-          return res.status(400).json({ message: "Invalid days JSON" });
-        }
-      } else {
-        days = req.body.days;
-      }
-    }
+    const isActivity = activityCategory && activityCategory !== "" && activityCategory !== "none";
 
-    const parsedSeo = seo ? (typeof seo === "string" ? JSON.parse(seo) : seo) : {}; // Parse SEO
-    const parsedHighlights = highlights ? (typeof highlights === "string" ? JSON.parse(highlights) : highlights) : [];
-
-    // parse existingImages: accept array or JSON string
-    let existingImages = [];
+    // 1) Images
+    let mainImages = [];
     if (req.body.existingImages) {
-      if (typeof req.body.existingImages === "string") {
-        try {
-          existingImages = JSON.parse(req.body.existingImages);
-        } catch (e) {
-          // If it's a single string (one URL), wrap it
-          existingImages = [{ url: req.body.existingImages, alt: "" }];
-        }
-      } else if (Array.isArray(req.body.existingImages)) {
-        existingImages = req.body.existingImages;
-      }
+      mainImages = JSON.parse(req.body.existingImages);
     }
-
-    // 2) Build a lookup map for uploaded files (fieldname -> array of files)
-    const files = Array.isArray(req.files) ? req.files : [];
-    const fileMap = files.reduce((acc, file) => {
-      acc[file.fieldname] = acc[file.fieldname] || [];
-      acc[file.fieldname].push(file);
-      return acc;
-    }, {});
-
-    // Helper: upload buffer to cloudinary using upload_stream
-    const uploadFile = (file, folder) =>
-      new Promise((resolve, reject) => {
-        try {
-          const stream = cloudinary.uploader.upload_stream(
-            { folder },
-            (err, result) => {
-              if (err) return reject(err);
-              resolve(result && result.secure_url ? result.secure_url : null);
-            }
-          );
-          stream.end(file.buffer);
-        } catch (err) {
-          reject(err);
-        }
-      });
-
-    // 3) MAIN IMAGES: start with existingImages (what frontend says to keep)
-    const mainImages = Array.isArray(existingImages) ? [...existingImages] : [];
-
-    // Upload all incoming files with fieldname 'images' (could be multiple)
-    const newMainFiles = fileMap["images"] || [];
+    const newMainFiles = (req.files || []).filter((f) => f.fieldname === "images");
     const mainImageAlts = req.body.mainImageAlts ? JSON.parse(req.body.mainImageAlts) : [];
 
     for (let i = 0; i < newMainFiles.length; i++) {
-      const f = newMainFiles[i];
-      try {
-        const url = await uploadFile(f, "travel_packages/main");
-        if (url) mainImages.push({
-            url: url,
-            alt: mainImageAlts[i] || ""
-        });
-      } catch (err) {
-        console.error("Main image upload failed:", err.message || err);
-      }
+        const url = await uploadFile(newMainFiles[i], "travel_packages/main");
+        if (url) mainImages.push({ url, alt: mainImageAlts[i] || "" });
     }
 
-    // Sanitize any potential corrupted strings or objects
-    const sanitizedMainImages = mainImages.map(img => {
-      if (typeof img === 'string') return { url: img, alt: "" };
-      if (img && typeof img === 'object' && img.url) return img;
-      return null;
-    }).filter(Boolean);
+    pkg.images = sanitizeImagesArray(mainImages);
 
-    // 4) SLOT IMAGES: iterate days and slots; replace only when new file exists
+    // 2) Days/Slots
+    const daysRaw = JSON.parse(req.body.days || "[]");
     const transformedDays = [];
-    for (let d = 0; d < days.length; d++) {
-      const day = days[d] || {};
+    for (let d = 0; d < daysRaw.length; d++) {
+      const day = daysRaw[d] || {};
       const slots = Array.isArray(day.slots) ? day.slots : [];
+      const newSlots = [];
 
-      const transformedSlots = [];
       for (let s = 0; s < slots.length; s++) {
         const slot = slots[s] || {};
-
-        // fieldname convention expected from frontend: `slotImage_${d}_${s}`
-        const fieldName = `slotImage_${d}_${s}`;
-
-        // pick first uploaded file for this slot if provided
-        const slotFiles = fileMap[fieldName] || [];
-        const slotFile = slotFiles[0] || null;
-
-        // Decide slotImageUrl:
-        // - If frontend provided slot.imageUrl (string), use it as baseline (could be "" to remove)
-        // - If a new file was uploaded, ALWAYS replace with uploaded URL
-        let slotImageUrl =
-          typeof slot.imageUrl !== "undefined" ? slot.imageUrl : "";
+        const slotFile = (req.files || []).find(f => f.fieldname === `slotImage_${d}_${s}`);
+        let slotImageUrl = slot.imageUrl || "";
 
         if (slotFile) {
-          try {
-            const url = await uploadFile(slotFile, "travel_packages/slots");
-            if (url) slotImageUrl = url;
-          } catch (err) {
-            console.error(
-              `Slot upload failed for ${fieldName}:`,
-              err.message || err
-            );
-          }
+          const url = await uploadFile(slotFile, "travel_packages/slots");
+          if (url) slotImageUrl = url;
         }
-
-        transformedSlots.push({
-          ...slot,
-          imageUrl: slotImageUrl || "", // ensure always string
-        });
+        newSlots.push({ ...slot, imageUrl: slotImageUrl || "" });
       }
-
-      transformedDays.push({
-        ...day,
-        slots: transformedSlots,
-      });
+      transformedDays.push({ ...day, slots: newSlots });
     }
 
-    // 4.5) Handle Rank Swapping logic
+    // 3) Update Fields
+    pkg.packageName = packageName;
+    pkg.packageDescription = packageDescription;
+    pkg.location = location;
+    pkg.country = country;
+    pkg.daysAndNights = daysAndNights;
+    pkg.price = Number(price) || 0;
+    pkg.isActive = isActive !== 'false';
+    pkg.status = status || pkg.status;
+    pkg.activityCategory = isActivity ? activityCategory : null;
+    pkg.hotelName = isActivity ? "" : hotelName;
+    pkg.offerPrice = isActivity ? 0 : (Number(offerPrice) || 0);
+    pkg.packageType = isActivity ? "" : packageType;
+    pkg.days = transformedDays;
+    pkg.operatingHours = operatingHours || "";
+    pkg.languages = languages || "";
+    pkg.isInstantConfirmation = isInstantConfirmation === 'true' || isInstantConfirmation === true;
+    pkg.isNonRefundable = isNonRefundable === 'true' || isNonRefundable === true;
+    
+    if (seo) pkg.seo = JSON.parse(seo);
+    if (highlights) pkg.highlights = JSON.parse(highlights);
+
+    // Best Package Rank Swap logic
     const isBestPackageBool = String(isBestPackage) === "true";
-
     if (isBestPackageBool && bestRank) {
-      const currentPackage = await Package.findById(req.params.id);
-      
-      const existingPackageWithRank = await Package.findOne({ 
-        bestRank, 
-        isBestPackage: true,
-        _id: { $ne: req.params.id }
-      });
-
-      if (existingPackageWithRank) {
-        if (currentPackage && currentPackage.isBestPackage && currentPackage.bestRank) {
-           // Swap ranks
-           existingPackageWithRank.bestRank = currentPackage.bestRank;
-           await existingPackageWithRank.save();
-        } else {
-           // Demote to prevent duplicates
-           existingPackageWithRank.bestRank = null;
-           existingPackageWithRank.isBestPackage = false;
-           await existingPackageWithRank.save();
+      const targetRank = Number(bestRank);
+      if (pkg.bestRank !== targetRank) {
+        const existing = await Package.findOne({ bestRank: targetRank, _id: { $ne: pkg._id } });
+        if (existing) {
+          existing.isBestPackage = false;
+          existing.bestRank = null;
+          await existing.save();
         }
       }
+      pkg.isBestPackage = true;
+      pkg.bestRank = targetRank;
     } else if (!isBestPackageBool) {
-        // If they turned off the promotion switch ensure bestRank is cleared
-        req.body.bestRank = null;
+      pkg.isBestPackage = false;
+      pkg.bestRank = null;
     }
 
-    // 5) Perform the update
-    const updatedPkg = await Package.findByIdAndUpdate(
-      req.params.id,
-      {
-        packageName,
-        packageDescription,
-        packageType,
-        location,
-        daysAndNights,
-        hotelName,
-        price,
-        offerPrice,
-        isBestPackage,
-        bestRank,
-        images: sanitizedMainImages,
-        days: transformedDays,
-        country,
-        isActive: isActive === 'false' ? false : true,
-        status,
-        activityCategory: activityCategory || null,
-        seo: parsedSeo,
-        operatingHours: operatingHours || "",
-        languages: languages || "",
-        isInstantConfirmation: isInstantConfirmation === 'true' || isInstantConfirmation === true,
-        isNonRefundable: isNonRefundable === 'true' || isNonRefundable === true,
-        highlights: parsedHighlights,
-      },
-      { new: true, runValidators: true }
-    );
+    await pkg.save();
+    res.status(200).json({ message: "Package updated successfully", data: pkg });
 
-
-    if (!updatedPkg) {
-      return res.status(404).json({ message: "Package not found" });
-    }
-
-    return res.status(200).json({
-      message: "Package updated successfully",
-      data: updatedPkg,
-    });
   } catch (error) {
     console.error("Update package error:", error);
-    return res.status(500).json({ error: error.message || error });
+    res.status(500).json({ error: error.message });
   }
 };

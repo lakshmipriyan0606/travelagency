@@ -2,6 +2,7 @@ import { FormProvider, useForm } from "react-hook-form";
 import { useEffect, useMemo, useRef, useState, useCallback } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { X, Search } from "lucide-react";
+import { motion } from "framer-motion";
 
 import {
     FilterState,
@@ -140,6 +141,9 @@ const FilterPackage = ({ likePackageOnly = false, mode = 'all' }: FilterPackageP
     const [totalCount, setTotalCount] = useState(0);
     const lastProcessedCursor = useRef<string | null>(null);
 
+    // ── Tab state for Likes page
+    const [activeTab, setActiveTab] = useState<'packages' | 'activities'>('packages');
+
     // ── Local search input (not in form, to avoid triggering URL updates on every keystroke)
     const [searchInput, setSearchInput] = useState("");
 
@@ -228,9 +232,18 @@ const FilterPackage = ({ likePackageOnly = false, mode = 'all' }: FilterPackageP
     // ─── Computed
     const filteredPackages = useMemo(() => {
         const pkgs = filterPackages(packageList, filters);
-        const liked = likePackageOnly ? pkgs.filter((p) => p.userLiked) : pkgs;
+        let liked = likePackageOnly ? pkgs.filter((p) => p.userLiked) : pkgs;
+
+        // Apply Tab Filter when in Likes mode
+        if (likePackageOnly) {
+            liked = liked.filter((p) => {
+                const isActivity = p.activityCategory && p.activityCategory !== "" && p.activityCategory !== "none";
+                return activeTab === 'activities' ? isActivity : !isActivity;
+            });
+        }
+
         return sortPackages(liked, sort);
-    }, [packageList, filters, likePackageOnly, sort]);
+    }, [packageList, filters, likePackageOnly, sort, activeTab]);
 
     const breadcrumbItems = useMemo(() => buildBreadcrumb(filters, mode), [filters, mode]);
 
@@ -506,6 +519,48 @@ const FilterPackage = ({ likePackageOnly = false, mode = 'all' }: FilterPackageP
                                 onClearAll={handleClearAll}
                             />
                         </div>
+
+                        {/* Likes Tab Switcher */}
+                        {likePackageOnly && (
+                            <div className="flex flex-col gap-4 mb-8">
+                                <div className="flex items-center gap-2 p-1.5 bg-neutral-100 rounded-2xl w-fit border border-neutral-200/50 shadow-inner">
+                                    <button
+                                        onClick={() => setActiveTab('packages')}
+                                        className={`relative px-8 py-3 rounded-xl text-xs font-black uppercase tracking-widest transition-all duration-300 ${activeTab === 'packages' ? "text-white" : "text-neutral-500 hover:text-neutral-700"
+                                            }`}
+                                    >
+                                        {activeTab === 'packages' && (
+                                            <motion.div
+                                                layoutId="activeTab"
+                                                className="absolute inset-0 bg-neutral-900 rounded-xl shadow-lg"
+                                                transition={{ type: "spring", bounce: 0.25, duration: 0.5 }}
+                                            />
+                                        )}
+                                        <span className="relative z-10">Packages</span>
+                                    </button>
+                                    <button
+                                        onClick={() => setActiveTab('activities')}
+                                        className={`relative px-8 py-3 rounded-xl text-xs font-black uppercase tracking-widest transition-all duration-300 ${activeTab === 'activities' ? "text-white" : "text-neutral-500 hover:text-neutral-700"
+                                            }`}
+                                    >
+                                        {activeTab === 'activities' && (
+                                            <motion.div
+                                                layoutId="activeTab"
+                                                className="absolute inset-0 bg-neutral-900 rounded-xl shadow-lg"
+                                                transition={{ type: "spring", bounce: 0.25, duration: 0.5 }}
+                                            />
+                                        )}
+                                        <span className="relative z-10">Activities</span>
+                                    </button>
+                                </div>
+                                <div className="flex items-center gap-2 px-1">
+                                    <div className={`w-2 h-2 rounded-full ${activeTab === 'packages' ? "bg-amber-400" : "bg-emerald-400"} animate-pulse`} />
+                                    <span className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">
+                                        Viewing {activeTab} you've liked
+                                    </span>
+                                </div>
+                            </div>
+                        )}
 
                         {/* Result count - Redesigned */}
                         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-6 mb-10 pb-6 border-b border-gray-100">
