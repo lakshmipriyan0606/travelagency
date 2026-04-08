@@ -1,6 +1,6 @@
 import { motion, AnimatePresence } from "framer-motion";
 import { adminMenu } from "../constant";
-import { LogOut, Package, ClipboardList, Image as ImageIcon, ChevronDown, Sparkles, Activity, PlusCircle, FileText, PenTool, MapPin } from "lucide-react";
+import { LogOut, Package, ClipboardList, Image as ImageIcon, ChevronDown, Sparkles, Activity, PlusCircle, FileText, PenTool, MapPin, Globe } from "lucide-react";
 import { useDispatch, useSelector } from "react-redux";
 import { logout } from "@/store/authSlice";
 import { logoutAPI } from "@/api/admin/auth.api";
@@ -25,6 +25,8 @@ const iconMap: Record<string, any> = {
     "CreateBlog": <PenTool size={18} />,
     "AllDestinations": <MapPin size={20} />,
     "CreateDestination": <PlusCircle size={18} />,
+    "Website": <Globe size={20} />,
+    "WebsiteHeroManager": <ImageIcon size={18} />,
 };
 
 export default function Sidebar({ active, onChange }: SidebarProps) {

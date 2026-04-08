@@ -2,6 +2,8 @@ import mongoose from "mongoose";
 
 const packageSchema = new mongoose.Schema(
   {
+    // Explicit discriminator to avoid "activityCategory" inference bugs on legacy data
+    type: { type: String, enum: ["package", "activity"], default: "package", index: true },
     packageName: { type: String, required: true },
     packageDescription: { type: String, required: true },
     packageType: { type: String, default: "" },

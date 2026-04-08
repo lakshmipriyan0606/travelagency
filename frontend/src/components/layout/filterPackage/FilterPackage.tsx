@@ -15,7 +15,7 @@ import {
 } from "./constant";
 
 import { UseFetchAPIQuery } from "@/Hook/UseFetchAPIQuery";
-import { GetAllPackageList } from "@/api/user/api";
+import { GetAllPackageList, GetLikedPackageList } from "@/api/user/api";
 import PackageCard from "../packageCard/PackageCard";
 import FilterConfigPage from "./filterConfigPage";
 import PackageCardSkeleton from "../packageCard/PackageCardSkeleton";
@@ -176,10 +176,25 @@ const FilterPackage = ({ likePackageOnly = false, mode = 'all' }: FilterPackageP
 
     // ─── API
     const isAdminMode = context?.isAdmin || false;
-    const queryKey = useMemo(() => ["allPackage", cursor, filters.search, filters.city, isAdminMode, mode], [cursor, filters.search, filters.city, isAdminMode, mode]);
+    const queryKey = useMemo(
+        () => ["allPackage", cursor, filters.search, filters.city, isAdminMode, mode, likePackageOnly, activeTab],
+        [cursor, filters.search, filters.city, isAdminMode, mode, likePackageOnly, activeTab]
+    );
     const { data, isLoading, isError, refetch } = UseFetchAPIQuery({
         key: queryKey,
         queryFn: () => {
+            // Likes page should use a dedicated endpoint (ensures userLiked is correct)
+            if (likePackageOnly) {
+                const onlyActivities = activeTab === 'activities';
+                const excludeActivities = activeTab === 'packages';
+                return GetLikedPackageList({
+                    limit: PAGE_SIZE,
+                    lastId: cursor,
+                    onlyActivities,
+                    excludeActivities
+                });
+            }
+
             const onlyActivities = mode === 'activities';
             const excludeActivities = mode === 'packages';
             return GetAllPackageList({
@@ -203,7 +218,7 @@ const FilterPackage = ({ likePackageOnly = false, mode = 'all' }: FilterPackageP
         setTotalCount(0);
         lastProcessedCursor.current = "RESET";
         setTimeout(() => refetch(), 0);
-    }, [JSON.stringify(filters.filterConfig), filters.search, filters.city, likePackageOnly, mode]);
+    }, [JSON.stringify(filters.filterConfig), filters.search, filters.city, likePackageOnly, mode, activeTab]);
 
     // Accumulate pages
     const dataProcessedRef = useRef<any>(null);
@@ -237,13 +252,33 @@ const FilterPackage = ({ likePackageOnly = false, mode = 'all' }: FilterPackageP
         // Apply Tab Filter when in Likes mode
         if (likePackageOnly) {
             liked = liked.filter((p) => {
-                const isActivity = p.activityCategory && p.activityCategory !== "" && p.activityCategory !== "none";
+                const isActivity =
+                    p.type === 'activity' ||
+                    (p.activityCategory && p.activityCategory !== "" && p.activityCategory !== "none");
                 return activeTab === 'activities' ? isActivity : !isActivity;
             });
         }
 
         return sortPackages(liked, sort);
     }, [packageList, filters, likePackageOnly, sort, activeTab]);
+
+    // If user has likes only in the other tab, auto-switch once.
+    useEffect(() => {
+        if (!likePackageOnly) return;
+        const liked = (packageList || []).filter((p) => p.userLiked);
+        const likedActivities = liked.filter((p) =>
+            p.type === 'activity' || (p.activityCategory && p.activityCategory !== "" && p.activityCategory !== "none")
+        ).length;
+        const likedPackages = liked.length - likedActivities;
+
+        if (activeTab === 'packages' && likedPackages === 0 && likedActivities > 0) {
+            setActiveTab('activities');
+        }
+        if (activeTab === 'activities' && likedActivities === 0 && likedPackages > 0) {
+            setActiveTab('packages');
+        }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [likePackageOnly, packageList]);
 
     const breadcrumbItems = useMemo(() => buildBreadcrumb(filters, mode), [filters, mode]);
 

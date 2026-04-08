@@ -6,6 +6,20 @@ export const adminMenu = [
         component: "MetricsDashboard",
     },
     {
+        id: 101,
+        label: "Website",
+        icon: "🌐",
+        component: "Website",
+        children: [
+            {
+                id: 1011,
+                label: "Hero Sections",
+                icon: "🖼️",
+                component: "WebsiteHeroManager",
+            }
+        ]
+    },
+    {
         id: 2,
         label: "Create New",
         icon: "➕",

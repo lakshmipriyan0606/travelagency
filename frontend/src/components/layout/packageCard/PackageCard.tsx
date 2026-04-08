@@ -28,6 +28,7 @@ const calculateDiscountPercentage = (price: number, offerPrice: number) => {
 
 export interface Package {
     _id: string;
+    type?: "package" | "activity";
     packageName: string;
     images: { url: string; alt: string }[];
     location: string;
@@ -84,7 +85,9 @@ export function SinglePackageCard({
     const [showRankPicker, setShowRankPicker] = useState(false);
     const queryClient = useQueryClient();
 
-    const isActivity = !!(offer.activityCategory && offer.activityCategory !== "" && offer.activityCategory !== "none");
+    const isActivity =
+        offer.type === "activity" ||
+        (!!(offer.activityCategory && offer.activityCategory !== "" && offer.activityCategory !== "none"));
 
     const availableRanks = RANK_OPTIONS.filter(rank => {
         const taken = (takenRanks || []).find((t: any) => 

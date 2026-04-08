@@ -34,7 +34,7 @@ export default function Contact() {
   };
 
   return (
-    <div className="min-h-screen bg-custom-black">
+    <div className="min-h-screen bg-white">
       <Helmet>
         <title>Contact | {GLOBAL_CONFIG.site.officialName}</title>
         <meta
@@ -45,6 +45,14 @@ export default function Contact() {
 
       {/* Hero */}
       <section className="relative overflow-hidden">
+        <div
+          className="absolute inset-0 pointer-events-none bg-cover bg-center"
+          style={{
+            backgroundImage:
+              "url('https://i.postimg.cc/rmFhP4Tg/woman-traveler-visiting-son-tra-marina-tourist-with-blue-dress-hat-traveling-da-nang-city-vietnam-so.jpg')",
+          }}
+        />
+        <div className="absolute inset-0 pointer-events-none bg-black/55" />
         <div className="absolute inset-0 pointer-events-none bg-[radial-gradient(circle_at_20%_10%,rgba(252,175,22,0.18),transparent_45%),radial-gradient(circle_at_80%_0%,rgba(255,255,255,0.08),transparent_40%)]" />
         <div className="relative max-w-7xl mx-auto px-4 pt-20 sm:pt-24 pb-10 sm:pb-14">
           {/* Breadcrumb */}
@@ -104,14 +112,14 @@ export default function Contact() {
           {/* Left: contact cards + map */}
           <div className="lg:col-span-7 space-y-6">
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-              <div className="rounded-2xl border border-white/10 bg-white/5 p-5">
+              <div className="rounded-2xl border border-neutral-200/80 bg-white p-5 shadow-[0_10px_25px_-18px_rgba(0,0,0,0.55)] transition-all duration-300 ease-out hover:-translate-y-0.5 hover:border-primary/35 hover:ring-2 hover:ring-primary/10 hover:shadow-[0_18px_40px_-22px_rgba(0,0,0,0.6)]">
                 <div className="flex items-start gap-3">
                   <div className="w-10 h-10 rounded-xl bg-primary/15 border border-primary/25 flex items-center justify-center">
                     <Phone className="w-5 h-5 text-primary" />
                   </div>
                   <div className="min-w-0">
-                    <p className="text-white font-semibold">WhatsApp</p>
-                    <p className="text-white/70 text-sm mt-1">{WADisplayNumber}</p>
+                    <p className="text-gray-900 font-semibold">WhatsApp</p>
+                    <p className="text-gray-600 text-sm mt-1">{WADisplayNumber}</p>
                     <button
                       type="button"
                       onClick={openWhatsApp}
@@ -123,14 +131,14 @@ export default function Contact() {
                 </div>
               </div>
 
-              <div className="rounded-2xl border border-white/10 bg-white/5 p-5">
+              <div className="rounded-2xl border border-neutral-200/80 bg-white p-5 shadow-[0_10px_25px_-18px_rgba(0,0,0,0.55)] transition-all duration-300 ease-out hover:-translate-y-0.5 hover:border-primary/35 hover:ring-2 hover:ring-primary/10 hover:shadow-[0_18px_40px_-22px_rgba(0,0,0,0.6)]">
                 <div className="flex items-start gap-3">
                   <div className="w-10 h-10 rounded-xl bg-primary/15 border border-primary/25 flex items-center justify-center">
                     <Mail className="w-5 h-5 text-primary" />
                   </div>
                   <div className="min-w-0">
-                    <p className="text-white font-semibold">Email</p>
-                    <p className="text-white/70 text-sm mt-1 break-all">{GLOBAL_CONFIG.contact.email}</p>
+                    <p className="text-gray-900 font-semibold">Email</p>
+                    <p className="text-gray-600 text-sm mt-1 break-all">{GLOBAL_CONFIG.contact.email}</p>
                     <a
                       href={`mailto:${GLOBAL_CONFIG.contact.email}`}
                       className="mt-3 inline-flex items-center gap-2 text-primary hover:underline text-sm"
@@ -142,20 +150,20 @@ export default function Contact() {
               </div>
             </div>
 
-            <div className="rounded-2xl border border-white/10 bg-white/5 p-5">
+            <div className="rounded-2xl border border-neutral-200/80 bg-white p-5 shadow-[0_10px_25px_-18px_rgba(0,0,0,0.55)] transition-all duration-300 ease-out hover:-translate-y-0.5 hover:border-primary/35 hover:ring-2 hover:ring-primary/10 hover:shadow-[0_18px_40px_-22px_rgba(0,0,0,0.6)]">
               <div className="flex items-start justify-between gap-4">
                 <div className="flex items-start gap-3 min-w-0">
                   <div className="w-10 h-10 rounded-xl bg-primary/15 border border-primary/25 flex items-center justify-center">
                     <MapPin className="w-5 h-5 text-primary" />
                   </div>
                   <div className="min-w-0">
-                    <p className="text-white font-semibold">Office address</p>
-                    <p className="text-white/70 text-sm mt-1">{OFFICE_ADDRESS}</p>
+                    <p className="text-gray-900 font-semibold">Office address</p>
+                    <p className="text-gray-600 text-sm mt-1">{OFFICE_ADDRESS}</p>
                     <div className="mt-3 flex flex-wrap gap-3">
                       <button
                         type="button"
                         onClick={copyAddress}
-                        className="inline-flex items-center gap-2 rounded-xl bg-white/10 text-white px-3 py-2 hover:bg-white/15 transition text-sm"
+                        className="inline-flex items-center gap-2 rounded-xl bg-gray-50 text-gray-900 px-3 py-2 hover:bg-gray-100 transition text-sm border border-neutral-200"
                       >
                         <Copy className="w-4 h-4" />
                         Copy address
@@ -163,7 +171,7 @@ export default function Contact() {
                       <button
                         type="button"
                         onClick={openDirections}
-                        className="inline-flex items-center gap-2 rounded-xl bg-white/10 text-white px-3 py-2 hover:bg-white/15 transition text-sm"
+                        className="inline-flex items-center gap-2 rounded-xl bg-gray-50 text-gray-900 px-3 py-2 hover:bg-gray-100 transition text-sm border border-neutral-200"
                       >
                         <ExternalLink className="w-4 h-4" />
                         Open in Google Maps
@@ -174,7 +182,7 @@ export default function Contact() {
               </div>
             </div>
 
-            <div className="rounded-2xl overflow-hidden border border-white/10 bg-white/5">
+            <div className="rounded-2xl overflow-hidden border border-neutral-200/80 bg-white shadow-[0_10px_25px_-18px_rgba(0,0,0,0.55)] transition-all duration-300 ease-out hover:-translate-y-0.5 hover:border-primary/35 hover:ring-2 hover:ring-primary/10 hover:shadow-[0_18px_40px_-22px_rgba(0,0,0,0.6)]">
               <div className="aspect-[16/12] sm:aspect-[16/9] lg:aspect-[16/8]">
                 <iframe
                   title="Sastikaa Travel location on Google Maps"
@@ -185,7 +193,7 @@ export default function Contact() {
                 />
               </div>
               <div className="p-4 flex items-center justify-between gap-3">
-                <p className="text-white/70 text-sm">
+                <p className="text-gray-600 text-sm">
                   Find us in Bukit Bintang, Kuala Lumpur.
                 </p>
                 <button
@@ -201,17 +209,17 @@ export default function Contact() {
 
           {/* Right: enquiry form */}
           <div className="lg:col-span-5">
-            <div className="rounded-2xl border border-white/10 bg-white/5 p-5 sm:p-6">
-              <h2 className="text-white text-xl sm:text-2xl font-semibold">
+            <div className="rounded-2xl border border-neutral-200/80 bg-white p-5 sm:p-6 shadow-[0_10px_25px_-18px_rgba(0,0,0,0.55)] transition-all duration-300 ease-out hover:-translate-y-0.5 hover:border-primary/35 hover:ring-2 hover:ring-primary/10 hover:shadow-[0_18px_40px_-22px_rgba(0,0,0,0.6)]">
+              <h2 className="text-gray-900 text-xl sm:text-2xl font-semibold">
                 Enquiry form
               </h2>
-              <p className="text-white/70 text-sm mt-2">
+              <p className="text-gray-600 text-sm mt-2">
                 Submit your details and we’ll call/message you back with package suggestions.
               </p>
               <div className="mt-5">
-                <BookingFomField fieldClassName="text-gray-700" mainClassName="bg-white" />
+                <BookingFomField mainClassName="bg-white" />
               </div>
-              <p className="mt-4 text-xs text-white/60 leading-relaxed">
+              <p className="mt-4 text-xs text-gray-500 leading-relaxed">
                 By submitting, you agree to be contacted via WhatsApp/phone/email for your enquiry.
               </p>
             </div>

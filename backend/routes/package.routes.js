@@ -41,6 +41,7 @@ router.get("/bestpackages", cacheResponse((req) => `packages:best:${req.headers.
     const userId = req?.headers?.userid;
     console.log('userId: ', userId);
     const bestPackages = await PackageModel.find({ 
+      type: "package",
       isBestPackage: true,
       isActive: { $ne: false },
       isDeleted: { $ne: true } 
@@ -77,6 +78,7 @@ router.get("/bestactivities", cacheResponse((req) => `packages:bestactivities:${
   try {
     const userId = req?.headers?.userid;
     const bestActivities = await PackageModel.find({
+      type: "activity",
       isBestPackage: true,
       isActive: { $ne: false },
       isDeleted: { $ne: true },
@@ -150,16 +152,11 @@ router.get("/", cacheResponse((req) => `packages:list:${req.headers.userid || 'a
     // Strict separation
     if (onlyActivities) {
       andConditions.push({ 
-        activityCategory: { $ne: null, $exists: true, $not: /none/i } 
+        type: "activity"
       });
     } else if (excludeActivities) {
       andConditions.push({ 
-        $or: [
-          { activityCategory: null }, 
-          { activityCategory: { $exists: false } }, 
-          { activityCategory: "" }, 
-          { activityCategory: "none" }
-        ] 
+        type: "package"
       });
     }
 
@@ -224,6 +221,7 @@ router.get("/activitycategories", cacheResponse("packages:activitycategories", 6
     ];
 
     const dbCategories = await PackageModel.distinct("activityCategory", {
+      type: "activity",
       activityCategory: { $ne: null, $exists: true, $not: /none/i },
       isActive: { $ne: false },
       isDeleted: { $ne: true },
@@ -238,7 +236,64 @@ router.get("/activitycategories", cacheResponse("packages:activitycategories", 6
   }
 });
 
+// Liked packages list (user-specific)
+router.get("/liked", async (req, res) => {
+  try {
+    const userId = req?.headers?.userid;
+    if (!userId) {
+      return res.status(200).json({
+        data: [],
+        totalCount: 0,
+        nextCursor: null,
+        hasMore: false,
+        message: "No user id provided",
+      });
+    }
 
+    const limit = parseInt(req.query.limit) || 10;
+    const lastId = req.query.lastId;
+
+    const onlyActivities = req.query.onlyActivities === "true";
+    const excludeActivities = req.query.excludeActivities === "true";
+
+    const query = {
+      isActive: { $ne: false },
+      isDeleted: { $ne: true },
+      likes: { $elemMatch: { userId, liked: true } },
+    };
+
+    if (onlyActivities) query.type = "activity";
+    if (excludeActivities) query.type = "package";
+
+    const totalCount = await PackageModel.countDocuments(query);
+
+    if (lastId) {
+      query._id = { $lt: lastId };
+    }
+
+    const packages = await PackageModel.find(query).sort({ _id: -1 }).limit(limit).lean();
+
+    const finalLiked = packages.map((pkg) => ({
+      ...pkg,
+      images: sanitizeImageObjects(pkg.images),
+      hotelName: pkg.hotelName || (pkg.rating ? `${pkg.rating} Stars Hotel` : ""),
+      userLiked: true,
+    }));
+
+    res.status(200).json({
+      data: finalLiked,
+      totalCount,
+      nextCursor: packages.length ? packages[packages.length - 1]._id : null,
+      hasMore: packages.length === limit,
+      message: "Liked packages fetched successfully",
+    });
+  } catch (error) {
+    res.status(500).json({
+      message: "Error fetching liked packages",
+      error: error.message,
+    });
+  }
+});
 
 router.get("/likeCount", async (req, res) => {
   try {
@@ -327,13 +382,13 @@ router.get("/takenRanks", async (req, res) => {
   try {
     const packages = await PackageModel.find(
       { isBestPackage: true, bestRank: { $ne: null }, isDeleted: { $ne: true } },
-      { bestRank: 1, _id: 1, packageName: 1, activityCategory: 1 }
+      { bestRank: 1, _id: 1, packageName: 1, activityCategory: 1, type: 1 }
     );
     const takenRanks = packages.map(p => ({
       rank: p.bestRank,
       packageId: p._id,
       packageName: p.packageName,
-      isActivity: !!(p.activityCategory && p.activityCategory !== "" && p.activityCategory !== "none")
+      isActivity: p.type === "activity" || !!(p.activityCategory && p.activityCategory !== "" && p.activityCategory !== "none")
     }));
     return res.json({ takenRanks });
   } catch (error) {
@@ -420,7 +475,7 @@ router.patch("/updateRank/:id", protectRoute, adminOnly, (req, res, next) => { b
     }
 
     // Check if another package holds this rank WITHIN THE SAME CATEGORY (Activity vs Package)
-    const isCurrentActivity = !!(currentPackage.activityCategory && currentPackage.activityCategory !== "" && currentPackage.activityCategory !== "none");
+    const isCurrentActivity = currentPackage.type === "activity" || !!(currentPackage.activityCategory && currentPackage.activityCategory !== "" && currentPackage.activityCategory !== "none");
 
     const conflictQuery = {
       bestRank,
@@ -429,14 +484,9 @@ router.patch("/updateRank/:id", protectRoute, adminOnly, (req, res, next) => { b
     };
 
     if (isCurrentActivity) {
-      conflictQuery.activityCategory = { $ne: null, $exists: true, $not: /none/i };
+      conflictQuery.type = "activity";
     } else {
-      conflictQuery.$or = [
-        { activityCategory: null },
-        { activityCategory: { $exists: false } },
-        { activityCategory: "" },
-        { activityCategory: "none" }
-      ];
+      conflictQuery.type = "package";
     }
 
     const existingWithRank = await PackageModel.findOne(conflictQuery);

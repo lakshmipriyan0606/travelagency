@@ -39,6 +39,7 @@ const sanitizeImagesArray = (arr) => {
 export const createPackage = async (req, res) => {
   try {
     const {
+      type,
       packageType,
       location,
       daysAndNights,
@@ -61,7 +62,9 @@ export const createPackage = async (req, res) => {
       seo,
     } = req.body;
 
-    const isActivity = activityCategory && activityCategory !== "" && activityCategory !== "none";
+    const isActivity =
+      (type && String(type).toLowerCase() === "activity") ||
+      (activityCategory && activityCategory !== "" && activityCategory !== "none");
 
     // 1) Parse existing images and upload new ones
     let mainImages = [];
@@ -103,6 +106,7 @@ export const createPackage = async (req, res) => {
 
     // 3) Create and Save
     const pkg = new Package({
+      type: isActivity ? "activity" : "package",
       packageName,
       packageDescription,
       packageType: isActivity ? "" : packageType,
@@ -153,6 +157,7 @@ export const updatePackage = async (req, res) => {
     if (!pkg) return res.status(404).json({ message: "Package not found" });
 
     const {
+      type,
       packageType,
       location,
       daysAndNights,
@@ -175,7 +180,9 @@ export const updatePackage = async (req, res) => {
       seo,
     } = req.body;
 
-    const isActivity = activityCategory && activityCategory !== "" && activityCategory !== "none";
+    const isActivity =
+      (type && String(type).toLowerCase() === "activity") ||
+      (activityCategory && activityCategory !== "" && activityCategory !== "none");
 
     // 1) Images
     let mainImages = [];
@@ -215,6 +222,7 @@ export const updatePackage = async (req, res) => {
     }
 
     // 3) Update Fields
+    pkg.type = isActivity ? "activity" : "package";
     pkg.packageName = packageName;
     pkg.packageDescription = packageDescription;
     pkg.location = location;

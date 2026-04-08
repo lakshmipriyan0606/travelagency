@@ -13,6 +13,8 @@ import blogRoutes from "./routes/blog.routes.js";
 import reviewRoutes from "./routes/review.routes.js";
 import storyRoutes from "./routes/story.routes.js";
 import destinationRoutes from "./routes/destination.routes.js";
+import uiConfigRoutes from "./routes/uiConfig.routes.js";
+import websiteHeroRoutes from "./routes/websiteHero.routes.js";
 
 // Infrastructure Middleware
 import { globalLimiter, authLimiter, apiLimiter } from "./middlewares/rateLimiter.middleware.js";
@@ -87,7 +89,7 @@ app.use(
     },
     credentials: true,
     methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
-    allowedHeaders: ["Content-Type", "Authorization", "userId", "UserId", "x-metrics-token"],
+    allowedHeaders: ["Content-Type", "Authorization", "userId", "UserId", "x-metrics-token", "Cache-Control", "Pragma"],
     maxAge: 86400,
   })
 );
@@ -169,6 +171,12 @@ app.get("/health", (req, res) => {
 
 // ── Routes with targeted rate limiters ───────────────────────────────
 app.use("/api/admin", authLimiter, authRoutes);
+// UI Config (website hero):
+// - admin update routes are mounted under /api/admin/ui (protected)
+// - public website routes are mounted under /api/ui
+app.use("/api/admin/ui", authLimiter, uiConfigRoutes);
+app.use("/api/ui", uiConfigRoutes);
+app.use("/api/website-hero", websiteHeroRoutes);
 app.use("/api/packages", apiLimiter, packageRoute);
 // bookingLimiter is applied only on POST /booking/create (see bookingForm.route.js)
 app.use("/api", bookingRoute);

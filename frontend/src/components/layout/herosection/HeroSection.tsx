@@ -18,11 +18,13 @@ import HeroEnquiryForm from './HeroEnquiryForm';
 import { HeroFormData } from '@/config/formConfig';
 import AnimatedButton from '@/components/Button/AnimatedButton/AnimatedButton';
 import { motion } from 'framer-motion';
+import { UseFetchAPIQuery } from '@/Hook/UseFetchAPIQuery';
+import { GetActiveWebsiteHero } from '@/api/admin/websiteHero.api';
 
-const heroImages = [
-    "https://i.postimg.cc/4d2180r1/Whats_App_Image_2026_03_19_at_12_02_47_AM.jpg",
-    "https://i.postimg.cc/NMCxNnWD/Whats_App_Image_2026_03_19_at_12_03_28_AM.jpg",
-    "https://i.postimg.cc/QtYq6zRk/Whats_App_Image_2026_03_19_at_12_04_07_AM.jpg"
+const fallbackHeroImages = [
+    { url: "https://i.postimg.cc/4d2180r1/Whats_App_Image_2026_03_19_at_12_02_47_AM.jpg", alt: "Malaysia travel experience" },
+    { url: "https://i.postimg.cc/NMCxNnWD/Whats_App_Image_2026_03_19_at_12_03_28_AM.jpg", alt: "Malaysia tour packages" },
+    { url: "https://i.postimg.cc/QtYq6zRk/Whats_App_Image_2026_03_19_at_12_04_07_AM.jpg", alt: "Travel in Malaysia" },
 ];
 
 // ... Scroll indicator ...
@@ -70,6 +72,20 @@ const HeroSection = () => {
     const handleFormComplete = (_data: HeroFormData) => {
         // Form is fully submitted and success message shown.
     };
+
+    const { data: heroCfgData } = UseFetchAPIQuery({
+        key: ["websiteHeroActive"],
+        queryFn: GetActiveWebsiteHero,
+        options: { enabled: true },
+    });
+
+    const heroCfg = heroCfgData?.data || {};
+    const heroImages: { url: string; alt?: string }[] =
+        Array.isArray(heroCfg?.backgroundImages) && heroCfg.backgroundImages.length
+            ? heroCfg.backgroundImages
+            : fallbackHeroImages;
+    const heroTitle = heroCfg?.title || "Best Travel Agency in Malaysia";
+    const heroDescription = heroCfg?.description || "Plan your perfect Malaysia trip with Sastikaa Travel — a professional travel agency in Malaysia providing city tours, airport transfers, and customized travel packages across Kuala Lumpur, Genting Highland, Langkawi Island, and Penang.";
 
     return (
         <div className="relative w-full h-screen overflow-hidden rounded-3xl">
@@ -121,12 +137,12 @@ const HeroSection = () => {
                 }}
                 className="hero-swiper absolute inset-0 w-full h-full rounded-2xl sm:rounded-3xl"
             >
-                {heroImages.map((src, index) => (
+                {heroImages.map((img, index) => (
                     <SwiperSlide key={index}>
                         <div className="relative w-full h-full overflow-hidden">
                             <motion.img
-                                src={src}
-                                alt={`Hero ${index + 1}`}
+                                src={img.url}
+                                alt={img.alt || `Hero ${index + 1}`}
                                 className="w-full h-full object-cover"
                                 initial={{ scale: 1.1 }}
                                 animate={{ scale: 1 }}
@@ -144,13 +160,17 @@ const HeroSection = () => {
                     <div className="flex flex-col items-start justify-center text-white text-left w-full md:w-[55%] gap-3 md:gap-6 max-w-[19rem] sm:max-w-[22rem] md:max-w-none sm:pb-10 lg:pb-0">
                         <div className="flex flex-col gap-1">
                             <h1 className="text-[1.8rem] sm:text-2xl lg:text-4xl leading-[1.5] sm:leading-[1.8] md:leading-snug font-semibold text-white">
-                                Best Travel Agency in <span className="text-primary">Malaysia</span>
+                                {heroTitle.includes("Malaysia") ? (
+                                    <>
+                                        {heroTitle.replace("Malaysia", "")}
+                                        <span className="text-primary">Malaysia</span>
+                                    </>
+                                ) : (
+                                    heroTitle
+                                )}
                             </h1>
-                            <p className="text-[1.8rem] sm:text-2xl lg:text-4xl leading-[1.5] sm:leading-[1.8] md:leading-snug font-semibold text-white">
-                                For <span className="text-primary">Personalized Trips</span>
-                            </p>
                             <p className="text-sm sm:text-base lg:text-lg text-gray-200 mt-2 max-w-2xl leading-relaxed">
-                                Plan your perfect Malaysia trip with <span className="text-primary font-medium">Sastikaa Travel</span> — a professional travel agency in Malaysia providing city tours, airport transfers, and customized travel packages across Kuala Lumpur, Genting Highland, Langkawi Island, and Penang.
+                                {heroDescription}
                             </p>
                         </div>
                         <div className="flex flex-col items-start gap-4 mt-2 pt-4">

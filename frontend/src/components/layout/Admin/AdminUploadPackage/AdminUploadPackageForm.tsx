@@ -48,6 +48,7 @@ const daySchema = z.object({
 });
 
 const formSchema = z.object({
+  type: z.enum(["package", "activity"]).optional(),
   packageName: z.string().min(1, "Required"),
   packageDescription: z.string().min(1, "Required"),
   location: z.string().min(1, "Required"),

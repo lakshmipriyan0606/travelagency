@@ -22,6 +22,7 @@ import StoryAdminList from '@/components/layout/Admin/Story/StoryAdminList'
 import StoryForm from '@/components/layout/Admin/Story/StoryForm'
 import DestinationAdminList from '@/components/layout/Admin/Destination/DestinationAdminList'
 import DestinationForm from '@/components/layout/Admin/Destination/DestinationForm'
+import WebsiteHeroManager from "./WebsiteHeroManager";
 
 export interface AdminPanelContextType {
     isAdmin: boolean;
@@ -110,6 +111,7 @@ const AdminPanel = () => {
         }),
     });
 
+
     const renderPage = () => {
         switch (active) {
             case "MetricsDashboard":
@@ -140,6 +142,8 @@ const AdminPanel = () => {
             case "CreateDestination": return <DestinationForm />;
             case "UploadImage": return <UploadImagePage />;
             case "MediaGallery": return <MediaGallery />;
+            case "WebsiteHeroManager": return <WebsiteHeroManager />;
+            case "CreateHero": return <WebsiteHeroManager startWithNew />;
             default: return <div>Page Not Found</div>;
         }
     };

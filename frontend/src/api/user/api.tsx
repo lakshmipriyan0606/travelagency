@@ -40,6 +40,26 @@ export const GetLikePackageListCount = async () => {
   return data;
 }
 
+export const GetLikedPackageList = async ({
+  limit = 10,
+  lastId = "",
+  onlyActivities = false,
+  excludeActivities = false,
+}: {
+  limit?: number;
+  lastId?: string;
+  onlyActivities?: boolean;
+  excludeActivities?: boolean;
+}) => {
+  const queryParams = new URLSearchParams();
+  if (limit) queryParams.append("limit", limit.toString());
+  if (lastId) queryParams.append("lastId", lastId);
+  if (onlyActivities) queryParams.append("onlyActivities", "true");
+  if (excludeActivities) queryParams.append("excludeActivities", "true");
+  const { data } = await axiosClient.get(`packages/liked?${queryParams.toString()}`);
+  return data;
+};
+
 export const CreateBookingForm = async (formData: any) => {
   const { data } = await axiosClient.post("booking/create", formData);
   return data;

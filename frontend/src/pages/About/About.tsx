@@ -59,9 +59,9 @@ const About = () => {
         <div className="absolute inset-0 z-0">
           <motion.div
             style={{ scale }}
-            className="w-full h-full bg-[url('https://images.unsplash.com/photo-1537996194471-e657df975ab4?auto=format&fit=crop&q=80&w=2000')] bg-cover bg-center"
+            className="w-full h-full bg-[url('https://i.postimg.cc/x13SzKT6/couple-overlooking-city-skyline-sunset-with-skyscrapers-view-jpg.jpg')] bg-cover bg-center"
           />
-          <div className="absolute inset-0 bg-gradient-to-b from-black/70 via-black/40 to-[#fcfcfd]" />
+          <div className="absolute inset-0 bg-black/60" />
         </div>
 
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10 text-center lg:text-left">
@@ -77,12 +77,12 @@ const About = () => {
               ESTABLISHED IN 2014
             </span>
             <h1 className="text-5xl md:text-7xl lg:text-8xl text-white mb-6 leading-[0.9] uppercase font-heading">
-              Redefining <br />
-              <span className="text-transparent bg-clip-text bg-gradient-to-r from-primary to-white">Travel</span> <br />
-              Experiences
+              Redefining Travel <br />
+              <span className="text-transparent bg-clip-text bg-gradient-to-r from-primary to-white">Experiences</span> <br />
+              Across Malaysia
             </h1>
             <p className="text-lg md:text-xl text-white/90 max-w-xl leading-relaxed mb-10 drop-shadow-lg font-body">
-              Empowering global partners with elite travel solutions. Where heritage meets innovation.
+              Delivering seamless, personalized, and reliable travel solutions for global travelers and travel partners. From vibrant cities to scenic destinations, we make every journey effortless and memorable.
             </p>
           </motion.div>
         </div>
@@ -91,7 +91,7 @@ const About = () => {
         <motion.div
           variants={floatingAnimation}
           animate="animate"
-          className="absolute top-[75%] -translate-y-1/2 left-4 sm:left-6 lg:left-10 bg-white/10 backdrop-blur-3xl p-4 rounded-[2rem] border border-white/20 hidden lg:block shadow-2xl cursor-pointer hover:bg-white/20 transition-all z-20 group"
+          className="absolute top-[79%] -translate-y-1/2 left-4 sm:left-6 lg:left-3 bg-white/10 backdrop-blur-3xl p-4 rounded-[2rem] border border-white/20 hidden lg:block shadow-2xl cursor-pointer hover:bg-white/20 transition-all z-20 group"
         >
           <div className="flex items-center gap-4">
             <div className="w-12 h-12 bg-primary rounded-full flex items-center justify-center text-black shadow-glow group-hover:scale-110 transition-transform">
@@ -99,20 +99,20 @@ const About = () => {
             </div>
             <div className="pr-2">
               <p className="text-white/60 text-[10px] uppercase tracking-[0.2em] font-heading">Trust</p>
-              <p className="text-white text-xl  font-heading leading-none mt-1">98% Success</p>
+              <p className="text-white text-xl  font-heading leading-none mt-1">98% Satisfaction Rate</p>
             </div>
           </div>
         </motion.div>
       </section>
 
       {/* Stats Section - Tighter spacing */}
-      <section className="relative -mt-12 md:-mt-16 z-30 px-4 sm:px-6 lg:px-8">
+      <section className="relative -mt-10 md:-mt-12 z-30 px-4 sm:px-6 lg:px-8">
         <div className="max-w-7xl mx-auto">
           <motion.div
             initial={{ opacity: 0, y: 40 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
-            className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6 bg-white p-6 md:p-10 rounded-[2.5rem] shadow-[0_30px_60px_-15px_rgba(0,0,0,0.12)] border border-gray-100"
+            className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 md:gap-3 bg-white p-3 rounded-[2.5rem] shadow-[0_30px_60px_-15px_rgba(0,0,0,0.12)] border border-gray-100"
           >
             {[
               { label: "Active Partners", value: "250+", icon: Users },
@@ -120,8 +120,8 @@ const About = () => {
               { label: "Yearly Tours", value: "1.2k+", icon: MapPin },
               { label: "Years Experience", value: "10+", icon: Calendar }
             ].map((stat, i) => (
-              <div key={i} className="text-center group cursor-pointer border-b last:border-0 sm:border-b-0 sm:odd:border-r lg:odd:border-r-0 lg:[&:not(:last-child)]:border-r border-gray-100 pb-4 sm:pb-0">
-                <div className="w-12 h-12 bg-primary/10 rounded-[1rem] flex items-center justify-center mx-auto mb-4 text-primary group-hover:bg-primary group-hover:text-black transition-all duration-300 shadow-sm group-hover:shadow-glow">
+              <div key={i} className="text-center group cursor-pointer border-b last:border-0 sm:border-b-0 sm:odd:border-r lg:odd:border-r-0 lg:[&:not(:last-child)]:border-r border-gray-100 pb-3 sm:pb-0">
+                <div className="w-11 h-11 bg-primary/10 rounded-[1rem] flex items-center justify-center mx-auto mb-3 text-primary group-hover:bg-primary group-hover:text-black transition-all duration-300 shadow-sm group-hover:shadow-glow">
                   <stat.icon size={24} strokeWidth={2.5} />
                 </div>
                 <h3 className="text-2xl md:text-3xl lg:text-4xl text-gray-900 mb-1 font-heading">{stat.value}</h3>
@@ -144,8 +144,8 @@ const About = () => {
                 className="relative z-10 rounded-[2.5rem] md:rounded-[3rem] overflow-hidden shadow-2xl shadow-amber-50"
               >
                 <img
-                  src="https://images.unsplash.com/photo-1537944434965-cf4679d1a598?auto=format&fit=crop&q=80&w=1000"
-                  alt="Bali Craftsmanship"
+                  src="https://i.postimg.cc/2SDDyHmc/rear-view-woman-against-sea-trees-against-sky-jpg.jpg"
+                  alt="Travel experience in Malaysia"
                   className="w-full aspect-[4/5] object-cover"
                 />
               </motion.div>
@@ -153,11 +153,11 @@ const About = () => {
                 initial={{ opacity: 0, scale: 0.8 }}
                 whileInView={{ opacity: 1, scale: 1 }}
                 viewport={{ once: true }}
-                className="absolute -bottom-4 -right-4 lg:-bottom-6 lg:-right-6 z-20 bg-white/95 backdrop-blur-3xl p-6 md:p-8 rounded-[2rem] border border-white shadow-glow-lg max-w-[220px] md:max-w-[280px] hidden sm:block cursor-pointer hover:scale-105 transition-transform"
+                className="absolute -bottom-4 -right-4 lg:-bottom-6 lg:-right-6 z-20 bg-white/95 backdrop-blur-3xl p-6 md:p-4 rounded-[2rem] border border-white shadow-glow-lg max-w-[220px] md:max-w-[280px] hidden sm:block cursor-pointer hover:scale-105 transition-transform"
               >
                 <Trophy className="text-primary mb-4" size={40} strokeWidth={2.5} />
-                <h4 className="text-lg md:text-xl  text-gray-900 mb-2 font-heading leading-none">Elite DMC</h4>
-                <p className="text-gray-500 font-medium text-[10px] md:text-xs leading-relaxed font-body">Reliable partner for premium travel agencies.</p>
+                <h4 className="text-lg md:text-xl  text-gray-900 mb-2 font-heading leading-none">Trusted DMC Partner</h4>
+                <p className="text-gray-500 font-medium text-[10px] md:text-xs leading-relaxed font-body">Reliable support for travel agents and personalized experiences for every traveler.</p>
               </motion.div>
             </div>
 
@@ -169,19 +169,21 @@ const About = () => {
               viewport={{ once: true, margin: "-100px" }}
               className="order-1 lg:order-2 text-center lg:text-left"
             >
-              <h2 className="text-[10px] tracking-[0.4em] text-primary uppercase mb-4 font-heading">The Journey</h2>
+              <h2 className="text-[10px] tracking-[0.4em] text-primary uppercase mb-4 font-heading">THE JOURNEY</h2>
               <h3 className="text-3xl md:text-5xl lg:text-6xl text-gray-900 mb-8 leading-[0.95] font-heading uppercase tracking-tighter">
-                Crafting <br /> <span className="text-primary">Legacies</span> <br className="hidden lg:block" /> In Every <br className="hidden lg:block" /> Itinerary.
+                Crafting Meaningful <br />
+                Travel Experiences <br className="hidden lg:block" />
+                <span className="text-primary">Across Malaysia</span>
               </h3>
               <div className="space-y-6 text-gray-600 text-sm md:text-base leading-relaxed font-medium font-body max-w-lg mx-auto lg:mx-0">
                 <p>
-                  Our mission emerged from a simple realization: travel partners needed more than just a provider—they needed a <span className="text-primary italic underline decoration-primary/30 underline-offset-8">strategic ally</span> on the ground.
+                  At Sastikaa Travel, our journey began with a simple vision — to go beyond being just a travel provider and become a trusted on-ground partner in Malaysia. We recognized that travelers and global travel agents need more than bookings; they need reliability, local expertise, and seamless execution.
                 </p>
                 <p>
-                  Our DNA is a unique fusion of hospitality standards and local depth. We bridge the gap between global expectations and local authenticity.
+                  With deep knowledge of destinations like Kuala Lumpur, Langkawi, Genting Highlands, and beyond, we design travel experiences that balance comfort, authenticity, and efficiency. Every itinerary is thoughtfully crafted to match the expectations of modern travelers and the operational needs of travel partners.
                 </p>
                 <p>
-                  Today, we stand as a tech-forward DMC. We architect experiences.
+                  Today, Sastikaa Travel stands as a dependable Destination Management Company (DMC) in Malaysia, delivering personalized holidays and complete ground handling services with precision and care.
                 </p>
               </div>
             </motion.div>
@@ -190,7 +192,7 @@ const About = () => {
       </section>
 
       {/* USP Section - Compact Dark Mode */}
-      <section className="py-20 md:py-32 bg-[#0a0a0b] text-white rounded-[3rem] mx-2 md:mx-4 my-12 md:my-10 overflow-hidden">
+      <section className="py-20 md:py-32 bg-[#0a0a0b]/95 text-white rounded-[3rem] mx-2 md:mx-4 my-12 md:my-10 overflow-hidden">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center mb-16 md:mb-24">
           <motion.div
             initial="initial"
@@ -199,10 +201,10 @@ const About = () => {
             transition={fadeInUpTransition as any}
             viewport={{ once: true, margin: "-100px" }}
           >
-            <h2 className="text-primary tracking-[0.3em] uppercase text-[10px] mb-4 font-heading">Why Partner</h2>
-            <h3 className="text-4xl md:text-6xl text-white mb-6 leading-none font-heading uppercase tracking-tighter">Unrivaled <br /> Excellence.</h3>
+            <h2 className="text-primary tracking-[0.3em] uppercase text-[10px] mb-4 font-heading">WHY PARTNER WITH US</h2>
+            <h3 className="text-4xl md:text-6xl text-white mb-6 leading-none font-heading uppercase tracking-tighter">Unmatched Travel <br /> Expertise & Reliability</h3>
             <p className="text-gray-400 text-base md:text-lg max-w-xl mx-auto font-medium font-body">
-              Strategic advantages that set your agency apart.
+              Strategic advantages that make Sastikaa Travel your trusted ground partner in Malaysia.
             </p>
           </motion.div>
         </div>
@@ -215,12 +217,12 @@ const About = () => {
           className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8"
         >
           {[
-            { icon: Globe, title: "Heritage Knowledge", desc: "Access hidden enclaves and cultural rituals typically closed to standard tourism." },
-            { icon: ShieldCheck, title: "Absolute Trust", desc: "Transparent operations with real-time audit capabilities for all partner agencies." },
-            { icon: Settings, title: "Hyper-Personalization", desc: "AI-assisted itinerary curation tailored to the specific micro-needs of your clients." },
-            { icon: Clock, title: "Elite 24/7 Concierge", desc: "Not just support—proactive management of every detail while your clients travel." },
-            { icon: Tag, title: "Preferred Direct Rates", desc: "Exclusive contract rates with top-tier Bali resorts and private island escapes." },
-            { icon: UserCheck, title: "Certified Guides", desc: "Our storytellers are certified in history, safety, and multi-lingual communication." }
+            { icon: Globe, title: "Local Destination Expertise", desc: "In-depth knowledge of Malaysia’s top destinations, ensuring authentic experiences and smooth travel execution." },
+            { icon: ShieldCheck, title: "Transparent & Reliable Service", desc: "Clear pricing, honest communication, and dependable operations you can trust every time." },
+            { icon: Settings, title: "Customized Travel Solutions", desc: "Tailor-made itineraries designed to match your clients’ preferences, budgets, and travel styles." },
+            { icon: Clock, title: "24/7 On-Ground Support", desc: "Round-the-clock assistance to handle changes, emergencies, and ensure a stress-free journey." },
+            { icon: Tag, title: "Competitive & Direct Pricing", desc: "A strong vendor network allows us to offer the best rates without compromising quality." },
+            { icon: UserCheck, title: "Professional Guides & Drivers", desc: "Experienced, friendly, and certified professionals ensuring safety, comfort, and local insights." }
           ].map((usp, index) => (
             <motion.div
               key={index}
@@ -252,7 +254,7 @@ const About = () => {
       </section>
 
       {/* Solutions Section - Compact methodology */}
-      <section className="py-16 md:py124 bg-white">
+      <section className="py-16 md:py-24 bg-white">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex flex-col lg:flex-row gap-16 lg:gap-20 items-center">
             <motion.div
@@ -263,26 +265,26 @@ const About = () => {
               viewport={{ once: true, margin: "-100px" }}
               className="flex-1"
             >
-              <h2 className="text-primary uppercase tracking-[0.3em] text-[10px] mb-6 font-heading">Our Methodology</h2>
+              <h2 className="text-primary uppercase tracking-[0.3em] text-[10px] mb-6 font-heading">OUR METHODOLOGY</h2>
               <h3 className="text-3xl md:text-5xl lg:text-6xl text-gray-900 mb-10 leading-[0.95] font-heading uppercase tracking-tighter">
-                Solving <br /> Complexity With <br /> <span className="text-primary">Innovation</span>.
+                Simplifying Travel <br /> with Smart <br /> <span className="text-primary">Execution</span>
               </h3>
 
               <div className="space-y-10 md:space-y-12">
                 {[
                   {
-                    title: "Real-time Intelligence",
-                    desc: "Skip the guesswork. Live updates on local conditions, traffic, and events to ensure smooth operations.",
+                    title: "Real-Time Travel Coordination",
+                    desc: "Stay ahead with live updates on traffic, schedules, and local conditions to ensure smooth and timely travel experiences across Malaysia.",
                     icon: Zap
                   },
                   {
-                    title: "Seamless Integration",
-                    desc: "Modern digital infrastructure that connects your systems directly with our inventory and ground team.",
+                    title: "Seamless Operations & Integration",
+                    desc: "Efficient systems and strong coordination between our team, partners, and vendors ensure hassle-free execution from booking to completion.",
                     icon: Settings
                   },
                   {
-                    title: "Rigorous Quality",
-                    desc: "Every hotel and vehicle undergoes a 50-point safety audit every quarter. No exceptions.",
+                    title: "Strict Quality Standards",
+                    desc: "Every hotel, vehicle, and service partner is carefully vetted to maintain safety, comfort, and consistent service quality.",
                     icon: CheckCircle2
                   }
                 ].map((item, idx) => (
@@ -310,10 +312,29 @@ const About = () => {
                 viewport={{ once: true }}
                 className="grid grid-cols-2 gap-4 md:gap-6"
               >
-                <img src="https://images.unsplash.com/photo-1518548419970-58e3b4079ab2?auto=format&fit=crop&q=80&w=400" className="rounded-[2rem] md:rounded-[2.5rem] shadow-premium-lg md:mt-12 aspect-[3/4] object-cover hover:scale-105 transition-transform duration-500" alt="Experience 1" />
-                <img src="https://images.unsplash.com/photo-1537996194471-e657df975ab4?auto=format&fit=crop&q=80&w=400" className="rounded-[2rem] md:rounded-[2.5rem] shadow-premium-lg aspect-[3/4] object-cover hover:scale-105 transition-transform duration-500" alt="Experience 2" />
-                <img src="https://images.unsplash.com/photo-1539367628448-4bc5c9d171c8?auto=format&fit=crop&q=80&w=400" className="rounded-[2rem] md:rounded-[2.5rem] shadow-premium-lg aspect-[3/4] object-cover hover:scale-105 transition-transform duration-500" alt="Experience 3" />
-                <img src="https://images.unsplash.com/photo-1524492412937-b28074a5d7da?auto=format&fit=crop&q=80&w=400" className="rounded-[2rem] md:rounded-[2.5rem] shadow-premium-lg md:-mt-12 aspect-[3/4] object-cover hover:scale-105 transition-transform duration-500" alt="Experience 4" />
+                <img
+                  src="https://res.cloudinary.com/dizocitqw/image/upload/v1775663891/uploads/pvu6s8sd4awn66gmluy0.jpg"
+                  className="rounded-[2rem] md:rounded-[2.5rem] shadow-premium-lg md:mt-12 aspect-[3/4] object-cover hover:scale-105 transition-transform duration-500"
+                  alt="Travel collage"
+                />
+
+                <img
+                  src="https://i.postimg.cc/ZYXZtbQz/miami-bayside-marketplace-jpg.jpg"
+                  className="rounded-[2rem] md:rounded-[2.5rem] shadow-premium-lg aspect-[3/4] object-cover hover:scale-105 transition-transform duration-500"
+                  alt="Malaysia travel place"
+                />
+
+                <img
+                  src="https://i.postimg.cc/jSbb28Km/aerial-view-stunning-orangedomed-mosque-melaka-sunny-day-jpg.jpg"
+                  className="rounded-[2rem] md:rounded-[2.5rem] shadow-premium-lg aspect-[3/4] object-cover hover:scale-105 transition-transform duration-500"
+                  alt="Melaka mosque view"
+                />
+
+                <img
+                  src="https://i.postimg.cc/fRNNyHZv/batu-caves-kuala-lumpur-one-largest-hindu-attractions-malaysia-jpg.jpg"
+                  className="rounded-[2rem] md:rounded-[2.5rem] shadow-premium-lg md:-mt-12 aspect-[3/4] object-cover hover:scale-105 transition-transform duration-500"
+                  alt="Batu Caves, Kuala Lumpur"
+                />
               </motion.div>
               <div className="absolute inset-0 bg-primary/10 rounded-[4rem] -z-10 blur-3xl scale-110" />
             </div>
@@ -333,7 +354,7 @@ const About = () => {
           >
             <h2 className="text-4xl md:text-6xl text-gray-900 mb-6 leading-none font-heading uppercase tracking-tighter">Built on <br /> Integrity.</h2>
             <p className="text-gray-600 text-lg max-w-xl mx-auto font-bold font-body">
-              Our core values are the compass for every interaction.
+              Our core values guide every journey we create and every partnership we build across Malaysia.
             </p>
           </motion.div>
         </div>
@@ -346,9 +367,9 @@ const About = () => {
           className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8 md:gap-12"
         >
           {[
-            { icon: Globe, title: "Global Vision", desc: "Setting the gold standard for luxury DMC services in Southeast Asia." },
-            { icon: Heart, title: "Passionate People", desc: "A team that treats your clients' vacations as their own responsibility." },
-            { icon: ShieldCheck, title: "Radical Honesty", desc: "Building long-term wealth through transparent and fair dealings." }
+            { icon: Globe, title: "Global Vision", desc: "Delivering world-class Destination Management Company (DMC) services in Malaysia, with a strong understanding of global travel expectations and evolving customer needs." },
+            { icon: Heart, title: "Passionate People", desc: "Our experienced travel specialists and local experts treat every itinerary with care—ensuring each trip is thoughtfully planned, seamlessly executed, and truly memorable." },
+            { icon: ShieldCheck, title: "Radical Honesty", desc: "We believe in complete transparency—offering clear pricing, honest communication, and dependable service that builds long-term trust with travelers and partners." }
           ].map((val, idx) => (
             <motion.div
               key={idx}
