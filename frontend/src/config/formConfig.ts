@@ -33,7 +33,7 @@ export const languageOptions: SelectOption[] = GLOBAL_CONFIG.languages;
 
 // ─── Field type ───────────────────────────────────────────────────────────────
 
-export type FormFieldType = 'select' | 'text' | 'email' | 'phone' | 'date';
+export type FormFieldType = 'select' | 'text' | 'email' | 'phone' | 'date' | 'textarea';
 
 export interface FormFieldConfig {
   name: string;
@@ -43,7 +43,7 @@ export interface FormFieldConfig {
   options?: SelectOption[];        // only for 'select'
   required: boolean;
   /** Lucide icon name shown in the icon-row style card */
-  icon: 'MapPin' | 'Calendar' | 'Users' | 'Clock' | 'User' | 'Mail' | 'Phone' | 'Globe';
+  icon: 'MapPin' | 'Calendar' | 'Users' | 'Clock' | 'User' | 'Mail' | 'Phone' | 'Globe' | 'MessageSquare';
 }
 
 // ─── Hero form — 4-field mini enquiry (Step 1) ────────────────────────────────
@@ -166,6 +166,14 @@ export const reachUsFormFields: FormFieldConfig[] = [
     required: false,
     icon: 'Globe',
   },
+  {
+    name: 'message',
+    label: 'Message',
+    placeholder: 'Add any special requests...',
+    type: 'textarea',
+    required: false,
+    icon: 'MessageSquare',
+  },
 ];
 
 export const reachUsFormSchema = z.object({
@@ -184,6 +192,7 @@ export const reachUsFormSchema = z.object({
     .min(1, 'WhatsApp number is required')
     .regex(/^\+?[0-9]{10,15}$/, 'Invalid WhatsApp number'),
   language: z.string().min(1, 'Please select language'),
+  message: z.string().max(500, 'Message cannot exceed 500 characters').optional(),
   packageName: z.string().optional(),
 });
 

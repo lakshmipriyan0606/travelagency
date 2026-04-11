@@ -10,7 +10,7 @@
 import { useForm } from 'react-hook-form';
 import { useState, useEffect } from 'react';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { MapPin, Calendar, Users, Clock, Mail, User } from 'lucide-react';
+import { MapPin, Calendar, Users, Clock, Mail, User, MessageSquare } from 'lucide-react';
 import {
     heroFormFields,
     // heroFormSchema,
@@ -20,6 +20,7 @@ import {
 } from '@/config/formConfig';
 import { SelectField } from '@/components/forms/SelectField';
 import { ReusableInput } from '@/components/forms/ReusableInput';
+import { ReusableTextArea } from '@/components/forms/ReusableTextArea';
 import { PhoneInputField } from '@/components/forms/PhoneInputField';
 import AnimatedButton from '@/components/Button/AnimatedButton/AnimatedButton';
 import { CreateBookingForm } from '@/api/user/api';
@@ -33,6 +34,7 @@ const iconMap: Record<string, React.ReactNode> = {
     Calendar: <Calendar size={18} className="text-yellow-600" />,
     Users: <Users size={18} className="text-yellow-600" />,
     Clock: <Clock size={18} className="text-yellow-600" />,
+    MessageSquare: <MessageSquare size={18} className="text-yellow-600" />,
 };
 
 // ─── Main form component ──────────────────────────────────────────────────────
@@ -77,6 +79,7 @@ export default function HeroEnquiryForm({
             email: '',
             whatsapp: '',
             language: '',
+            message: '',
             packageName: packageName || '',
         },
     });
@@ -246,6 +249,22 @@ export default function HeroEnquiryForm({
                                         options={languageOptions}
                                         labelClassName={isCustomMobileView ? 'text-gray-200' : ''}
                                         selectedValueClassName={isCustomMobileView ? 'text-gray-200' : ''}
+                                    />
+                                </div>
+                            </div>
+                            <div className="flex items-start gap-3 py-3 last:border-b-0">
+                                <div className="flex-none w-9 h-9 rounded-full bg-yellow-50 border border-yellow-200 flex items-center justify-center mt-1">
+                                    <MessageSquare size={18} className="text-yellow-600" />
+                                </div>
+                                <div className="flex-1 min-w-0">
+                                    <ReusableTextArea
+                                        control={control}
+                                        name="message"
+                                        label="Message (Max 500 chars)"
+                                        placeholder="Add any special requests..."
+                                        maxLength={500}
+                                        labelClassName={isCustomMobileView ? 'text-gray-200' : ''}
+                                        textareaClassName={isCustomMobileView ? 'text-gray-200' : ''}
                                     />
                                 </div>
                             </div>

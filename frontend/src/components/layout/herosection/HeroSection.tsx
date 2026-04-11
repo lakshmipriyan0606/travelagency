@@ -22,9 +22,8 @@ import { UseFetchAPIQuery } from '@/Hook/UseFetchAPIQuery';
 import { GetActiveWebsiteHero } from '@/api/admin/websiteHero.api';
 
 const fallbackHeroImages = [
-    { url: "https://i.postimg.cc/4d2180r1/Whats_App_Image_2026_03_19_at_12_02_47_AM.jpg", alt: "Malaysia travel experience" },
-    { url: "https://i.postimg.cc/NMCxNnWD/Whats_App_Image_2026_03_19_at_12_03_28_AM.jpg", alt: "Malaysia tour packages" },
-    { url: "https://i.postimg.cc/QtYq6zRk/Whats_App_Image_2026_03_19_at_12_04_07_AM.jpg", alt: "Travel in Malaysia" },
+    { url: "https://res.cloudinary.com/dizocitqw/image/upload/v1775669454/websiteHero/at0nbqnm1q2hae5hzcoi.jpg", alt: "Malaysia travel experience" },
+    { url: "https://res.cloudinary.com/dizocitqw/image/upload/v1775584519/travel_packages/fpg9g3re4uvplrtg0fgx.jpg", alt: "Malaysia tour packages" },
 ];
 
 // ... Scroll indicator ...

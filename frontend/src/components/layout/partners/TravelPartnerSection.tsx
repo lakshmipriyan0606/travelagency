@@ -23,7 +23,7 @@ const partners = [
         fallback: tp4
     },
     {
-        src: "", // No URL for 5th, use local directly
+        src: "https://res.cloudinary.com/dizocitqw/image/upload/v1775895762/uploads/k0racj98pca9bdylfyxe.jpg", // No URL for 5th, use local directly
         fallback: tp5
     }
 ];

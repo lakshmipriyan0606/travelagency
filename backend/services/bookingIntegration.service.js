@@ -16,6 +16,7 @@ export const processBookingIntegrations = async (payload) => {
     name,
     language,
     packageName,
+    message,
   } = payload;
 
   let sheetSyncStatus = "Pending";
@@ -34,6 +35,7 @@ export const processBookingIntegrations = async (payload) => {
     noOfPeople: noOfPeople || "",
     duration: duration || "",
     language: language || "",
+    message: message || "",
   };
 
   try {
@@ -89,8 +91,8 @@ export const processBookingIntegrations = async (payload) => {
     try {
       await sendBookingEmailNow({
         to: process.env.ADMIN_EMAIL,
-        subject: `NEW BOOKING ALERT - ${bookingId} (${name || "New Lead"})`,
-        html: `<h2>New Booking Received!</h2>
+        subject: `New Enquiry Received - ${bookingId} (${name || "New Lead"})`,
+        html: `<h2>New Enquiry Received!</h2>
                <div style="background-color: #f9f9f9; padding: 20px; border-radius: 10px; border: 1px solid #ddd;">
                  <h3 style="color: #F69520; margin-top: 0;">Inquiry Details</h3>
                  <p>Booking ID: <strong>${bookingId}</strong></p>
@@ -100,6 +102,7 @@ export const processBookingIntegrations = async (payload) => {
                  <p>No. of People: <strong>${noOfPeople || "-"}</strong></p>
                  <p>Duration: <strong>${duration || "-"}</strong></p>
                  <p>Preferred Language: <strong>${language || "-"}</strong></p>
+                 ${message ? `<p>Message: <strong>${message}</strong></p>` : ""}
                  <h3 style="color: #F69520; border-top: 1px solid #eee; margin-top: 20px;">Customer Details</h3>
                  <p>Name: <strong>${name || "-"}</strong></p>
                  <p>Email: <strong>${email || "-"}</strong></p>
@@ -139,7 +142,7 @@ export const processBookingIntegrations = async (payload) => {
     }
 
     if (process.env.ADMIN_WHATSAPP) {
-      const adminWaMessage = `*🚨 NEW BOOKING ALERT!* 🚨\n\n*ID:* ${bookingId}\n*Name:* ${name || "-"}\n*WhatsApp:* ${whatsapp || "-"}\n*Destination:* ${destination || "-"}\n${packageName ? `*Package:* ${packageName}\n` : ""}*Month:* ${travelMonth || "-"}\n*Group Size:* ${noOfPeople || "-"}\n*Duration:* ${duration || "-"}\n\n*View details in Admin Panel!* 💼`;
+      const adminWaMessage = `*🚨 NEW ENQUIRY ALERT!* 🚨\n\n*ID:* ${bookingId}\n*Name:* ${name || "-"}\n*WhatsApp:* ${whatsapp || "-"}\n*Destination:* ${destination || "-"}\n${packageName ? `*Package:* ${packageName}\n` : ""}*Month:* ${travelMonth || "-"}\n*Group Size:* ${noOfPeople || "-"}\n*Duration:* ${duration || "-"}\n\n*View details in Admin Panel!* 💼`;
       const adminWa = await sendWhatsAppMessage(process.env.ADMIN_WHATSAPP, adminWaMessage);
       if (adminWa && adminWa.success === false) {
         errorLogs.push({

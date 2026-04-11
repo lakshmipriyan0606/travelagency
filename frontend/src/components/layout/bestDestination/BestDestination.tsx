@@ -127,12 +127,12 @@ export function BestDestination() {
                                                 alt="badge"
                                                 className="w-[160px] sm:w-[200px] h-auto object-contain drop-shadow-2xl"
                                             />
-                                            <h3 className="absolute inset-0 flex items-center pl-4 justify-center text-white font-arizonia text-xl sm:text-2xl mt-1 drop-shadow-md">
+                                            <h3 className="absolute inset-0 flex items-center pl-4 justify-center text-white font-arizonia text-xl mt-1 drop-shadow-md">
                                                 {dest.title.split(' ').slice(0, 2).join(' ')}
                                             </h3>
                                         </div>
                                         {dest.title.split(' ').length > 2 && (
-                                            <h3 className="text-white font-arizonia text-lg sm:text-2xl mt-[-10px] drop-shadow-md">
+                                            <h3 className="text-white font-arizonia text-lg mt-[-10px] drop-shadow-md">
                                                 {dest.title.split(' ').slice(2).join(' ')}
                                             </h3>
                                         )}

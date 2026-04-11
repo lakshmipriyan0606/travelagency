@@ -8,7 +8,6 @@ import {
   Tag,
   UserCheck,
   CheckCircle2,
-  Trophy,
   Zap,
   Heart,
   Globe,
@@ -91,7 +90,7 @@ const About = () => {
         <motion.div
           variants={floatingAnimation}
           animate="animate"
-          className="absolute top-[79%] -translate-y-1/2 left-4 sm:left-6 lg:left-3 bg-white/10 backdrop-blur-3xl p-4 rounded-[2rem] border border-white/20 hidden lg:block shadow-2xl cursor-pointer hover:bg-white/20 transition-all z-20 group"
+          className="absolute top-[79%] sm:top-[86%] -translate-y-1/2 left-4 sm:left-6 lg:left-4 bg-white/10 backdrop-blur-3xl p-4 rounded-[2rem] border border-white/20 hidden lg:block shadow-2xl cursor-pointer hover:bg-white/20 transition-all z-20 group"
         >
           <div className="flex items-center gap-4">
             <div className="w-12 h-12 bg-primary rounded-full flex items-center justify-center text-black shadow-glow group-hover:scale-110 transition-transform">
@@ -148,16 +147,6 @@ const About = () => {
                   alt="Travel experience in Malaysia"
                   className="w-full aspect-[4/5] object-cover"
                 />
-              </motion.div>
-              <motion.div
-                initial={{ opacity: 0, scale: 0.8 }}
-                whileInView={{ opacity: 1, scale: 1 }}
-                viewport={{ once: true }}
-                className="absolute -bottom-4 -right-4 lg:-bottom-6 lg:-right-6 z-20 bg-white/95 backdrop-blur-3xl p-6 md:p-4 rounded-[2rem] border border-white shadow-glow-lg max-w-[220px] md:max-w-[280px] hidden sm:block cursor-pointer hover:scale-105 transition-transform"
-              >
-                <Trophy className="text-primary mb-4" size={40} strokeWidth={2.5} />
-                <h4 className="text-lg md:text-xl  text-gray-900 mb-2 font-heading leading-none">Trusted DMC Partner</h4>
-                <p className="text-gray-500 font-medium text-[10px] md:text-xs leading-relaxed font-body">Reliable support for travel agents and personalized experiences for every traveler.</p>
               </motion.div>
             </div>
 

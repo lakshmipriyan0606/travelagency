@@ -24,6 +24,7 @@ router.post("/booking/create", bookingLimiter, async (req, res) => {
       name,
       language,
       packageName,
+      message,
     } = req.body;
 
     const bookingId = `ID-${uuidv4().split("-")[0].toUpperCase()}`;
@@ -39,6 +40,7 @@ router.post("/booking/create", bookingLimiter, async (req, res) => {
       vacationType: vacationType || "",
       duration: duration || "",
       language: language || "",
+      message: message || "",
 
       email: email ? encryptValue(email.toLowerCase().trim()) : "",
       phone: phone || whatsapp ? encryptValue(phone || whatsapp) : "",
@@ -65,6 +67,7 @@ router.post("/booking/create", bookingLimiter, async (req, res) => {
       noOfPeople: noOfPeople || "",
       duration: duration || "",
       language: language || "",
+      message: message || "",
     };
 
     // Queue integration processing so API returns immediately.

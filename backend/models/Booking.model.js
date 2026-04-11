@@ -21,6 +21,7 @@ const BookingSchema = new mongoose.Schema({
   travelDate: { type: Date, default: null }, // Made optional
   travelMonth: { type: String, default: "" }, // Added
   noOfPeople: { type: String, default: "" }, // Changed to String to accommodate e.g. "8 Persons"
+  message: { type: String, default: "", maxLength: 500 }, // Added Message field
 
   createdAt: { type: Date, default: Date.now },
   

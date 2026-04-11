@@ -21,8 +21,9 @@ import AnimatedButton from '@/components/Button/AnimatedButton/AnimatedButton';
 import { CreateBookingForm } from '@/api/user/api';
 import { useMutationAPIQuery } from '@/Hook/useMutationAPIQuery';
 import { showToast } from '@/lib/utils';
-import { MapPin, Calendar, Users, Clock, User, Mail, Phone, Globe } from 'lucide-react';
+import { MapPin, Calendar, Users, Clock, User, Mail, Phone, Globe, MessageSquare } from 'lucide-react';
 import { useEffect, type ReactElement } from 'react';
+import { ReusableTextArea } from '@/components/forms/ReusableTextArea';
 
 // ─── Single dynamic field renderer ───────────────────────────────────────────
 
@@ -41,12 +42,13 @@ const IconMap: Record<FormFieldConfig['icon'], ReactElement> = {
     Mail: <Mail size={18} className="text-yellow-600" />,
     Phone: <Phone size={18} className="text-yellow-600" />,
     Globe: <Globe size={18} className="text-yellow-600" />,
+    MessageSquare: <MessageSquare size={18} className="text-yellow-600" />,
 };
 
 const DynamicField = ({ fieldConfig, control, fieldClassName }: DynamicFieldProps) => {
     return (
         <div className="flex items-center gap-3 py-1.5">
-            <div className="flex-none w-9 h-9 rounded-full bg-yellow-50/90 border border-yellow-200 flex items-center justify-center">
+            <div className={`flex-none w-9 h-9 rounded-full bg-yellow-50/90 border border-yellow-200 flex items-center justify-center ${fieldConfig.type === 'textarea' ? 'self-start mt-1' : ''}`}>
                 {IconMap[fieldConfig.icon]}
             </div>
             <div className="flex-1 min-w-0">
@@ -68,6 +70,17 @@ const DynamicField = ({ fieldConfig, control, fieldClassName }: DynamicFieldProp
                         required={fieldConfig.required}
                         labelClassName="text-gray-500"
                         inputClassName={fieldClassName}
+                    />
+                ) : fieldConfig.type === 'textarea' ? (
+                    <ReusableTextArea
+                        control={control}
+                        name={fieldConfig.name}
+                        label={fieldConfig.label}
+                        placeholder={fieldConfig.placeholder}
+                        required={fieldConfig.required}
+                        maxLength={500}
+                        labelClassName="text-gray-500"
+                        textareaClassName={fieldClassName}
                     />
                 ) : (
                     <ReusableInput

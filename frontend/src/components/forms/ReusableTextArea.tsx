@@ -18,6 +18,7 @@ interface ReusableTextAreaProps {
   className?: string;
   textareaProps?: React.TextareaHTMLAttributes<HTMLTextAreaElement>;
   variant?: "classic" | "floating";
+  maxLength?: number;
 }
 
 export const ReusableTextArea = ({
@@ -32,6 +33,7 @@ export const ReusableTextArea = ({
   className,
   textareaProps,
   variant = "classic",
+  maxLength,
 }: ReusableTextAreaProps) => {
   return (
     <Controller
@@ -44,8 +46,9 @@ export const ReusableTextArea = ({
               <Textarea
                 {...field}
                 placeholder={placeholder || " "}
+                maxLength={maxLength}
                 className={cn(
-                  `peer w-full pt-5 pb-1 px-3 min-h-[120px]
+                  `peer w-full pt-5 pb-1 px-3 h-[100px] resize-none
                    border border-gray-200 rounded-lg
                    bg-white
                    focus:outline-none focus:ring-1 focus:ring-yellow-50/1
@@ -57,36 +60,19 @@ export const ReusableTextArea = ({
                 {...textareaProps}
               />
 
-              {label && (
-                <label
-                  className={cn(
-                    `absolute left-3 bg-white px-1
-                     text-yellow-500
-                     pointer-events-none
-                     transition-all duration-300 ease-out
-
-                     /* Default resting */
-                     top-[15%] -translate-y-1/2 text-[14px] text-gray-400 font-medium
-
-                     /* When focused */
-                     peer-focus:top-0
-                     peer-focus:-translate-y-1/2
-                     peer-focus:text-xs
-                     peer-focus:text-yellow-600
-
-                     /* When input has value */
-                     peer-[&:not(:placeholder-shown)]:top-0
-                     peer-[&:not(:placeholder-shown)]:-translate-y-1/2
-                     peer-[&:not(:placeholder-shown)]:text-xs
-                     peer-[&:not(:placeholder-shown)]:text-yellow-600
-                    `,
-                    labelClassName
-                  )}
-                >
-                  {label}
-                  {required && <span className="text-red-500 ml-[2px]">*</span>}
-                </label>
-              )}
+              <div className="absolute top-1/2 -translate-y-1/2 left-3 flex items-center gap-2 pointer-events-none transition-all duration-300 peer-focus:top-0 peer-focus:text-xs peer-[:not(:placeholder-shown)]:top-0 peer-[:not(:placeholder-shown)]:text-xs">
+                {label && (
+                  <label
+                    className={cn(
+                      "text-gray-400 font-medium bg-white px-1",
+                      labelClassName
+                    )}
+                  >
+                    {label}
+                    {required && <span className="text-red-500 ml-[2px]">*</span>}
+                  </label>
+                )}
+              </div>
 
               {error && (
                 <p className="mt-1 text-[9px] font-semibold text-red-500 uppercase tracking-wider px-1">{error.message}</p>

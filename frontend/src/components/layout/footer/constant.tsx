@@ -26,10 +26,7 @@ export const footerData = {
   ],
   social: [
     { name: "Facebook", href: "#", icon: "Facebook" },
-    { name: "Twitter", href: "#", icon: "Twitter" },
     { name: "Instagram", href: "#", icon: "Instagram" },
-    { name: "Linkedin", href: "#", icon: "Linkedin" },
-    { name: "X", href: "#", icon: "X" },
   ],
   links: [
     { name: "Privacy Policy", href: "#" },

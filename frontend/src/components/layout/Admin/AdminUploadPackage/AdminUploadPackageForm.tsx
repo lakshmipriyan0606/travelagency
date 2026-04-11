@@ -55,7 +55,7 @@ const formSchema = z.object({
   packageType: z.string().optional(),
   daysAndNights: z.string().min(1, "Required"),
   hotelName: z.string().optional(),
-  price: z.string().min(1, "Required"),
+  price: z.string().optional(), // Make optional to allow activities to submit
   offerPrice: z.string().optional(),
   isBestPackage: z.boolean(),
   bestRank: z.string().optional(),
@@ -63,7 +63,7 @@ const formSchema = z.object({
   isActive: z.boolean().default(true),
   status: z.enum(["Active", "Inactive"]).default("Active"),
   activityCategory: z.string().optional(),
-  days: z.array(daySchema),
+  days: z.array(daySchema).optional(), // Make optional for activities
   operatingHours: z.string().optional(),
   isInstantConfirmation: z.boolean().default(false),
   isNonRefundable: z.boolean().default(false),
@@ -428,18 +428,56 @@ export default function AdminUploadPackageForm({ isActivity: isActivityProp = fa
   const nextStep = async (e?: React.MouseEvent) => {
     e?.preventDefault();
     const fieldsByTitle: Record<string, string[]> = {
-      "Core Details": isActivity ? 
-        ["packageName", "packageDescription", "location", "country", "daysAndNights", "activityCategory"] : 
-        ["packageName", "packageDescription", "location", "country", "packageType", "daysAndNights", "activityCategory", "price"],
+      "Core Details": ["packageName", "packageDescription", "location", "country", "daysAndNights", "activityCategory", "packageType"],
       "Pricing & Visibility": ["price", "offerPrice", "hotelName", "status", "isActive", "isBestPackage", "bestRank"],
       "Media Gallery": [],
-      "Activity Highlights": ["operatingHours"],
+      "Activity Highlights": ["operatingHours", "languages"],
       "Journey Roadmap": ["days"]
     };
 
     const currentTitle = filteredSteps[activeStep].title;
-    const isStepValid = await methods.trigger(fieldsByTitle[currentTitle] as any);
-    if (isStepValid) setActiveStep(prev => Math.min(prev + 1, filteredSteps.length - 1));
+    const fieldsToValidate = fieldsByTitle[currentTitle] || [];
+    
+    // Perform Zod validation for current step fields
+    const isStepValid = await methods.trigger(fieldsToValidate as any);
+    
+    if (isStepValid) {
+      // Manual required checks for fields that are optional in schema but required for packages/activities
+      if (currentTitle === "Core Details") {
+        if (!isActivity) {
+          const pkgType = watch("packageType");
+          if (!pkgType || pkgType === "") {
+            methods.setError("packageType", { type: "required", message: "Category is required for packages" });
+            return;
+          }
+        } else {
+          const actCat = watch("activityCategory");
+          if (!actCat || actCat === "" || actCat === "none") {
+            methods.setError("activityCategory", { type: "required", message: "Activity Category is required" });
+            return;
+          }
+        }
+      }
+
+      if (!isActivity) {
+        if (currentTitle === "Pricing & Visibility") {
+          const price = watch("price");
+          if (!price || price.trim() === "") {
+            methods.setError("price", { type: "required", message: "Price is required for packages" });
+            return;
+          }
+        }
+        if (currentTitle === "Journey Roadmap") {
+          const days = watch("days");
+          if (!days || days.length === 0 || !days[0].dayTitle) {
+            methods.setError("days.0.dayTitle", { type: "required", message: "At least one day with a title is required" });
+            return;
+          }
+        }
+      }
+      
+      setActiveStep(prev => Math.min(prev + 1, filteredSteps.length - 1));
+    }
   };
 
   const prevStep = () => setActiveStep(prev => Math.max(prev - 1, 0));
@@ -528,10 +566,10 @@ export default function AdminUploadPackageForm({ isActivity: isActivityProp = fa
                 <Card className="p-6 border border-neutral-200/60 shadow-xl shadow-neutral-200/30 rounded-[24px] overflow-hidden bg-white/80 backdrop-blur-md transition-all">
                   <SectionHeader icon={Package} title="General Information" subtitle="Define the core identity of this travel package" />
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-1 mt-2">
-                    <StyledField className="md:col-span-2">
+                    <StyledField>
                       <ReusableInput control={control} name="packageName" label={isActivity ? "Activity Name" : "Package Name"} required variant="floating" />
                     </StyledField>
-                    <StyledField className="md:col-span-2">
+                    <StyledField>
                       <ReusableTextArea control={control} name="packageDescription" label="Detailed Description" required variant="floating" />
                     </StyledField>
                     <StyledField>

@@ -34,6 +34,7 @@ interface Booking {
     travelDate: string;
     vacationType?: string;
     noOfPeople?: number;
+    message?: string;
     createdAt?: string;
     sheetSyncStatus?: string;
     userEmailStatus?: string;
@@ -314,6 +315,14 @@ export default function BookingAdminPage() {
                                                     <p className="text-sm font-semibold text-neutral-800">{selected.phone}</p>
                                                 </div>
                                             </div>
+                                            {selected.message && (
+                                                <div className="mt-6 pt-6 border-t border-neutral-100">
+                                                    <p className="text-xs font-bold text-neutral-400 uppercase tracking-widest leading-none mb-3">Customer Message</p>
+                                                    <div className="bg-neutral-50 p-4 rounded-2xl border border-neutral-100 italic text-sm text-neutral-600 leading-relaxed break-words">
+                                                        "{selected.message}"
+                                                    </div>
+                                                </div>
+                                            )}
                                         </div>
                                     </div>
                                 </section>
