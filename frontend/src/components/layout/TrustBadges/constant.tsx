@@ -9,7 +9,7 @@ export const TRUST_BADGES = [
   {
     id: 1,
     icon: google,
-    text: "4.9 Google Ratings",
+    text: "4.8 Google Ratings",
   },
   {
     id: 2,
