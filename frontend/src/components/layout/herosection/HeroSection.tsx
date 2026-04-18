@@ -155,14 +155,15 @@ const HeroSection = () => {
             <div className="custom-hero-pagination absolute bottom-10 left-1/2 -translate-x-1/2 z-20"></div>
 
             <div className="absolute inset-0 bg-black/40 z-10 flex items-center rounded-2xl sm:rounded-3xl pointer-events-none">
-                <div className="w-full h-full flex flex-col md:flex-row items-start md:items-center mt-[38%] md:mt-0 px-6 md:px-12 lg:px-20 gap-6 md:gap-10 pointer-events-auto">
-                    <div className="flex flex-col items-start justify-center text-white text-left w-full md:w-[55%] gap-3 md:gap-6 max-w-[19rem] sm:max-w-[22rem] md:max-w-none sm:pb-10 lg:pb-0">
+                <div className="w-full h-full flex flex-col md:flex-row items-start md:items-center pt-28 pb-10 md:pt-0 md:pb-0 px-6 md:px-12 lg:px-20 gap-6 md:gap-10 pointer-events-auto overflow-y-auto md:overflow-visible">
+                    <div className="flex flex-col items-start justify-center text-white text-left w-full md:w-[55%] gap-3 md:gap-6 max-w-[19rem] sm:max-w-[22rem] md:max-w-none sm:pb-10 lg:pb-0 font-sans">
                         <div className="flex flex-col gap-1">
-                            <h1 className="text-[1.8rem] sm:text-2xl lg:text-4xl leading-[1.5] sm:leading-[1.8] md:leading-snug font-semibold text-white">
+                            <h1 className="text-[1.8rem] sm:text-2xl lg:text-4xl leading-[1.3] sm:leading-[1.5] md:leading-snug font-bold text-white">
                                 {heroTitle.includes("Malaysia") ? (
                                     <>
-                                        {heroTitle.replace("Malaysia", "")}
-                                        <span className="text-primary">Malaysia</span>
+                                        {heroTitle.split("Malaysia")[0]}
+                                        <span className="text-primary italic">Malaysia</span>
+                                        {heroTitle.split("Malaysia")[1]}
                                     </>
                                 ) : (
                                     heroTitle

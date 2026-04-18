@@ -27,25 +27,27 @@ const Navbar = () => {
       <div
         className={`fixed top-0 left-0 w-full z-50 transition-all duration-300 ${scrolled
           ? "backdrop-blur-md bg-custom-black/80 border-b border-white/10 shadow-sm py-2"
-          : "bg-custom-black py-0"
+          : "bg-custom-black py-2"
           }`}
       >
         <div className={`navbar-main flex items-center justify-between px-6 ${scrolled ? 'rounded-2xl' : ''} bg-transparent`}>
           <CompanyLogo />
 
-          {/* Desktop Navigation */}
-          <div className="desktop-nav">
+          {/* Desktop Navigation - Hidden on tablet/mobile, visible on large screens */}
+          <div className="hidden lg:flex items-center">
             <NavbarRenderList />
           </div>
 
-          {/* Mobile Navigation */}
-          <div className="navbar-rightside">
+          {/* Right Side Icons & Mobile Toggle */}
+          <div className="flex items-center gap-4 sm:gap-6">
             <ProfileSection />
+            
+            {/* Hamburger Menu - Visible on tablet/mobile, hidden on large screens */}
             <div
-              className="mobile-nav mobile-menu-toggle cursor-pointer"
+              className="lg:hidden cursor-pointer p-1 -mr-1"
               onClick={() => setNavbarOpen(!navbarOpen)}
             >
-              {navbarOpen ? <X className="w-6 h-6" /> : <MenuIcon className="w-6 h-6" />}
+              {navbarOpen ? <X className="w-7 h-7" /> : <MenuIcon className="w-7 h-7" />}
             </div>
           </div>
         </div>

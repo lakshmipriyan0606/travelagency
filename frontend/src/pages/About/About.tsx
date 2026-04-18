@@ -143,7 +143,7 @@ const About = () => {
                 className="relative z-10 rounded-[2.5rem] md:rounded-[3rem] overflow-hidden shadow-2xl shadow-amber-50"
               >
                 <img
-                  src="https://i.postimg.cc/2SDDyHmc/rear-view-woman-against-sea-trees-against-sky-jpg.jpg"
+                  src="https://res.cloudinary.com/dizocitqw/image/upload/v1774080031/travel_packages/ire48oc7tl83t9k5uaye.jpg"
                   alt="Travel experience in Malaysia"
                   className="w-full aspect-[4/5] object-cover"
                 />

@@ -1,13 +1,10 @@
-.company-logo {
-  @apply w-16 h-16;
-}
 
 .navbar-main {
   @apply text-white flex items-center justify-between px-4;
 }
 
 .navbar-list {
-  @apply hidden md:flex items-center gap-6 text-[14px];
+  @apply hidden lg:flex items-center gap-6 text-[14px];
   transition: all 1s;
 }
 
@@ -36,15 +33,15 @@
 }
 
 .mobile-menu-toggle {
-  @apply md:hidden cursor-pointer;
+  @apply lg:hidden cursor-pointer;
 }
 
 .desktop-nav {
-  @apply hidden md:flex items-center gap-6;
+  @apply hidden lg:flex items-center gap-6;
 }
 
 .mobile-nav {
-  @apply md:hidden;
+  @apply lg:hidden;
 }
 
 .navbar-rightside {

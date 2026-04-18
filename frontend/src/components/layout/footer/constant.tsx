@@ -30,7 +30,7 @@ export const footerData = {
   ],
   links: [
     { name: "Privacy Policy", href: "#" },
-    { name: "Terms of Use", href: "#" },
+    { name: "Terms & Conditions", href: "/terms-conditions" },
     { name: "Sitemap", href: "#" },
   ],
   copyright: GLOBAL_CONFIG.site.copyright,

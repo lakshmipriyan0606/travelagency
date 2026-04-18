@@ -16,6 +16,7 @@ const BlogListPage = lazy(() => import('@/pages/Blog/BlogListPage'));
 const BlogDetailPage = lazy(() => import('@/pages/Blog/BlogDetailPage'));
 const Contact = lazy(() => import('@/pages/Contact/Contact'));
 const About = lazy(() => import('@/pages/About/About'));
+const TermsAndConditions = lazy(() => import('@/pages/TermsAndConditions/TermsAndConditions'));
 
 const routes: AppRoute[] = [
     {
@@ -26,6 +27,11 @@ const routes: AppRoute[] = [
     {
         path: '/about',
         element: <About />,
+        isProtectRoute: false,
+    },
+    {
+        path: '/terms-conditions',
+        element: <TermsAndConditions />,
         isProtectRoute: false,
     },
     {
