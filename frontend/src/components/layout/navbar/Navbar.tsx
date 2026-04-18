@@ -26,8 +26,8 @@ const Navbar = () => {
     <>
       <div
         className={`fixed top-0 left-0 w-full z-50 transition-all duration-300 ${scrolled
-          ? "backdrop-blur-md bg-custom-black/80 border-b border-white/10 shadow-sm py-2"
-          : "bg-custom-black py-2"
+          ? "backdrop-blur-md bg-custom-black/80 border-b border-white/10 shadow-sm"
+          : "bg-custom-black"
           }`}
       >
         <div className={`navbar-main flex items-center justify-between px-6 ${scrolled ? 'rounded-2xl' : ''} bg-transparent`}>
@@ -41,7 +41,7 @@ const Navbar = () => {
           {/* Right Side Icons & Mobile Toggle */}
           <div className="flex items-center gap-4 sm:gap-6">
             <ProfileSection />
-            
+
             {/* Hamburger Menu - Visible on tablet/mobile, hidden on large screens */}
             <div
               className="lg:hidden cursor-pointer p-1 -mr-1"

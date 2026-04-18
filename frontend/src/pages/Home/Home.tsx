@@ -33,7 +33,7 @@ const Home = () => {
       </Helmet>
       <div className="min-h-screen bg-background-black">
 
-        <div className="pt-16 sm:pt-20 md:pt-17 lg:pt-22 px-4">
+        <div className="pt-16 sm:pt-20 md:pt-17 lg:pt-30 px-4">
           <HeroSection />
         </div>
         <TrustBadges />
