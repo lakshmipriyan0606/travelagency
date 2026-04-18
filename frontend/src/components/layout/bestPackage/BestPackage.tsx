@@ -21,7 +21,7 @@ export default function BestPackage() {
 
                 <OuterCarousel />
 
-                <div className="flex justify-center">
+                <div className="flex justify-center mt-5">
                     <Link
                         to="/allpackage"
                         className="group flex items-center gap-3 text-primary hover:text-white font-bold tracking-[0.25em] uppercase transition-all duration-300"
