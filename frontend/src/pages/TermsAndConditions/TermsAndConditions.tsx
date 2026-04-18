@@ -71,10 +71,10 @@ const TermsAndConditions = () => {
   return (
     <div className="bg-[#fcfcfd] min-h-screen font-body selection:bg-primary/20 selection:text-primary-dark">
       {/* Hero Section */}
-      <section className="relative h-[40vh] md:h-[50vh] flex items-center justify-center overflow-hidden">
+      <section className="relative h-[40vh] md:h-[70vh] flex items-center justify-center overflow-hidden">
         <div className="absolute inset-0 z-0">
-          <div className="w-full h-full bg-[url('https://i.postimg.cc/mD8T18n3/modern-office-building-skyline-business-concept.jpg')] bg-cover bg-center" />
-          <div className="absolute inset-0 bg-black/70" />
+          <div className="w-full h-full bg-[url('https://res.cloudinary.com/dizocitqw/image/upload/v1774077014/travel_packages/zonwfcxrdg6ssjnu2fpy.jpg')] bg-cover bg-center" />
+          <div className="absolute inset-0 bg-black/50" />
         </div>
 
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10 text-center">
