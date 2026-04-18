@@ -17,16 +17,16 @@ export default function BestActivitiesSection() {
 
                 <OuterCarousel />
 
-                <div className="mt-12 flex justify-center">
-                    <Link 
-                        to="/activities" 
+                <div className="flex justify-center">
+                    <Link
+                        to="/activities"
                         className="group flex items-center gap-3 text-primary hover:text-white font-bold tracking-[0.25em] uppercase transition-all duration-300"
                     >
                         <span className="text-[12px] md:text-sm border-b border-primary/40 group-hover:border-primary pb-0.5">
                             VIEW ALL ACTIVITIES
                         </span>
                         <div className="w-10 h-10 rounded-full border border-primary/40 group-hover:bg-primary group-hover:border-primary flex items-center justify-center transition-all duration-300">
-                             <ArrowRight size={18} className="group-hover:text-black transition-colors" />
+                            <ArrowRight size={18} className="group-hover:text-black transition-colors" />
                         </div>
                     </Link>
                 </div>
