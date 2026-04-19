@@ -1,5 +1,5 @@
 
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 
 interface TransparentLogoProps {
   src: string;
@@ -19,7 +19,6 @@ const TransparentLogo: React.FC<TransparentLogoProps> = ({
   threshold = 40 
 }) => {
   const [processedSrc, setProcessedSrc] = useState<string | null>(null);
-  const canvasRef = useRef<HTMLCanvasElement>(null);
 
   useEffect(() => {
     const img = new Image();

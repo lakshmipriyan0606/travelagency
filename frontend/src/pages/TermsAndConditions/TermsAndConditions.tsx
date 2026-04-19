@@ -6,12 +6,10 @@ import {
   ShieldCheck,
   Info,
   ArrowRight,
-  Gavel,
   Landmark,
-  FileCheck,
   ChevronRight
 } from 'lucide-react';
-import { termsData, footerDisclaimer } from './constant';
+import { termsData } from './constant';
 import { useState, useEffect } from 'react';
 
 const TermsAndConditions = () => {
@@ -136,7 +134,7 @@ const TermsAndConditions = () => {
 
           {/* Terms Content */}
           <div className="flex-1 space-y-20">
-            {termsData.map((category, catIdx) => (
+            {termsData.map((category) => (
               <div
                 key={category.title}
                 data-title={category.title}
