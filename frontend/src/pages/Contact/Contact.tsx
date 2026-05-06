@@ -3,7 +3,6 @@ import BookingFomField from "@/components/layout/reachus/BookingFomField";
 import { GLOBAL_CONFIG } from "@/config/globalConfig";
 import { MapPin, Mail, Phone, MessageCircle, ExternalLink, Copy, PhoneCall } from "lucide-react";
 import { showToast, WANumber, WADisplayNumber } from "@/lib/utils";
-import { Link } from "react-router-dom";
 
 const OFFICE_ADDRESS =
   "Sastikaa Travel Sdn Bhd, 117, Jln Pudu, Bukit Bintang, 50000 Kuala Lumpur, Federal Territory of Kuala Lumpur, Malaysia";
