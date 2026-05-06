@@ -14,7 +14,7 @@ const CompanyLogo = () => {
                 src={finalCompanyLogo} 
                 alt="Sastikaa Travel Logo" 
                 threshold={50}
-                className='h-16 sm:h-18 md:h-20 lg:h-24 w-auto max-w-[200px] sm:max-w-[250px] md:max-w-none object-contain transition-all duration-300 transform hover:scale-105' 
+                className='h-12 sm:h-14 md:h-16 lg:h-18 w-auto max-w-[160px] sm:max-w-[200px] md:max-w-none object-contain transition-all duration-300 transform hover:scale-105' 
             />
         </div>
     );

@@ -50,7 +50,7 @@ const BlogListPage = () => {
           content="Read our latest travel blogs to discover the best destinations, travel tips, and cultural experiences worldwide."
         />
       </Helmet>
-      <main className="min-h-screen bg-[#F6F8FC] py-12 md:py-20">
+      <main className="min-h-screen bg-[#F6F8FC] pt-28 pb-12 md:pt-32 md:pb-20">
         <div className="container mx-auto px-4 sm:px-6 lg:px-8">
           {/* Breadcrumb */}
           <div className="mb-10">

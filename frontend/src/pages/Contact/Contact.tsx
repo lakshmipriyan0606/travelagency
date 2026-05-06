@@ -1,7 +1,7 @@
 import { Helmet } from "react-helmet-async";
 import BookingFomField from "@/components/layout/reachus/BookingFomField";
 import { GLOBAL_CONFIG } from "@/config/globalConfig";
-import { MapPin, Mail, Phone, MessageCircle, ExternalLink, Copy } from "lucide-react";
+import { MapPin, Mail, Phone, MessageCircle, ExternalLink, Copy, PhoneCall } from "lucide-react";
 import { showToast, WANumber, WADisplayNumber } from "@/lib/utils";
 import { Link } from "react-router-dom";
 
@@ -55,14 +55,6 @@ export default function Contact() {
         <div className="absolute inset-0 pointer-events-none bg-black/55" />
         <div className="absolute inset-0 pointer-events-none bg-[radial-gradient(circle_at_20%_10%,rgba(252,175,22,0.18),transparent_45%),radial-gradient(circle_at_80%_0%,rgba(255,255,255,0.08),transparent_40%)]" />
         <div className="relative max-w-7xl mx-auto px-4 pt-20 sm:pt-24 pb-10 sm:pb-14">
-          {/* Breadcrumb */}
-          <nav className="mb-5 text-xs sm:text-sm text-white/70 flex items-center gap-2">
-            <Link to="/" className="hover:text-primary transition-colors">
-              Home
-            </Link>
-            <span className="text-white/35">/</span>
-            <span className="text-white/90">Contact</span>
-          </nav>
 
           <div className="flex flex-col gap-5">
             <p className="text-primary tracking-[0.25em] uppercase text-xs sm:text-sm">
@@ -127,6 +119,24 @@ export default function Contact() {
                     >
                       Message on WhatsApp <ExternalLink className="w-4 h-4" />
                     </button>
+                  </div>
+                </div>
+              </div>
+
+              <div className="rounded-2xl border border-neutral-200/80 bg-white p-5 shadow-[0_10px_25px_-18px_rgba(0,0,0,0.55)] transition-all duration-300 ease-out hover:-translate-y-0.5 hover:border-primary/35 hover:ring-2 hover:ring-primary/10 hover:shadow-[0_18px_40px_-22px_rgba(0,0,0,0.6)]">
+                <div className="flex items-start gap-3">
+                  <div className="w-10 h-10 rounded-xl bg-primary/15 border border-primary/25 flex items-center justify-center">
+                    <PhoneCall className="w-5 h-5 text-primary" />
+                  </div>
+                  <div className="min-w-0">
+                    <p className="text-gray-900 font-semibold">India Contact</p>
+                    <p className="text-gray-600 text-sm mt-1">{GLOBAL_CONFIG.contact.indiaPhone}</p>
+                    <a
+                      href={`tel:${GLOBAL_CONFIG.contact.indiaPhone.replace(/\s/g, '')}`}
+                      className="mt-3 inline-flex items-center gap-2 text-primary hover:underline text-sm"
+                    >
+                      Call Now <ExternalLink className="w-4 h-4" />
+                    </a>
                   </div>
                 </div>
               </div>

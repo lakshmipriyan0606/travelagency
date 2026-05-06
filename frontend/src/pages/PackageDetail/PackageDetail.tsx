@@ -64,7 +64,7 @@ const PackageDetail = () => {
             )}
             {/* Breadcrumb */}
 
-            <div className="px-4 sm:px-8 lg:px-8 pt-20 sm:pt-24">
+            <div className="px-4 sm:px-8 lg:px-8 pt-28 sm:pt-32">
                 <Breadcrumb
                     items={[
                         { label: "Home", href: "/" },

@@ -10,13 +10,14 @@ export const GLOBAL_CONFIG = {
   site: {
     name: "S' SASTIKA TRAVELS",
     officialName: "Sastika Travels",
-    email: "info@sastikaatravels.com",
+    email: "sastikaatravels@gmail.com",
     copyright: "© sastikaatravels.com 2025. All rights reserved.",
   },
   contact: {
     whatsappNumber: "60164012988",
     whatsappDisplay: "+60 16-401 2988",
-    email: "info@sastikaatravels.com",
+    indiaPhone: "+91 99943 32988",
+    email: "sastikaatravels@gmail.com",
   },
   currency: {
     symbol: "RM",

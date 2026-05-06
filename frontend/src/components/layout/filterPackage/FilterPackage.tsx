@@ -487,7 +487,7 @@ const FilterPackage = ({ likePackageOnly = false, mode = 'all' }: FilterPackageP
             <div className="min-h-screen bg-white">
 
                 {/* ── TOP SECTION (Breadcrumb + Search) ── */}
-                <div className="px-4 sm:px-8 xl:px-16 pt-20 pb-2 relative z-40">
+                <div className="px-4 sm:px-8 xl:px-16 pt-28 pb-2 relative z-40">
                     {/* Breadcrumb */}
                     <Breadcrumb items={breadcrumbItems} className="mb-3" />
 

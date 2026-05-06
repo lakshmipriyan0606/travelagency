@@ -8,6 +8,7 @@ import { WANumber } from '@/lib/utils';
 import AnimatedButton from '@/components/Button/AnimatedButton/AnimatedButton';
 import EnquiryModal from '../herosection/EnquiryModal';
 import { useState } from 'react';
+import { GLOBAL_CONFIG } from '@/config/globalConfig';
 type IconComponent = React.FC<React.SVGProps<SVGSVGElement>>;
 
 const iconMap: Record<string, IconComponent> = {
@@ -109,7 +110,7 @@ export default function Footer() {
             C o n t a c t &nbsp; U s
           </h2> */}
           <section className="flex flex-col md:flex-row items-start md:items-center justify-between gap-8 md:gap-12 w-full">
-            <div className="w-full md:w-1/3">
+            <div className="w-full md:w-1/4">
               <h3 className="text-white font-semibold mb-2 uppercase tracking-wide">
                 Whats App Us
               </h3>
@@ -123,7 +124,19 @@ export default function Footer() {
               </a>
             </div>
 
-            <div className="w-full md:w-1/3 text-left">
+            <div className="w-full md:w-1/4">
+              <h3 className="text-white font-semibold mb-2 uppercase tracking-wide">
+                India Contact
+              </h3>
+              <a
+                href={`tel:${GLOBAL_CONFIG.contact.indiaPhone.replace(/\s/g, '')}`}
+                className="flex items-center gap-2 hover:text-primary transition-colors text-sm"
+              >
+                {GLOBAL_CONFIG.contact.indiaPhone}
+              </a>
+            </div>
+
+            <div className="w-full md:w-1/4 text-left">
               <h3 className="text-white font-semibold mb-2 uppercase tracking-wide">
                 Email Us
               </h3>
