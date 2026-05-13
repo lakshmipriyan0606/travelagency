@@ -16,6 +16,8 @@ export const GLOBAL_CONFIG = {
   contact: {
     whatsappNumber: "60164012988",
     whatsappDisplay: "+60 16-401 2988",
+    indiaWhatsappNumber: "919994332988",
+    indiaWhatsappDisplay: "+91 99943 32988",
     indiaPhone: "+91 99943 32988",
     email: "sastikaatravels@gmail.com",
   },

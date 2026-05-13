@@ -16,7 +16,6 @@ const ActivitySection = () => {
     });
 
     const categories: string[] = data?.data || [];
-    console.log(categories);
     // Fallback to global config if API returns nothing or only one (ensure UI is rich)
     const displayCategories = !categories.length
         ? categories

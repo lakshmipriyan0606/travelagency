@@ -3,17 +3,14 @@ import { Phone, Mail } from 'lucide-react';
 import whatsappIcon from '@/assets/icons/whatsapp.svg';
 import MapIcon from '@/assets/icons/Map.svg';
 import BookingFomField from './BookingFomField';
-import { WANumber, WADisplayNumber } from '@/lib/utils';
+import { WANumber, WADisplayNumber, IndiaWANumber, IndiaWADisplayNumber, ContactEmail } from '@/lib/utils';
 import HeroEnquiryForm from '../herosection/HeroEnquiryForm';
 
 
 export default function ReachUs() {
 
-  const handleSendToWhatsApp = () => {
-    const phoneNumber = WANumber
-
+  const handleSendToWhatsApp = (phoneNumber: string) => {
     const message = `Hi Sastika Travels I visited your website and would like to know more about your travel packages.Please share the details. Thank you!`;
-
 
     const url = `https://wa.me/${phoneNumber}?text=${encodeURIComponent(message)}`;
 
@@ -37,23 +34,36 @@ export default function ReachUs() {
             Reach Us!
           </h1>
 
+          {/* Malaysia WhatsApp */}
+          <p className="mt-4 text-xs uppercase tracking-widest text-primary relative z-10">Global</p>
           <div className="flex items-center gap-4 relative z-10">
-            <img src={whatsappIcon} alt="whatsapp" className="w-12 h-12 cursor-pointer" onClick={() => handleSendToWhatsApp()} />
-            <span className="font-medium text-gray-300">OR</span>
-            <div className="w-12 h-12 bg-black rounded-full flex items-center justify-center">
-              <Phone className="text-white" />
-            </div>
+            <img src={whatsappIcon} alt="whatsapp" className="w-12 h-12 cursor-pointer" onClick={() => handleSendToWhatsApp(WANumber)} />
           </div>
 
           <p className="mt-6 text-lg text-gray-300 relative z-10">
             {WADisplayNumber}
           </p>
 
+          {/* India WhatsApp */}
+          <p className="mt-4 text-xs uppercase tracking-widest text-primary relative z-10">India</p>
+          <div className="flex items-center gap-4 relative z-10">
+            <img src={whatsappIcon} alt="whatsapp india" className="w-12 h-12 cursor-pointer" onClick={() => handleSendToWhatsApp(IndiaWANumber)} />
+            <span className="font-medium text-gray-300">OR</span>
+            <a href={`tel:${IndiaWADisplayNumber.replace(/\s/g, '')}`} className="w-12 h-12 bg-black rounded-full flex items-center justify-center cursor-pointer">
+              <Phone className="text-white" />
+            </a>
+          </div>
+
+          <p className="mt-4 text-lg text-gray-300 relative z-10">
+            {IndiaWADisplayNumber}
+          </p>
+
+          {/* Email */}
           <div className="flex flex-col items-center gap-3 mt-10 relative z-10">
             <div className="w-12 h-12 bg-black rounded-full flex items-center justify-center">
               <Mail className="text-white" />
             </div>
-            <p className="text-gray-300 text-lg">info@SastikaTravels.com</p>
+            <a href={`mailto:${ContactEmail}`} className="text-gray-300 text-lg hover:text-primary transition-colors">{ContactEmail}</a>
           </div>
         </div>
 
