@@ -32,6 +32,7 @@ interface Booking {
     destination: string;
     packageName?: string; // Added
     travelDate: string;
+    travelMonth?: string;
     vacationType?: string;
     noOfPeople?: number;
     message?: string;
@@ -272,8 +273,9 @@ export default function BookingAdminPage() {
                                         <span className="block text-[10px] font-bold uppercase tracking-widest opacity-80 mb-1">Travel Date</span>
                                         <span className="text-lg font-bold">
                                             {(() => {
+                                                if (!selected.travelDate) return selected.travelMonth || "TBD";
                                                 const d = new Date(selected.travelDate);
-                                                return isNaN(d.getTime()) ? "TBD" : d.toLocaleDateString();
+                                                return isNaN(d.getTime()) ? (selected.travelMonth || "TBD") : d.toLocaleDateString();
                                             })()}
                                         </span>
                                     </div>
