@@ -17,8 +17,14 @@ const BlogDetailPage = lazy(() => import('@/pages/Blog/BlogDetailPage'));
 const Contact = lazy(() => import('@/pages/Contact/Contact'));
 const About = lazy(() => import('@/pages/About/About'));
 const TermsAndConditions = lazy(() => import('@/pages/TermsAndConditions/TermsAndConditions'));
+const ComingSoon = lazy(() => import('@/pages/ComingSoon/ComingSoon'));
 
 const routes: AppRoute[] = [
+    {
+        path: '/b2b',
+        element: <ComingSoon />,
+        isProtectRoute: false,
+    },
     {
         path: '/',
         element: <Home />,

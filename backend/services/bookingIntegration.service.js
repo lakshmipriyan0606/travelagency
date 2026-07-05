@@ -70,7 +70,7 @@ export const processBookingIntegrations = async (payload) => {
         subject: `Your Booking Request Received - ${bookingId}`,
         html: `<h2>Thank You!</h2>
                <p>Dear ${name || "Traveler"},</p>
-               <p>We have received your booking request (ID: <strong>${bookingId}</strong>) for <strong>${destination || "your destination"}</strong>.</p>
+               <p>We have received your booking request (<strong>${bookingId}</strong>) for <strong>${destination || "your destination"}</strong>.</p>
                <p>Our travel experts will review your request and contact you shortly at <strong>${whatsapp || email}</strong> to finalize the details.</p>
                <p>Thank you for choosing Sastikaa Travels!</p>`,
       });

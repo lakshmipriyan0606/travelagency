@@ -24,7 +24,9 @@ const NavbarRenderList = () => {
     <ul className="navbar-list">
       {navbarListItems}
       <li>
-        <PrimaryOutlineButton buttonName="For Agencies/ B2B"  className="h-7" animated />
+        <NavLink to="/b2b">
+            <PrimaryOutlineButton buttonName="For Agencies/ B2B"  className="h-7" animated />
+        </NavLink>
       </li>
     </ul>
   );

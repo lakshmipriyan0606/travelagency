@@ -69,7 +69,9 @@ const Navbar = () => {
               </Link>
             ))}
             <div className="mx-start pl-2">
-              <PrimaryOutlineButton buttonName="For Agencies/ B2B" animated />
+              <Link to="/b2b" onClick={() => setNavbarOpen(false)}>
+                <PrimaryOutlineButton buttonName="For Agencies/ B2B" animated />
+              </Link>
             </div>
           </div>
         </div>
