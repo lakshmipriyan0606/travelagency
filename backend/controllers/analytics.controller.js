@@ -5,6 +5,7 @@ import {
   getUtcDateString,
   isLocalRequest,
   maskIp,
+  EXCLUDE_ANALYTICS_ROUTE,
 } from "../utils/requestOrigin.js";
 
 const LOCALHOST_IP_MATCH = {
@@ -127,16 +128,16 @@ export const getApiUsage = async (req, res) => {
 
     const [todayTotalResult, dailyStats, topRoutes, routeDetails] = await Promise.all([
       ApiHit.aggregate([
-        { $match: { date: today } },
+        { $match: { date: today, ...EXCLUDE_ANALYTICS_ROUTE } },
         { $group: { _id: null, total: { $sum: "$count" } } },
       ]),
       ApiHit.aggregate([
-        { $match: { date: { $gte: dateLimit } } },
+        { $match: { date: { $gte: dateLimit }, ...EXCLUDE_ANALYTICS_ROUTE } },
         { $group: { _id: "$date", count: { $sum: "$count" } } },
         { $sort: { _id: 1 } },
       ]),
       ApiHit.aggregate([
-        { $match: { date: { $gte: dateLimit } } },
+        { $match: { date: { $gte: dateLimit }, ...EXCLUDE_ANALYTICS_ROUTE } },
         {
           $group: {
             _id: { method: "$method", route: "$route" },
@@ -156,7 +157,7 @@ export const getApiUsage = async (req, res) => {
         },
       ]),
       ApiHit.aggregate([
-        { $match: { date: { $gte: dateLimit } } },
+        { $match: { date: { $gte: dateLimit }, ...EXCLUDE_ANALYTICS_ROUTE } },
         {
           $group: {
             _id: { method: "$method", route: "$route", status: "$status" },
@@ -215,11 +216,17 @@ export const cleanupLocalhostVisits = async (req, res) => {
 
 export async function runStartupLocalhostCleanup() {
   try {
-    const result = await Visitor.deleteMany(LOCALHOST_IP_MATCH);
-    if (result.deletedCount > 0) {
-      console.log(`Removed ${result.deletedCount} localhost visitor record(s)`);
+    const [visitorResult, apiHitResult] = await Promise.all([
+      Visitor.deleteMany(LOCALHOST_IP_MATCH),
+      ApiHit.deleteMany({ route: { $regex: "^/api/analytics" } }),
+    ]);
+    if (visitorResult.deletedCount > 0) {
+      console.log(`Removed ${visitorResult.deletedCount} localhost visitor record(s)`);
+    }
+    if (apiHitResult.deletedCount > 0) {
+      console.log(`Removed ${apiHitResult.deletedCount} analytics API hit record(s)`);
     }
   } catch (error) {
-    console.error("Startup localhost cleanup failed:", error.message);
+    console.error("Startup cleanup failed:", error.message);
   }
 }

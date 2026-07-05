@@ -62,6 +62,14 @@ export function getFullPath(req) {
   return (req.originalUrl || "").split("?")[0] || req.path || "";
 }
 
+export function isAnalyticsApiPath(path) {
+  return path.startsWith("/api/analytics");
+}
+
+export const EXCLUDE_ANALYTICS_ROUTE = {
+  route: { $not: { $regex: "^/api/analytics" } },
+};
+
 export function isPublicApiRequest(req) {
   const fullPath = getFullPath(req);
   const origin = (req.headers.origin || "").toString();
@@ -74,11 +82,12 @@ export function isPublicApiRequest(req) {
     fullPath.startsWith("/api/admin/queue");
 
   const isAdminApi = fullPath.startsWith("/api/admin");
+  const isAnalyticsApi = isAnalyticsApiPath(fullPath);
 
   const isLocalDev =
     /localhost|127\.0\.0\.1/i.test(origin) ||
     /localhost|127\.0\.0\.1/i.test(host) ||
     isLocalRequest(req);
 
-  return !isInternalMetricsPath && !isAdminApi && !isLocalDev;
+  return !isInternalMetricsPath && !isAdminApi && !isAnalyticsApi && !isLocalDev;
 }
