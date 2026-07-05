@@ -14,15 +14,22 @@ import axiosClient from "./api/axiosClient";
 function App() {
   useEffect(() => {
     const trackVisit = async () => {
+      const hostname = window.location.hostname;
+      if (hostname === "localhost" || hostname === "127.0.0.1") return;
+      if (window.location.pathname.startsWith("/admin")) return;
+
       let visitorId = localStorage.getItem("visitor_id");
       if (!visitorId) {
         visitorId = crypto.randomUUID ? crypto.randomUUID() : Math.random().toString(36).substring(2, 15);
         localStorage.setItem("visitor_id", visitorId);
       }
       try {
-        await axiosClient.post("/analytics/visit", { visitorId });
+        await axiosClient.post("/analytics/visit", {
+          visitorId,
+          referrer: document.referrer || "",
+          path: window.location.pathname,
+        });
       } catch (error) {
-        // Silently fail, don't disrupt user experience
         console.error("Failed to track visit", error);
       }
     };

@@ -1,6 +1,7 @@
 // db.config.js
 import mongoose from "mongoose";
 import dotenv from "dotenv";
+import { runStartupLocalhostCleanup } from "../controllers/analytics.controller.js";
 
 dotenv.config(); // Loads .env variables
 
@@ -19,6 +20,7 @@ export const connectDB = async () => {
     });
 
     console.log(`MongoDB Connected: ${conn.connection.host} → Database: ${conn.connection.name}`);
+    runStartupLocalhostCleanup();
   } catch (error) {
     console.error("MongoDB Connection Failed:", error.message);
     process.exit(1); // Exit process with failure

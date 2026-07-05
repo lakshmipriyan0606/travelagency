@@ -22,6 +22,8 @@ import { globalLimiter, authLimiter, apiLimiter } from "./middlewares/rateLimite
 import { register, httpRequestCounter, publicHttpRequestCounter, httpRequestDuration } from "./config/metrics.js";
 import { protectRoute, superAdminOnly } from "./middlewares/auth.middleware.js";
 import { getQueuePublicSnapshot, getQueueHealthDetail } from "./config/queueRuntime.js";
+import ApiHit from "./models/ApiHit.model.js";
+import { getFullPath, getUtcDateString, isPublicApiRequest } from "./utils/requestOrigin.js";
 
 const app = express();
 app.set("trust proxy", 1);
@@ -31,32 +33,21 @@ app.set("trust proxy", 1);
 app.use((req, res, next) => {
   const end = httpRequestDuration.startTimer();
   res.on("finish", () => {
-    const route = req.route?.path || req.path || "unknown";
+    const fullPath = getFullPath(req);
+    const route = fullPath || req.route?.path || req.path || "unknown";
     const labels = { method: req.method, route, status: res.statusCode };
     httpRequestCounter.inc(labels);
     end(labels);
 
-    // "Production/public" count:
-    // - exclude metrics/health endpoints and admin endpoints (dashboard polling would inflate counts)
-    // - exclude localhost/dev origins
-    const path = req.path || "";
-    const origin = (req.headers.origin || "").toString();
-    const host = (req.headers.host || "").toString();
-
-    const isInternalMetricsPath =
-      path === "/metrics" ||
-      path === "/health" ||
-      path.startsWith("/api/admin/metrics") ||
-      path.startsWith("/api/admin/queue");
-
-    const isAdminApi = path.startsWith("/api/admin");
-
-    const isLocalDev =
-      /localhost|127\.0\.0\.1/i.test(origin) ||
-      /localhost|127\.0\.0\.1/i.test(host);
-
-    if (!isInternalMetricsPath && !isAdminApi && !isLocalDev) {
+    if (isPublicApiRequest(req)) {
       publicHttpRequestCounter.inc(labels);
+
+      const date = getUtcDateString();
+      ApiHit.findOneAndUpdate(
+        { date, method: req.method, route, status: res.statusCode },
+        { $inc: { count: 1 } },
+        { upsert: true }
+      ).catch((err) => console.error("ApiHit persist error:", err.message));
     }
   });
   next();

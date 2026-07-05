@@ -5,6 +5,8 @@ const VisitorSchema = new mongoose.Schema({
   date: { type: String, required: true }, // Format: YYYY-MM-DD
   userAgent: { type: String },
   ip: { type: String },
+  referrer: { type: String },
+  path: { type: String },
   createdAt: { type: Date, default: Date.now }
 });
 
