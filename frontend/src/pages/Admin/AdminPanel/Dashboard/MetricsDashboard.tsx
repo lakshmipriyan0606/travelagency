@@ -1,8 +1,8 @@
-import { useEffect, useMemo, useState, type ReactNode } from 'react';
-import { fetchMetrics, fetchQueueHealth } from '@/api/admin/metrics.api';
+import { useEffect, useState } from 'react';
+import { fetchMetrics } from '@/api/admin/metrics.api';
+import axiosClient from '@/api/axiosClient';
+import { Activity, Globe, Users, Laptop, Smartphone, X } from 'lucide-react';
 import {
-    LineChart,
-    Line,
     BarChart,
     Bar,
     XAxis,
@@ -10,164 +10,108 @@ import {
     CartesianGrid,
     Tooltip,
     ResponsiveContainer,
-    AreaChart,
-    Area
+    LabelList
 } from 'recharts';
-import { Activity, Cpu, Database, Globe, ShieldCheck, ShieldX, Clock3 } from 'lucide-react';
-import {
-    type MetricsRange,
-    type MetricsSample,
-    buildChartData,
-    getInitialHistory,
-    mergeSample,
-    persistSamples,
-    rangeTitle,
-} from './metricsChartUtils';
 
-interface MetricValue {
-    value: number;
-    labels?: Record<string, string>;
+interface VisitorDetail {
+    userAgent?: string;
+    time: string;
 }
 
-interface MetricItem {
-    name: string;
-    help: string;
-    type: string;
-    values: MetricValue[];
+interface VisitorData {
+    _id: string; // Date (YYYY-MM-DD)
+    count: number;
+    details?: VisitorDetail[];
 }
 
-interface QueueFailure {
-    name: string;
-    failCount: number;
-    lastFinishedAt: string | null;
-    reason: string | null;
-}
+// Helper to parse a clean device/browser name from raw user agent
+const parseDevice = (ua: string | undefined = '') => {
+    if (!ua || ua === 'Unknown') return { label: 'Unknown Device', isMobile: false };
+    
+    const isMobile = /Mobile|Android|iPhone|iPad/i.test(ua);
+    const os = /Windows/i.test(ua) ? 'Windows' : 
+               /Mac OS/i.test(ua) ? 'Mac' : 
+               /Linux/i.test(ua) ? 'Linux' : 
+               /Android/i.test(ua) ? 'Android' : 
+               /iOS|iPhone|iPad/i.test(ua) ? 'iOS' : 'Unknown OS';
+    
+    const browser = /Edg/i.test(ua) ? 'Edge' : 
+                    /Chrome/i.test(ua) ? 'Chrome' : 
+                    /Firefox/i.test(ua) ? 'Firefox' : 
+                    /Safari/i.test(ua) ? 'Safari' : 'Unknown Browser';
 
-interface QueueHealth {
-    healthy: boolean;
-    mongoConnected: boolean;
-    agendaWorkerStarted: boolean;
-    agendaMarkedStartedAt: string | null;
-    recentFailures: QueueFailure[];
-}
-
-const normalizeMetricsArray = (data: unknown): MetricItem[] => {
-    if (Array.isArray(data)) return data as MetricItem[];
-    return [];
+    return { label: `${os} · ${browser}`, isMobile };
 };
 
-const getMetricValue = (metrics: MetricItem[], name: string): number => {
-    const metric = metrics.find(m => m.name === name);
-    return metric?.values[0]?.value || 0;
-};
-
-const getMetricSum = (metrics: MetricItem[], name: string): number => {
-    const metric = metrics.find(m => m.name === name);
-    if (!metric) return 0;
-    return metric.values.reduce((acc, val) => acc + (val.value || 0), 0);
+const CustomVisitorTooltip = ({ active, payload, label }: any) => {
+    if (active && payload && payload.length) {
+        const data: VisitorData = payload[0].payload;
+        
+        return (
+            <div className="bg-white/95 backdrop-blur-xl border border-neutral-200 p-4 rounded-xl shadow-xl shadow-neutral-200/50 min-w-[150px]">
+                <p className="text-sm font-bold text-neutral-800 mb-1">{label}</p>
+                <p className="text-xs text-neutral-500 font-medium">Total Visitors: <span className="text-blue-600 font-bold">{data.count}</span></p>
+                <p className="text-[10px] text-neutral-400 mt-2 font-semibold tracking-wide uppercase">Click bar for details</p>
+            </div>
+        );
+    }
+    return null;
 };
 
 const MetricsDashboard = () => {
-    const [metricsData, setMetricsData] = useState<MetricItem[]>([]);
-    const [samples, setSamples] = useState<MetricsSample[]>(() => getInitialHistory());
-    const [range, setRange] = useState<MetricsRange>('day');
+    const [totalRequests, setTotalRequests] = useState<number>(0);
+    const [visitorStats, setVisitorStats] = useState<VisitorData[]>([]);
+    const [apiStats, setApiStats] = useState<{ route: string, count: number }[]>([]);
     const [isLoading, setIsLoading] = useState(true);
-    const [queueHealth, setQueueHealth] = useState<QueueHealth | null>(null);
-
-    const chartData = useMemo(() => buildChartData(samples, range), [samples, range]);
+    const [selectedDay, setSelectedDay] = useState<VisitorData | null>(null);
 
     useEffect(() => {
-        const loadMetrics = async () => {
+        const loadDashboardData = async () => {
             try {
-                const raw = await fetchMetrics();
-                const data = normalizeMetricsArray(raw);
-                setMetricsData(data);
+                const rawMetrics = await fetchMetrics();
+                const metricsData = Array.isArray(rawMetrics) ? rawMetrics : [];
+                
+                // Process API Requests Total
+                const requestMetric = metricsData.find(m => m.name === 'travelagency_http_requests_public_total');
+                const values = requestMetric?.values || [];
+                const sum = values.reduce((acc: number, val: {value: number}) => acc + (val.value || 0), 0);
+                setTotalRequests(sum);
 
-                const t = Date.now();
-                const heapUsed = getMetricValue(data, 'travelagency_nodejs_heap_size_used_bytes') / (1024 * 1024);
-                const heapTotal = getMetricValue(data, 'travelagency_nodejs_heap_size_total_bytes') / (1024 * 1024);
-                const cpuUser = getMetricValue(data, 'travelagency_process_cpu_user_seconds_total');
-                const cpuSystem = getMetricValue(data, 'travelagency_process_cpu_system_seconds_total');
-                const totalRequests = getMetricSum(data, 'travelagency_http_requests_public_total');
-
-                setSamples((prev) => {
-                    const prevPoint = prev[prev.length - 1];
-                    const prevRequests = prevPoint?.requests ?? 0;
-                    const requestsDelta = Math.max(0, totalRequests - prevRequests);
-
-                    const sample: MetricsSample = {
-                        t,
-                        heapUsed: Number(heapUsed.toFixed(1)),
-                        heapTotal: Number(heapTotal.toFixed(1)),
-                        cpu: Number((cpuUser + cpuSystem).toFixed(2)),
-                        requests: totalRequests,
-                        requestsDelta,
-                    };
-                    const merged = mergeSample(prev, sample);
-                    persistSamples(merged);
-                    return merged;
+                // Process API Requests By Route for Chart
+                const routeMap: Record<string, number> = {};
+                values.forEach((v: any) => {
+                    const method = v.labels?.method || 'GET';
+                    const route = v.labels?.route || 'Unknown';
+                    // Clean up route names slightly (e.g. remove trailing slashes)
+                    const cleanRoute = route === '/' ? '/' : route.replace(/\/$/, '');
+                    const key = `${method} ${cleanRoute}`;
+                    routeMap[key] = (routeMap[key] || 0) + (v.value || 0);
                 });
+                
+                // Convert to array, sort by highest count, take top 10
+                const apiChartData = Object.entries(routeMap)
+                    .map(([route, count]) => ({ route, count }))
+                    .sort((a, b) => b.count - a.count)
+                    .slice(0, 10);
+                
+                setApiStats(apiChartData);
 
-                const queueRaw = await fetchQueueHealth();
-                setQueueHealth({
-                    healthy: Boolean(queueRaw?.healthy),
-                    mongoConnected: Boolean(queueRaw?.mongoConnected),
-                    agendaWorkerStarted: Boolean(queueRaw?.agendaWorkerStarted),
-                    agendaMarkedStartedAt: queueRaw?.agendaMarkedStartedAt || null,
-                    recentFailures: Array.isArray(queueRaw?.recentFailures) ? queueRaw.recentFailures : [],
-                });
+                // Fetch Daily Visitors
+                const visitorRes = await axiosClient.get("/analytics/daily");
+                setVisitorStats(visitorRes.data.data || []);
             } catch (error) {
-                console.error("Failed to load metrics", error);
+                console.error("Failed to load dashboard data", error);
             } finally {
                 setIsLoading(false);
             }
         };
 
-        loadMetrics();
-        const interval = setInterval(loadMetrics, 3000);
+        loadDashboardData();
+        const interval = setInterval(loadDashboardData, 5000);
         return () => clearInterval(interval);
     }, []);
 
-    const last = samples[samples.length - 1];
-    const currentMemory = last?.heapUsed ?? 0;
-    const currentCpu = last?.cpu ?? 0;
-    const currentRequests = last?.requests ?? 0;
-    const currentRequestsDelta = last?.requestsDelta ?? 0;
-    const uptime = getMetricValue(metricsData, 'travelagency_process_uptime_seconds');
-
-    const formatUptime = (seconds: number) => {
-        const h = Math.floor(seconds / 3600);
-        const m = Math.floor((seconds % 3600) / 60);
-        const s = Math.floor(seconds % 60);
-        return `${h}h ${m}m ${s}s`;
-    };
-
-    const tooltipFormatter = (value: unknown, name: unknown) => {
-        const n = String(name);
-        const label =
-            n === 'heapUsed' ? 'Heap (MB)' :
-            n === 'requests' ? 'Production requests (total)' :
-            n === 'cpu' ? 'CPU user+system (s)' : n;
-        const v = typeof value === 'number' ? value : Number(value);
-        const formatted = Number.isFinite(v)
-            ? v.toFixed(n === 'heapUsed' ? 1 : 2)
-            : String(value ?? '');
-        return [formatted, label];
-    };
-
-    const tooltipLabelFormatter = (_label: unknown, payload: unknown): ReactNode => {
-        const arr = payload as Array<{ payload?: { t?: number } }> | undefined;
-        const t = arr?.[0]?.payload?.t;
-        if (typeof t === 'number') {
-            return new Date(t).toLocaleString(undefined, {
-                dateStyle: 'medium',
-                timeStyle: 'short',
-            });
-        }
-        return _label as ReactNode;
-    };
-
-    if (isLoading && samples.length === 0) {
+    if (isLoading) {
         return (
             <div className="flex items-center justify-center p-12 h-[60vh]">
                 <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div>
@@ -175,231 +119,175 @@ const MetricsDashboard = () => {
         );
     }
 
+    const today = new Date();
+    const offset = today.getTimezoneOffset();
+    const localDate = new Date(today.getTime() - (offset*60*1000));
+    const todayString = localDate.toISOString().split("T")[0];
+    
+    const todayVisitors = visitorStats.find(v => v._id === todayString)?.count || 0;
+
     return (
-        <div className="p-6 max-w-7xl mx-auto space-y-6">
-            <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
-                <div>
-                    <h2 className="text-2xl font-bold text-neutral-800 flex items-center gap-2">
-                        <Activity className="text-primary" /> System Dashboard
-                    </h2>
-                    <p className="text-sm text-neutral-500 mt-1">
-                        Charts: <span className="font-semibold text-neutral-700">{rangeTitle(range)}</span>
-                        <span className="text-neutral-400"> · stored in this browser for trends</span>
-                    </p>
-                </div>
-                <div className="inline-flex rounded-xl border border-neutral-200 bg-neutral-100/80 p-1 shadow-inner">
-                    {(['day', 'month', 'year'] as const).map((r) => (
-                        <button
-                            key={r}
-                            type="button"
-                            onClick={() => setRange(r)}
-                            className={`rounded-lg px-4 py-2 text-sm font-bold transition-all ${
-                                range === r
-                                    ? 'bg-white text-primary shadow-sm'
-                                    : 'text-neutral-500 hover:text-neutral-800'
-                            }`}
-                        >
-                            {r === 'day' ? 'Day' : r === 'month' ? 'Month' : 'Year'}
-                        </button>
-                    ))}
-                </div>
+        <div className="p-6 max-w-5xl mx-auto space-y-8 relative">
+            <div>
+                <h2 className="text-2xl font-bold text-neutral-800 flex items-center gap-2">
+                    <Activity className="text-primary" /> System Dashboard
+                </h2>
+                <p className="text-sm text-neutral-500 mt-1">
+                    Simplified overview of your application traffic and usage.
+                </p>
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-                <div className="bg-white p-6 rounded-2xl shadow-sm border border-neutral-100 flex items-center gap-4">
-                    <div className="w-12 h-12 rounded-full bg-blue-50 flex items-center justify-center text-blue-500">
-                        <Database size={24} />
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div className="bg-white p-6 rounded-2xl shadow-sm border border-neutral-200 flex items-center gap-4">
+                    <div className="w-14 h-14 rounded-full bg-blue-50 flex items-center justify-center text-blue-500">
+                        <Users size={28} />
                     </div>
                     <div>
-                        <p className="text-sm text-neutral-500 font-medium tracking-wide border-b border-transparent">Memory Used</p>
-                        <h3 className="text-2xl font-black text-neutral-800">{currentMemory.toFixed(1)} <span className="text-sm font-bold text-neutral-400">MB</span></h3>
+                        <p className="text-sm text-neutral-500 font-medium tracking-wide">Unique Visitors Today</p>
+                        <h3 className="text-3xl font-black text-neutral-800">{todayVisitors}</h3>
                     </div>
                 </div>
 
-                <div className="bg-white p-6 rounded-2xl shadow-sm border border-neutral-100 flex items-center gap-4">
-                    <div className="w-12 h-12 rounded-full bg-orange-50 flex items-center justify-center text-orange-500">
-                        <Cpu size={24} />
-                    </div>
-                    <div>
-                        <p className="text-sm text-neutral-500 font-medium tracking-wide">CPU Seconds</p>
-                        <h3 className="text-2xl font-black text-neutral-800">{currentCpu.toFixed(1)} <span className="text-sm font-bold text-neutral-400">s</span></h3>
-                    </div>
-                </div>
-
-                <div className="bg-white p-6 rounded-2xl shadow-sm border border-neutral-100 flex items-center gap-4">
-                    <div className="w-12 h-12 rounded-full bg-green-50 flex items-center justify-center text-green-500">
-                        <Globe size={24} />
+                <div className="bg-white p-6 rounded-2xl shadow-sm border border-neutral-200 flex items-center gap-4">
+                    <div className="w-14 h-14 rounded-full bg-green-50 flex items-center justify-center text-green-500">
+                        <Globe size={28} />
                     </div>
                     <div>
                         <p className="text-sm text-neutral-500 font-medium tracking-wide">Production API Requests</p>
-                        <h3 className="text-2xl font-black text-neutral-800">{currentRequests}</h3>
-                        <p className="text-[11px] text-neutral-400 font-bold mt-0.5">
-                            +{currentRequestsDelta} / 3s
-                        </p>
-                    </div>
-                </div>
-
-                <div className="bg-white p-6 rounded-2xl shadow-sm border border-neutral-100 flex items-center gap-4">
-                    <div className="w-12 h-12 rounded-full bg-purple-50 flex items-center justify-center text-purple-500">
-                        <Activity size={24} />
-                    </div>
-                    <div>
-                        <p className="text-sm text-neutral-500 font-medium tracking-wide">Server Uptime</p>
-                        <h3 className="text-xl font-black text-neutral-800">{formatUptime(uptime)}</h3>
+                        <h3 className="text-3xl font-black text-neutral-800">{totalRequests}</h3>
+                        <p className="text-[11px] text-neutral-400 font-medium mt-0.5">Total requests since last restart</p>
                     </div>
                 </div>
             </div>
 
-            <div className="bg-white p-6 rounded-2xl shadow-sm border border-neutral-100">
-                <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
-                    <div>
-                        <h3 className="text-lg font-bold text-neutral-800">Booking Queue Health</h3>
-                        <p className="text-xs text-neutral-500 mt-1">
-                            Tracks worker processing for booking mail and Google Sheet sync.
-                        </p>
-                    </div>
-                    <span
-                        className={`inline-flex items-center gap-2 px-3 py-1.5 rounded-full text-xs font-bold uppercase tracking-wider ${
-                            queueHealth?.healthy
-                                ? 'bg-green-100 text-green-700'
-                                : 'bg-red-100 text-red-700'
-                        }`}
-                    >
-                        {queueHealth?.healthy ? <ShieldCheck size={14} /> : <ShieldX size={14} />}
-                        {queueHealth?.healthy ? 'Healthy' : 'Needs Attention'}
-                    </span>
-                </div>
-
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-3 mt-4">
-                    <div className="rounded-xl border border-neutral-100 bg-neutral-50 p-3">
-                        <p className="text-[10px] font-bold uppercase tracking-widest text-neutral-500">Mongo Connection</p>
-                        <p className={`mt-1 text-sm font-bold ${queueHealth?.mongoConnected ? 'text-green-700' : 'text-red-700'}`}>
-                            {queueHealth?.mongoConnected ? 'Connected' : 'Disconnected'}
-                        </p>
-                    </div>
-                    <div className="rounded-xl border border-neutral-100 bg-neutral-50 p-3">
-                        <p className="text-[10px] font-bold uppercase tracking-widest text-neutral-500">Agenda Worker</p>
-                        <p className={`mt-1 text-sm font-bold ${queueHealth?.agendaWorkerStarted ? 'text-green-700' : 'text-red-700'}`}>
-                            {queueHealth?.agendaWorkerStarted ? 'Started' : 'Not Started'}
-                        </p>
-                    </div>
-                    <div className="rounded-xl border border-neutral-100 bg-neutral-50 p-3">
-                        <p className="text-[10px] font-bold uppercase tracking-widest text-neutral-500">Worker Started At</p>
-                        <p className="mt-1 text-sm font-bold text-neutral-700 inline-flex items-center gap-1">
-                            <Clock3 size={13} className="text-neutral-500" />
-                            {queueHealth?.agendaMarkedStartedAt
-                                ? new Date(queueHealth.agendaMarkedStartedAt).toLocaleString()
-                                : 'N/A'}
-                        </p>
-                    </div>
-                </div>
-
-                {queueHealth?.recentFailures?.length ? (
-                    <div className="mt-4 rounded-xl border border-red-100 bg-red-50/50 p-3">
-                        <p className="text-[10px] font-bold uppercase tracking-widest text-red-600 mb-2">Recent Queue Failures</p>
-                        <div className="space-y-2">
-                            {queueHealth.recentFailures.slice(0, 5).map((f, idx) => (
-                                <div key={`${f.name}-${idx}`} className="rounded-lg border border-red-100 bg-white p-2.5">
-                                    <p className="text-xs font-bold text-red-700">{f.name} (fails: {f.failCount})</p>
-                                    <p className="text-[11px] text-red-800 mt-0.5">{f.reason || 'Unknown reason'}</p>
-                                </div>
-                            ))}
-                        </div>
-                    </div>
-                ) : (
-                    <p className="mt-4 text-xs text-green-700 bg-green-50 border border-green-100 rounded-xl px-3 py-2">
-                        No recent queue failures.
-                    </p>
-                )}
-            </div>
-
-            {chartData.length === 0 && (
-                <p className="text-sm text-amber-800 bg-amber-50 border border-amber-100 rounded-xl px-4 py-3">
-                    No samples in this period yet. Keep this page open; charts fill as metrics are collected. Month/year need data over time in this browser.
-                </p>
-            )}
-
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mt-2">
-                <div className="bg-white p-6 rounded-2xl shadow-sm border border-neutral-100">
-                    <h3 className="text-lg font-bold text-neutral-800 mb-4">Node.js Heap Memory (MB)</h3>
-                    <div className="h-[300px] w-full">
+            <div className="bg-white p-6 rounded-2xl shadow-sm border border-neutral-200">
+                <h3 className="text-lg font-bold text-neutral-800 mb-6">Daily Unique Visitors (Last 30 Days)</h3>
+                <div className="h-[350px] w-full cursor-pointer">
+                    {visitorStats.length > 0 ? (
                         <ResponsiveContainer width="100%" height="100%">
-                            <AreaChart data={chartData} margin={{ top: 10, right: 20, left: 0, bottom: 8 }}>
-                                <defs>
-                                    <linearGradient id="colorMemory" x1="0" y1="0" x2="0" y2="1">
-                                        <stop offset="5%" stopColor="#3b82f6" stopOpacity={0.3}/>
-                                        <stop offset="95%" stopColor="#3b82f6" stopOpacity={0}/>
-                                    </linearGradient>
-                                </defs>
+                            <BarChart data={visitorStats} margin={{ top: 20, right: 20, left: 0, bottom: 8 }}>
                                 <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#f5f5f5" />
-                                <XAxis
-                                    dataKey="timeLabel"
-                                    tick={{ fontSize: 11, fill: '#888' }}
-                                    tickMargin={8}
-                                    interval="preserveStartEnd"
-                                    minTickGap={28}
+                                <XAxis 
+                                    dataKey="_id" 
+                                    tick={{ fontSize: 11, fill: '#888' }} 
+                                    tickMargin={10} 
                                 />
-                                <YAxis tick={{ fontSize: 12, fill: '#888' }} />
-                                <Tooltip
-                                    formatter={tooltipFormatter}
-                                    labelFormatter={tooltipLabelFormatter}
-                                    contentStyle={{ borderRadius: '12px', border: 'none', boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)' }}
+                                <YAxis 
+                                    tick={{ fontSize: 12, fill: '#888' }} 
+                                    allowDecimals={false}
                                 />
-                                <Area type="monotone" dataKey="heapUsed" stroke="#3b82f6" strokeWidth={2} fillOpacity={1} fill="url(#colorMemory)" name="heapUsed" />
-                            </AreaChart>
-                        </ResponsiveContainer>
-                    </div>
-                </div>
-
-                <div className="bg-white p-6 rounded-2xl shadow-sm border border-neutral-100">
-                    <h3 className="text-lg font-bold text-neutral-800 mb-4">API Request Volume</h3>
-                    <div className="h-[300px] w-full">
-                        <ResponsiveContainer width="100%" height="100%">
-                            <LineChart data={chartData} margin={{ top: 10, right: 20, left: 0, bottom: 8 }}>
-                                <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#f5f5f5" />
-                                <XAxis
-                                    dataKey="timeLabel"
-                                    tick={{ fontSize: 11, fill: '#888' }}
-                                    tickMargin={8}
-                                    interval="preserveStartEnd"
-                                    minTickGap={28}
-                                />
-                                <YAxis tick={{ fontSize: 12, fill: '#888' }} />
-                                <Tooltip
-                                    formatter={tooltipFormatter}
-                                    labelFormatter={tooltipLabelFormatter}
-                                    contentStyle={{ borderRadius: '12px', border: 'none', boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)' }}
-                                />
-                                <Line type="monotone" dataKey="requests" stroke="#10b981" strokeWidth={2} dot={false} activeDot={{ r: 6 }} name="requests" />
-                            </LineChart>
-                        </ResponsiveContainer>
-                    </div>
-                </div>
-
-                <div className="bg-white p-6 rounded-2xl shadow-sm border border-neutral-100 lg:col-span-2">
-                    <h3 className="text-lg font-bold text-neutral-800 mb-4">CPU Usage (cumulative seconds)</h3>
-                    <div className="h-[250px] w-full">
-                        <ResponsiveContainer width="100%" height="100%">
-                            <BarChart data={chartData} margin={{ top: 10, right: 20, left: 0, bottom: 8 }}>
-                                <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#f5f5f5" />
-                                <XAxis
-                                    dataKey="timeLabel"
-                                    tick={{ fontSize: 11, fill: '#888' }}
-                                    tickMargin={8}
-                                    interval="preserveStartEnd"
-                                    minTickGap={28}
-                                />
-                                <YAxis tick={{ fontSize: 12, fill: '#888' }} />
-                                <Tooltip
-                                    formatter={tooltipFormatter}
-                                    labelFormatter={tooltipLabelFormatter}
-                                    contentStyle={{ borderRadius: '12px', border: 'none', boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)' }}
+                                <Tooltip 
+                                    content={<CustomVisitorTooltip />}
                                     cursor={{ fill: '#f8fafc' }}
                                 />
-                                <Bar dataKey="cpu" fill="#f97316" radius={[4, 4, 0, 0]} name="cpu" />
+                                <Bar 
+                                    dataKey="count" 
+                                    fill="#3b82f6" 
+                                    radius={[4, 4, 0, 0]} 
+                                    barSize={50} 
+                                    onClick={(data: any) => setSelectedDay(data?.payload ?? null)}
+                                    className="hover:opacity-80 transition-opacity"
+                                >
+                                    <LabelList dataKey="count" position="top" fill="#64748b" fontSize={11} fontWeight="bold" />
+                                </Bar>
                             </BarChart>
                         </ResponsiveContainer>
+                    ) : (
+                        <div className="w-full h-full flex flex-col items-center justify-center text-neutral-400 text-sm gap-2 bg-neutral-50 rounded-xl border border-dashed border-neutral-200">
+                            <Users size={32} className="text-neutral-300" />
+                            <p>No visitor data available yet. Visit your website to register the first visit!</p>
+                        </div>
+                    )}
+                </div>
+            </div>
+
+            {/* Visitor Details Modal */}
+            {selectedDay && (
+                <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm p-4">
+                    <div className="bg-white rounded-2xl shadow-2xl w-full max-w-md overflow-hidden flex flex-col max-h-[80vh]">
+                        <div className="flex items-center justify-between p-5 border-b border-neutral-100 bg-neutral-50/50">
+                            <div>
+                                <h3 className="text-lg font-bold text-neutral-800">Visitor Details</h3>
+                                <p className="text-sm text-neutral-500 font-medium">Date: {selectedDay._id}</p>
+                            </div>
+                            <button 
+                                onClick={() => setSelectedDay(null)}
+                                className="w-8 h-8 rounded-full bg-white border border-neutral-200 flex items-center justify-center text-neutral-500 hover:bg-neutral-100 hover:text-neutral-800 transition-colors"
+                            >
+                                <X size={18} />
+                            </button>
+                        </div>
+                        
+                        <div className="p-5 overflow-y-auto flex-1">
+                            {(!selectedDay.details || selectedDay.details.length === 0) ? (
+                                <p className="text-center text-neutral-400 py-8 text-sm">No detailed records found for this date.</p>
+                            ) : (
+                                <div className="space-y-4">
+                                    <p className="text-xs font-bold uppercase tracking-wider text-neutral-400 border-b border-neutral-100 pb-2">
+                                        Recent Visitors (Top {selectedDay.details.length})
+                                    </p>
+                                    <div className="space-y-3">
+                                        {selectedDay.details.map((visitor, idx) => {
+                                            const { label: deviceLabel, isMobile } = parseDevice(visitor.userAgent);
+                                            const timeStr = new Date(visitor.time).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+                                            return (
+                                                <div key={idx} className="flex items-center gap-4 bg-neutral-50 p-3 rounded-xl border border-neutral-100">
+                                                    <div className="w-10 h-10 rounded-full bg-white flex items-center justify-center text-primary shadow-sm border border-neutral-200 shrink-0">
+                                                        {isMobile ? <Smartphone size={18} /> : <Laptop size={18} />}
+                                                    </div>
+                                                    <div className="flex-1 min-w-0">
+                                                        <p className="text-sm font-bold text-neutral-700 truncate">{deviceLabel}</p>
+                                                        <p className="text-xs text-neutral-400 font-medium mt-0.5">{timeStr}</p>
+                                                    </div>
+                                                </div>
+                                            );
+                                        })}
+                                    </div>
+                                </div>
+                            )}
+                        </div>
                     </div>
+                </div>
+            )}
+
+            {/* API Usage Chart */}
+            <div className="bg-white p-6 rounded-2xl shadow-sm border border-neutral-200">
+                <h3 className="text-lg font-bold text-neutral-800 mb-6 flex items-center gap-2">
+                    <Globe className="text-green-500" size={20} /> Top 10 Most Used API Routes
+                </h3>
+                <div className="h-[350px] w-full">
+                    {apiStats.length > 0 ? (
+                        <ResponsiveContainer width="100%" height="100%">
+                            <BarChart data={apiStats} margin={{ top: 20, right: 20, left: 0, bottom: 40 }}>
+                                <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#f5f5f5" />
+                                <XAxis 
+                                    dataKey="route" 
+                                    tick={{ fontSize: 10, fill: '#888' }} 
+                                    tickMargin={10} 
+                                    angle={-45}
+                                    textAnchor="end"
+                                />
+                                <YAxis 
+                                    tick={{ fontSize: 12, fill: '#888' }} 
+                                    allowDecimals={false}
+                                />
+                                <Tooltip 
+                                    cursor={{ fill: '#f8fafc' }}
+                                    contentStyle={{ borderRadius: '12px', border: 'none', boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)' }}
+                                    formatter={(value: any) => [value as number, "Requests"]}
+                                    labelFormatter={(label: any) => `Route: ${label}`}
+                                />
+                                <Bar dataKey="count" fill="#22c55e" radius={[4, 4, 0, 0]} barSize={40}>
+                                    <LabelList dataKey="count" position="top" fill="#64748b" fontSize={11} fontWeight="bold" />
+                                </Bar>
+                            </BarChart>
+                        </ResponsiveContainer>
+                    ) : (
+                        <div className="w-full h-full flex flex-col items-center justify-center text-neutral-400 text-sm gap-2 bg-neutral-50 rounded-xl border border-dashed border-neutral-200">
+                            <Globe size={32} className="text-neutral-300" />
+                            <p>No API usage data available yet.</p>
+                        </div>
+                    )}
                 </div>
             </div>
         </div>

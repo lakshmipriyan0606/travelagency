@@ -15,6 +15,7 @@ import storyRoutes from "./routes/story.routes.js";
 import destinationRoutes from "./routes/destination.routes.js";
 import uiConfigRoutes from "./routes/uiConfig.routes.js";
 import websiteHeroRoutes from "./routes/websiteHero.routes.js";
+import analyticsRoute from "./routes/analytics.routes.js";
 
 // Infrastructure Middleware
 import { globalLimiter, authLimiter, apiLimiter } from "./middlewares/rateLimiter.middleware.js";
@@ -186,5 +187,6 @@ app.use("/api/blogs", apiLimiter, blogRoutes);
 app.use("/api/reviews", apiLimiter, reviewRoutes);
 app.use("/api/stories", storyRoutes);
 app.use("/api/destinations", destinationRoutes);
+app.use("/api/analytics", analyticsRoute);
 
 export default app;
