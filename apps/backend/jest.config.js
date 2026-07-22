@@ -1,5 +1,14 @@
 export default {
   transform: {},
+  moduleNameMapper: {
+    '^#modules/(.*)$': '<rootDir>/src/modules/$1',
+    '^#integrations/(.*)$': '<rootDir>/src/integrations/$1',
+    '^#shared/(.*)$': '<rootDir>/src/shared/$1',
+    '^#middleware/(.*)$': '<rootDir>/src/middleware/$1',
+    '^#config/(.*)$': '<rootDir>/config/$1',
+    '^#utils/(.*)$': '<rootDir>/src/utils/$1',
+    '^#app/(.*)$': '<rootDir>/src/app/$1',
+  },
   setupFilesAfterEnv: ['<rootDir>/tests/setup/setupFile.js'],
   globalSetup: '<rootDir>/tests/setup/globalSetup.js',
   globalTeardown: '<rootDir>/tests/setup/globalTeardown.js',

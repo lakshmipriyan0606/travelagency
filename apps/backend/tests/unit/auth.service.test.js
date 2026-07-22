@@ -6,7 +6,7 @@ const mockCreate = jest.fn();
 const mockFindOne = jest.fn();
 const mockFindById = jest.fn();
 
-jest.unstable_mockModule('../../src/database/models/user.model.js', () => ({
+jest.unstable_mockModule('../../src/modules/users/user.model.js', () => ({
   default: {
     create: mockCreate,
     findOne: mockFindOne,
@@ -16,7 +16,7 @@ jest.unstable_mockModule('../../src/database/models/user.model.js', () => ({
 
 // Import service after mocking
 const { registerUser, findUserByEmail, findUserById } =
-  await import('../../src/modules/auth/auth.service.js');
+  await import('#modules/auth/auth.service.js');
 
 describe('Auth Service Unit Tests', () => {
   beforeEach(() => {

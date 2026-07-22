@@ -1,7 +1,37 @@
+/**
+ * ============================================================================
+ * Newsletter Service
+ * ============================================================================
+ *
+ * Layer:
+ * Business Service
+ *
+ * Responsibility:
+ * Processes newsletter subscriptions. Validates for existing subscribers,
+ * persists to the database, and fires an asynchronous welcome email via SendGrid.
+ *
+ * Called By:
+ * src/modules/newsletter/newsletter.controller.js
+ *
+ * Depends On:
+ * src/modules/newsletter/newsletter.repository.js
+ * src/integrations/email/email.service.js
+ * ============================================================================
+ */
 import * as newsletterRepository from './newsletter.repository.js';
-import { sendWelcomeEmail } from '../../integrations/email/email.service.js';
+import { sendWelcomeEmail } from '#integrations/email/email.service.js';
 import { WELCOME_EMAIL_SUBJECT } from './newsletter.constants.js';
 
+/**
+ * Subscribes a new email to the newsletter.
+ *
+ * Business Intent:
+ * Ensures the email is stored cleanly (lowercase/trimmed), prevents duplicate
+ * subscriptions gracefully, and sends a welcome confirmation email immediately.
+ *
+ * @param {string} email
+ * @returns {Promise<Object>} Created subscription object
+ */
 export const subscribeNewsletterService = async (email) => {
   if (!email) {
     const error = new Error('Email is required');
@@ -20,6 +50,9 @@ export const subscribeNewsletterService = async (email) => {
 
   const newSubscriber = await newsletterRepository.create({ email: normalizedEmail });
 
+  // ---------------------------------------------------------------------
+  // Fire-and-forget Email Notification
+  // ---------------------------------------------------------------------
   try {
     await sendWelcomeEmail({
       to: normalizedEmail,
@@ -33,6 +66,8 @@ export const subscribeNewsletterService = async (email) => {
   `,
     });
   } catch (emailErr) {
+    // Deliberately catching and logging so that an email failure doesn't
+    // bubble up and return a 500 to the user, since the DB save succeeded.
     console.error('Failed to send welcome email:', emailErr.message);
   }
 

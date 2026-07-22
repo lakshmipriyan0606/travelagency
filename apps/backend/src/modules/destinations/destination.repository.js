@@ -1,3 +1,21 @@
+/**
+ * ============================================================================
+ * Destination Repository
+ * ============================================================================
+ *
+ * Layer:
+ * Data Access
+ *
+ * Responsibility:
+ * Encapsulates MongoDB operations for Popular Destinations.
+ *
+ * Called By:
+ * src/modules/destinations/destination.service.js
+ *
+ * Depends On:
+ * src/modules/destinations/destination.model.js
+ * ============================================================================
+ */
 import { Destination } from './destination.model.js';
 
 export const count = async () => {

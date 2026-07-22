@@ -1,7 +1,26 @@
-import mongoose from "mongoose";
-import * as websiteHeroRepository from "./websiteHero.repository.js";
-import { normalizeImages } from "./websiteHero.validation.js";
-import { DEFAULT_HERO_TITLE } from "./websiteHero.constants.js";
+/**
+ * ============================================================================
+ * Website Hero Service
+ * ============================================================================
+ *
+ * Layer:
+ * Business Service
+ *
+ * Responsibility:
+ * Manages the logic for dynamic hero variants. Normalizes complex
+ * image payload structures to prevent UI failures.
+ *
+ * Called By:
+ * src/modules/websiteHero/websiteHero.controller.js
+ *
+ * Depends On:
+ * src/modules/websiteHero/websiteHero.repository.js
+ * ============================================================================
+ */
+import mongoose from 'mongoose';
+import * as websiteHeroRepository from './websiteHero.repository.js';
+import { normalizeImages } from './websiteHero.validation.js';
+import { DEFAULT_HERO_TITLE } from './websiteHero.constants.js';
 
 export const getActiveHeroService = async () => {
   const hero = await websiteHeroRepository.findActive();
@@ -9,15 +28,15 @@ export const getActiveHeroService = async () => {
   if (!hero) {
     return {
       title: DEFAULT_HERO_TITLE,
-      description: "",
+      description: '',
       backgroundImages: [],
     };
   }
 
   return {
     _id: hero._id,
-    title: hero.title || "",
-    description: hero.description || "",
+    title: hero.title || '',
+    description: hero.description || '',
     backgroundImages: normalizeImages(hero.backgroundImages),
   };
 };
@@ -31,14 +50,14 @@ export const createHeroService = async (body) => {
   const images = normalizeImages(backgroundImages);
 
   if (!images.length) {
-    const error = new Error("At least one background image is required");
+    const error = new Error('At least one background image is required');
     error.statusCode = 400;
     throw error;
   }
 
   return await websiteHeroRepository.create({
-    title: (title ?? "").toString(),
-    description: (description ?? "").toString(),
+    title: (title ?? '').toString(),
+    description: (description ?? '').toString(),
     backgroundImages: images,
     isActive: isActive === undefined ? true : Boolean(isActive),
   });
@@ -46,29 +65,32 @@ export const createHeroService = async (body) => {
 
 export const updateHeroService = async (id, body) => {
   if (!mongoose.isValidObjectId(id)) {
-    const error = new Error("Invalid id");
+    const error = new Error('Invalid id');
     error.statusCode = 400;
     throw error;
   }
 
   const { title, description, backgroundImages, isActive } = body || {};
   const update = {};
-  if (title !== undefined) update.title = (title ?? "").toString();
-  if (description !== undefined) update.description = (description ?? "").toString();
+
+  if (title !== undefined) update.title = (title ?? '').toString();
+  if (description !== undefined) update.description = (description ?? '').toString();
+
   if (backgroundImages !== undefined) {
     const images = normalizeImages(backgroundImages);
     if (!images.length) {
-      const error = new Error("At least one background image is required");
+      const error = new Error('At least one background image is required');
       error.statusCode = 400;
       throw error;
     }
     update.backgroundImages = images;
   }
+
   if (isActive !== undefined) update.isActive = Boolean(isActive);
 
   const doc = await websiteHeroRepository.findByIdAndUpdate(id, update);
   if (!doc) {
-    const error = new Error("Hero not found");
+    const error = new Error('Hero not found');
     error.statusCode = 404;
     throw error;
   }
@@ -77,14 +99,14 @@ export const updateHeroService = async (id, body) => {
 
 export const deleteHeroService = async (id) => {
   if (!mongoose.isValidObjectId(id)) {
-    const error = new Error("Invalid id");
+    const error = new Error('Invalid id');
     error.statusCode = 400;
     throw error;
   }
 
   const doc = await websiteHeroRepository.findByIdAndDelete(id);
   if (!doc) {
-    const error = new Error("Hero not found");
+    const error = new Error('Hero not found');
     error.statusCode = 404;
     throw error;
   }

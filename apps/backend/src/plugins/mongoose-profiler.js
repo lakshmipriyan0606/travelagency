@@ -1,7 +1,24 @@
-import { logger } from '../shared/logger.js';
+/**
+ * ============================================================================
+ * Mongoose Profiler Plugin
+ * ============================================================================
+ *
+ * Layer:
+ * Infrastructure / Database
+ *
+ * Responsibility:
+ * Automatically wraps Mongoose schemas to measure execution time of all
+ * database queries. Reports durations to Prometheus metrics and logs warnings
+ * (plus Sentry breadcrumbs) if queries exceed a defined latency threshold.
+ *
+ * Called By:
+ * src/config/db.js (Applied globally to mongoose)
+ * ============================================================================
+ */
+import { logger } from '#shared/logger.js';
 import * as Sentry from '@sentry/node';
 import client from 'prom-client';
-import { register } from '../../config/metrics.js';
+import { register } from '#config/metrics.js';
 
 export const dbQueryDuration = new client.Histogram({
   name: 'travelagency_db_query_duration_seconds',

@@ -1,4 +1,21 @@
-import { logger } from '../../shared/logger.js';
+/**
+ * ============================================================================
+ * Global Error Handler Middleware
+ * ============================================================================
+ *
+ * Layer:
+ * Middleware / Infrastructure
+ *
+ * Responsibility:
+ * Catch-all error handler for Express. Intercepts any `next(err)` calls.
+ * Ensures consistent JSON response structure and prevents stack traces
+ * from leaking into the production API response.
+ *
+ * Called By:
+ * src/app.js (registered as the final middleware)
+ * ============================================================================
+ */
+import { logger } from '#shared/logger.js';
 
 export const globalErrorHandler = (err, req, res, next) => {
   err.statusCode = err.statusCode || 500;

@@ -6,7 +6,7 @@ module.exports = {
   apps: [
     {
       name: "travelagency-backend",
-      script: "./server.js",
+      script: "./src/server.js",
 
       // 'max' = one instance per CPU core (horizontal scaling on single machine)
       instances: "max",

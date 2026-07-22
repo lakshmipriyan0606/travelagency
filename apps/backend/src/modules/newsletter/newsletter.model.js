@@ -1,3 +1,18 @@
+/**
+ * ============================================================================
+ * Newsletter Model
+ * ============================================================================
+ *
+ * Layer:
+ * Data Access / Entity
+ *
+ * Responsibility:
+ * Defines the MongoDB schema for Newsletter subscribers.
+ *
+ * Called By:
+ * src/modules/newsletter/newsletter.repository.js
+ * ============================================================================
+ */
 import mongoose from 'mongoose';
 
 const newsletterSchema = new mongoose.Schema({
@@ -14,5 +29,6 @@ const newsletterSchema = new mongoose.Schema({
   },
 });
 
-export const Newsletter = mongoose.models.Newsletter || mongoose.model('Newsletter', newsletterSchema);
+export const Newsletter =
+  mongoose.models.Newsletter || mongoose.model('Newsletter', newsletterSchema);
 export default Newsletter;

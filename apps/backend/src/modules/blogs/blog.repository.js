@@ -1,4 +1,23 @@
-import Blog from "./blog.model.js";
+/**
+ * ============================================================================
+ * Blog Repository
+ * ============================================================================
+ *
+ * Layer:
+ * Data Access
+ *
+ * Responsibility:
+ * Encapsulates database logic for the Blog entity. Supports dynamic population
+ * of the createdBy field.
+ *
+ * Called By:
+ * src/modules/blogs/blog.service.js
+ *
+ * Depends On:
+ * src/modules/blogs/blog.model.js
+ * ============================================================================
+ */
+import Blog from './blog.model.js';
 
 export const create = async (blogData) => {
   const blog = new Blog(blogData);
@@ -25,6 +44,10 @@ export const findById = async (id) => {
   return await Blog.findById(id);
 };
 
-export const findByIdAndUpdate = async (id, updateData, options = { new: true, runValidators: true }) => {
+export const findByIdAndUpdate = async (
+  id,
+  updateData,
+  options = { new: true, runValidators: true }
+) => {
   return await Blog.findByIdAndUpdate(id, updateData, options);
 };

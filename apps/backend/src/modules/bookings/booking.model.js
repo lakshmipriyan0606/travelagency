@@ -1,12 +1,33 @@
+/**
+ * ============================================================================
+ * Booking Model
+ * ============================================================================
+ *
+ * Layer:
+ * Data Access / Entity
+ *
+ * Responsibility:
+ * Defines the MongoDB schema for customer booking inquiries and captures
+ * tracking status for external synchronization (Google Sheets, Emails).
+ *
+ * Called By:
+ * src/modules/bookings/booking.repository.js
+ * ============================================================================
+ */
 import mongoose from 'mongoose';
 
 const BookingSchema = new mongoose.Schema({
+  // Unique system-generated identifier for the booking
   bookingId: { type: String, required: true, unique: true },
+
+  // Customer Contact Info
   email: { type: String, required: true },
   phone: { type: String, default: '' },
   whatsapp: { type: String, default: null },
   name: { type: String, required: true },
   city: { type: String, default: '' },
+
+  // Package/Travel Context
   destination: { type: String, required: true },
   packageName: { type: String, default: '' },
   vacationType: { type: String, default: '' },
@@ -16,10 +37,16 @@ const BookingSchema = new mongoose.Schema({
   travelMonth: { type: String, default: '' },
   noOfPeople: { type: String, default: '' },
   message: { type: String, default: '', maxLength: 500 },
+
+  // Audit Trail
   createdAt: { type: Date, default: Date.now },
+
+  // Background Job Status Flags (Pending -> Success/Failed)
   sheetSyncStatus: { type: String, default: 'Pending' },
   userEmailStatus: { type: String, default: 'Pending' },
   adminEmailStatus: { type: String, default: 'Pending' },
+
+  // Job Error Logs for troubleshooting Async failures
   errorLogs: [
     {
       task: { type: String },
@@ -28,6 +55,14 @@ const BookingSchema = new mongoose.Schema({
     },
   ],
 });
+
+// ============================================================================
+// Indexes
+// ----------------------------------------------------------------------------
+// 1. Time-series indexing for dashboard queries
+// 2. Compound index for background workers to quickly find un-synced jobs
+// 3. Email/Destination indexing for quick admin searches
+// ============================================================================
 BookingSchema.index({ createdAt: -1 });
 BookingSchema.index({ sheetSyncStatus: 1, createdAt: -1 });
 BookingSchema.index({ email: 1 });

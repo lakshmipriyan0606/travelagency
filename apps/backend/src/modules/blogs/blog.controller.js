@@ -1,14 +1,52 @@
-import * as blogService from "./blog.service.js";
+/**
+ * ============================================================================
+ * Blog Controller
+ * ============================================================================
+ *
+ * Layer:
+ * Controller / Interface Adapter
+ *
+ * Responsibility:
+ * Processes HTTP requests for blog operations. Handles multipart/form-data
+ * for image uploads via Multer.
+ *
+ * Called By:
+ * src/modules/blogs/blog.b2c.routes.js
+ * src/modules/blogs/blog.admin.routes.js
+ *
+ * Depends On:
+ * src/modules/blogs/blog.service.js
+ * ============================================================================
+ */
+import * as blogService from './blog.service.js';
 
+/**
+ * Creates a new blog post.
+ *
+ * Request Flow:
+ * Admin Client
+ *   ↓
+ * Route (POST /api/v1/b2c-admin/blogs) -> Multer Middleware
+ *   ↓
+ * Controller (createBlog)
+ *   ↓
+ * Service (createBlogService) -> Parses JSON -> Uploads buffers to Cloudinary
+ *   ↓
+ * Database (Blog Collection)
+ *   ↓
+ * Response (201 Created)
+ */
 export const createBlog = async (req, res) => {
   try {
     const blog = await blogService.createBlogService(req.body, req.files, req.user?._id);
-    res.status(201).json({ message: "Blog created successfully", data: blog });
+    res.status(201).json({ message: 'Blog created successfully', data: blog });
   } catch (error) {
     if (error.code === 11000) {
-      return res.status(400).json({ error: "Slug already exists. Please choose a different title or slug." });
+      return res
+        .status(400)
+        .json({ error: 'Slug already exists. Please choose a different title or slug.' });
     }
-    console.error("Create blog error:", error);
+    console.error('Create blog error:', error);
     res.status(500).json({ error: error.message });
   }
 };
@@ -18,7 +56,7 @@ export const getAllBlogs = async (req, res) => {
     const blogs = await blogService.getAllBlogsService(req.query);
     res.status(200).json({ data: blogs });
   } catch (error) {
-    console.error("Get all blogs error:", error);
+    console.error('Get all blogs error:', error);
     res.status(500).json({ error: error.message });
   }
 };
@@ -46,10 +84,12 @@ export const getBlogById = async (req, res) => {
 export const updateBlog = async (req, res) => {
   try {
     const updatedBlog = await blogService.updateBlogService(req.params.id, req.body, req.files);
-    res.status(200).json({ message: "Blog updated successfully", data: updatedBlog });
+    res.status(200).json({ message: 'Blog updated successfully', data: updatedBlog });
   } catch (error) {
     if (error.code === 11000) {
-      return res.status(400).json({ error: "Slug already exists. Please choose a different title or slug." });
+      return res
+        .status(400)
+        .json({ error: 'Slug already exists. Please choose a different title or slug.' });
     }
     const status = error.statusCode || 500;
     res.status(status).json({ error: error.message });
@@ -59,7 +99,7 @@ export const updateBlog = async (req, res) => {
 export const deleteBlog = async (req, res) => {
   try {
     await blogService.deleteBlogService(req.params.id);
-    res.status(200).json({ message: "Blog deleted successfully" });
+    res.status(200).json({ message: 'Blog deleted successfully' });
   } catch (error) {
     const status = error.statusCode || 500;
     res.status(status).json({ error: error.message });

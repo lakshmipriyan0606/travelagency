@@ -1,11 +1,46 @@
-import * as reviewService from "./review.service.js";
+/**
+ * ============================================================================
+ * Review Controller
+ * ============================================================================
+ *
+ * Layer:
+ * Controller / Interface Adapter
+ *
+ * Responsibility:
+ * Processes HTTP requests to manage and fetch customer reviews.
+ *
+ * Called By:
+ * src/modules/reviews/review.b2c.routes.js
+ * src/modules/reviews/review.admin.routes.js
+ *
+ * Depends On:
+ * src/modules/reviews/review.service.js
+ * ============================================================================
+ */
+import * as reviewService from './review.service.js';
 
+/**
+ * Creates a new Review.
+ *
+ * Request Flow:
+ * Admin Client
+ *   ↓
+ * Route (POST /api/v1/b2c-admin/reviews)
+ *   ↓
+ * Controller (createReview)
+ *   ↓
+ * Service (createReviewService) -> Pre-save auto numbering
+ *   ↓
+ * Database (Review Collection)
+ *   ↓
+ * Response (201 Created)
+ */
 export const createReview = async (req, res) => {
   try {
     const savedReview = await reviewService.createReviewService(req.body);
     return res.status(201).json(savedReview);
   } catch (error) {
-    return res.status(500).json({ message: error.message || "Failed to create review" });
+    return res.status(500).json({ message: error.message || 'Failed to create review' });
   }
 };
 
@@ -15,7 +50,7 @@ export const getAllReviews = async (req, res) => {
     const reviews = await reviewService.getAllReviewsService(status);
     return res.status(200).json(reviews);
   } catch (error) {
-    return res.status(500).json({ message: error.message || "Failed to fetch reviews" });
+    return res.status(500).json({ message: error.message || 'Failed to fetch reviews' });
   }
 };
 
@@ -26,7 +61,7 @@ export const updateReview = async (req, res) => {
     return res.status(200).json(updatedReview);
   } catch (error) {
     const status = error.statusCode || 500;
-    return res.status(status).json({ message: error.message || "Failed to update review" });
+    return res.status(status).json({ message: error.message || 'Failed to update review' });
   }
 };
 
@@ -34,10 +69,10 @@ export const deleteReview = async (req, res) => {
   try {
     const { id } = req.params;
     await reviewService.deleteReviewService(id);
-    return res.status(200).json({ message: "Review deleted successfully" });
+    return res.status(200).json({ message: 'Review deleted successfully' });
   } catch (error) {
     const status = error.statusCode || 500;
-    return res.status(status).json({ message: error.message || "Failed to delete review" });
+    return res.status(status).json({ message: error.message || 'Failed to delete review' });
   }
 };
 
@@ -48,7 +83,7 @@ export const swapOrder = async (req, res) => {
     return res.status(200).json(result);
   } catch (error) {
     const status = error.statusCode || 500;
-    return res.status(status).json({ message: error.message || "Failed to swap order" });
+    return res.status(status).json({ message: error.message || 'Failed to swap order' });
   }
 };
 
@@ -60,7 +95,7 @@ export const moveReview = async (req, res) => {
     return res.status(200).json(result);
   } catch (error) {
     const status = error.statusCode || 500;
-    return res.status(status).json({ message: error.message || "Failed to move review" });
+    return res.status(status).json({ message: error.message || 'Failed to move review' });
   }
 };
 
@@ -69,6 +104,6 @@ export const normalizeReviewsOrder = async (req, res) => {
     const result = await reviewService.normalizeReviewsOrderService();
     return res.status(200).json(result);
   } catch (error) {
-    return res.status(500).json({ message: error.message || "Failed to normalize review orders" });
+    return res.status(500).json({ message: error.message || 'Failed to normalize review orders' });
   }
 };

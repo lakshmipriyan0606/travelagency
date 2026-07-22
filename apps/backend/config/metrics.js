@@ -1,3 +1,21 @@
+/**
+ * ============================================================================
+ * Prometheus Metrics Definitions
+ * ============================================================================
+ *
+ * Layer:
+ * Configuration / Monitoring
+ *
+ * Responsibility:
+ * Defines the custom Prometheus Counters, Histograms, and Gauges used
+ * to monitor HTTP application traffic. Also enables default Node.js system
+ * metrics (memory, gc, event loop).
+ *
+ * Called By:
+ * src/bootstrap/prometheus.js
+ * src/monitoring/metrics.routes.js
+ * ============================================================================
+ */
 import client from 'prom-client';
 
 // Collect default Node.js metrics: CPU, memory, event loop lag, GC, etc.

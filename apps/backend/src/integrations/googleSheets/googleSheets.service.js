@@ -1,3 +1,21 @@
+/**
+ * ============================================================================
+ * Google Sheets Integration Service
+ * ============================================================================
+ *
+ * Layer:
+ * External Integration
+ *
+ * Responsibility:
+ * Syncs booking leads to a Google Sheet via an Apps Script Webhook.
+ * Also fetches dynamic package configuration data directly from a public
+ * Google Sheet JSON endpoint.
+ *
+ * Called By:
+ * src/modules/bookings/booking.service.js
+ * src/modules/packages/package.service.js
+ * ============================================================================
+ */
 import dotenv from 'dotenv';
 dotenv.config();
 

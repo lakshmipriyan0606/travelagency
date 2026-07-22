@@ -1,5 +1,22 @@
+/**
+ * ============================================================================
+ * Redis Cache Configuration
+ * ============================================================================
+ *
+ * Layer:
+ * Configuration / Infrastructure
+ *
+ * Responsibility:
+ * Establishes and exports a singleton connection to the Redis server using ioredis.
+ * Used for caching database queries (packages, blogs) and session storage.
+ *
+ * Called By:
+ * src/middleware/cache.middleware.js
+ * src/server.js (for graceful shutdown)
+ * ============================================================================
+ */
 import Redis from 'ioredis';
-import { logger } from '../src/shared/logger.js';
+import { logger } from '#shared/logger.js';
 
 const redisConfig = {
   host: process.env.REDIS_HOST || '127.0.0.1',

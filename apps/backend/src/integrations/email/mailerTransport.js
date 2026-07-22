@@ -1,3 +1,21 @@
+/**
+ * ============================================================================
+ * Email Transport Configuration
+ * ============================================================================
+ *
+ * Layer:
+ * Infrastructure / Third-Party Integration
+ *
+ * Responsibility:
+ * Wraps the underlying email delivery mechanisms (Resend SDK, Nodemailer + Gmail)
+ * to provide a unified `sendTransactionalEmail` interface. Includes automatic
+ * fallback from Resend to Gmail if delivery fails.
+ *
+ * Called By:
+ * src/workers/email.worker.js
+ * src/integrations/email/email.service.js
+ * ============================================================================
+ */
 import nodemailer from 'nodemailer';
 import { Resend } from 'resend';
 

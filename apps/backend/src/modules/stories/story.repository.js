@@ -1,11 +1,29 @@
-import Story from "./story.model.js";
+/**
+ * ============================================================================
+ * Story Repository
+ * ============================================================================
+ *
+ * Layer:
+ * Data Access
+ *
+ * Responsibility:
+ * Encapsulates Mongoose database operations for Customer Stories.
+ *
+ * Called By:
+ * src/modules/stories/story.service.js
+ *
+ * Depends On:
+ * src/modules/stories/story.model.js
+ * ============================================================================
+ */
+import Story from './story.model.js';
 
 export const create = async (storyData) => {
   const story = new Story(storyData);
   return await story.save();
 };
 
-export const findSorted = async (query = {}, sort = "row orderNumber") => {
+export const findSorted = async (query = {}, sort = 'row orderNumber') => {
   return await Story.find(query).sort(sort);
 };
 

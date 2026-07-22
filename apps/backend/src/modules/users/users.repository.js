@@ -1,4 +1,24 @@
-import User from '../../database/models/user.model.js';
+/**
+ * ============================================================================
+ * Users Repository
+ * ============================================================================
+ *
+ * Layer:
+ * Data Access
+ *
+ * Responsibility:
+ * Encapsulates MongoDB database interactions for the User collection.
+ * Automatically filters out soft-deleted users in read operations.
+ * Also automatically excludes sensitive password hashes from results.
+ *
+ * Called By:
+ * src/modules/users/users.service.js
+ *
+ * Depends On:
+ * src/modules/users/user.model.js
+ * ============================================================================
+ */
+import User from './user.model.js';
 
 export const findById = async (userId) => {
   return await User.findOne({ _id: userId, isDeleted: false }).select('-password').lean();

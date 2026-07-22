@@ -1,7 +1,24 @@
+/**
+ * ============================================================================
+ * MongoDB Configuration
+ * ============================================================================
+ *
+ * Layer:
+ * Configuration / Infrastructure
+ *
+ * Responsibility:
+ * Establishes the connection to the MongoDB cluster using Mongoose.
+ * Applies global plugins (like query profiling) and handles connection errors
+ * fatally to prevent the app from starting in a degraded state.
+ *
+ * Called By:
+ * src/server.js
+ * ============================================================================
+ */
 // db.config.js
 import mongoose from 'mongoose';
 import dotenv from 'dotenv';
-import { runStartupLocalhostCleanup } from '../controllers/analytics.controller.js';
+import { runStartupLocalhostCleanup } from '#modules/analytics/analytics.controller.js';
 import mongooseProfiler from '../src/plugins/mongoose-profiler.js';
 
 dotenv.config(); // Loads .env variables

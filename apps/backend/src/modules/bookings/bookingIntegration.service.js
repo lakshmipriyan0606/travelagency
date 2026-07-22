@@ -1,7 +1,7 @@
 import Booking from './booking.model.js';
-import { syncBookingToSheet } from '../../integrations/googleSheets/googleSheets.service.js';
-import { sendBookingEmailNow } from '../../integrations/email/email.service.js';
-import { sendWhatsAppMessage } from '../../integrations/whatsapp/whatsapp.service.js';
+import { syncBookingToSheet } from '#integrations/googleSheets/googleSheets.service.js';
+import { sendBookingEmailNow } from '#integrations/email/email.service.js';
+import { sendWhatsAppMessage } from '#integrations/whatsapp/whatsapp.service.js';
 
 export const processBookingIntegrations = async (payload) => {
   const {

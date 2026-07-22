@@ -1,4 +1,23 @@
-import mongoose from "mongoose";
+/**
+ * ============================================================================
+ * Queue Runtime Utilities
+ * ============================================================================
+ *
+ * Layer:
+ * Configuration / Background Jobs
+ *
+ * Responsibility:
+ * Tracks the lifecycle and state of the Agenda background worker instance.
+ * Exposes methods to query queue statistics (jobs pending/failed) directly
+ * from the MongoDB collections for administrative monitoring.
+ *
+ * Called By:
+ * src/server.js
+ * src/monitoring/queue.routes.js
+ * src/health/health.routes.js
+ * ============================================================================
+ */
+import mongoose from 'mongoose';
 
 let agendaInstance = null;
 let agendaMarkedStartedAt = null;
@@ -13,9 +32,7 @@ export function getQueuePublicSnapshot() {
   return {
     mongoConnected: mongoose.connection.readyState === 1,
     agendaWorkerStarted: Boolean(agendaInstance),
-    agendaMarkedStartedAt: agendaMarkedStartedAt
-      ? agendaMarkedStartedAt.toISOString()
-      : null,
+    agendaMarkedStartedAt: agendaMarkedStartedAt ? agendaMarkedStartedAt.toISOString() : null,
   };
 }
 
@@ -27,24 +44,24 @@ export async function getQueueHealthDetail() {
     timestamp: new Date().toISOString(),
     ...getQueuePublicSnapshot(),
     mongooseReadyState: mongoose.connection.readyState,
-    collection: "agendaJobs",
+    collection: 'agendaJobs',
     jobs: {},
     recentFailures: [],
     note: null,
   };
 
   if (mongoose.connection.readyState !== 1 || !mongoose.connection.db) {
-    snapshot.note = "MongoDB not connected; job stats unavailable";
+    snapshot.note = 'MongoDB not connected; job stats unavailable';
     return snapshot;
   }
 
   try {
-    const col = mongoose.connection.db.collection("agendaJobs");
+    const col = mongoose.connection.db.collection('agendaJobs');
     const names = [
-      "process booking integrations",
-      "send booking email",
-      "send welcome email",
-      "send enquiry email",
+      'process booking integrations',
+      'send booking email',
+      'send welcome email',
+      'send enquiry email',
     ];
 
     for (const name of names) {

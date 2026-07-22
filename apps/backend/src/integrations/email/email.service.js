@@ -1,4 +1,25 @@
-import { agendaReady } from '../config/agenda.js';
+/**
+ * ============================================================================
+ * Email Integration Service
+ * ============================================================================
+ *
+ * Layer:
+ * External Integration / Background Job Enqueue
+ *
+ * Responsibility:
+ * Exposes methods for enqueueing email delivery jobs into Agenda (MongoDB).
+ * Isolates the SMTP/Mailer logic from the HTTP request/response cycle to
+ * improve API latency and reliability.
+ *
+ * Called By:
+ * src/modules/bookings/booking.service.js
+ * src/modules/newsletter/newsletter.service.js
+ *
+ * Depends On:
+ * src/config/agenda.js
+ * ============================================================================
+ */
+import { agendaReady } from '#config/agenda.js';
 import { sendTransactionalEmail } from './mailerTransport.js';
 
 /**

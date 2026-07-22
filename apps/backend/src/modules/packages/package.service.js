@@ -1,9 +1,31 @@
+/**
+ * ============================================================================
+ * Package Service
+ * ============================================================================
+ *
+ * Layer:
+ * Business Service
+ *
+ * Responsibility:
+ * Implements all package-related business rules. Handles image processing via
+ * Cloudinary, calculates rankings, syncs from Google Sheets, and formats
+ * response payloads.
+ *
+ * Called By:
+ * src/modules/packages/package.controller.js
+ *
+ * Depends On:
+ * src/modules/packages/package.repository.js
+ * src/modules/packages/package.mapper.js
+ * src/config/cloudinary.js
+ * ============================================================================
+ */
 import mongoose from 'mongoose';
 import * as packageRepository from './package.repository.js';
 import { sanitizeImagesArray, sanitizeImageObjects } from './package.mapper.js';
 import { PREDEFINED_ACTIVITY_CATEGORIES } from './package.constants.js';
-import cloudinary from '../../config/cloudinary.js';
-import { fetchPackagesFromSheet } from '../../integrations/googleSheets/googleSheets.service.js';
+import cloudinary from '#config/cloudinary.js';
+import { fetchPackagesFromSheet } from '#integrations/googleSheets/googleSheets.service.js';
 
 const uploadFile = (file, folder = 'travel_packages') =>
   new Promise((resolve, reject) => {

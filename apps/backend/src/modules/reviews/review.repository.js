@@ -1,11 +1,29 @@
-import Review from "./review.model.js";
+/**
+ * ============================================================================
+ * Review Repository
+ * ============================================================================
+ *
+ * Layer:
+ * Data Access
+ *
+ * Responsibility:
+ * Encapsulates Mongoose database operations for Reviews.
+ *
+ * Called By:
+ * src/modules/reviews/review.service.js
+ *
+ * Depends On:
+ * src/modules/reviews/review.model.js
+ * ============================================================================
+ */
+import Review from './review.model.js';
 
 export const create = async (reviewData) => {
   const review = new Review(reviewData);
   return await review.save();
 };
 
-export const find = async (filter = {}, sort = "orderNumber") => {
+export const find = async (filter = {}, sort = 'orderNumber') => {
   return await Review.find(filter).sort(sort);
 };
 

@@ -2,7 +2,7 @@ import dotenv from 'dotenv';
 dotenv.config();
 
 import mongoose from 'mongoose';
-import { connectDB } from '../config/db.js';
+import { connectDB } from '#config/db.js';
 import PackageModel from '../models/Package.model.js';
 
 const isActivityByCategory = (activityCategory) => {

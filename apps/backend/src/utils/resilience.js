@@ -1,4 +1,21 @@
-import { logger } from '../shared/logger.js';
+/**
+ * ============================================================================
+ * Resilience Utilities
+ * ============================================================================
+ *
+ * Layer:
+ * Shared Utility / Reliability
+ *
+ * Responsibility:
+ * Provides wrappers for external API calls to implement timeout thresholds
+ * and exponential backoff retry logic. Essential for preventing cascading
+ * failures in a microservices / API integration context.
+ *
+ * Called By:
+ * src/modules/bookings/bookingIntegration.service.js
+ * ============================================================================
+ */
+import { logger } from '#shared/logger.js';
 import * as Sentry from '@sentry/node';
 
 /**

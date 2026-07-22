@@ -1,3 +1,20 @@
+/**
+ * ============================================================================
+ * WhatsApp Business API Integration
+ * ============================================================================
+ *
+ * Layer:
+ * External Integration
+ *
+ * Responsibility:
+ * Integrates with the Meta Graph API to dispatch WhatsApp messages (both
+ * text and template-based) to customers, particularly for booking updates.
+ * Features a development mode fallback if credentials are absent.
+ *
+ * Called By:
+ * src/modules/bookings/bookingIntegration.service.js
+ * ============================================================================
+ */
 import https from 'https';
 
 /**

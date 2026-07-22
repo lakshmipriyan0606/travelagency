@@ -1,4 +1,22 @@
-import Newsletter from "./newsletter.model.js";
+/**
+ * ============================================================================
+ * Newsletter Repository
+ * ============================================================================
+ *
+ * Layer:
+ * Data Access
+ *
+ * Responsibility:
+ * Centralizes read/write access to the Newsletter collection.
+ *
+ * Called By:
+ * src/modules/newsletter/newsletter.service.js
+ *
+ * Depends On:
+ * src/modules/newsletter/newsletter.model.js
+ * ============================================================================
+ */
+import Newsletter from './newsletter.model.js';
 
 export const create = async (data) => {
   return await Newsletter.create(data);

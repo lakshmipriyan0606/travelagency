@@ -1,3 +1,21 @@
+/**
+ * ============================================================================
+ * Core Logger Configuration
+ * ============================================================================
+ *
+ * Layer:
+ * Infrastructure / Utilities
+ *
+ * Responsibility:
+ * Instantiates the global Pino logger used throughout the application.
+ * Automatically redacts sensitive fields (passwords, tokens, cookies)
+ * to ensure PII compliance in the logs.
+ *
+ * Called By:
+ * src/server.js
+ * src/bootstrap/logger.js
+ * ============================================================================
+ */
 import pino from 'pino';
 
 const isProduction = process.env.NODE_ENV === 'production';

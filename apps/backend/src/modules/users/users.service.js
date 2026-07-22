@@ -1,15 +1,38 @@
-import * as userRepository from "./users.repository.js";
-import { validateUpdateProfile, validateRoleAssignment } from "./users.validation.js";
+/**
+ * ============================================================================
+ * Users Service
+ * ============================================================================
+ *
+ * Layer:
+ * Business Service
+ *
+ * Responsibility:
+ * Processes operations relating to user lifecycle, profile modifications,
+ * RBAC assignments, and permissions updates.
+ *
+ * Called By:
+ * src/modules/users/users.controller.js
+ *
+ * Depends On:
+ * src/modules/users/users.repository.js
+ * ============================================================================
+ */
+import * as userRepository from './users.repository.js';
+import { validateUpdateProfile, validateRoleAssignment } from './users.validation.js';
 
 export const getUserProfile = async (userId) => {
   const user = await userRepository.findById(userId);
-  if (!user) throw new Error("User not found.");
+  if (!user) throw new Error('User not found.');
   return user;
 };
 
+/**
+ * Updates a user's own profile. Strict allowlist filters payload to prevent
+ * a user from escalating their own privileges (Mass Assignment prevention).
+ */
 export const updateUserProfile = async (userId, profileData) => {
   const { isValid, errors } = validateUpdateProfile(profileData);
-  if (!isValid) throw new Error(errors.join(" "));
+  if (!isValid) throw new Error(errors.join(' '));
 
   const allowedUpdates = {};
   if (profileData.name !== undefined) allowedUpdates.name = profileData.name;
@@ -26,7 +49,7 @@ export const listUsers = async (options) => {
 
 export const getUserById = async (userId) => {
   const user = await userRepository.findById(userId);
-  if (!user) throw new Error("User not found.");
+  if (!user) throw new Error('User not found.');
   return user;
 };
 
@@ -35,7 +58,7 @@ export const updateUserStatus = async (userId, status) => {
 };
 
 export const assignUserRole = async (userId, role) => {
-  if (!validateRoleAssignment(role)) throw new Error("Invalid user role specified.");
+  if (!validateRoleAssignment(role)) throw new Error('Invalid user role specified.');
   return await userRepository.updateById(userId, { role });
 };
 

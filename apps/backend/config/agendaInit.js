@@ -1,6 +1,23 @@
-import { Agenda } from "agenda";
-import { MongoBackend } from "@agendajs/mongo-backend";
-import mongoose from "mongoose";
+/**
+ * ============================================================================
+ * Agenda Initialization
+ * ============================================================================
+ *
+ * Layer:
+ * Configuration / Background Jobs
+ *
+ * Responsibility:
+ * Creates the Agenda background job queue instance specifically tied to the
+ * underlying MongoDB database connection managed by Mongoose.
+ * Prevents race conditions where Agenda tries to connect before Mongoose.
+ *
+ * Called By:
+ * src/config/agenda.js
+ * ============================================================================
+ */
+import { Agenda } from 'agenda';
+import { MongoBackend } from '@agendajs/mongo-backend';
+import mongoose from 'mongoose';
 
 /**
  * Creates Agenda once MongoDB is connected. Handles the case where the connection
@@ -12,17 +29,15 @@ export function createAgendaWhenConnected(resolve, reject) {
       const agenda = new Agenda({
         backend: new MongoBackend({
           mongo: mongoose.connection.getClient().db(),
-          collection: "agendaJobs",
+          collection: 'agendaJobs',
         }),
-        processEvery: "10 seconds",
+        processEvery: '10 seconds',
         maxConcurrency: 5,
       });
 
-      agenda.on("error", (err) =>
-        console.error("❌ Agenda connection error:", err)
-      );
+      agenda.on('error', (err) => console.error('❌ Agenda connection error:', err));
 
-      console.log("✅ Agenda (Job Queue) connected to MongoDB via Mongoose");
+      console.log('✅ Agenda (Job Queue) connected to MongoDB via Mongoose');
       resolve(agenda);
     } catch (err) {
       reject(err);
@@ -32,6 +47,6 @@ export function createAgendaWhenConnected(resolve, reject) {
   if (mongoose.connection.readyState === 1) {
     init();
   } else {
-    mongoose.connection.once("connected", init);
+    mongoose.connection.once('connected', init);
   }
 }
