@@ -1,19 +1,19 @@
-import { Destination } from "./destination.model.js";
+import { Destination } from './destination.model.js';
 
 export const count = async () => {
   return await Destination.countDocuments();
 };
 
 export const findAllSorted = async () => {
-  return await Destination.find().sort("orderNumber");
+  return await Destination.find().sort('orderNumber');
 };
 
 export const findById = async (id) => {
-  return await Destination.findById(id);
+  return await Destination.findById(id).lean();
 };
 
 export const findOne = async (query, sortOptions = {}) => {
-  return await Destination.findOne(query).sort(sortOptions);
+  return await Destination.findOne(query).sort(sortOptions).lean();
 };
 
 export const create = async (destinationData) => {

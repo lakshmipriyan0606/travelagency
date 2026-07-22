@@ -1,9 +1,9 @@
-import dotenv from "dotenv";
+import dotenv from 'dotenv';
 dotenv.config();
 
-import mongoose from "mongoose";
-import { connectDB } from "../config/db.js";
-import PackageModel from "../models/Package.model.js";
+import mongoose from 'mongoose';
+import { connectDB } from '../config/db.js';
+import PackageModel from '../models/Package.model.js';
 
 const isActivityByCategory = (activityCategory) => {
   if (activityCategory === null || activityCategory === undefined) return false;
@@ -20,12 +20,12 @@ async function run() {
     $or: [
       { type: { $exists: false } },
       { type: null },
-      { type: "" },
-      { type: { $nin: ["package", "activity"] } },
+      { type: '' },
+      { type: { $nin: ['package', 'activity'] } },
     ],
     isDeleted: { $ne: true },
   })
-    .select("_id activityCategory type")
+    .select('_id activityCategory type')
     .lean()
     .cursor();
 
@@ -34,14 +34,14 @@ async function run() {
 
   for await (const doc of cursor) {
     scanned += 1;
-    const nextType = isActivityByCategory(doc.activityCategory) ? "activity" : "package";
+    const nextType = isActivityByCategory(doc.activityCategory) ? 'activity' : 'package';
     await PackageModel.updateOne({ _id: doc._id }, { $set: { type: nextType } });
     updated += 1;
   }
 
   // 2) Normalize category for packages (optional safety)
   const normalized = await PackageModel.updateMany(
-    { type: "package", activityCategory: { $ne: null } },
+    { type: 'package', activityCategory: { $ne: null } },
     { $set: { activityCategory: null } }
   );
 
@@ -61,10 +61,11 @@ async function run() {
 }
 
 run().catch(async (err) => {
-  console.error("Backfill failed:", err);
+  console.error('Backfill failed:', err);
   try {
     await mongoose.connection.close();
-  } catch {}
+  } catch {
+    // ignore
+  }
   process.exit(1);
 });
-

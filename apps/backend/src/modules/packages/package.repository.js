@@ -1,4 +1,4 @@
-import Package from "./package.model.js";
+import Package from './package.model.js';
 
 export const create = async (packageData) => {
   const pkg = new Package(packageData);
@@ -6,15 +6,15 @@ export const create = async (packageData) => {
 };
 
 export const findById = async (id) => {
-  return await Package.findById(id);
+  return await Package.findById(id).lean();
 };
 
 export const findOne = async (query) => {
-  return await Package.findOne(query);
+  return await Package.findOne(query).lean();
 };
 
 export const find = async (query, projection = null, options = {}) => {
-  return await Package.find(query, projection, options);
+  return await Package.find(query, projection, options).lean();
 };
 
 export const countDocuments = async (query) => {

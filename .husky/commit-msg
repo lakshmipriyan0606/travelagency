@@ -1,0 +1,1 @@
+cd apps/backend && npx --no-install commitlint --edit "$1"

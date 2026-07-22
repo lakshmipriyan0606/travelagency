@@ -1,10 +1,10 @@
-import * as newsletterRepository from "./newsletter.repository.js";
-import { sendWelcomeEmail } from "../../services/email.service.js";
-import { WELCOME_EMAIL_SUBJECT } from "./newsletter.constants.js";
+import * as newsletterRepository from './newsletter.repository.js';
+import { sendWelcomeEmail } from '../../integrations/email/email.service.js';
+import { WELCOME_EMAIL_SUBJECT } from './newsletter.constants.js';
 
 export const subscribeNewsletterService = async (email) => {
   if (!email) {
-    const error = new Error("Email is required");
+    const error = new Error('Email is required');
     error.statusCode = 400;
     throw error;
   }
@@ -13,7 +13,7 @@ export const subscribeNewsletterService = async (email) => {
   const existingUser = await newsletterRepository.findOne({ email: normalizedEmail });
 
   if (existingUser) {
-    const error = new Error("Email already subscribed");
+    const error = new Error('Email already subscribed');
     error.statusCode = 409;
     throw error;
   }
@@ -33,7 +33,7 @@ export const subscribeNewsletterService = async (email) => {
   `,
     });
   } catch (emailErr) {
-    console.error("Failed to send welcome email:", emailErr.message);
+    console.error('Failed to send welcome email:', emailErr.message);
   }
 
   return newSubscriber;
