@@ -17,7 +17,12 @@
  * src/modules/bookings/booking.model.js
  * ============================================================================
  */
+import mongoose from 'mongoose';
 import Booking from './booking.model.js';
+
+export const startSession = async () => {
+  return await mongoose.startSession();
+};
 
 /**
  * Persists a new booking inquiry.
@@ -25,9 +30,13 @@ import Booking from './booking.model.js';
  * @param {Object} bookingData
  * @returns {Promise<Object>} Created document
  */
-export const create = async (bookingData) => {
+export const create = async (bookingData, options = {}) => {
   const booking = new Booking(bookingData);
-  return await booking.save();
+  return await booking.save(options);
+};
+
+export const findByIdempotencyKey = async (idempotencyKey, options = {}) => {
+  return await Booking.findOne({ idempotencyKey }, null, options).lean();
 };
 
 /**

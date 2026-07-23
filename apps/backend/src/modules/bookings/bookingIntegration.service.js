@@ -159,8 +159,18 @@ export const processBookingIntegrations = async (payload) => {
     console.error(`❌ WhatsApp tasks failed for ${bookingId}:`, waErr.message);
   }
 
-  await Booking.findOneAndUpdate(
-    { bookingId },
-    { sheetSyncStatus, userEmailStatus, adminEmailStatus, errorLogs }
-  );
+  const updateQuery = {
+    $set: { sheetSyncStatus, userEmailStatus, adminEmailStatus },
+  };
+
+  if (errorLogs.length > 0) {
+    updateQuery.$push = {
+      errorLogs: {
+        $each: errorLogs,
+        $slice: -10,
+      },
+    };
+  }
+
+  await Booking.findOneAndUpdate({ bookingId }, updateQuery);
 };

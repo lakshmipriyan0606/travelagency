@@ -103,3 +103,13 @@ const shutdown = async (signal) => {
 
 process.on('SIGTERM', () => shutdown('SIGTERM'));
 process.on('SIGINT', () => shutdown('SIGINT'));
+
+process.on('uncaughtException', (err) => {
+  logger.fatal(err, 'Uncaught Exception detected');
+  shutdown('uncaughtException');
+});
+
+process.on('unhandledRejection', (err) => {
+  logger.fatal(err, 'Unhandled Promise Rejection detected');
+  shutdown('unhandledRejection');
+});

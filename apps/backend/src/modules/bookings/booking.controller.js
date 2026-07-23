@@ -19,55 +19,26 @@
  * ============================================================================
  */
 import * as bookingService from './booking.service.js';
+import { sendSuccess } from '#utils/response.js';
 
-/**
- * Accept a new booking inquiry from a consumer.
- *
- * Request Flow:
- * Client
- *   ↓
- * Route (POST /api/v1/b2c/bookings/create)
- *   ↓
- * Controller (createBooking)
- *   ↓
- * Service (createBookingService)
- *   ↓
- * Database (Booking Collection) + Agenda Queue
- *   ↓
- * Response (201 Created)
- */
-export const createBooking = async (req, res) => {
+export const createBooking = async (req, res, next) => {
   try {
-    const result = await bookingService.createBookingService(req.body);
-    return res.status(201).json({ success: true, bookingId: result.bookingId });
+    const idempotencyKey = req.headers['idempotency-key'] || req.headers['x-idempotency-key'];
+    const result = await bookingService.createBookingService(req.body, idempotencyKey);
+    return sendSuccess(res, result.isDuplicate ? 200 : 201, 'Booking created', {
+      bookingId: result.bookingId,
+      isDuplicate: result.isDuplicate,
+    });
   } catch (err) {
-    console.error('Create Booking Error:', err);
-    return res.status(500).json({ success: false, message: err.message || 'Server error' });
+    next(err);
   }
 };
 
-/**
- * Retrieve all booking inquiries.
- *
- * Request Flow:
- * Admin Client
- *   ↓
- * Auth Middleware
- *   ↓
- * Route (GET /api/v1/b2c-admin/bookings)
- *   ↓
- * Controller (getAllBookings)
- *   ↓
- * Service (getAllBookingsService) -> Repository
- *   ↓
- * Response (JSON List)
- */
-export const getAllBookings = async (req, res) => {
+export const getAllBookings = async (req, res, next) => {
   try {
     const decryptedBookings = await bookingService.getAllBookingsService();
-    return res.status(200).json({ success: true, bookings: decryptedBookings });
+    return sendSuccess(res, 200, 'Bookings fetched', { bookings: decryptedBookings });
   } catch (err) {
-    console.error('Get All Bookings Error:', err);
-    return res.status(500).json({ success: false, message: 'Server error' });
+    next(err);
   }
 };

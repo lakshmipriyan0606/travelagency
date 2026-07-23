@@ -18,92 +18,73 @@
  * ============================================================================
  */
 import * as reviewService from './review.service.js';
+import { sendSuccess } from '#utils/response.js';
 
-/**
- * Creates a new Review.
- *
- * Request Flow:
- * Admin Client
- *   ↓
- * Route (POST /api/v1/b2c-admin/reviews)
- *   ↓
- * Controller (createReview)
- *   ↓
- * Service (createReviewService) -> Pre-save auto numbering
- *   ↓
- * Database (Review Collection)
- *   ↓
- * Response (201 Created)
- */
-export const createReview = async (req, res) => {
+export const createReview = async (req, res, next) => {
   try {
     const savedReview = await reviewService.createReviewService(req.body);
-    return res.status(201).json(savedReview);
+    return sendSuccess(res, 201, 'Review created successfully', savedReview);
   } catch (error) {
-    return res.status(500).json({ message: error.message || 'Failed to create review' });
+    next(error);
   }
 };
 
-export const getAllReviews = async (req, res) => {
+export const getAllReviews = async (req, res, next) => {
   try {
     const { status } = req.query;
     const reviews = await reviewService.getAllReviewsService(status);
-    return res.status(200).json(reviews);
+    return sendSuccess(res, 200, 'Reviews fetched successfully', reviews);
   } catch (error) {
-    return res.status(500).json({ message: error.message || 'Failed to fetch reviews' });
+    next(error);
   }
 };
 
-export const updateReview = async (req, res) => {
+export const updateReview = async (req, res, next) => {
   try {
     const { id } = req.params;
     const updatedReview = await reviewService.updateReviewService(id, req.body);
-    return res.status(200).json(updatedReview);
+    return sendSuccess(res, 200, 'Review updated successfully', updatedReview);
   } catch (error) {
-    const status = error.statusCode || 500;
-    return res.status(status).json({ message: error.message || 'Failed to update review' });
+    next(error);
   }
 };
 
-export const deleteReview = async (req, res) => {
+export const deleteReview = async (req, res, next) => {
   try {
     const { id } = req.params;
     await reviewService.deleteReviewService(id);
-    return res.status(200).json({ message: 'Review deleted successfully' });
+    return sendSuccess(res, 200, 'Review deleted successfully');
   } catch (error) {
-    const status = error.statusCode || 500;
-    return res.status(status).json({ message: error.message || 'Failed to delete review' });
+    next(error);
   }
 };
 
-export const swapOrder = async (req, res) => {
+export const swapOrder = async (req, res, next) => {
   try {
     const { id1, id2 } = req.body;
     const result = await reviewService.swapOrderService(id1, id2);
-    return res.status(200).json(result);
+    return sendSuccess(res, 200, 'Order swapped successfully', result);
   } catch (error) {
-    const status = error.statusCode || 500;
-    return res.status(status).json({ message: error.message || 'Failed to swap order' });
+    next(error);
   }
 };
 
-export const moveReview = async (req, res) => {
+export const moveReview = async (req, res, next) => {
   try {
     const { id } = req.params;
     const { direction } = req.body;
     const result = await reviewService.moveReviewService(id, direction);
-    return res.status(200).json(result);
+    return sendSuccess(res, 200, 'Review moved successfully', result);
   } catch (error) {
-    const status = error.statusCode || 500;
-    return res.status(status).json({ message: error.message || 'Failed to move review' });
+    next(error);
   }
 };
 
-export const normalizeReviewsOrder = async (req, res) => {
+export const normalizeReviewsOrder = async (req, res, next) => {
   try {
     const result = await reviewService.normalizeReviewsOrderService();
-    return res.status(200).json(result);
+    return sendSuccess(res, 200, 'Review orders normalized successfully', result);
   } catch (error) {
-    return res.status(500).json({ message: error.message || 'Failed to normalize review orders' });
+    next(error);
   }
 };

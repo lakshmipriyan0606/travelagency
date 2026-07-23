@@ -1,5 +1,6 @@
 {
   "name": "backend",
+  "version": "1.0.0",
   "dependencies": {
     "@agendajs/mongo-backend": "^4.0.0",
     "@sentry/node": "^10.67.0",
@@ -30,7 +31,7 @@
     "prom-client": "^15.1.3",
     "resend": "^6.4.2",
     "uuid": "^13.0.0",
-    "xss-clean": "^0.1.4"
+    "zod": "^4.4.3"
   },
   "devDependencies": {
     "@commitlint/cli": "^21.2.1",
@@ -55,13 +56,16 @@
     "#middleware/*": "./src/middleware/*",
     "#config/*": "./config/*",
     "#utils/*": "./src/utils/*",
-    "#app/*": "./src/app/*"
+    "#app/*": "./src/app/*",
+    "#bootstrap/*": "./src/bootstrap/*",
+    "#health/*": "./src/modules/health/*"
   },
   "scripts": {
     "dev": "nodemon ./src/server.js",
     "build": "echo 'Backend build complete'",
     "start": "node src/server.js",
     "start:cluster": "pm2 start ecosystem.config.cjs --env production",
+    "reload:cluster": "pm2 reload travelagency-backend",
     "stop:cluster": "pm2 stop travelagency-backend",
     "logs:cluster": "pm2 logs travelagency-backend",
     "test": "cross-env NODE_OPTIONS=--experimental-vm-modules jest",

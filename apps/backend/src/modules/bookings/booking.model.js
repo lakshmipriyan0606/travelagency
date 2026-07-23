@@ -41,6 +41,9 @@ const BookingSchema = new mongoose.Schema({
   // Audit Trail
   createdAt: { type: Date, default: Date.now },
 
+  // Idempotency Key for avoiding duplicate requests
+  idempotencyKey: { type: String, unique: true, sparse: true },
+
   // Background Job Status Flags (Pending -> Success/Failed)
   sheetSyncStatus: { type: String, default: 'Pending' },
   userEmailStatus: { type: String, default: 'Pending' },
@@ -67,6 +70,7 @@ BookingSchema.index({ createdAt: -1 });
 BookingSchema.index({ sheetSyncStatus: 1, createdAt: -1 });
 BookingSchema.index({ email: 1 });
 BookingSchema.index({ destination: 1 });
+BookingSchema.index({ idempotencyKey: 1 });
 
 export const Booking = mongoose.models.Booking || mongoose.model('Booking', BookingSchema);
 export default Booking;

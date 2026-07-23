@@ -19,170 +19,154 @@
  * ============================================================================
  */
 import * as packageService from './package.service.js';
-export const createPackage = async (req, res) => {
+import { sendSuccess } from '#utils/response.js';
+
+export const createPackage = async (req, res, next) => {
   try {
     const pkg = await packageService.createPackageService(req.body, req.files, req.user?._id);
-    res.status(201).json({ message: 'Package created successfully', data: pkg });
+    return sendSuccess(res, 201, 'Package created successfully', { data: pkg });
   } catch (error) {
-    console.error('Create package error:', error);
-    res.status(500).json({ error: error.message });
+    next(error);
   }
 };
 
-export const updatePackage = async (req, res) => {
+export const updatePackage = async (req, res, next) => {
   try {
     const pkg = await packageService.updatePackageService(req.params.id, req.body, req.files);
-    res.status(200).json({ message: 'Package updated successfully', data: pkg });
+    return sendSuccess(res, 200, 'Package updated successfully', { data: pkg });
   } catch (error) {
-    console.error('Update package error:', error);
-    const status = error.statusCode || 500;
-    res.status(status).json({ error: error.message, message: error.message });
+    next(error);
   }
 };
 
-export const getBestPackages = async (req, res) => {
+export const getBestPackages = async (req, res, next) => {
   try {
     const userId = req?.headers?.userid;
     const data = await packageService.getBestPackages(userId);
-    res.status(200).json({ data, message: 'All best packages fetched successfully' });
+    return sendSuccess(res, 200, 'All best packages fetched successfully', { data });
   } catch (error) {
-    res.status(500).json({ message: 'Error fetching best packages', error: error.message });
+    next(error);
   }
 };
 
-export const getBestActivities = async (req, res) => {
+export const getBestActivities = async (req, res, next) => {
   try {
     const userId = req?.headers?.userid;
     const data = await packageService.getBestActivities(userId);
-    res.status(200).json({ data, message: 'All best activities fetched successfully' });
+    return sendSuccess(res, 200, 'All best activities fetched successfully', { data });
   } catch (error) {
-    res.status(500).json({ message: 'Error fetching best activities', error: error.message });
+    next(error);
   }
 };
 
-export const getAllPackages = async (req, res) => {
+export const getAllPackages = async (req, res, next) => {
   try {
     const userId = req?.headers?.userid;
     const result = await packageService.listPackages(req.query, userId);
-    res.status(200).json({ ...result, message: 'Packages fetched successfully' });
+    return sendSuccess(res, 200, 'Packages fetched successfully', result);
   } catch (error) {
-    res.status(500).json({ message: 'Error fetching packages', error: error.message });
+    next(error);
   }
 };
 
-export const getActivityCategories = async (req, res) => {
+export const getActivityCategories = async (req, res, next) => {
   try {
     const data = await packageService.getActivityCategories();
-    res.status(200).json({ data, message: 'Activity categories fetched successfully' });
+    return sendSuccess(res, 200, 'Activity categories fetched successfully', { data });
   } catch (error) {
-    res.status(500).json({ message: 'Error fetching activity categories', error: error.message });
+    next(error);
   }
 };
 
-export const getLikedPackages = async (req, res) => {
+export const getLikedPackages = async (req, res, next) => {
   try {
     const userId = req?.headers?.userid;
     const result = await packageService.getLikedPackages(userId, req.query);
-    res
-      .status(200)
-      .json({ ...result, message: result.message || 'Liked packages fetched successfully' });
+    return sendSuccess(res, 200, result.message || 'Liked packages fetched successfully', result);
   } catch (error) {
-    res.status(500).json({ message: 'Error fetching liked packages', error: error.message });
+    next(error);
   }
 };
 
-export const getLikeCount = async (req, res) => {
+export const getLikeCount = async (req, res, next) => {
   try {
     const userId = req?.headers?.userid;
     const count = await packageService.getLikeCount(userId);
-    res.status(200).json({ data: count, message: 'like count fetched successfully' });
+    return sendSuccess(res, 200, 'like count fetched successfully', { data: count });
   } catch (error) {
-    res.status(500).json({ message: 'Error fetching like count packages', error: error.message });
+    next(error);
   }
 };
 
-export const getSuggestions = async (req, res) => {
+export const getSuggestions = async (req, res, next) => {
   try {
     const result = await packageService.getSuggestions(req.query.q);
-    res.status(200).json(result);
+    return sendSuccess(res, 200, 'Suggestions fetched successfully', result);
   } catch (error) {
-    res.status(500).json({ message: 'Error fetching suggestions', error: error.message });
+    next(error);
   }
 };
 
-export const getTakenRanks = async (req, res) => {
+export const getTakenRanks = async (req, res, next) => {
   try {
     const takenRanks = await packageService.getTakenRanks();
-    res.json({ takenRanks });
+    return sendSuccess(res, 200, 'Taken ranks fetched', { takenRanks });
   } catch (error) {
-    res.status(500).json({ message: error.message });
+    next(error);
   }
 };
 
-export const getPackageById = async (req, res) => {
+export const getPackageById = async (req, res, next) => {
   try {
     const data = await packageService.getPackageById(req.params.id);
-    res.status(200).json({ data, message: 'Package fetched successfully' });
+    return sendSuccess(res, 200, 'Package fetched successfully', { data });
   } catch (error) {
-    const status = error.statusCode || 500;
-    res
-      .status(status)
-      .json({ message: error.message || 'Error fetching package detail', error: error.message });
+    next(error);
   }
 };
 
-export const updateRank = async (req, res) => {
+export const updateRank = async (req, res, next) => {
   try {
     const result = await packageService.updateRank(req.params.id, req.body.bestRank);
-    res.json(result);
+    return sendSuccess(res, 200, 'Rank updated successfully', result);
   } catch (error) {
-    console.error('Quick rank update error:', error);
-    res.status(500).json({ message: error.message });
+    next(error);
   }
 };
 
-export const toggleStatus = async (req, res) => {
+export const toggleStatus = async (req, res, next) => {
   try {
     const result = await packageService.toggleStatus(req.params.id);
-    res.json(result);
+    return sendSuccess(res, 200, 'Status toggled successfully', result);
   } catch (error) {
-    console.error('Toggle status error:', error);
-    res.status(500).json({ message: error.message });
+    next(error);
   }
 };
 
-export const deletePackage = async (req, res) => {
+export const deletePackage = async (req, res, next) => {
   try {
     const deletedPackage = await packageService.deletePackage(req.params.id);
-    res.json({ message: 'Package deleted successfully', deletedPackage });
+    return sendSuccess(res, 200, 'Package deleted successfully', { deletedPackage });
   } catch (error) {
-    const status = error.statusCode || 500;
-    res.status(status).json({ message: error.message });
+    next(error);
   }
 };
 
-export const toggleLike = async (req, res) => {
+export const toggleLike = async (req, res, next) => {
   try {
     const { userId, id, liked } = req.body;
     const updatedLikes = await packageService.toggleLike(userId, id, liked);
-    res.json({ message: 'Updated', likes: updatedLikes });
+    return sendSuccess(res, 200, 'Updated', { likes: updatedLikes });
   } catch (error) {
-    const status = error.statusCode || 500;
-    res.status(status).json({ message: error.message || 'Server Error', error: error.message });
+    next(error);
   }
 };
 
-export const syncFromSheet = async (req, res) => {
+export const syncFromSheet = async (req, res, next) => {
   try {
     const result = await packageService.syncFromSheetService();
-    res.status(200).json({ success: true, message: `Synced ${result.count} packages from sheet` });
+    return sendSuccess(res, 200, `Synced ${result.count} packages from sheet`, { success: true });
   } catch (error) {
-    console.error('Sync error:', error);
-    const status = error.statusCode || 500;
-    res.status(status).json({
-      success: false,
-      message: error.message || 'Error syncing from sheet',
-      error: error.message,
-    });
+    next(error);
   }
 };

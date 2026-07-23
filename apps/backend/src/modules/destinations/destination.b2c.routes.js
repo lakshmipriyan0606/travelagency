@@ -1,5 +1,6 @@
 import express from 'express';
 import { protectRoute } from '#middleware/auth/auth.middleware.js';
+import { cacheResponse } from '#middleware/cache.middleware.js';
 import {
   createDestination,
   getAllDestinations,
@@ -15,6 +16,6 @@ import {
 
 const router = express.Router();
 
-router.get('/', getAllDestinations);
+router.get('/', cacheResponse('destinations', 3600), getAllDestinations);
 
 export default router;

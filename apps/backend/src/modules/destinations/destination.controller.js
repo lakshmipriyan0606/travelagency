@@ -19,84 +19,62 @@
  * ============================================================================
  */
 import * as destinationService from './destination.service.js';
+import { sendSuccess } from '#utils/response.js';
 
-/**
- * Creates a new popular destination if under the max limit.
- *
- * Request Flow:
- * Admin Client
- *   ↓
- * Route (POST /api/v1/b2c-admin/destinations)
- *   ↓
- * Controller (createDestination)
- *   ↓
- * Service (createDestination) -> Validation -> Enforcement
- *   ↓
- * Response (201 Created)
- */
-export const createDestination = async (req, res) => {
+export const createDestination = async (req, res, next) => {
   try {
     const destination = await destinationService.createDestination(req.body);
-    return res.status(201).json(destination);
+    return sendSuccess(res, 201, 'Destination created successfully', destination);
   } catch (error) {
-    const status = error.statusCode || 500;
-    return res.status(status).json({ message: error.message || 'Failed to create destination' });
+    next(error);
   }
 };
 
-/**
- * Fetch all popular destinations in order.
- */
-export const getAllDestinations = async (req, res) => {
+export const getAllDestinations = async (req, res, next) => {
   try {
     const destinations = await destinationService.getAllDestinations();
-    return res.status(200).json(destinations);
+    return sendSuccess(res, 200, 'Destinations fetched successfully', destinations);
   } catch (error) {
-    return res.status(500).json({ message: error.message || 'Failed to fetch destinations' });
+    next(error);
   }
 };
 
-export const updateDestination = async (req, res) => {
+export const updateDestination = async (req, res, next) => {
   try {
     const { id } = req.params;
     const updated = await destinationService.updateDestination(id, req.body);
-    return res.status(200).json(updated);
+    return sendSuccess(res, 200, 'Destination updated successfully', updated);
   } catch (error) {
-    const status = error.statusCode || 500;
-    return res.status(status).json({ message: error.message || 'Failed to update destination' });
+    next(error);
   }
 };
 
-export const deleteDestination = async (req, res) => {
+export const deleteDestination = async (req, res, next) => {
   try {
     const { id } = req.params;
     await destinationService.deleteDestination(id);
-    return res.status(200).json({ message: 'Destination deleted successfully' });
+    return sendSuccess(res, 200, 'Destination deleted successfully');
   } catch (error) {
-    const status = error.statusCode || 500;
-    return res.status(status).json({ message: error.message || 'Failed to delete destination' });
+    next(error);
   }
 };
 
-export const moveDestination = async (req, res) => {
+export const moveDestination = async (req, res, next) => {
   try {
     const { id } = req.params;
     const { direction } = req.body;
     const result = await destinationService.moveDestination(id, direction);
-    return res.status(200).json(result);
+    return sendSuccess(res, 200, 'Destination moved successfully', result);
   } catch (error) {
-    const status = error.statusCode || 500;
-    return res.status(status).json({ message: error.message || 'Failed to move destination' });
+    next(error);
   }
 };
 
-export const normalizeDestinationsOrder = async (req, res) => {
+export const normalizeDestinationsOrder = async (req, res, next) => {
   try {
     const result = await destinationService.normalizeDestinationsOrder();
-    return res.status(200).json(result);
+    return sendSuccess(res, 200, 'Destination orders normalized successfully', result);
   } catch (error) {
-    return res
-      .status(500)
-      .json({ message: error.message || 'Failed to normalize destination orders' });
+    next(error);
   }
 };

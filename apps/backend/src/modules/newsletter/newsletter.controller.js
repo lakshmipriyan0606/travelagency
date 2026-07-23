@@ -17,33 +17,14 @@
  * ============================================================================
  */
 import * as newsletterService from './newsletter.service.js';
+import { sendSuccess } from '#utils/response.js';
 
-/**
- * Handle new newsletter subscription.
- *
- * Request Flow:
- * Client
- *   ↓
- * Route (POST /api/v1/b2c/newsletter/subscribe)
- *   ↓
- * Controller (subscribeNewsletter)
- *   ↓
- * Service (subscribeNewsletterService) -> Sends Welcome Email
- *   ↓
- * Database (Newsletter Collection)
- *   ↓
- * Response (201 Created)
- */
-export const subscribeNewsletter = async (req, res) => {
+export const subscribeNewsletter = async (req, res, next) => {
   try {
     const { email } = req.body;
     const newSubscriber = await newsletterService.subscribeNewsletterService(email);
-    return res.status(201).json({
-      message: 'Subscribed successfully',
-      data: newSubscriber,
-    });
+    return sendSuccess(res, 201, 'Subscribed successfully', { data: newSubscriber });
   } catch (error) {
-    const status = error.statusCode || 500;
-    return res.status(status).json({ message: error.message || 'Server error' });
+    next(error);
   }
 };

@@ -18,10 +18,9 @@
  * src/modules/auth/auth.utils.js
  * ============================================================================
  */
-import bcrypt from 'bcrypt';
-import jwt from 'jsonwebtoken';
-import { generateAccessToken, generateRefreshToken } from './auth.utils.js';
-import { findUserByEmail, findUserById, registerUser } from './auth.service.js';
+import { setAuthCookies } from './auth.utils.js';
+import * as authService from './auth.service.js';
+import { sendSuccess } from '#utils/response.js';
 
 /**
  * Handle new user registration.
@@ -41,21 +40,13 @@ import { findUserByEmail, findUserById, registerUser } from './auth.service.js';
  *   ↓
  * Response (201 Created)
  */
-export const register = async (req, res) => {
+export const register = async (req, res, next) => {
   try {
     const { name, email, password, role } = req.body;
-
-    // Check uniqueness early to avoid hashing overhead on duplicates
-    const existing = await findUserByEmail(email);
-    if (existing) {
-      return res.status(400).json({ msg: 'Email already exists' });
-    }
-
-    await registerUser(email, password, name, role);
-
-    res.status(201).json({ msg: 'Registered successfully' });
-  } catch (err) {
-    res.status(500).json({ msg: err.message });
+    await authService.registerUser(email, password, name, role);
+    return sendSuccess(res, 201, 'Registered successfully');
+  } catch (error) {
+    next(error);
   }
 };
 
@@ -73,46 +64,16 @@ export const register = async (req, res) => {
  *   ↓
  * Response (Sets HttpOnly Cookies + Returns User Object)
  */
-export const login = async (req, res) => {
+export const login = async (req, res, next) => {
   try {
     const { email, password } = req.body;
+    const { accessToken, refreshToken, user } = await authService.loginUser(email, password);
 
-    const user = await findUserByEmail(email);
-    if (!user) return res.status(404).json({ msg: 'No user found' });
+    setAuthCookies(res, accessToken, refreshToken);
 
-    // Validate raw password against bcrypt hash
-    const match = await bcrypt.compare(password, user.password);
-    if (!match) return res.status(401).json({ msg: 'Wrong password' });
-
-    // Issue short-lived access token and long-lived refresh token
-    const accessToken = generateAccessToken(user);
-    const refreshToken = generateRefreshToken(user);
-
-    const isProduction = process.env.NODE_ENV === 'production';
-
-    // Set secure, HTTP-only cookies to prevent XSS attacks extracting the JWT
-    res.cookie('access_token', accessToken, {
-      httpOnly: true,
-      secure: isProduction,
-      sameSite: isProduction ? 'none' : 'strict',
-    });
-
-    res.cookie('refresh_token', refreshToken, {
-      httpOnly: true,
-      secure: isProduction,
-      sameSite: isProduction ? 'none' : 'strict',
-    });
-
-    // Hydrate expiration onto the user object for frontend session management
-    const decodedToken = jwt.decode(accessToken);
-    const userObj = user.toObject();
-    if (decodedToken && decodedToken.exp) {
-      userObj.exp = decodedToken.exp;
-    }
-
-    res.json({ msg: 'Logged in', user: userObj });
-  } catch (err) {
-    res.status(500).json({ msg: err.message });
+    return sendSuccess(res, 200, 'Logged in', { user, accessToken });
+  } catch (error) {
+    next(error);
   }
 };
 
@@ -123,43 +84,34 @@ export const login = async (req, res) => {
  * Allows the client to obtain a new short-lived access token without requiring
  * the user to re-authenticate, provided their long-lived refresh token is valid.
  */
-export const refresh = (req, res) => {
-  const refreshToken = req.cookies.refresh_token;
-
-  if (!refreshToken) return res.status(401).json({ msg: 'No refresh token' });
-
+export const refresh = async (req, res, next) => {
   try {
-    const decoded = jwt.verify(
-      refreshToken,
-      process.env.JWT_REFRESH_SECRET || process.env.JWT_SECRET || 'refresh_secret'
-    );
+    const refreshToken = req.cookies.refresh_token;
+    const newAccessToken = await authService.refreshUserToken(refreshToken);
 
-    const newAccessToken = jwt.sign(
-      { id: decoded.id, role: decoded.role },
-      process.env.JWT_ACCESS_SECRET || process.env.JWT_SECRET || 'access_secret',
-      { expiresIn: process.env.JWT_ACCESS_EXPIRE || '59m' }
-    );
+    setAuthCookies(res, newAccessToken);
 
-    const isProduction = process.env.NODE_ENV === 'production';
-    res.cookie('access_token', newAccessToken, {
-      httpOnly: true,
-      secure: isProduction,
-      sameSite: isProduction ? 'none' : 'strict',
-    });
-
-    return res.json({ msg: 'Refreshed' });
-  } catch (err) {
-    return res.status(403).json({ msg: 'Invalid refresh token' });
+    return sendSuccess(res, 200, 'Refreshed');
+  } catch (error) {
+    next(error);
   }
 };
 
 /**
  * Handle user logout by clearing auth cookies.
  */
-export const logout = (req, res) => {
-  res.clearCookie('access_token');
-  res.clearCookie('refresh_token');
-  res.json({ msg: 'Logged out' });
+export const logout = async (req, res, next) => {
+  try {
+    const refreshToken = req.cookies.refresh_token;
+    await authService.logoutUser(refreshToken);
+
+    res.clearCookie('access_token');
+    res.clearCookie('refresh_token');
+
+    return sendSuccess(res, 200, 'Logged out');
+  } catch (error) {
+    next(error);
+  }
 };
 
 /**
@@ -169,36 +121,13 @@ export const logout = (req, res) => {
  * Used by the frontend SPA on initialization to verify if an active session
  * exists and to hydrate the current user's profile and RBAC roles.
  */
-export const getSession = async (req, res) => {
+export const getSession = async (req, res, next) => {
   try {
     const token = req.cookies.access_token;
+    const sessionData = await authService.getSessionData(token);
 
-    if (!token) {
-      return res.json({ isLoggedIn: false });
-    }
-
-    const decoded = jwt.verify(
-      token,
-      process.env.JWT_SECRET || process.env.JWT_ACCESS_SECRET || 'access_secret'
-    );
-
-    const currentUser = await findUserById(decoded.id);
-
-    if (!currentUser) {
-      return res.json({ isLoggedIn: false });
-    }
-
-    return res.json({
-      isLoggedIn: true,
-      id: decoded.id,
-      role: currentUser.role || 'user',
-      user: {
-        name: currentUser.name || '',
-        email: currentUser.email || '',
-        exp: decoded.exp,
-      },
-    });
-  } catch (err) {
-    return res.json({ isLoggedIn: false });
+    return sendSuccess(res, 200, 'Session retrieved', sessionData);
+  } catch (error) {
+    next(error);
   }
 };

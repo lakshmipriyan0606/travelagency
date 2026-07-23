@@ -31,6 +31,7 @@ describe('Auth Service Unit Tests', () => {
       const role = 'user';
 
       mockCreate.mockResolvedValue({ _id: '1', email, name, role });
+      mockFindOne.mockReturnValue({ lean: jest.fn().mockResolvedValue(null) });
 
       const result = await registerUser(email, password, name, role);
 
@@ -50,9 +51,11 @@ describe('Auth Service Unit Tests', () => {
 
   describe('findUserByEmail', () => {
     it('should find user by email', async () => {
-      mockFindOne.mockResolvedValue({ _id: '1', email: 'test@example.com' });
+      mockFindOne.mockReturnValue({
+        lean: jest.fn().mockResolvedValue({ _id: '1', email: 'test@example.com' }),
+      });
       const result = await findUserByEmail('test@example.com');
-      expect(mockFindOne).toHaveBeenCalledWith({ email: 'test@example.com' });
+      expect(mockFindOne).toHaveBeenCalledWith({ email: 'test@example.com', isDeleted: false });
       expect(result.email).toBe('test@example.com');
     });
   });

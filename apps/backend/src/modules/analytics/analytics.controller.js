@@ -19,67 +19,44 @@
  * ============================================================================
  */
 import * as analyticsService from './analytics.service.js';
+import { sendSuccess } from '#utils/response.js';
 
-/**
- * Handle tracking ping from the storefront frontend.
- *
- * Request Flow:
- * Browser
- *   ↓
- * Route (POST /api/v1/b2c/analytics/visit)
- *   ↓
- * Controller (recordVisit)
- *   ↓
- * Service (recordVisitService) -> Filters duplicate/localhost traffic
- *   ↓
- * Database (Visitor Collection)
- *   ↓
- * Response (200/201)
- */
-export const recordVisit = async (req, res) => {
+export const recordVisit = async (req, res, next) => {
   try {
     const result = await analyticsService.recordVisitService(req);
     if (result.skipped || result.duplicate) {
-      return res.status(200).json({ message: result.message });
+      return sendSuccess(res, 200, result.message);
     }
-    return res.status(201).json({ message: result.message });
+    return sendSuccess(res, 201, result.message);
   } catch (error) {
-    console.error('Error recording visit:', error);
-    const status = error.statusCode || 500;
-    return res.status(status).json({ message: error.message || 'Internal server error' });
+    next(error);
   }
 };
 
-export const getDailyVisits = async (req, res) => {
+export const getDailyVisits = async (req, res, next) => {
   try {
     const data = await analyticsService.getDailyVisitsService();
-    return res.status(200).json({ data });
+    return sendSuccess(res, 200, 'Daily visits fetched', { data });
   } catch (error) {
-    console.error('Error fetching daily visits:', error);
-    return res.status(500).json({ message: 'Internal server error' });
+    next(error);
   }
 };
 
-export const getApiUsage = async (req, res) => {
+export const getApiUsage = async (req, res, next) => {
   try {
     const usage = await analyticsService.getApiUsageService();
-    return res.status(200).json(usage);
+    return sendSuccess(res, 200, 'API usage fetched', usage);
   } catch (error) {
-    console.error('Error fetching API usage:', error);
-    return res.status(500).json({ message: 'Internal server error' });
+    next(error);
   }
 };
 
-export const cleanupLocalhostVisits = async (req, res) => {
+export const cleanupLocalhostVisits = async (req, res, next) => {
   try {
     const result = await analyticsService.cleanupLocalhostVisitsService();
-    return res.status(200).json({
-      message: 'Localhost visits removed',
-      deletedCount: result.deletedCount,
-    });
+    return sendSuccess(res, 200, 'Localhost visits removed', { deletedCount: result.deletedCount });
   } catch (error) {
-    console.error('Error cleaning localhost visits:', error);
-    return res.status(500).json({ message: 'Internal server error' });
+    next(error);
   }
 };
 

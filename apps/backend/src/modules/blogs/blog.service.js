@@ -21,6 +21,7 @@
  */
 import * as blogRepository from './blog.repository.js';
 import cloudinary from '#config/cloudinary.js';
+import { AppError } from '#middleware/error/AppError.js';
 
 const uploadFile = (file, folder) =>
   new Promise((resolve, reject) => {
@@ -99,7 +100,14 @@ export const createBlogService = async (body, files, userId) => {
     blogData.bannerImage = { url: bannerImageUrl, alt: bannerImageAlt || title };
   }
 
-  return await blogRepository.create(blogData);
+  try {
+    return await blogRepository.create(blogData);
+  } catch (error) {
+    if (error.code === 11000) {
+      throw new AppError('Slug already exists. Please choose a different title or slug.', 400);
+    }
+    throw error;
+  }
 };
 
 export const getAllBlogsService = async (queryParams) => {
@@ -244,7 +252,17 @@ export const updateBlogService = async (id, body, files) => {
     };
   }
 
-  return await blogRepository.findByIdAndUpdate(id, updateData, { new: true, runValidators: true });
+  try {
+    return await blogRepository.findByIdAndUpdate(id, updateData, {
+      new: true,
+      runValidators: true,
+    });
+  } catch (error) {
+    if (error.code === 11000) {
+      throw new AppError('Slug already exists. Please choose a different title or slug.', 400);
+    }
+    throw error;
+  }
 };
 
 /**

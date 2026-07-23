@@ -36,7 +36,17 @@ import { enqueueBookingIntegrations } from './bookingQueue.service.js';
  * @param {Object} body Raw booking payload from the client
  * @returns {Promise<Object>} Contains the generated bookingId and the Mongoose object
  */
-export const createBookingService = async (body) => {
+export const createBookingService = async (body, idempotencyKey = null) => {
+  if (idempotencyKey) {
+    const existingBooking = await bookingRepository.findByIdempotencyKey(idempotencyKey);
+    if (existingBooking) {
+      return {
+        bookingId: existingBooking.bookingId,
+        bookingObj: existingBooking,
+        isDuplicate: true,
+      };
+    }
+  }
   const {
     city,
     email,
@@ -78,52 +88,70 @@ export const createBookingService = async (body) => {
     noOfPeople: noOfPeople ? String(noOfPeople) : '',
   };
 
-  const bookingObj = await bookingRepository.create(newBookingData);
-
-  // ---------------------------------------------------------------------
-  // Prepare plaintext payload for background integrations.
-  // We do not encrypt here because external APIs (Google Sheets/SendGrid)
-  // require the raw email/phone.
-  // ---------------------------------------------------------------------
-  const integrationPayload = {
-    bookingId,
-    city: city || '',
-    name: name || '',
-    email: email || '',
-    whatsapp: whatsapp || '',
-    destination: destination || '',
-    packageName: packageName || '',
-    travelMonth: travelMonth || '',
-    noOfPeople: noOfPeople || '',
-    duration: duration || '',
-    language: language || '',
-    message: message || '',
-  };
-
-  // ---------------------------------------------------------------------
-  // Safely enqueue the job. If Redis/Agenda is down, mark the booking
-  // with a 'Failed' status so it can be retried later via a cron job or Admin UI.
-  // ---------------------------------------------------------------------
-  try {
-    await enqueueBookingIntegrations(integrationPayload);
-  } catch (err) {
-    await bookingRepository.findOneAndUpdate(
-      { bookingId },
-      {
-        sheetSyncStatus: 'Failed',
-        userEmailStatus: 'Failed',
-        adminEmailStatus: 'Failed',
-        errorLogs: [
-          {
-            task: 'Queue Booking Integrations',
-            message: err.message || 'Failed to queue booking integrations',
-          },
-        ],
-      }
-    );
+  if (idempotencyKey) {
+    newBookingData.idempotencyKey = idempotencyKey;
   }
 
-  return { bookingId, bookingObj };
+  const session = await bookingRepository.startSession();
+  session.startTransaction();
+
+  let bookingObj;
+  try {
+    bookingObj = await bookingRepository.create(newBookingData, { session });
+
+    // ---------------------------------------------------------------------
+    // Prepare plaintext payload for background integrations.
+    // We do not encrypt here because external APIs (Google Sheets/SendGrid)
+    // require the raw email/phone.
+    // ---------------------------------------------------------------------
+    const integrationPayload = {
+      bookingId,
+      city: city || '',
+      name: name || '',
+      email: email || '',
+      whatsapp: whatsapp || '',
+      destination: destination || '',
+      packageName: packageName || '',
+      travelMonth: travelMonth || '',
+      noOfPeople: noOfPeople || '',
+      duration: duration || '',
+      language: language || '',
+      message: message || '',
+    };
+
+    // ---------------------------------------------------------------------
+    // Safely enqueue the job. If Redis/Agenda is down, mark the booking
+    // with a 'Failed' status so it can be retried later via a cron job or Admin UI.
+    // ---------------------------------------------------------------------
+    try {
+      await enqueueBookingIntegrations(integrationPayload);
+    } catch (err) {
+      await bookingRepository.findOneAndUpdate(
+        { bookingId },
+        {
+          sheetSyncStatus: 'Failed',
+          userEmailStatus: 'Failed',
+          adminEmailStatus: 'Failed',
+          errorLogs: [
+            {
+              task: 'Queue Booking Integrations',
+              message: err.message || 'Failed to queue booking integrations',
+            },
+          ],
+        },
+        { new: true, session }
+      );
+    }
+
+    await session.commitTransaction();
+  } catch (error) {
+    await session.abortTransaction();
+    throw error;
+  } finally {
+    session.endSession();
+  }
+
+  return { bookingId, bookingObj, isDuplicate: false };
 };
 
 /**

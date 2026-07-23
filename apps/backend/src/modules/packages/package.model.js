@@ -118,6 +118,7 @@ const packageSchema = new mongoose.Schema(
 packageSchema.index({ location: 1, country: 1, isActive: 1 });
 packageSchema.index({ type: 1, status: 1 });
 packageSchema.index({ packageName: 'text', packageDescription: 'text' });
+packageSchema.index({ 'likes.userId': 1 });
 
 export const Package = mongoose.models.Package || mongoose.model('Package', packageSchema);
 export default Package;

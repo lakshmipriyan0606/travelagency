@@ -25,11 +25,11 @@ export const createVisitor = async (data) => {
 };
 
 export const aggregateVisitors = async (pipeline) => {
-  return await Visitor.aggregate(pipeline);
+  return await Visitor.aggregate(pipeline).allowDiskUse(true);
 };
 
 export const aggregateApiHits = async (pipeline) => {
-  return await ApiHit.aggregate(pipeline);
+  return await ApiHit.aggregate(pipeline).allowDiskUse(true);
 };
 
 export const deleteVisitorMany = async (filter) => {

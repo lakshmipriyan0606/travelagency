@@ -35,7 +35,7 @@ export const connectDB = async () => {
     const conn = await mongoose.connect(process.env.MONGO_URI, {
       dbName: 'travelagency', // Your DB name
       autoIndex: true, // Optional: builds indexes (set false in prod if needed)
-      maxPoolSize: 10, // Optional: connection pool size
+      maxPoolSize: 50, // Optimize connection pooling for PM2 cluster
       serverSelectionTimeoutMS: 5000, // Timeout faster if cluster is down
       socketTimeoutMS: 45000, // Close sockets after 45s of inactivity
     });

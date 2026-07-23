@@ -18,67 +18,50 @@
  * ============================================================================
  */
 import * as storyService from './story.service.js';
+import { sendSuccess } from '#utils/response.js';
 
-/**
- * Creates a new Story.
- *
- * Request Flow:
- * Admin Client
- *   ↓
- * Route (POST /api/v1/b2c-admin/stories)
- *   ↓
- * Controller (createStory)
- *   ↓
- * Service (createStoryService) -> Pre-save auto numbering
- *   ↓
- * Database (Story Collection)
- *   ↓
- * Response (201 Created)
- */
-export const createStory = async (req, res) => {
+export const createStory = async (req, res, next) => {
   try {
     const savedStory = await storyService.createStoryService(req.body);
-    return res.status(201).json(savedStory);
+    return sendSuccess(res, 201, 'Story created successfully', savedStory);
   } catch (error) {
-    return res.status(500).json({ message: error.message || 'Failed to create story' });
+    next(error);
   }
 };
 
-export const getAllStories = async (req, res) => {
+export const getAllStories = async (req, res, next) => {
   try {
     const stories = await storyService.getAllStoriesService();
-    return res.status(200).json(stories);
+    return sendSuccess(res, 200, 'Stories fetched successfully', stories);
   } catch (error) {
-    return res.status(500).json({ message: error.message || 'Failed to fetch stories' });
+    next(error);
   }
 };
 
-export const deleteStory = async (req, res) => {
+export const deleteStory = async (req, res, next) => {
   try {
     await storyService.deleteStoryService(req.params.id);
-    return res.status(200).json({ message: 'Story deleted successfully' });
+    return sendSuccess(res, 200, 'Story deleted successfully');
   } catch (error) {
-    const status = error.statusCode || 500;
-    return res.status(status).json({ message: error.message || 'Failed to delete story' });
+    next(error);
   }
 };
 
-export const moveStory = async (req, res) => {
+export const moveStory = async (req, res, next) => {
   try {
     const { direction } = req.body;
     const result = await storyService.moveStoryService(req.params.id, direction);
-    return res.status(200).json(result);
+    return sendSuccess(res, 200, 'Story moved successfully', result);
   } catch (error) {
-    const status = error.statusCode || 500;
-    return res.status(status).json({ message: error.message || 'Failed to move story' });
+    next(error);
   }
 };
 
-export const normalizeStoriesOrder = async (req, res) => {
+export const normalizeStoriesOrder = async (req, res, next) => {
   try {
     const result = await storyService.normalizeStoriesOrderService();
-    return res.status(200).json(result);
+    return sendSuccess(res, 200, 'Stories order normalized successfully', result);
   } catch (error) {
-    return res.status(500).json({ message: error.message || 'Failed to normalize stories' });
+    next(error);
   }
 };

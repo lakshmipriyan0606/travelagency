@@ -22,6 +22,7 @@ const ApiHitSchema = new mongoose.Schema({
   route: { type: String, required: true },
   status: { type: Number, required: true },
   count: { type: Number, default: 0 },
+  createdAt: { type: Date, default: Date.now, index: { expires: '30d' } },
 });
 
 // Compound unique index for daily aggregation per route and status

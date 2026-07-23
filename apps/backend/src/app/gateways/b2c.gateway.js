@@ -37,15 +37,15 @@ import { apiLimiter } from '#middleware/rateLimiter.middleware.js';
 
 const router = express.Router();
 
-router.use('/analytics', analyticsRoutes);
+router.use('/analytics', apiLimiter, analyticsRoutes);
 router.use('/auth', authRoutes);
 router.use('/blogs', apiLimiter, blogRoutes);
-router.use('/bookings', bookingRoutes);
-router.use('/destinations', destinationRoutes);
-router.use('/newsletter', newsletterRoutes);
+router.use('/bookings', apiLimiter, bookingRoutes);
+router.use('/destinations', apiLimiter, destinationRoutes);
+router.use('/newsletter', apiLimiter, newsletterRoutes);
 router.use('/packages', apiLimiter, packageRoutes);
 router.use('/reviews', apiLimiter, reviewRoutes);
-router.use('/ui-config', uiConfigRoutes);
-router.use('/website-hero', websiteHeroRoutes);
+router.use('/ui-config', apiLimiter, uiConfigRoutes);
+router.use('/website-hero', apiLimiter, websiteHeroRoutes);
 
 export default router;

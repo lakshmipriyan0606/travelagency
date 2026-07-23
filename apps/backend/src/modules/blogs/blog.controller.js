@@ -19,100 +19,68 @@
  * ============================================================================
  */
 import * as blogService from './blog.service.js';
+import { sendSuccess } from '#utils/response.js';
 
-/**
- * Creates a new blog post.
- *
- * Request Flow:
- * Admin Client
- *   ↓
- * Route (POST /api/v1/b2c-admin/blogs) -> Multer Middleware
- *   ↓
- * Controller (createBlog)
- *   ↓
- * Service (createBlogService) -> Parses JSON -> Uploads buffers to Cloudinary
- *   ↓
- * Database (Blog Collection)
- *   ↓
- * Response (201 Created)
- */
-export const createBlog = async (req, res) => {
+export const createBlog = async (req, res, next) => {
   try {
     const blog = await blogService.createBlogService(req.body, req.files, req.user?._id);
-    res.status(201).json({ message: 'Blog created successfully', data: blog });
+    return sendSuccess(res, 201, 'Blog created successfully', { data: blog });
   } catch (error) {
-    if (error.code === 11000) {
-      return res
-        .status(400)
-        .json({ error: 'Slug already exists. Please choose a different title or slug.' });
-    }
-    console.error('Create blog error:', error);
-    res.status(500).json({ error: error.message });
+    next(error);
   }
 };
 
-export const getAllBlogs = async (req, res) => {
+export const getAllBlogs = async (req, res, next) => {
   try {
     const blogs = await blogService.getAllBlogsService(req.query);
-    res.status(200).json({ data: blogs });
+    return sendSuccess(res, 200, 'Blogs fetched successfully', { data: blogs });
   } catch (error) {
-    console.error('Get all blogs error:', error);
-    res.status(500).json({ error: error.message });
+    next(error);
   }
 };
 
-export const getBlogBySlug = async (req, res) => {
+export const getBlogBySlug = async (req, res, next) => {
   try {
     const blog = await blogService.getBlogBySlugService(req.params.slug);
-    res.status(200).json({ data: blog });
+    return sendSuccess(res, 200, 'Blog fetched successfully', { data: blog });
   } catch (error) {
-    const status = error.statusCode || 500;
-    res.status(status).json({ message: error.message, error: error.message });
+    next(error);
   }
 };
 
-export const getBlogById = async (req, res) => {
+export const getBlogById = async (req, res, next) => {
   try {
     const blog = await blogService.getBlogByIdService(req.params.id);
-    res.status(200).json({ data: blog });
+    return sendSuccess(res, 200, 'Blog fetched successfully', { data: blog });
   } catch (error) {
-    const status = error.statusCode || 500;
-    res.status(status).json({ message: error.message, error: error.message });
+    next(error);
   }
 };
 
-export const updateBlog = async (req, res) => {
+export const updateBlog = async (req, res, next) => {
   try {
     const updatedBlog = await blogService.updateBlogService(req.params.id, req.body, req.files);
-    res.status(200).json({ message: 'Blog updated successfully', data: updatedBlog });
+    return sendSuccess(res, 200, 'Blog updated successfully', { data: updatedBlog });
   } catch (error) {
-    if (error.code === 11000) {
-      return res
-        .status(400)
-        .json({ error: 'Slug already exists. Please choose a different title or slug.' });
-    }
-    const status = error.statusCode || 500;
-    res.status(status).json({ error: error.message });
+    next(error);
   }
 };
 
-export const deleteBlog = async (req, res) => {
+export const deleteBlog = async (req, res, next) => {
   try {
     await blogService.deleteBlogService(req.params.id);
-    res.status(200).json({ message: 'Blog deleted successfully' });
+    return sendSuccess(res, 200, 'Blog deleted successfully');
   } catch (error) {
-    const status = error.statusCode || 500;
-    res.status(status).json({ error: error.message });
+    next(error);
   }
 };
 
-export const toggleLike = async (req, res) => {
+export const toggleLike = async (req, res, next) => {
   try {
     const userId = req.headers.userid || req.headers.userId || req.body.userId;
     const result = await blogService.toggleLikeService(req.params.id, userId);
-    res.status(200).json(result);
+    return sendSuccess(res, 200, 'Like toggled', result);
   } catch (error) {
-    const status = error.statusCode || 500;
-    res.status(status).json({ error: error.message, message: error.message });
+    next(error);
   }
 };

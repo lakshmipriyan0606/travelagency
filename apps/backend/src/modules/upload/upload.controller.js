@@ -18,44 +18,26 @@
  * ============================================================================
  */
 import * as uploadService from './upload.service.js';
+import { sendSuccess } from '#utils/response.js';
 
-/**
- * Handle image upload.
- *
- * Request Flow:
- * Admin Client
- *   ↓
- * Route (POST /api/v1/b2c-admin/upload) -> Multer Middleware parses memory buffer
- *   ↓
- * Controller (uploadImage)
- *   ↓
- * Service (uploadImageService)
- *   ↓
- * Repository (uploadStreamToCloudinary)
- *   ↓
- * External SDK (Cloudinary)
- *   ↓
- * Response (201 Created)
- */
-export const uploadImage = async (req, res) => {
+export const uploadImage = async (req, res, next) => {
   try {
     const result = await uploadService.uploadImageService(
       req.file,
       req.body?.folder,
       req.query?.folder
     );
-    return res.status(201).json(result);
+    return sendSuccess(res, 201, 'Image uploaded', result);
   } catch (error) {
-    const status = error.statusCode || 500;
-    return res.status(status).json({ message: error.message || 'Server error' });
+    next(error);
   }
 };
 
-export const getAllImages = async (req, res) => {
+export const getAllImages = async (req, res, next) => {
   try {
     const images = await uploadService.getAllImagesService(req.query?.folder);
-    return res.status(200).json({ images });
+    return sendSuccess(res, 200, 'Images fetched', { images });
   } catch (error) {
-    return res.status(500).json({ message: error.message || 'Failed to fetch images' });
+    next(error);
   }
 };
