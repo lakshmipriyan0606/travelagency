@@ -90,24 +90,28 @@ export const loginUser = async (email, password) => {
 export const refreshUserToken = async (refreshToken) => {
   if (!refreshToken) throw new AppError('No refresh token', 401);
 
-  const isRevoked = await cache.get(`revoked_token:${refreshToken}`);
+  let isRevoked = null;
+  if (cache.status === 'ready') {
+    try {
+      isRevoked = await cache.get(`revoked_token:${refreshToken}`);
+    } catch (err) {
+      // Ignored cache error
+    }
+  }
   if (isRevoked) {
     throw new AppError('Refresh token has been revoked', 403);
   }
 
   let decoded;
   try {
-    decoded = jwt.verify(
-      refreshToken,
-      process.env.JWT_REFRESH_SECRET || process.env.JWT_SECRET || 'refresh_secret'
-    );
+    decoded = jwt.verify(refreshToken, process.env.JWT_REFRESH_SECRET || process.env.JWT_SECRET);
   } catch (err) {
     throw new AppError('Invalid refresh token', 403);
   }
 
   const newAccessToken = jwt.sign(
     { id: decoded.id, role: decoded.role },
-    process.env.JWT_ACCESS_SECRET || process.env.JWT_SECRET || 'access_secret',
+    process.env.JWT_ACCESS_SECRET || process.env.JWT_SECRET,
     { expiresIn: process.env.JWT_ACCESS_EXPIRE || '59m' }
   );
 
@@ -120,8 +124,12 @@ export const logoutUser = async (refreshToken) => {
     const decoded = jwt.decode(refreshToken);
     if (decoded && decoded.exp) {
       const timeToLive = decoded.exp - Math.floor(Date.now() / 1000);
-      if (timeToLive > 0) {
-        await cache.set(`revoked_token:${refreshToken}`, 'revoked', 'EX', timeToLive);
+      if (timeToLive > 0 && cache.status === 'ready') {
+        try {
+          await cache.set(`revoked_token:${refreshToken}`, 'revoked', 'EX', timeToLive);
+        } catch (err) {
+          // Ignored cache error
+        }
       }
     }
   } catch (err) {
@@ -133,10 +141,7 @@ export const getSessionData = async (token) => {
   if (!token) return { isLoggedIn: false };
 
   try {
-    const decoded = jwt.verify(
-      token,
-      process.env.JWT_SECRET || process.env.JWT_ACCESS_SECRET || 'access_secret'
-    );
+    const decoded = jwt.verify(token, process.env.JWT_SECRET || process.env.JWT_ACCESS_SECRET);
 
     const currentUser = await findUserById(decoded.id);
 

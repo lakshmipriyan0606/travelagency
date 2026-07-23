@@ -19,5 +19,8 @@ jobs:
       - name: Install Dependencies
         run: npm ci
         
+      - name: Security Audit
+        run: npm audit --audit-level=high
+        
       - name: Run Linting and Tests
         run: npm run check

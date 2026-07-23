@@ -22,6 +22,7 @@
  * 6. CORS
  * ============================================================================
  */
+import crypto from 'crypto';
 import express from 'express';
 import helmet from 'helmet';
 import compression from 'compression';
@@ -40,6 +41,12 @@ export const registerMiddlewares = (app) => {
   // Helmet sets essential HTTP security headers (XSS, CSP, Clickjacking).
   // Logger binds Pino instance to the request to trace subsequent execution.
   // ============================================================================
+  app.use((req, res, next) => {
+    req.id = crypto.randomUUID();
+    res.setHeader('X-Request-Id', req.id);
+    next();
+  });
+
   app.use(helmet());
   app.use(loggerMiddleware);
 

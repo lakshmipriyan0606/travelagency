@@ -20,6 +20,7 @@
  */
 import express from 'express';
 import analyticsRoutes from '#modules/analytics/analytics.admin.routes.js';
+import authRoutes from '#modules/auth/auth.b2c.routes.js';
 import blogRoutes from '#modules/blogs/blog.admin.routes.js';
 import destinationRoutes from '#modules/destinations/destination.admin.routes.js';
 import packageRoutes from '#modules/packages/package.admin.routes.js';
@@ -32,6 +33,7 @@ import websiteHeroRoutes from '#modules/websiteHero/websiteHero.admin.routes.js'
 const router = express.Router();
 
 router.use('/analytics', analyticsRoutes);
+router.use('/auth', authRoutes);
 router.use('/blogs', blogRoutes);
 router.use('/destinations', destinationRoutes);
 router.use('/packages', packageRoutes);

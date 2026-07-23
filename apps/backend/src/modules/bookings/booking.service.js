@@ -99,56 +99,56 @@ export const createBookingService = async (body, idempotencyKey = null) => {
   try {
     bookingObj = await bookingRepository.create(newBookingData, { session });
 
-    // ---------------------------------------------------------------------
-    // Prepare plaintext payload for background integrations.
-    // We do not encrypt here because external APIs (Google Sheets/SendGrid)
-    // require the raw email/phone.
-    // ---------------------------------------------------------------------
-    const integrationPayload = {
-      bookingId,
-      city: city || '',
-      name: name || '',
-      email: email || '',
-      whatsapp: whatsapp || '',
-      destination: destination || '',
-      packageName: packageName || '',
-      travelMonth: travelMonth || '',
-      noOfPeople: noOfPeople || '',
-      duration: duration || '',
-      language: language || '',
-      message: message || '',
-    };
-
-    // ---------------------------------------------------------------------
-    // Safely enqueue the job. If Redis/Agenda is down, mark the booking
-    // with a 'Failed' status so it can be retried later via a cron job or Admin UI.
-    // ---------------------------------------------------------------------
-    try {
-      await enqueueBookingIntegrations(integrationPayload);
-    } catch (err) {
-      await bookingRepository.findOneAndUpdate(
-        { bookingId },
-        {
-          sheetSyncStatus: 'Failed',
-          userEmailStatus: 'Failed',
-          adminEmailStatus: 'Failed',
-          errorLogs: [
-            {
-              task: 'Queue Booking Integrations',
-              message: err.message || 'Failed to queue booking integrations',
-            },
-          ],
-        },
-        { new: true, session }
-      );
-    }
-
     await session.commitTransaction();
   } catch (error) {
     await session.abortTransaction();
     throw error;
   } finally {
     session.endSession();
+  }
+
+  // ---------------------------------------------------------------------
+  // Prepare plaintext payload for background integrations.
+  // We do not encrypt here because external APIs (Google Sheets/SendGrid)
+  // require the raw email/phone.
+  // ---------------------------------------------------------------------
+  const integrationPayload = {
+    bookingId,
+    city: city || '',
+    name: name || '',
+    email: email || '',
+    whatsapp: whatsapp || '',
+    destination: destination || '',
+    packageName: packageName || '',
+    travelMonth: travelMonth || '',
+    noOfPeople: noOfPeople || '',
+    duration: duration || '',
+    language: language || '',
+    message: message || '',
+  };
+
+  // ---------------------------------------------------------------------
+  // Safely enqueue the job. If Redis/Agenda is down, mark the booking
+  // with a 'Failed' status so it can be retried later via a cron job or Admin UI.
+  // ---------------------------------------------------------------------
+  try {
+    await enqueueBookingIntegrations(integrationPayload);
+  } catch (err) {
+    await bookingRepository.findOneAndUpdate(
+      { bookingId },
+      {
+        sheetSyncStatus: 'Failed',
+        userEmailStatus: 'Failed',
+        adminEmailStatus: 'Failed',
+        errorLogs: [
+          {
+            task: 'Queue Booking Integrations',
+            message: err.message || 'Failed to queue booking integrations',
+          },
+        ],
+      },
+      { new: true }
+    );
   }
 
   return { bookingId, bookingObj, isDuplicate: false };

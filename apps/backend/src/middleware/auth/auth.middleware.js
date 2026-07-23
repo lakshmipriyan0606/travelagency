@@ -31,10 +31,7 @@ export const protectRoute = async (req, res, next) => {
 
     if (!token) return res.status(401).json({ message: 'Unauthorized: No Token' });
 
-    const decoded = jwt.verify(
-      token,
-      process.env.JWT_SECRET || process.env.JWT_ACCESS_SECRET || 'access_secret'
-    );
+    const decoded = jwt.verify(token, process.env.JWT_SECRET || process.env.JWT_ACCESS_SECRET);
 
     req.user = await User.findById(decoded.id).select('-password');
 

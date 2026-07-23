@@ -43,8 +43,8 @@ import { sendSuccess } from '#utils/response.js';
 export const register = async (req, res, next) => {
   try {
     const { name, email, password, role } = req.body;
-    await authService.registerUser(email, password, name, role);
-    return sendSuccess(res, 201, 'Registered successfully');
+    const user = await authService.registerUser(email, password, name, role);
+    return sendSuccess(res, 201, 'Registered successfully', { user });
   } catch (error) {
     next(error);
   }
@@ -123,7 +123,9 @@ export const logout = async (req, res, next) => {
  */
 export const getSession = async (req, res, next) => {
   try {
-    const token = req.cookies.access_token;
+    const token =
+      req.cookies.access_token ||
+      (req.headers.authorization && req.headers.authorization.split(' ')[1]);
     const sessionData = await authService.getSessionData(token);
 
     return sendSuccess(res, 200, 'Session retrieved', sessionData);

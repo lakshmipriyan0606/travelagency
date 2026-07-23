@@ -22,6 +22,10 @@ describe('Auth API Integration Tests', () => {
   });
 
   describe('POST /api/v1/b2c-admin/auth/login', () => {
+    beforeEach(async () => {
+      await request(app).post('/api/v1/b2c/auth/register').send(credentials);
+    });
+
     it('should login successfully and return tokens', async () => {
       const res = await request(app).post('/api/v1/b2c-admin/auth/login').send({
         email: credentials.email,
@@ -34,7 +38,7 @@ describe('Auth API Integration Tests', () => {
       // Check if refresh token is in cookies
       const cookies = res.headers['set-cookie'];
       expect(cookies).toBeDefined();
-      expect(cookies.some((c) => c.includes('jwt='))).toBeTruthy();
+      expect(cookies.some((c) => c.includes('refresh_token='))).toBeTruthy();
     });
 
     it('should reject invalid credentials', async () => {
@@ -47,6 +51,10 @@ describe('Auth API Integration Tests', () => {
   });
 
   describe('GET /api/v1/b2c-admin/auth/session', () => {
+    beforeEach(async () => {
+      await request(app).post('/api/v1/b2c/auth/register').send(credentials);
+    });
+
     it('should get session information with valid token', async () => {
       // 1. Login to get token
       const loginRes = await request(app).post('/api/v1/b2c-admin/auth/login').send({

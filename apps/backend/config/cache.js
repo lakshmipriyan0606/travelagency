@@ -22,13 +22,23 @@ const redisConfig = {
   host: process.env.REDIS_HOST || '127.0.0.1',
   port: process.env.REDIS_PORT || 6379,
   password: process.env.REDIS_PASSWORD || undefined,
-  maxRetriesPerRequest: 3,
+  maxRetriesPerRequest: null,
+  enableOfflineQueue: false,
+  retryStrategy: (times) => {
+    if (times > 3) {
+      return null; // Stop retrying after 3 attempts, degrade gracefully
+    }
+    return Math.min(times * 50, 2000);
+  },
 };
 
 const cache = new Redis(redisConfig);
 
 cache.on('error', (err) => {
-  logger.error({ err }, 'Redis connection error');
+  logger.error(
+    { message: err.message },
+    'Redis connection error. Operating in degraded cache-bypass mode.'
+  );
 });
 
 cache.on('connect', () => {

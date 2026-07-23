@@ -77,10 +77,15 @@ export const createPackageService = async (body, files, userId) => {
   const newMainFiles = (files || []).filter((f) => f.fieldname === 'images');
   const mainImageAlts = body.mainImageAlts ? JSON.parse(body.mainImageAlts) : [];
 
-  for (let i = 0; i < newMainFiles.length; i++) {
-    const url = await uploadFile(newMainFiles[i], 'travel_packages/main');
-    if (url) mainImages.push({ url, alt: mainImageAlts[i] || '' });
-  }
+  const uploadPromises = newMainFiles.map((file, i) =>
+    uploadFile(file, 'travel_packages/main').then((url) => ({
+      url: url || '',
+      alt: mainImageAlts[i] || '',
+    }))
+  );
+
+  const uploadedResults = await Promise.all(uploadPromises);
+  mainImages.push(...uploadedResults.filter((img) => img.url));
 
   const sanitizedMainImages = sanitizeImagesArray(mainImages);
 
@@ -91,18 +96,19 @@ export const createPackageService = async (body, files, userId) => {
     const slots = Array.isArray(day.slots) ? day.slots : [];
     const newSlots = [];
 
-    for (let s = 0; s < slots.length; s++) {
-      const slot = slots[s] || {};
+    const slotUploadPromises = slots.map(async (slot, s) => {
       const slotFile = (files || []).find((f) => f.fieldname === `slotImage_${d}_${s}`);
-      let slotImageUrl = slot.imageUrl || '';
+      let slotImageUrl = (slot && slot.imageUrl) || '';
 
       if (slotFile) {
         const url = await uploadFile(slotFile, 'travel_packages/slots');
         if (url) slotImageUrl = url;
       }
-      newSlots.push({ ...slot, imageUrl: slotImageUrl || '' });
-    }
-    transformedDays.push({ ...day, slots: newSlots });
+      return { ...(slot || {}), imageUrl: slotImageUrl || '' };
+    });
+
+    const uploadedSlots = await Promise.all(slotUploadPromises);
+    transformedDays.push({ ...day, slots: uploadedSlots });
   }
 
   const packageData = {
@@ -132,20 +138,30 @@ export const createPackageService = async (body, files, userId) => {
     createdBy: userId,
   };
 
-  if (packageData.isBestPackage && packageData.bestRank) {
-    const existing = await packageRepository.findOne({ bestRank: packageData.bestRank });
-    if (existing) {
-      existing.isBestPackage = false;
-      existing.bestRank = null;
-      await existing.save();
-    }
-  }
+  const session = await mongoose.startSession();
+  session.startTransaction();
 
-  return await packageRepository.create(packageData);
+  try {
+    if (packageData.isBestPackage && packageData.bestRank) {
+      await packageRepository.findOneAndUpdate(
+        { bestRank: packageData.bestRank },
+        { isBestPackage: false, bestRank: null },
+        { session }
+      );
+    }
+    const createdPackage = await packageRepository.create(packageData, { session });
+    await session.commitTransaction();
+    return createdPackage;
+  } catch (error) {
+    await session.abortTransaction();
+    throw error;
+  } finally {
+    session.endSession();
+  }
 };
 
 export const updatePackageService = async (id, body, files) => {
-  const pkg = await packageRepository.findById(id);
+  const pkg = await packageRepository.findById(id, { lean: false });
   if (!pkg) {
     const error = new Error('Package not found');
     error.statusCode = 404;
@@ -187,10 +203,15 @@ export const updatePackageService = async (id, body, files) => {
   const newMainFiles = (files || []).filter((f) => f.fieldname === 'images');
   const mainImageAlts = body.mainImageAlts ? JSON.parse(body.mainImageAlts) : [];
 
-  for (let i = 0; i < newMainFiles.length; i++) {
-    const url = await uploadFile(newMainFiles[i], 'travel_packages/main');
-    if (url) mainImages.push({ url, alt: mainImageAlts[i] || '' });
-  }
+  const uploadPromises = newMainFiles.map((file, i) =>
+    uploadFile(file, 'travel_packages/main').then((url) => ({
+      url: url || '',
+      alt: mainImageAlts[i] || '',
+    }))
+  );
+
+  const uploadedResults = await Promise.all(uploadPromises);
+  mainImages.push(...uploadedResults.filter((img) => img.url));
 
   pkg.images = sanitizeImagesArray(mainImages);
 
@@ -199,20 +220,20 @@ export const updatePackageService = async (id, body, files) => {
   for (let d = 0; d < daysRaw.length; d++) {
     const day = daysRaw[d] || {};
     const slots = Array.isArray(day.slots) ? day.slots : [];
-    const newSlots = [];
 
-    for (let s = 0; s < slots.length; s++) {
-      const slot = slots[s] || {};
+    const slotUploadPromises = slots.map(async (slot, s) => {
       const slotFile = (files || []).find((f) => f.fieldname === `slotImage_${d}_${s}`);
-      let slotImageUrl = slot.imageUrl || '';
+      let slotImageUrl = (slot && slot.imageUrl) || '';
 
       if (slotFile) {
         const url = await uploadFile(slotFile, 'travel_packages/slots');
         if (url) slotImageUrl = url;
       }
-      newSlots.push({ ...slot, imageUrl: slotImageUrl || '' });
-    }
-    transformedDays.push({ ...day, slots: newSlots });
+      return { ...(slot || {}), imageUrl: slotImageUrl || '' };
+    });
+
+    const uploadedSlots = await Promise.all(slotUploadPromises);
+    transformedDays.push({ ...day, slots: uploadedSlots });
   }
 
   pkg.type = isActivity ? 'activity' : 'package';
@@ -237,28 +258,36 @@ export const updatePackageService = async (id, body, files) => {
   if (seo) pkg.seo = JSON.parse(seo);
   if (highlights) pkg.highlights = JSON.parse(highlights);
 
-  const isBestPackageBool = String(isBestPackage) === 'true';
-  if (isBestPackageBool && bestRank) {
-    const targetRank = Number(bestRank);
-    if (pkg.bestRank !== targetRank) {
-      const existing = await packageRepository.findOne({
-        bestRank: targetRank,
-        _id: { $ne: pkg._id },
-      });
-      if (existing) {
-        existing.isBestPackage = false;
-        existing.bestRank = null;
-        await existing.save();
-      }
-    }
-    pkg.isBestPackage = true;
-    pkg.bestRank = targetRank;
-  } else if (!isBestPackageBool) {
-    pkg.isBestPackage = false;
-    pkg.bestRank = null;
-  }
+  const session = await mongoose.startSession();
+  session.startTransaction();
 
-  return await pkg.save();
+  try {
+    const isBestPackageBool = String(isBestPackage) === 'true';
+    if (isBestPackageBool && bestRank) {
+      const targetRank = Number(bestRank);
+      if (pkg.bestRank !== targetRank) {
+        await packageRepository.findOneAndUpdate(
+          { bestRank: targetRank, _id: { $ne: pkg._id } },
+          { isBestPackage: false, bestRank: null },
+          { session }
+        );
+      }
+      pkg.isBestPackage = true;
+      pkg.bestRank = targetRank;
+    } else if (!isBestPackageBool) {
+      pkg.isBestPackage = false;
+      pkg.bestRank = null;
+    }
+
+    const result = await pkg.save({ session });
+    await session.commitTransaction();
+    return result;
+  } catch (error) {
+    await session.abortTransaction();
+    throw error;
+  } finally {
+    session.endSession();
+  }
 };
 
 export const getBestPackages = async (userId) => {

@@ -25,9 +25,9 @@ import Package from './package.model.js';
  * @param {Object} packageData
  * @returns {Promise<Object>} The saved Mongoose document
  */
-export const create = async (packageData) => {
+export const create = async (packageData, options = {}) => {
   const pkg = new Package(packageData);
-  return await pkg.save();
+  return await pkg.save(options);
 };
 
 /**
@@ -37,8 +37,10 @@ export const create = async (packageData) => {
  * @param {string} id
  * @returns {Promise<Object>}
  */
-export const findById = async (id) => {
-  return await Package.findById(id).lean();
+export const findById = async (id, options = {}) => {
+  const query = Package.findById(id);
+  if (options.session) query.session(options.session);
+  return options.lean === false ? await query : await query.lean();
 };
 
 /**
@@ -48,8 +50,10 @@ export const findById = async (id) => {
  * @param {Object} query
  * @returns {Promise<Object>}
  */
-export const findOne = async (query) => {
-  return await Package.findOne(query).lean();
+export const findOne = async (query, options = {}) => {
+  const q = Package.findOne(query);
+  if (options.session) q.session(options.session);
+  return options.lean === false ? await q : await q.lean();
 };
 
 /**
