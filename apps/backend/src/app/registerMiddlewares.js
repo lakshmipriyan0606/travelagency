@@ -67,7 +67,14 @@ export const registerMiddlewares = (app) => {
   // ============================================================================
   app.use(compression());
   app.use(express.json());
-  app.use(mongoSanitize());
+  app.use((req, res, next) => {
+    ['body', 'params', 'query', 'headers'].forEach((k) => {
+      if (req[k]) {
+        mongoSanitize.sanitize(req[k], { replaceWith: '_' });
+      }
+    });
+    next();
+  });
   app.use(cookieParser());
 
   // ============================================================================

@@ -58,7 +58,8 @@
     "#utils/*": "./src/utils/*",
     "#app/*": "./src/app/*",
     "#bootstrap/*": "./src/bootstrap/*",
-    "#health/*": "./src/modules/health/*"
+    "#health/*": "./src/health/*",
+    "#monitoring/*": "./src/monitoring/*"
   },
   "scripts": {
     "dev": "nodemon ./src/server.js",
