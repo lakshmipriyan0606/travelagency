@@ -1,0 +1,17 @@
+export const CUSTOMER_IMAGES = [
+  "https://i.postimg.cc/Fsd3ypMQ/Whats_App_Image_2025_12_24_at_8_18_41_AM.jpg",
+  "https://i.postimg.cc/fTtmcC66/Whats_App_Image_2025_12_28_at_3_59_12_PM.jpg",
+  "https://i.postimg.cc/28bhQGPg/Whats_App_Image_2026_01_02_at_10_02_16_AM.jpg",
+  "https://i.postimg.cc/4N7V6PrM/Whats_App_Image_2026_01_13_at_6_56_21_AM.jpg",
+  "https://i.postimg.cc/TYLgV0ZQ/Whats_App_Image_2026_01_14_at_9_20_30_AM.jpg",
+  "https://i.postimg.cc/hPzTLsHy/Whats_App_Image_2026_01_16_at_4_26_18_PM.jpg",
+  "https://i.postimg.cc/Nf9m6DWC/Whats_App_Image_2026_01_16_at_9_58_25_AM.jpg",
+  "https://i.postimg.cc/vHgfrhpN/Whats_App_Image_2026_01_18_at_12_35_16_PM.jpg",
+  "https://i.postimg.cc/SN2C6dwc/Whats_App_Image_2026_01_23_at_9_06_31_AM.jpg",
+  "https://i.postimg.cc/bNDkxgKT/Whats_App_Image_2026_01_30_at_6_04_39_PM.jpg",
+  "https://i.postimg.cc/RV6K7djT/Whats_App_Image_2026_02_01_at_5_35_02_PM.jpg",
+  "https://i.postimg.cc/8knLf9nM/Whats_App_Image_2026_02_04_at_1_27_05_PM.jpg",
+  "https://i.postimg.cc/SQtcY3tc/Whats_App_Image_2026_02_04_at_1_27_12_PM.jpg",
+  "https://i.postimg.cc/NGPR2SP6/Whats_App_Image_2026_02_09_at_5_43_08_PM.jpg",
+  "https://i.postimg.cc/BZw2Pkwx/Whats_App_Image_2026_02_19_at_11_52_00_AM.jpg",
+];
