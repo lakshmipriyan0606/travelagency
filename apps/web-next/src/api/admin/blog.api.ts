@@ -1,7 +1,7 @@
 import axiosClient from "../axiosClient";
 
 export const createBlog = async (payload: FormData) => {
-  const { data } = await axiosClient.post("/blogs", payload, {
+  const { data } = await axiosClient.post("admin/blogs", payload, {
     headers: {
       "Content-Type": "multipart/form-data",
     },
@@ -10,7 +10,7 @@ export const createBlog = async (payload: FormData) => {
 };
 
 export const updateBlog = async (id: string, payload: FormData) => {
-  const { data } = await axiosClient.put(`/blogs/${id}`, payload, {
+  const { data } = await axiosClient.put(`admin/blogs/${id}`, payload, {
     headers: {
       "Content-Type": "multipart/form-data",
     },
@@ -19,7 +19,7 @@ export const updateBlog = async (id: string, payload: FormData) => {
 };
 
 export const deleteBlog = async (id: string) => {
-  const { data } = await axiosClient.delete(`/blogs/${id}`);
+  const { data } = await axiosClient.delete(`admin/blogs/${id}`);
   return data;
 };
 
@@ -31,7 +31,7 @@ export const getAdminBlogs = async ({ limit = 10, lastId = "", search = "", stat
 };
 
 export const getBlogById = async (id: string) => {
-  const { data } = await axiosClient.get(`/blogs/admin/${id}`);
+  const { data } = await axiosClient.get(`admin/blogs/admin/${id}`);
   return data;
 };
 

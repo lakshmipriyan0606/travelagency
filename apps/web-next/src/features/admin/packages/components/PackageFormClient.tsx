@@ -3,6 +3,8 @@
 import { Package, Calendar, Image as ImageIcon, Tag, List, Clock } from "lucide-react";
 import { useFieldArray, FormProvider } from "react-hook-form";
 import { createContext, useContext } from "react";
+import { useRouter } from "next/navigation";
+import { toast } from "react-toastify";
 export const AdminPanelContext = createContext<any>(null);
 
 import { usePackageForm } from "./PackageForm/usePackageForm";
@@ -12,12 +14,19 @@ import { PackageFormImages } from "./PackageForm/PackageFormImages";
 import { PackageFormItinerary } from "./PackageForm/PackageFormItinerary";
 import { PackageFormControls } from "./PackageForm/PackageFormControls";
 
-export default function AdminUploadPackageForm({ isActivity: isActivityProp = false }: { isActivity?: boolean }) {
-  const context = useContext(AdminPanelContext);
-  if (!context) throw new Error("AdminUploadPackageForm must be used within AdminPanelContext");
-  const { editId: id, setActive, triggerRefresh } = context;
-
-  const { methods, mainImageFiles, setMainImageFiles, mainImageUrls, setMainImageUrls, activeStep, setActiveStep, onSubmit, isSubmitting, isActivity } = usePackageForm(id, setActive, triggerRefresh, isActivityProp);
+export default function AdminUploadPackageForm({ 
+  isActivity: isActivityProp = false,
+  editId = null
+}: { 
+  isActivity?: boolean;
+  editId?: string | null;
+}) {
+  const router = useRouter();
+  const handleSuccessRedirect = () => {
+    router.push(isActivityProp ? "/admin/activities" : "/admin/packages");
+    router.refresh();
+  };
+  const { methods, mainImageFiles, setMainImageFiles, mainImageUrls, setMainImageUrls, activeStep, setActiveStep, onSubmit, isSubmitting, isActivity } = usePackageForm(editId, handleSuccessRedirect, () => {}, isActivityProp);
   const { control, handleSubmit, watch, formState } = methods;
   const formControl = control as any;
   const { fields: dayFields, append: addDay, remove: removeDay } = useFieldArray({ control, name: "days" });
@@ -63,7 +72,7 @@ export default function AdminUploadPackageForm({ isActivity: isActivityProp = fa
           <div>
             <h1 className="text-2xl font-black text-neutral-800 tracking-tight flex items-center gap-3">
               <div className="w-1.5 h-8 bg-primary rounded-full" />
-              {isActivity ? "Create Activity" : (id ? "Sync Changes" : "Create Adventure")}
+              {isActivity ? "Create Activity" : (editId ? "Sync Changes" : "Create Adventure")}
             </h1>
           </div>
         </div>
@@ -86,14 +95,20 @@ export default function AdminUploadPackageForm({ isActivity: isActivityProp = fa
           </div>
         </div>
 
-        <form onSubmit={handleSubmit((values) => onSubmit(values, activeStep === filteredSteps.length - 1))} className="space-y-6">
+        <form onSubmit={handleSubmit(
+          (values) => onSubmit(values, activeStep === filteredSteps.length - 1),
+          (errors) => {
+            console.error("Form Validation Errors:", errors);
+            toast.error("Please fix validation errors before submitting.");
+          }
+        )} className="space-y-6">
           <div className="px-4">
             {filteredSteps[activeStep].title === "Core Details" && <PackageFormBasicInfo formControl={formControl} isActivity={!!isActivity} watch={watch} />}
             {filteredSteps[activeStep].title === "Pricing & Visibility" && <PackageFormPricing formControl={formControl} isActivity={!!isActivity} watch={watch} />}
             {filteredSteps[activeStep].title === "Media Gallery" && <PackageFormImages mainImageFiles={mainImageFiles} setMainImageFiles={setMainImageFiles} mainImageUrls={mainImageUrls} setMainImageUrls={setMainImageUrls} />}
             {(filteredSteps[activeStep].title === "Activity Highlights" || filteredSteps[activeStep].title === "Journey Roadmap") && <PackageFormItinerary formControl={formControl} isActivity={!!isActivity} dayFields={dayFields} addDay={addDay} removeDay={removeDay} />}
           </div>
-          <PackageFormControls activeStep={activeStep} totalSteps={filteredSteps.length} nextStep={nextStep} prevStep={prevStep} isSubmitting={isSubmitting} isDirty={formState.isDirty} id={id} />
+          <PackageFormControls activeStep={activeStep} totalSteps={filteredSteps.length} nextStep={nextStep} prevStep={prevStep} isSubmitting={isSubmitting} isDirty={formState.isDirty} id={editId as string} />
         </form>
       </div>
     </FormProvider>

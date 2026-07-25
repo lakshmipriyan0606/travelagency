@@ -1,3 +1,4 @@
+import { API_BASE_URL } from '@/lib/config';
 import { requireAdmin } from "@/features/admin/auth/guards";
 import { getAccessToken } from "@/lib/auth/session";
 import DestinationListClient from "@/features/admin/destinations/components/DestinationListClient";
@@ -15,9 +16,9 @@ export default async function DestinationsListPage() {
   // Fetch initial data from backend to pass to Client Component
   let destinations: Destination[] = [];
   try {
-    const res = await fetch(`/destinations`, {
+    const res = await fetch(`${API_BASE_URL}/v1/b2c/destinations`, {
       headers: {
-        Cookie: "access_token="
+        Cookie: `access_token=${token}`
       },
       next: { revalidate: 0 },
     });
@@ -43,3 +44,4 @@ export default async function DestinationsListPage() {
     </div>
   );
 }
+

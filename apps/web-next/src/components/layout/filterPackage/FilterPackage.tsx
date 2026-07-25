@@ -25,14 +25,15 @@ const buildBreadcrumb = (filters: FilterState, mode: string): BreadcrumbItem[] =
 interface FilterPackageProps {
   likePackageOnly?: boolean;
   mode?: 'packages' | 'activities' | 'all';
+  isAdminMode?: boolean;
 }
 
-const FilterPackage = ({ likePackageOnly = false, mode = 'all' }: FilterPackageProps) => {
+const FilterPackage = ({ likePackageOnly = false, mode = 'all', isAdminMode = false }: FilterPackageProps) => {
   const {
     packageList, setPackageList, cursor, hasMore, totalCount, activeTab, setActiveTab,
     searchInput, setSearchInput, sort, setSort, methods, filters, filteredPackages, groupedPackages,
     isLoading, isError, refetch, handleRemoveTag, handleClearAll, handleSearch, resetAndRefetch
-  } = usePackageFilter({ likePackageOnly, mode });
+  } = usePackageFilter({ likePackageOnly, mode, isAdminMode });
 
   const { setValue } = methods;
   const breadcrumbItems = useMemo(() => buildBreadcrumb(filters, mode), [filters, mode]);
@@ -120,6 +121,7 @@ const FilterPackage = ({ likePackageOnly = false, mode = 'all' }: FilterPackageP
               resetAndRefetch={resetAndRefetch}
               refetch={refetch}
               setPackageList={setPackageList}
+              isAdminMode={isAdminMode}
             />
           </div>
         </div>

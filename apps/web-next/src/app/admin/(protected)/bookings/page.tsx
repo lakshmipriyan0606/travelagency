@@ -1,3 +1,4 @@
+import { API_BASE_URL } from '@/lib/config';
 import { requireAdmin } from "@/features/admin/auth/guards";
 import { getAccessToken } from "@/lib/auth/session";
 import BookingListClient from "@/features/admin/bookings/components/BookingListClient";
@@ -13,9 +14,9 @@ export default async function BookingsListPage() {
 
   let bookings: Booking[] = [];
   try {
-    const res = await fetch(`/auth/admin/bookings`, {
+    const res = await fetch(`${API_BASE_URL}/v1/b2c/booking/all`, {
       headers: {
-        Cookie: "access_token="
+        Cookie: `access_token=${token}`
       },
       next: { revalidate: 0 },
     });
@@ -34,3 +35,4 @@ export default async function BookingsListPage() {
     </div>
   );
 }
+

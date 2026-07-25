@@ -32,10 +32,11 @@ export const adminNavigation: AdminNavItem[] = [
     href: "#",
     icon: PlusCircle,
     children: [
-      { title: "Create Package", href: "/admin/packages/create", icon: Package },
-      { title: "Create Activity", href: "/admin/activities/create", icon: Sparkles },
-      { title: "Create Blog", href: "/admin/blogs/create", icon: PenTool },
-      { title: "Create Destination", href: "/admin/destinations/create", icon: MapPin },
+      { title: "Create Package", href: "/admin/packages/new", icon: Package },
+      { title: "Create Activity", href: "/admin/activities/new", icon: Sparkles },
+      { title: "Create Blog", href: "/admin/blogs/new", icon: PenTool },
+      { title: "Create Destination", href: "/admin/destinations/new", icon: MapPin },
+      { title: "Create Story", href: "/admin/stories/new", icon: PlusCircle },
     ],
   },
   {
@@ -59,6 +60,11 @@ export const adminNavigation: AdminNavItem[] = [
     icon: MapPin,
   },
   {
+    title: "All Stories",
+    href: "/admin/stories",
+    icon: Sparkles,
+  },
+  {
     title: "All Reviews",
     href: "/admin/reviews",
     icon: Star,
@@ -67,6 +73,11 @@ export const adminNavigation: AdminNavItem[] = [
     title: "Bookings",
     href: "/admin/bookings",
     icon: CalendarCheck,
+  },
+  {
+    title: "Media Gallery",
+    href: "/admin/media",
+    icon: ImageIcon,
   },
   {
     title: "Website",

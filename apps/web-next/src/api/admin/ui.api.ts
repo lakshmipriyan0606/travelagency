@@ -7,12 +7,12 @@ export type WebsiteHeroConfig = {
 };
 
 export const GetWebsiteHeroConfig = async () => {
-  const { data } = await axiosClient.get("ui/website-hero");
+  const { data } = await axiosClient.get("ui-config/website-hero");
   return data;
 };
 
 export const UpdateWebsiteHeroConfig = async (payload: Partial<WebsiteHeroConfig>) => {
-  const { data } = await axiosClient.put("admin/ui/website-hero", payload);
+  const { data } = await axiosClient.put("admin/ui-config/website-hero", payload);
   return data;
 };
 

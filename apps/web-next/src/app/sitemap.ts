@@ -1,7 +1,8 @@
+import { API_BASE_URL } from '@/lib/config';
 import { MetadataRoute } from 'next';
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
-    const API_BASE = process.env.NEXT_PUBLIC_API_BASE_URL || 'http://localhost:5000/api';
+    const API_BASE = API_BASE_URL;
     const BASE_URL = process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000';
 
     try {
@@ -80,3 +81,4 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
         ];
     }
 }
+

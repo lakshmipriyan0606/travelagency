@@ -11,6 +11,8 @@ import axiosClient from "@/api/axiosClient";
 import { useRouter } from "next/navigation";
 import { Review, reviewSchema, ReviewFormValues } from "../validation/review.schema";
 
+import { ReviewLeftColumn } from "./ReviewLeftColumn";
+
 export default function ReviewFormClient({
   initialData,
   totalReviews,
@@ -44,6 +46,7 @@ export default function ReviewFormClient({
 
   const rating = watch("rating");
   const profileImageUrl = watch("profileImage.url");
+  const status = watch("status");
 
   useEffect(() => {
     if (initialData) {
@@ -134,58 +137,14 @@ export default function ReviewFormClient({
         <form onSubmit={handleSubmit(onSubmit)} className="p-8 sm:p-10 space-y-10">
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-10">
             {/* Left Column: Image & Quick Settings */}
-            <div className="lg:col-span-4 space-y-8">
-              <div className="space-y-4">
-                <label className="text-xs font-black text-neutral-400 uppercase tracking-widest">Reviewer Photo</label>
-                {!profileImageUrl ? (
-                  <div className="relative group">
-                    <input
-                      type="file"
-                      onChange={handleImageUpload}
-                      className="absolute inset-0 opacity-0 cursor-pointer z-10"
-                      accept="image/*"
-                    />
-                    <div className="aspect-square rounded-[32px] border-4 border-dashed border-neutral-100 bg-neutral-50/50 flex flex-col items-center justify-center gap-4 transition-all group-hover:bg-white group-hover:border-primary/30 group-hover:shadow-xl group-hover:shadow-primary/5">
-                      {uploading ? (
-                        <Loader2 size={32} className="text-primary/40 animate-spin" />
-                      ) : (
-                        <>
-                          <div className="w-16 h-16 rounded-full bg-white flex items-center justify-center shadow-md">
-                            <ImageIcon size={24} className="text-primary/40" />
-                          </div>
-                          <p className="text-xs font-black text-neutral-400 tracking-tight">Upload Photo</p>
-                        </>
-                      )}
-                    </div>
-                  </div>
-                ) : (
-                  <div className="relative group aspect-square rounded-[32px] overflow-hidden shadow-xl ring-1 ring-neutral-200">
-                    <img src={profileImageUrl} alt="Profile" className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" />
-                    <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-3">
-                      <button type="button" onClick={removeImage} className="w-10 h-10 rounded-xl bg-red-500 text-white flex items-center justify-center shadow-lg hover:scale-110 transition-transform">
-                        <X size={18} />
-                      </button>
-                    </div>
-                  </div>
-                )}
-              </div>
-
-              <div className="space-y-4 bg-neutral-50 p-6 rounded-[24px] border border-neutral-100">
-                <label className="text-xs font-black text-neutral-400 uppercase tracking-widest">Status</label>
-                <div className="flex gap-2">
-                  {["Published", "Draft"].map((status) => (
-                    <button
-                      key={status}
-                      type="button"
-                      onClick={() => setValue("status", status as "Published" | "Draft")}
-                      className={"flex-1 py-3 rounded-xl text-xs font-bold transition-all "}
-                    >
-                      {status}
-                    </button>
-                  ))}
-                </div>
-              </div>
-            </div>
+            <ReviewLeftColumn
+              profileImageUrl={profileImageUrl || ""}
+              uploading={uploading}
+              handleImageUpload={handleImageUpload}
+              removeImage={removeImage}
+              setValue={setValue}
+              status={status}
+            />
 
             {/* Right Column: Text Content */}
             <div className="lg:col-span-8 space-y-8">

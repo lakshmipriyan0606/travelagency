@@ -1,3 +1,4 @@
+import { API_BASE_URL } from "@/lib/config";
 import { requireAdmin } from "@/features/admin/auth/guards";
 import PackageFormClient from "@/features/admin/packages/components/PackageFormClient";
 import { getAccessToken } from "@/lib/auth/session";
@@ -15,7 +16,7 @@ export default async function EditPackagePage({
   await requireAdmin();
   const token = await getAccessToken();
 
-  const res = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL || 'http://localhost:5000/api'}/packages/${params.id}`, {
+  const res = await fetch(`${API_BASE_URL}/v1/b2c-admin/packages/${params.id}`, {
     headers: {
       Cookie: `access_token=${token}`
     },
@@ -36,8 +37,7 @@ export default async function EditPackagePage({
         <p className="text-gray-500 text-sm mt-1">Update details for {packageData?.packageName}</p>
       </div>
       
-      {/* @ts-ignore */}
-      <PackageFormClient isEdit={true} initialData={packageData} />
+      <PackageFormClient isActivity={false} editId={params.id} />
     </div>
   );
 }

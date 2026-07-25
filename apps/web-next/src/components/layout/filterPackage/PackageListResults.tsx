@@ -59,7 +59,7 @@ export const PackageListResults: React.FC<PackageListResultsProps> = ({
             {filters.city} <span className="text-primary font-medium ml-2">({filteredPackages.length})</span>
           </h2>
         </div>
-        <PackageCard filterList={filteredPackages} isAdmin={false} setEditPackageId={() => {}} setActive={() => {}} refetch={resetAndRefetch} handleLikeUpdate={handleLikeUpdate} />
+        <PackageCard filterList={filteredPackages} isAdmin={isAdminMode} setEditPackageId={() => {}} setActive={() => {}} refetch={resetAndRefetch} handleLikeUpdate={handleLikeUpdate} />
       </section>
     );
   }
@@ -77,7 +77,7 @@ export const PackageListResults: React.FC<PackageListResultsProps> = ({
                 {cityName} <span className="text-primary font-medium ml-2">({packages.length})</span>
               </h2>
             </div>
-            <PackageCard filterList={packages} isAdmin={false} setEditPackageId={() => {}} setActive={() => {}} refetch={resetAndRefetch} handleLikeUpdate={handleLikeUpdate} />
+            <PackageCard filterList={packages} isAdmin={isAdminMode} setEditPackageId={() => {}} setActive={() => {}} refetch={resetAndRefetch} handleLikeUpdate={handleLikeUpdate} />
           </section>
         );
       })}
@@ -90,7 +90,7 @@ export const PackageListResults: React.FC<PackageListResultsProps> = ({
               Other Locations <span className="text-gray-400 font-medium ml-2">({groupedPackages["Other"].length})</span>
             </h2>
           </div>
-          <PackageCard filterList={groupedPackages["Other"]} isAdmin={false} setEditPackageId={() => {}} setActive={() => {}} refetch={resetAndRefetch} handleLikeUpdate={handleLikeUpdate} />
+          <PackageCard filterList={groupedPackages["Other"]} isAdmin={isAdminMode} setEditPackageId={() => {}} setActive={() => {}} refetch={resetAndRefetch} handleLikeUpdate={handleLikeUpdate} />
         </section>
       )}
 

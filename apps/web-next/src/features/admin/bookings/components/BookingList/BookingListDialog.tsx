@@ -147,4 +147,4 @@ export const BookingListDialog: React.FC<BookingListDialogProps> = ({
       </DialogContent>
     </Dialog>
   );
-};
+}

@@ -11,9 +11,10 @@ const PAGE_SIZE = PACKAGE_CONFIG.INITIAL_LOAD_LIMIT;
 interface UsePackageFilterProps {
   likePackageOnly?: boolean;
   mode?: 'packages' | 'activities' | 'all';
+  isAdminMode?: boolean;
 }
 
-export function usePackageFilter({ likePackageOnly = false, mode = 'all' }: UsePackageFilterProps) {
+export function usePackageFilter({ likePackageOnly = false, mode = 'all', isAdminMode = false }: UsePackageFilterProps) {
   const pathname = usePathname();
   const router = useRouter();
   const searchParams = useSearchParams();
@@ -43,7 +44,6 @@ export function usePackageFilter({ likePackageOnly = false, mode = 'all' }: UseP
     setSort((filters.sort as SortOption) ?? "default");
   }, []);
 
-  const isAdminMode = false;
   const queryKey = useMemo(
     () => ["allPackage", cursor, filters.search, filters.city, isAdminMode, mode, likePackageOnly, activeTab],
     [cursor, filters.search, filters.city, isAdminMode, mode, likePackageOnly, activeTab]

@@ -4,10 +4,12 @@ import { useState } from "react";
 import { RANK_OPTIONS } from "@/config/rankConfig";
 import { Package } from "./types";
 
+import { useRouter } from "next/navigation";
+
 interface AdminControlsProps {
     offer: Package;
-    setEditPackageId: (id: string) => void;
-    setActive: (active: string) => void;
+    setEditPackageId?: (id: string) => void;
+    setActive?: (active: string) => void;
     setOpen: (open: boolean) => void;
     setDeleteId: (id: string) => void;
     updateRankMutate: (payload: { id: string, bestRank: string | null }) => void;
@@ -28,6 +30,7 @@ export function PackageCardAdminControls({
     isActivity
 }: AdminControlsProps) {
     const [showRankPicker, setShowRankPicker] = useState(false);
+    const router = useRouter();
 
     const availableRanks = RANK_OPTIONS.filter(rank => {
         const taken = (takenRanks || []).find((t: any) => 
@@ -43,8 +46,8 @@ export function PackageCardAdminControls({
                     type="button"
                     onClick={(e) => {
                         e.stopPropagation();
-                        setEditPackageId(offer._id);
-                        setActive("CreatePackage");
+                        // Next.js App Router navigation
+                        router.push(`/admin/${isActivity ? 'activities' : 'packages'}/${offer._id}`);
                     }}
                     className="w-8 h-8 bg-white/95 backdrop-blur-md rounded-full flex items-center justify-center text-neutral-700 shadow-xl hover:bg-neutral-800 hover:text-white transition-all transform active:scale-95 border border-white"
                     title="Edit Package"

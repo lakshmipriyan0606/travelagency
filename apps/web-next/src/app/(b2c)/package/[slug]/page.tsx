@@ -7,11 +7,11 @@ import BookingFomField from '@/components/layout/reachus/BookingFomField';
 import SuggestedProducts from '@/components/layout/suggestedProducts/SuggestedProducts';
 import { PackageTabs } from '@/components/layout/packageDetail/PackageClientComponents';
 import { Clock, Zap, ShieldCheck, Globe } from 'lucide-react';
+import { API_BASE_URL } from '@/lib/config';
 
 async function getPackageDetail(slug: string) {
-    const API_BASE = process.env.NEXT_PUBLIC_API_BASE_URL || 'http://localhost:5000/api';
     try {
-        const res = await fetch(`${API_BASE}/packages/${slug}`, { next: { revalidate: 3600 } });
+        const res = await fetch(`${API_BASE_URL}/v1/b2c/packages/${slug}`, { next: { revalidate: 3600 } });
         if (!res.ok) return null;
         const data = await res.json();
         return data?.data || null;

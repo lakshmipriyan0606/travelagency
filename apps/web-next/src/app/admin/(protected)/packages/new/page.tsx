@@ -16,8 +16,7 @@ export default async function NewPackagePage() {
         <p className="text-gray-500 text-sm mt-1">Configure all details, itineraries, and pricing.</p>
       </div>
       
-      {/* @ts-ignore */}
-      <PackageFormClient isEdit={false} />
+      <PackageFormClient isActivity={false} editId={null} />
     </div>
   );
 }

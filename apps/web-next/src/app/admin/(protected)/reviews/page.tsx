@@ -1,3 +1,4 @@
+import { API_BASE_URL } from '@/lib/config';
 import { requireAdmin } from "@/features/admin/auth/guards";
 import { getAccessToken } from "@/lib/auth/session";
 import ReviewListClient from "@/features/admin/reviews/components/ReviewListClient";
@@ -14,9 +15,9 @@ export default async function ReviewsListPage() {
   
   let reviews: Review[] = [];
   try {
-    const res = await fetch(`/reviews/admin`, {
+    const res = await fetch(`${API_BASE_URL}/v1/b2c/reviews`, {
       headers: {
-        Cookie: "access_token="
+        Cookie: `access_token=${token}`
       },
       next: { revalidate: 0 },
     });
@@ -42,3 +43,4 @@ export default async function ReviewsListPage() {
     </div>
   );
 }
+

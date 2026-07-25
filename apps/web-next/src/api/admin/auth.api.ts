@@ -21,41 +21,41 @@ export const currentUserAPI = async () => {
 };
 
 export const CreatePackage = async (payload: object) => {
-  const { data } = await axiosClient.post("/packages/create", payload);
+  const { data } = await axiosClient.post("admin/packages/create", payload);
   return data;
 };
 export const UpdatePackage = async (payload: Object | any, id: string | any) => {
   const { data } = await axiosClient.post(
-    `/packages/updatePackage/${id}`,
+    `admin/packages/updatePackage/${id}`,
     payload
   );
   return data;
 };
 export const GetCurrentPackageDetail = async (id: string | any) => {
-  const { data } = await axiosClient.get(`/packages/${id}`);
+  const { data } = await axiosClient.get(`admin/packages/${id}`);
   return data;
 };
 export const DeleteCurrentPackage = async (id: string) => {
-  const { data } = await axiosClient.delete(`/packages/deletePackage/${id}`);
+  const { data } = await axiosClient.delete(`admin/packages/deletePackage/${id}`);
   return data;
 };
 
 export const GetAllBookings = async () => {
-  const { data } = await axiosClient.get("/booking/all");
+  const { data } = await axiosClient.get("admin/bookings/all");
   return data;
 };
 
 export const UpdatePackageRank = async ({ id, bestRank }: { id: string; bestRank: string | null }) => {
-  const { data } = await axiosClient.patch(`/packages/updateRank/${id}`, { bestRank });
+  const { data } = await axiosClient.patch(`admin/packages/updateRank/${id}`, { bestRank });
   return data;
 };
 
 export const TogglePackageStatus = async (id: string) => {
-  const { data } = await axiosClient.patch(`/packages/toggleStatus/${id}`);
+  const { data } = await axiosClient.patch(`admin/packages/toggleStatus/${id}`);
   return data;
 };
 
 export const GetTakenRanks = async () => {
-  const { data } = await axiosClient.get("/packages/takenRanks");
+  const { data } = await axiosClient.get("admin/packages/takenRanks");
   return data;
 };

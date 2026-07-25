@@ -7,12 +7,13 @@ import Breadcrumb from "@/components/common/Breadcrumb/Breadcrumb";
 import { footerData } from '@/components/layout/footer/constant';
 import { FAQItem, BlogInteractions } from '@/components/layout/blogDetail/BlogClientComponents';
 
+import { API_BASE_URL } from '@/lib/config';
+
 const iconMap: Record<string, any> = { Facebook, Twitter, Instagram, Linkedin };
 
 async function getBlogData(slug: string) {
-    const API_BASE = process.env.NEXT_PUBLIC_API_BASE_URL || 'http://localhost:5000/api';
     try {
-        const res = await fetch(`${API_BASE}/blogs/${slug}`, { next: { revalidate: 3600 } });
+        const res = await fetch(`${API_BASE_URL}/v1/b2c/blogs/${slug}`, { next: { revalidate: 3600 } });
         if (!res.ok) return null;
         const data = await res.json();
         return data?.data || null;
@@ -22,12 +23,11 @@ async function getBlogData(slug: string) {
 }
 
 async function getSidebarBlogs(category: string) {
-    const API_BASE = process.env.NEXT_PUBLIC_API_BASE_URL || 'http://localhost:5000/api';
     try {
         // Fetch related and recent in parallel
         const [relatedRes, recentRes] = await Promise.all([
-            fetch(`${API_BASE}/blogs?category=${encodeURIComponent(category)}&limit=4`, { next: { revalidate: 3600 } }),
-            fetch(`${API_BASE}/blogs?limit=4`, { next: { revalidate: 3600 } })
+            fetch(`${API_BASE_URL}/v1/b2c/blogs?category=${encodeURIComponent(category)}&limit=4`, { next: { revalidate: 3600 } }),
+            fetch(`${API_BASE_URL}/v1/b2c/blogs?limit=4`, { next: { revalidate: 3600 } })
         ]);
         
         const related = relatedRes.ok ? await relatedRes.json() : { data: [] };

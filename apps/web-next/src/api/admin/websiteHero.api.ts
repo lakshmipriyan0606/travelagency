@@ -17,12 +17,12 @@ export const GetActiveWebsiteHero = async () => {
 };
 
 export const GetAllWebsiteHeroes = async () => {
-  const { data } = await axiosClient.get("website-hero");
+  const { data } = await axiosClient.get("admin/website-hero");
   return data;
 };
 
 export const CreateWebsiteHero = async (payload: Partial<WebsiteHeroCard>) => {
-  const { data } = await axiosClient.post("website-hero", payload);
+  const { data } = await axiosClient.post("admin/website-hero", payload);
   return data;
 };
 
@@ -33,12 +33,11 @@ export const UpdateWebsiteHero = async ({
   id: string;
   payload: Partial<WebsiteHeroCard>;
 }) => {
-  const { data } = await axiosClient.put(`website-hero/${id}`, payload);
+  const { data } = await axiosClient.put(`admin/website-hero/${id}`, payload);
   return data;
 };
 
 export const DeleteWebsiteHero = async (id: string) => {
-  const { data } = await axiosClient.delete(`website-hero/${id}`);
+  const { data } = await axiosClient.delete(`admin/website-hero/${id}`);
   return data;
 };
-

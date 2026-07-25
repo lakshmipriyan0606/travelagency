@@ -8,7 +8,7 @@ import { useMutationAPIQuery } from "@/Hook/useMutationAPIQuery";
 import { CreatePackage, UpdatePackage, GetCurrentPackageDetail } from "@/api/admin/auth.api";
 import { UseFetchAPIQuery } from "@/Hook/UseFetchAPIQuery";
 
-export function usePackageForm(id: string, setActive: (a: string) => void, triggerRefresh: () => void, isActivityProp: boolean) {
+export function usePackageForm(id: string | null | undefined, setActive: (a: string) => void, triggerRefresh: () => void, isActivityProp: boolean) {
   const [mainImageFiles, setMainImageFiles] = useState<{ file: File; alt: string }[]>([]);
   const [mainImageUrls, setMainImageUrls] = useState<{ url: string; alt: string }[]>([]);
   const [activeStep, setActiveStep] = useState(0);
@@ -32,7 +32,7 @@ export function usePackageForm(id: string, setActive: (a: string) => void, trigg
     onError: (error: any) => { toast.error(error?.message || "Failed to create package"); }
   });
 
-  const updateMutation = useMutationAPIQuery((data: any) => UpdatePackage(data, id), {
+  const updateMutation = useMutationAPIQuery((data: any) => UpdatePackage(data, id as string), {
     onSuccess: () => { toast.success("Package updated successfully!"); reset(); setActive("AllPackages"); triggerRefresh?.(); },
     onError: (error: any) => { toast.error(error?.message || "Failed to update package"); }
   });
@@ -41,7 +41,7 @@ export function usePackageForm(id: string, setActive: (a: string) => void, trigg
 
   const { data } = UseFetchAPIQuery({
     key: ["currentPackageDetail", { id }],
-    queryFn: async () => GetCurrentPackageDetail(id),
+    queryFn: async () => GetCurrentPackageDetail(id as string),
     options: { enabled: !!id }
   });
 
@@ -83,6 +83,11 @@ export function usePackageForm(id: string, setActive: (a: string) => void, trigg
       });
       formData.append("seo", JSON.stringify(values.seo));
       formData.append("existingImages", JSON.stringify(mainImageUrls));
+      if (isActivity) {
+        formData.append("type", "activity");
+      } else {
+        formData.append("type", "package");
+      }
       mainImageFiles.forEach(f => formData.append("images", f.file));
       formData.append("mainImageAlts", JSON.stringify(mainImageFiles.map(f => f.alt)));
       const daysClean = values.days?.map((day: ItineraryItem) => ({

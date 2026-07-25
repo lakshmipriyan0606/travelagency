@@ -1,5 +1,5 @@
 import { requireAdmin } from "@/features/admin/auth/guards";
-import BlogFormClient from "@/features/admin/blog/components/BlogFormClient";
+import BlogFormClient from "@/features/admin/blogs/components/BlogFormClient";
 
 export const metadata = {
   title: "Create Blog | Admin",
@@ -7,10 +7,9 @@ export const metadata = {
 
 export default async function NewBlogPage() {
   await requireAdmin();
-
   return (
-    <div className="max-w-4xl mx-auto space-y-6">
-      <BlogFormClient isEdit={false} />
+    <div className="space-y-6">
+      <BlogFormClient />
     </div>
   );
 }

@@ -21,12 +21,15 @@ const HappyStories = () => {
     );
   }
 
+  // Extract array if stories is wrapped in a response object
+  const storiesArray = Array.isArray(stories) ? stories : (stories.data || []);
+
   // Filter into rows and create loopable arrays
-  const row1Data = stories.filter((s: any) => s.row === 1);
-  const row2Data = stories.filter((s: any) => s.row === 2);
+  const row1Data = storiesArray.filter((s: any) => s.row === 1);
+  const row2Data = storiesArray.filter((s: any) => s.row === 2);
 
   // If no stories, don't show the marquee part
-  if (stories.length === 0) return null;
+  if (storiesArray.length === 0) return null;
 
   const imagesRow1 = [...row1Data, ...row1Data, ...row1Data];
   const imagesRow2 = [...row2Data, ...row2Data, ...row2Data];

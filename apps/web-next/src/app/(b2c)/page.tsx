@@ -1,3 +1,4 @@
+import { API_BASE_URL } from '@/lib/config';
 import { Metadata } from "next";
 import { BestDestination } from "@/components/layout/bestDestination/BestDestination";
 import BestPackage from "@/components/layout/bestPackage/BestPackage";
@@ -17,7 +18,7 @@ export const metadata: Metadata = {
 };
 
 export default async function HomePage() {
-  const API_BASE = process.env.NEXT_PUBLIC_API_BASE_URL || 'http://localhost:5000/api';
+  const API_BASE = API_BASE_URL;
   
   let initialBestPackages = [];
   let initialBestActivities = [];
@@ -70,3 +71,4 @@ export default async function HomePage() {
     </div>
   );
 }
+
