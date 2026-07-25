@@ -21,7 +21,7 @@ export default function ReachUs() {
     <div id="reach-us-section" className="   relative bg-[#474747] py-10 px-2 overflow-hidden">
       {/* Background map */}
       <img
-        src={MapIcon}
+        src={MapIcon.src}
         alt="Map background"
         className="absolute inset-3 opacity-25 object-cover pointer-events-none w-full h-full"
       />
@@ -38,7 +38,7 @@ export default function ReachUs() {
           {/* Malaysia WhatsApp */}
           <p className="mt-4 text-xs uppercase tracking-widest text-primary relative z-10">Global</p>
           <div className="flex items-center gap-4 relative z-10">
-            <img src={whatsappIcon} alt="whatsapp" className="w-12 h-12 cursor-pointer" onClick={() => handleSendToWhatsApp(WANumber)} />
+            <img src={whatsappIcon.src} alt="whatsapp" className="w-12 h-12 cursor-pointer" onClick={() => handleSendToWhatsApp(WANumber)} />
           </div>
 
           <p className="mt-6 text-lg text-gray-300 relative z-10">
@@ -48,7 +48,7 @@ export default function ReachUs() {
           {/* India WhatsApp */}
           <p className="mt-4 text-xs uppercase tracking-widest text-primary relative z-10">India</p>
           <div className="flex items-center gap-4 relative z-10">
-            <img src={whatsappIcon} alt="whatsapp india" className="w-12 h-12 cursor-pointer" onClick={() => handleSendToWhatsApp(IndiaWANumber)} />
+            <img src={whatsappIcon.src} alt="whatsapp india" className="w-12 h-12 cursor-pointer" onClick={() => handleSendToWhatsApp(IndiaWANumber)} />
             <span className="font-medium text-gray-300">OR</span>
             <a href={`tel:${IndiaWADisplayNumber.replace(/\s/g, '')}`} className="w-12 h-12 bg-black rounded-full flex items-center justify-center cursor-pointer">
               <Phone className="text-white" />

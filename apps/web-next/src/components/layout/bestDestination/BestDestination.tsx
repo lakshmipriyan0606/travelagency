@@ -2,7 +2,7 @@
 import badgeBackground from "@/assets/icons/badgeBackground.svg";
 import Link from "next/link";
 import { useQuery } from "@tanstack/react-query";
-import { getDestinations } from "@/api/admin/destination.api";
+import { getDestinations } from "@/features/admin/destinations/api/destinations.api";
 
 const FALLBACK_DESTINATIONS = [
   {
@@ -124,7 +124,7 @@ export function BestDestination() {
                                     <div className="relative transform translate-y-4 group-hover:translate-y-0 transition-transform duration-500 flex flex-col items-center">
                                         <div className="relative">
                                             <img
-                                                src={badgeBackground}
+                                                src={badgeBackground.src}
                                                 alt="badge"
                                                 className="w-[160px] sm:w-[200px] h-auto object-contain drop-shadow-2xl"
                                             />

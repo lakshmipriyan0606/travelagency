@@ -121,8 +121,8 @@ export default function ActivitiesCarousel({ initialActivities }: { initialActiv
                         className="outer-prev absolute left-2 lg:left-0 xl:left-[-60px] top-[45%] -translate-y-1/2 z-50 cursor-pointer p-2 bg-white sm:bg-transparent rounded-full shadow-md sm:shadow-none transition-all hover:scale-110 active:scale-95 disabled:opacity-0 disabled:pointer-events-none"
                         aria-label="Previous slide"
                     >
-                        <img src={arrowLeft} className="w-6 h-6 sm:hidden" alt="" />
-                        <img src={customArrowLeft} className="hidden sm:block w-16 h-16 lg:w-20 lg:h-20" alt="" />
+                        <img src={arrowLeft.src} className="w-6 h-6 sm:hidden" alt="" />
+                        <img src={customArrowLeft.src} className="hidden sm:block w-16 h-16 lg:w-20 lg:h-20" alt="" />
                     </button>
 
                     <button
@@ -130,8 +130,8 @@ export default function ActivitiesCarousel({ initialActivities }: { initialActiv
                         className="outer-next absolute right-2 lg:right-0 xl:right-[-60px] top-[45%] -translate-y-1/2 z-50 cursor-pointer p-2 bg-white sm:bg-transparent rounded-full shadow-md sm:shadow-none transition-all hover:scale-110 active:scale-95 disabled:opacity-0 disabled:pointer-events-none"
                         aria-label="Next slide"
                     >
-                        <img src={arrowRight} className="w-6 h-6 sm:hidden" alt="" />
-                        <img src={customArrowRight} className="hidden sm:block w-16 h-16 lg:w-20 lg:h-20" alt="" />
+                        <img src={arrowRight.src} className="w-6 h-6 sm:hidden" alt="" />
+                        <img src={customArrowRight.src} className="hidden sm:block w-16 h-16 lg:w-20 lg:h-20" alt="" />
                     </button>
                 </>
             )}

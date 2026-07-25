@@ -29,6 +29,7 @@ import uiConfigRoutes from '#modules/uiConfig/uiConfig.admin.routes.js';
 import uploadRoutes from '#modules/upload/upload.admin.routes.js';
 import usersRoutes from '#modules/users/users.admin.routes.js';
 import websiteHeroRoutes from '#modules/websiteHero/websiteHero.admin.routes.js';
+import storyRoutes from '#modules/stories/story.routes.js';
 
 const router = express.Router();
 
@@ -42,5 +43,6 @@ router.use('/ui-config', uiConfigRoutes);
 router.use('/upload', uploadRoutes);
 router.use('/users', usersRoutes);
 router.use('/website-hero', websiteHeroRoutes);
+router.use('/stories', storyRoutes);
 
 export default router;

@@ -56,7 +56,7 @@ const BestCities = () => {
                   <div className="absolute bottom-8 left-1/2 -translate-x-1/2 w-full flex justify-center px-4">
                     <div className="relative">
                       <img
-                        src={badgeBackground}
+                        src={badgeBackground.src}
                         alt="badge"
                         className="w-[180px] h-auto"
                       />

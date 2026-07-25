@@ -9,7 +9,9 @@ import {
   PenTool, 
   MapPin, 
   Globe, 
-  LayoutDashboard
+  LayoutDashboard,
+  Star,
+  CalendarCheck
 } from "lucide-react";
 
 export type AdminNavItem = {
@@ -55,6 +57,16 @@ export const adminNavigation: AdminNavItem[] = [
     title: "All Destinations",
     href: "/admin/destinations",
     icon: MapPin,
+  },
+  {
+    title: "All Reviews",
+    href: "/admin/reviews",
+    icon: Star,
+  },
+  {
+    title: "Bookings",
+    href: "/admin/bookings",
+    icon: CalendarCheck,
   },
   {
     title: "Website",

@@ -29,9 +29,7 @@ import packageRoutes from '#modules/packages/package.b2c.routes.js';
 import reviewRoutes from '#modules/reviews/review.b2c.routes.js';
 import uiConfigRoutes from '#modules/uiConfig/uiConfig.b2c.routes.js';
 import websiteHeroRoutes from '#modules/websiteHero/websiteHero.b2c.routes.js';
-
-// Story only has protected routes currently, but for B2C it might be fetching?
-// We will manually fix stories.
+import storyRoutes from '#modules/stories/story.routes.js';
 
 import { apiLimiter } from '#middleware/rateLimiter.middleware.js';
 
@@ -47,5 +45,6 @@ router.use('/packages', apiLimiter, packageRoutes);
 router.use('/reviews', apiLimiter, reviewRoutes);
 router.use('/ui-config', apiLimiter, uiConfigRoutes);
 router.use('/website-hero', apiLimiter, websiteHeroRoutes);
+router.use('/stories', apiLimiter, storyRoutes);
 
 export default router;

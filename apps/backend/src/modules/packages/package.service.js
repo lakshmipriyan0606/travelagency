@@ -479,7 +479,7 @@ export const getLikedPackages = async (userId, queryParams) => {
 export const getLikeCount = async (userId) => {
   const allPackages = await packageRepository.find({ isDeleted: { $ne: true } });
   const finalAllPackages = allPackages.map((pkg) => {
-    const userLike = pkg.likes.find((like) => like.userId === userId);
+    const userLike = pkg.likes?.find((like) => like.userId === userId);
     return {
       ...pkg.toObject(),
       userLiked: userLike ? userLike.liked : false,

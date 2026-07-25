@@ -20,7 +20,7 @@ const FloatingActions = () => {
                 aria-label="Contact on WhatsApp"
                 className="cursor-pointer"
             >
-                <img src={whatsappIcon} alt="WhatsApp" className="w-10 h-10 relative z-10" />
+                <img src={whatsappIcon.src} alt="WhatsApp" className="w-10 h-10 relative z-10" />
             </button>
 
             {/* Instagram Button */}

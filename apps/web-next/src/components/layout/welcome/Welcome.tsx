@@ -23,7 +23,7 @@ const Welcome = () => {
                 </p>
 
                 <section className='flex items-center gap-1 mb-20'>
-                    <img src={Exclimation} className='w-8 h-8' alt="" />
+                    <img src={Exclimation.src} className='w-8 h-8' alt="" />
                     <div className='relative flex-1 top-[70px] sm:top-[100px] border border-[#9C9C9C] rounded-[10px] text-center  text-3xl p-2 sm:text-5xl sm:p-5'>
                         <h1 className='font-accent '> Travel isn’t about the miles you cover, it’s about
                             memories you create.

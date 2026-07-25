@@ -48,7 +48,7 @@ export const DatePickerField = ({
                   {value
                     ? new Date(value).toLocaleDateString("en-GB") // dd/MM/yyyy
                     : " "}
-                  <img src={calendarIcon} alt="" />
+                  <img src={calendarIcon.src} alt="" />
                 </span>
               </Button>
             </PopoverTrigger>

@@ -97,13 +97,13 @@ export default function InnerCarousel({ images = [], offerId, packageName, isAct
             <button
                 className={`inner-prev-${offerId} cursor-pointer absolute left-2 top-1/2 -translate-y-1/2 bg-black/40 hover:bg-black/70 p-2 rounded-full z-10 transition`}
             >
-                <img src={arrowLeft} alt="Prev" className="w-10 h-10" />
+                <img src={arrowLeft.src} alt="Prev" className="w-10 h-10" />
             </button>
 
             <button
                 className={`inner-next-${offerId} cursor-pointer absolute right-2 top-1/2 -translate-y-1/2 bg-black/40 hover:bg-black/70 p-2 rounded-full z-10 transition`}
             >
-                <img src={arrowRight} alt="Next" className="w-10 h-10" />
+                <img src={arrowRight.src} alt="Next" className="w-10 h-10" />
             </button>
         </div>
     );
