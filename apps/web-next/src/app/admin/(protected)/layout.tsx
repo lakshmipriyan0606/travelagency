@@ -1,5 +1,5 @@
 import { requireAdmin } from "@/features/admin/auth/guards";
-import AdminShell from "./components/AdminShell";
+import AdminShell from "../components/AdminShell";
 
 export const metadata = {
   title: "Admin Dashboard | Travel Agency",
