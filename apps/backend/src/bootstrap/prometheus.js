@@ -22,7 +22,7 @@ import {
   httpRequestDuration,
   httpRequestsActive,
 } from '#config/metrics.js';
-import ApiHit from '#modules/analytics/apiHit.model.js';
+import ApiHit from '#modules/b2c/analytics/apiHit.model.js';
 import { getFullPath, getUtcDateString, isPublicApiRequest } from '#utils/requestOrigin.js';
 import { logger } from '#shared/logger.js';
 

@@ -19,7 +19,7 @@
  * ============================================================================
  */
 import jwt from 'jsonwebtoken';
-import User from '../../modules/users/user.model.js';
+import User from '../../modules/b2c/users/user.model.js';
 
 /**
  * Ensures the requester has a valid JWT token.

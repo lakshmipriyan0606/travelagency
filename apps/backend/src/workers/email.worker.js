@@ -21,7 +21,7 @@
 import { agendaReady } from '#config/agenda.js';
 import dotenv from 'dotenv';
 import { sendTransactionalEmail } from '#integrations/email/mailerTransport.js';
-import { processBookingIntegrations } from '#modules/bookings/bookingIntegration.service.js';
+import { processBookingIntegrations } from '#modules/b2c/bookings/bookingIntegration.service.js';
 
 dotenv.config();
 

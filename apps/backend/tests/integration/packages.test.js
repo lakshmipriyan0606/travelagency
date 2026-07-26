@@ -1,9 +1,9 @@
 import request from 'supertest';
 import mongoose from 'mongoose';
 import app from '#app/app.js';
-import User from '#modules/users/user.model.js';
-import Package from '#modules/packages/package.model.js';
-import Destination from '#modules/destinations/destination.model.js';
+import User from '#modules/b2c/users/user.model.js';
+import Package from '#modules/b2c/packages/package.model.js';
+import Destination from '#modules/b2c/destinations/destination.model.js';
 import jwt from 'jsonwebtoken';
 
 describe('Packages API Integration Tests', () => {

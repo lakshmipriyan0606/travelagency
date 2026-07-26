@@ -1,10 +1,10 @@
 import request from 'supertest';
 import mongoose from 'mongoose';
 import app from '../../src/app.js';
-import Booking from '../../src/modules/bookings/booking.model.js';
-import { enqueueBookingIntegrations } from '../../src/modules/bookings/bookingQueue.service.js';
+import Booking from '../../src/modules/b2c/bookings/booking.model.js';
+import { enqueueBookingIntegrations } from '../../src/modules/b2c/bookings/bookingQueue.service.js';
 
-jest.mock('../../src/modules/bookings/bookingQueue.service.js', () => ({
+jest.mock('../../src/modules/b2c/bookings/bookingQueue.service.js', () => ({
   enqueueBookingIntegrations: jest.fn().mockResolvedValue(true),
 }));
 

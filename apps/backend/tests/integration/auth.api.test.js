@@ -1,7 +1,7 @@
 import request from 'supertest';
 import mongoose from 'mongoose';
 import app from '../../src/app.js';
-import User from '../../src/modules/users/user.model.js';
+import User from '../../src/modules/b2c/users/user.model.js';
 
 describe('Auth API Integration Tests', () => {
   const credentials = {
