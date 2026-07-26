@@ -19,7 +19,7 @@
  * ============================================================================
  */
 import * as packageService from './package.service.js';
-import { sendSuccess } from '#utils/response.js';
+import { sendSuccess } from '#shared/utils/response.js';
 
 export const createPackage = async (req, res, next) => {
   try {

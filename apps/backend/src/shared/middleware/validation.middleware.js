@@ -1,5 +1,5 @@
 import { z } from 'zod';
-import { logger } from '#shared/logger.js';
+import { logger } from '#shared/utils/logger.js';
 
 /**
  * Higher-order middleware function that returns an Express middleware.
@@ -17,12 +17,13 @@ export const validateBody = (schema) => {
       req.body = validatedData;
       next();
     } catch (error) {
-      if (error instanceof z.ZodError) {
-        logger.warn({ path: req.originalUrl, errors: error.errors }, 'Validation failed');
+      if (error instanceof z.ZodError || error.name === 'ZodError') {
+        const issues = error.errors || error.issues || [];
+        logger.warn({ path: req.originalUrl, errors: issues }, 'Validation failed');
         return res.status(400).json({
           success: false,
           message: 'Invalid request data',
-          errors: error.errors.map((err) => ({
+          errors: issues.map((err) => ({
             field: err.path.join('.'),
             message: err.message,
           })),

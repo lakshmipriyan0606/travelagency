@@ -22,9 +22,9 @@ import {
   httpRequestDuration,
   httpRequestsActive,
 } from '#config/metrics.js';
-import ApiHit from '#modules/b2c/analytics/apiHit.model.js';
-import { getFullPath, getUtcDateString, isPublicApiRequest } from '#utils/requestOrigin.js';
-import { logger } from '#shared/logger.js';
+import ApiHit from '#b2c/analytics/apiHit.model.js';
+import { getFullPath, getUtcDateString, isPublicApiRequest } from '#shared/utils/requestOrigin.js';
+import { logger } from '#shared/utils/logger.js';
 
 export const prometheusMiddleware = (req, res, next) => {
   httpRequestsActive.inc({ method: req.method });

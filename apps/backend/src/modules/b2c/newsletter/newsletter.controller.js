@@ -17,7 +17,7 @@
  * ============================================================================
  */
 import * as newsletterService from './newsletter.service.js';
-import { sendSuccess } from '#utils/response.js';
+import { sendSuccess } from '#shared/utils/response.js';
 
 export const subscribeNewsletter = async (req, res, next) => {
   try {

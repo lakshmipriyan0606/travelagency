@@ -5,7 +5,7 @@ import {
   getApiUsage,
   cleanupLocalhostVisits,
 } from './analytics.controller.js';
-import { protectRoute, superAdminOnly } from '#middleware/auth/auth.middleware.js';
+import { protectRoute, superAdminOnly } from '#b2c/middleware/auth.middleware.js';
 
 const router = express.Router();
 

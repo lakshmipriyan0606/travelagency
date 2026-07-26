@@ -20,7 +20,12 @@
  * ============================================================================
  */
 import * as analyticsRepository from './analytics.repository.js';
-import { getClientIp, getUtcDateString, isLocalRequest, maskIp } from '#utils/requestOrigin.js';
+import {
+  getClientIp,
+  getUtcDateString,
+  isLocalRequest,
+  maskIp,
+} from '#shared/utils/requestOrigin.js';
 import { LOCALHOST_IP_MATCH, EXCLUDE_ANALYTICS_ROUTE } from './analytics.constants.js';
 
 /**

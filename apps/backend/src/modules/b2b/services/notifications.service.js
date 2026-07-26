@@ -1,4 +1,4 @@
-import { logger } from '#shared/logger.js';
+import { logger } from '#shared/utils/logger.js';
 
 /**
  * Stub service for notifying B2B agencies regarding lifecycle changes.

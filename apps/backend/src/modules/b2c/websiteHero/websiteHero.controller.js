@@ -19,7 +19,7 @@
  * ============================================================================
  */
 import * as websiteHeroService from './websiteHero.service.js';
-import { sendSuccess } from '#utils/response.js';
+import { sendSuccess } from '#shared/utils/response.js';
 
 export const getActiveHero = async (req, res, next) => {
   try {

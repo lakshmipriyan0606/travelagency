@@ -19,7 +19,7 @@
  * ============================================================================
  */
 import jwt from 'jsonwebtoken';
-import User from '../../modules/b2c/users/user.model.js';
+import User from '../users/user.model.js';
 
 /**
  * Ensures the requester has a valid JWT token.
@@ -27,7 +27,9 @@ import User from '../../modules/b2c/users/user.model.js';
  */
 export const protectRoute = async (req, res, next) => {
   try {
-    const token = req.cookies.access_token;
+    const token =
+      req.cookies?.access_token ||
+      (req.headers?.authorization && req.headers.authorization.split(' ')[1]);
 
     if (!token) return res.status(401).json({ message: 'Unauthorized: No Token' });
 

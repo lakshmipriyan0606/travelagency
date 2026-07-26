@@ -19,19 +19,19 @@
  * ============================================================================
  */
 import express from 'express';
-import analyticsRoutes from '#modules/b2c/analytics/analytics.b2c.routes.js';
-import authRoutes from '#modules/b2c/auth/auth.b2c.routes.js';
-import blogRoutes from '#modules/b2c/blogs/blog.b2c.routes.js';
-import bookingRoutes from '#modules/b2c/bookings/booking.b2c.routes.js';
-import destinationRoutes from '#modules/b2c/destinations/destination.b2c.routes.js';
-import newsletterRoutes from '#modules/b2c/newsletter/newsletter.b2c.routes.js';
-import packageRoutes from '#modules/b2c/packages/package.b2c.routes.js';
-import reviewRoutes from '#modules/b2c/reviews/review.b2c.routes.js';
-import uiConfigRoutes from '#modules/b2c/uiConfig/uiConfig.b2c.routes.js';
-import websiteHeroRoutes from '#modules/b2c/websiteHero/websiteHero.b2c.routes.js';
-import storyRoutes from '#modules/b2c/stories/story.routes.js';
+import analyticsRoutes from '#b2c/analytics/analytics.b2c.routes.js';
+import authRoutes from '#b2c/auth/auth.b2c.routes.js';
+import blogRoutes from '#b2c/blogs/blog.b2c.routes.js';
+import bookingRoutes from '#b2c/bookings/booking.b2c.routes.js';
+import destinationRoutes from '#b2c/destinations/destination.b2c.routes.js';
+import newsletterRoutes from '#b2c/newsletter/newsletter.b2c.routes.js';
+import packageRoutes from '#b2c/packages/package.b2c.routes.js';
+import reviewRoutes from '#b2c/reviews/review.b2c.routes.js';
+import uiConfigRoutes from '#b2c/uiConfig/uiConfig.b2c.routes.js';
+import websiteHeroRoutes from '#b2c/websiteHero/websiteHero.b2c.routes.js';
+import storyRoutes from '#b2c/stories/story.routes.js';
 
-import { apiLimiter } from '#middleware/rateLimiter.middleware.js';
+import { apiLimiter } from '#b2c/middleware/rateLimiter.middleware.js';
 
 const router = express.Router();
 

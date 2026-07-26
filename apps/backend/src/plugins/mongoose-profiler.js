@@ -15,7 +15,7 @@
  * src/config/db.js (Applied globally to mongoose)
  * ============================================================================
  */
-import { logger } from '#shared/logger.js';
+import { logger } from '#shared/utils/logger.js';
 import * as Sentry from '@sentry/node';
 import client from 'prom-client';
 import { register } from '#config/metrics.js';

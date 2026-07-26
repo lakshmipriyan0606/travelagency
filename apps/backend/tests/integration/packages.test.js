@@ -1,16 +1,16 @@
 import request from 'supertest';
 import mongoose from 'mongoose';
-import app from '#app/app.js';
-import User from '#modules/b2c/users/user.model.js';
-import Package from '#modules/b2c/packages/package.model.js';
-import Destination from '#modules/b2c/destinations/destination.model.js';
+import app from '../../src/app.js';
+import User from '#b2c/users/user.model.js';
+import Package from '#b2c/packages/package.model.js';
+import Destination from '#b2c/destinations/destination.model.js';
 import jwt from 'jsonwebtoken';
 
 describe('Packages API Integration Tests', () => {
   let adminToken;
   let destinationId;
 
-  beforeAll(async () => {
+  beforeEach(async () => {
     // Clean up
     await User.deleteMany({});
     await Package.deleteMany({});
@@ -46,13 +46,7 @@ describe('Packages API Integration Tests', () => {
     destinationId = dest._id;
   });
 
-  afterAll(async () => {
-    await User.deleteMany({});
-    await Package.deleteMany({});
-    await Destination.deleteMany({});
-  });
-
-  it('should create a new package via Admin Gateway', async () => {
+  it('should create a new package via Admin Gateway and fetch it via B2C Gateway', async () => {
     const newPackage = {
       type: 'package',
       packageName: 'Integration Test Package',
@@ -68,19 +62,17 @@ describe('Packages API Integration Tests', () => {
     };
 
     const res = await request(app)
-      .post('/api/v1/b2c-admin/packages')
+      .post('/api/v1/b2c-admin/packages/create')
       .set('Authorization', `Bearer ${adminToken}`)
       .send(newPackage);
 
     expect(res.status).toBe(201);
     expect(res.body.success).toBe(true);
     expect(res.body.data.packageName).toBe('Integration Test Package');
-  });
 
-  it('should fetch the created package via B2C Gateway', async () => {
-    const res = await request(app).get('/api/v1/b2c/packages').expect(200);
+    const fetchRes = await request(app).get('/api/v1/b2c/packages').expect(200);
 
-    expect(res.body.success).toBe(true);
-    expect(res.body.data.some((p) => p.packageName === 'Integration Test Package')).toBe(true);
+    expect(fetchRes.body.success).toBe(true);
+    expect(fetchRes.body.data.some((p) => p.packageName === 'Integration Test Package')).toBe(true);
   });
 });

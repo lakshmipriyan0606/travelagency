@@ -19,7 +19,7 @@
  */
 import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
-import { AppError } from '#middleware/error/AppError.js';
+import { AppError } from '#shared/errors/AppError.js';
 import * as userRepository from '../users/users.repository.js';
 import cache from '#config/cache.js';
 import { generateAccessToken, generateRefreshToken } from './auth.utils.js';

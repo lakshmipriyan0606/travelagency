@@ -1,12 +1,18 @@
-import request from 'supertest';
-import mongoose from 'mongoose';
-import app from '../../src/app.js';
-import Booking from '../../src/modules/b2c/bookings/booking.model.js';
-import { enqueueBookingIntegrations } from '../../src/modules/b2c/bookings/bookingQueue.service.js';
+import { jest } from '@jest/globals';
 
-jest.mock('../../src/modules/b2c/bookings/bookingQueue.service.js', () => ({
-  enqueueBookingIntegrations: jest.fn().mockResolvedValue(true),
+const mockEnqueue = jest.fn().mockResolvedValue(true);
+
+jest.unstable_mockModule('../../src/modules/b2c/bookings/bookingQueue.service.js', () => ({
+  enqueueBookingIntegrations: mockEnqueue,
 }));
+
+// Dynamically import dependencies after mocking
+const request = (await import('supertest')).default;
+const mongoose = (await import('mongoose')).default;
+const app = (await import('../../src/app.js')).default;
+const Booking = (await import('../../src/modules/b2c/bookings/booking.model.js')).default;
+const { enqueueBookingIntegrations } =
+  await import('../../src/modules/b2c/bookings/bookingQueue.service.js');
 
 describe('Booking API Integration Tests', () => {
   afterEach(async () => {
@@ -20,6 +26,7 @@ describe('Booking API Integration Tests', () => {
       email: 'john@example.com',
       destination: 'Paris',
       packageName: 'Romantic Getaway',
+      phone: '1234567890', // satisfy refinement rule
     };
 
     it('should create a booking and enqueue integrations successfully', async () => {

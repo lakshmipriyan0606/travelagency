@@ -25,7 +25,7 @@ import express from 'express';
 import { initSentry, setupSentryErrorHandler } from './bootstrap/sentry.js';
 import { registerMiddlewares } from './app/registerMiddlewares.js';
 import { registerRoutes } from './app/registerRoutes.js';
-import { globalErrorHandler } from '#middleware/error/errorHandler.js';
+import { globalErrorHandler } from '#shared/middleware/errorHandler.js';
 
 const app = express();
 app.set('trust proxy', 1);

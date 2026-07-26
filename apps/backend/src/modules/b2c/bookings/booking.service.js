@@ -22,7 +22,7 @@
  */
 import { v4 as uuidv4 } from 'uuid';
 import * as bookingRepository from './booking.repository.js';
-import { encryptValue, decryptValue } from '#utils/crypto.js';
+import { encryptValue, decryptValue } from '#shared/utils/crypto.js';
 import { enqueueBookingIntegrations } from './bookingQueue.service.js';
 
 /**

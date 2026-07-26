@@ -8,9 +8,9 @@ import {
   deleteBlog,
   toggleLike,
 } from './blog.controller.js';
-import { protectRoute } from '#middleware/auth/auth.middleware.js';
+import { protectRoute } from '#b2c/middleware/auth.middleware.js';
 import { upload } from '#config/multer.js';
-import { cacheResponse, bustCacheByPrefix } from '#middleware/cache.middleware.js';
+import { cacheResponse, bustCacheByPrefix } from '#shared/middleware/cache.middleware.js';
 
 // Public routes
 

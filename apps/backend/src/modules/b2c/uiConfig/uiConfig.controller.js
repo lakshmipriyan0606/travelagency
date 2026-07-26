@@ -18,7 +18,7 @@
  * ============================================================================
  */
 import * as uiConfigService from './uiConfig.service.js';
-import { sendSuccess } from '#utils/response.js';
+import { sendSuccess } from '#shared/utils/response.js';
 
 export const getWebsiteHero = async (req, res, next) => {
   try {

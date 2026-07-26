@@ -18,7 +18,7 @@
  * ============================================================================
  */
 import * as uploadService from './upload.service.js';
-import { sendSuccess } from '#utils/response.js';
+import { sendSuccess } from '#shared/utils/response.js';
 
 export const uploadImage = async (req, res, next) => {
   try {

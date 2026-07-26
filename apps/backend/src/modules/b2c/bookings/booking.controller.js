@@ -19,16 +19,21 @@
  * ============================================================================
  */
 import * as bookingService from './booking.service.js';
-import { sendSuccess } from '#utils/response.js';
+import { sendSuccess } from '#shared/utils/response.js';
 
 export const createBooking = async (req, res, next) => {
   try {
     const idempotencyKey = req.headers['idempotency-key'] || req.headers['x-idempotency-key'];
     const result = await bookingService.createBookingService(req.body, idempotencyKey);
-    return sendSuccess(res, result.isDuplicate ? 200 : 201, 'Booking created', {
-      bookingId: result.bookingId,
-      isDuplicate: result.isDuplicate,
-    });
+    return sendSuccess(
+      res,
+      result.isDuplicate ? 200 : 201,
+      result.isDuplicate ? 'Duplicate request ignored' : 'Booking created',
+      {
+        bookingId: result.bookingId,
+        isDuplicate: result.isDuplicate,
+      }
+    );
   } catch (err) {
     next(err);
   }

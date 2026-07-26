@@ -19,7 +19,7 @@
  * ============================================================================
  */
 import * as analyticsService from './analytics.service.js';
-import { sendSuccess } from '#utils/response.js';
+import { sendSuccess } from '#shared/utils/response.js';
 
 export const recordVisit = async (req, res, next) => {
   try {

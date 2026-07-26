@@ -1,5 +1,5 @@
 import express from 'express';
-import { protectRoute, adminOnly } from '#middleware/auth/auth.middleware.js';
+import { protectRoute, adminOnly } from '#b2c/middleware/auth.middleware.js';
 import {
   getProfile,
   updateProfile,

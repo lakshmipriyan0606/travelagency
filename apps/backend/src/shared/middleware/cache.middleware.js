@@ -19,7 +19,7 @@
  * ============================================================================
  */
 import cache from '#config/cache.js';
-import { logger } from '#shared/logger.js';
+import { logger } from '#shared/utils/logger.js';
 
 /**
  * Cache-aside middleware using Redis.

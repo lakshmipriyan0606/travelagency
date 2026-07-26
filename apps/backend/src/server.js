@@ -28,7 +28,7 @@
  * ============================================================================
  */
 import { env } from '#config/env.js';
-import { logger } from '#shared/logger.js';
+import { logger } from '#shared/utils/logger.js';
 
 // Connect Database
 import { connectDB } from '#config/db.js';

@@ -16,7 +16,7 @@
  * ============================================================================
  */
 import Redis from 'ioredis';
-import { logger } from '#shared/logger.js';
+import { logger } from '#shared/utils/logger.js';
 
 const redisConfig = {
   host: process.env.REDIS_HOST || '127.0.0.1',

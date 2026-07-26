@@ -15,7 +15,7 @@
  * src/app.js (registered as the final middleware)
  * ============================================================================
  */
-import { logger } from '#shared/logger.js';
+import { logger } from '#shared/utils/logger.js';
 
 export const globalErrorHandler = (err, req, res, next) => {
   err.statusCode = err.statusCode || 500;

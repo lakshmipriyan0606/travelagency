@@ -1,6 +1,8 @@
 export default {
   transform: {},
   moduleNameMapper: {
+    '^#b2b/(.*)$': '<rootDir>/src/modules/b2b/$1',
+    '^#b2c/(.*)$': '<rootDir>/src/modules/b2c/$1',
     '^#modules/(.*)$': '<rootDir>/src/modules/$1',
     '^#integrations/(.*)$': '<rootDir>/src/integrations/$1',
     '^#shared/(.*)$': '<rootDir>/src/shared/$1',

@@ -1,17 +1,27 @@
-import { protectRoute } from '../../src/middleware/auth/auth.middleware.js';
-import jwt from 'jsonwebtoken';
-import cache from '../../config/cache.js';
+import { jest } from '@jest/globals';
 
-jest.mock('jsonwebtoken');
-jest.mock('../../config/cache.js', () => ({
-  get: jest.fn(),
+const mockVerify = jest.fn();
+const mockFindById = jest.fn();
+
+jest.unstable_mockModule('jsonwebtoken', () => ({
+  default: {
+    verify: mockVerify,
+  },
 }));
+
+jest.unstable_mockModule('#b2c/users/user.model.js', () => ({
+  default: {
+    findById: mockFindById,
+  },
+}));
+
+const { protectRoute } = await import('../../src/modules/b2c/middleware/auth.middleware.js');
 
 describe('Auth Middleware', () => {
   let req, res, next;
 
   beforeEach(() => {
-    req = { headers: {} };
+    req = { cookies: {} };
     res = {
       status: jest.fn().mockReturnThis(),
       json: jest.fn(),
@@ -20,29 +30,17 @@ describe('Auth Middleware', () => {
     jest.clearAllMocks();
   });
 
-  it('should return 401 if no Authorization header is provided', async () => {
+  it('should return 401 if no access token cookie is provided', async () => {
     await protectRoute(req, res, next);
     expect(res.status).toHaveBeenCalledWith(401);
     expect(res.json).toHaveBeenCalledWith(
-      expect.objectContaining({ message: 'Authentication required' })
-    );
-  });
-
-  it('should return 401 if token is blacklisted', async () => {
-    req.headers.authorization = 'Bearer blacklisted_token';
-    cache.get.mockResolvedValue(true);
-
-    await protectRoute(req, res, next);
-    expect(res.status).toHaveBeenCalledWith(401);
-    expect(res.json).toHaveBeenCalledWith(
-      expect.objectContaining({ message: 'Session expired. Please login again.' })
+      expect.objectContaining({ message: 'Unauthorized: No Token' })
     );
   });
 
   it('should return 401 if token is invalid or expired', async () => {
-    req.headers.authorization = 'Bearer invalid_token';
-    cache.get.mockResolvedValue(false);
-    jwt.verify.mockImplementation(() => {
+    req.cookies.access_token = 'invalid_token';
+    mockVerify.mockImplementation(() => {
       throw new Error('TokenExpiredError');
     });
 
@@ -54,12 +52,14 @@ describe('Auth Middleware', () => {
   });
 
   it('should call next() if token is valid', async () => {
-    req.headers.authorization = 'Bearer valid_token';
-    cache.get.mockResolvedValue(false);
-    jwt.verify.mockReturnValue({ id: 'user123', role: 'admin' });
+    req.cookies.access_token = 'valid_token';
+    mockVerify.mockReturnValue({ id: 'user123' });
+    mockFindById.mockReturnValue({
+      select: jest.fn().mockResolvedValue({ _id: 'user123', name: 'John Doe' }),
+    });
 
     await protectRoute(req, res, next);
-    expect(req.user).toEqual({ id: 'user123', role: 'admin' });
+    expect(req.user).toEqual({ _id: 'user123', name: 'John Doe' });
     expect(next).toHaveBeenCalledTimes(1);
   });
 });

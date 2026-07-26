@@ -18,7 +18,7 @@
  * ============================================================================
  */
 import * as storyService from './story.service.js';
-import { sendSuccess } from '#utils/response.js';
+import { sendSuccess } from '#shared/utils/response.js';
 
 export const createStory = async (req, res, next) => {
   try {

@@ -21,7 +21,7 @@
  */
 import * as blogRepository from './blog.repository.js';
 import cloudinary from '#config/cloudinary.js';
-import { AppError } from '#middleware/error/AppError.js';
+import { AppError } from '#shared/errors/AppError.js';
 
 const uploadFile = (file, folder) =>
   new Promise((resolve, reject) => {

@@ -17,7 +17,7 @@
  */
 import pinoHttp from 'pino-http';
 import { v4 as uuidv4 } from 'uuid';
-import { logger } from '#shared/logger.js';
+import { logger } from '#shared/utils/logger.js';
 
 export const loggerMiddleware = pinoHttp({
   logger,

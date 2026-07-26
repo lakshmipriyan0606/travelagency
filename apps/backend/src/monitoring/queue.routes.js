@@ -16,8 +16,8 @@
  */
 import express from 'express';
 import { getQueueHealthDetail } from '#config/queueRuntime.js';
-import { protectRoute, superAdminOnly } from '#middleware/auth/auth.middleware.js';
-import { logger } from '#shared/logger.js';
+import { protectRoute, superAdminOnly } from '#b2c/middleware/auth.middleware.js';
+import { logger } from '#shared/utils/logger.js';
 
 const router = express.Router();
 

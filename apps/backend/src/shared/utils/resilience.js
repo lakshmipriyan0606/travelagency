@@ -15,7 +15,7 @@
  * src/modules/bookings/bookingIntegration.service.js
  * ============================================================================
  */
-import { logger } from '#shared/logger.js';
+import { logger } from '#shared/utils/logger.js';
 import * as Sentry from '@sentry/node';
 
 /**

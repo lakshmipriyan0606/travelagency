@@ -18,7 +18,7 @@
  * ============================================================================
  */
 import * as reviewService from './review.service.js';
-import { sendSuccess } from '#utils/response.js';
+import { sendSuccess } from '#shared/utils/response.js';
 
 export const createReview = async (req, res, next) => {
   try {

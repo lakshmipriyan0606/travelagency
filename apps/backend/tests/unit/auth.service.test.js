@@ -15,8 +15,7 @@ jest.unstable_mockModule('../../src/modules/b2c/users/user.model.js', () => ({
 }));
 
 // Import service after mocking
-const { registerUser, findUserByEmail, findUserById } =
-  await import('#modules/b2c/auth/auth.service.js');
+const { registerUser, findUserByEmail, findUserById } = await import('#b2c/auth/auth.service.js');
 
 describe('Auth Service Unit Tests', () => {
   beforeEach(() => {

@@ -1,7 +1,7 @@
 import express from 'express';
-import { protectRoute, adminOnly } from '#middleware/auth/auth.middleware.js';
+import { protectRoute, adminOnly } from '#b2c/middleware/auth.middleware.js';
 import { upload } from '#config/multer.js';
-import { cacheResponse, bustCacheByPrefix } from '#middleware/cache.middleware.js';
+import { cacheResponse, bustCacheByPrefix } from '#shared/middleware/cache.middleware.js';
 import {
   createPackage,
   updatePackage,

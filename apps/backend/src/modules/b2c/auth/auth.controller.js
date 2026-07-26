@@ -20,7 +20,7 @@
  */
 import { setAuthCookies } from './auth.utils.js';
 import * as authService from './auth.service.js';
-import { sendSuccess } from '#utils/response.js';
+import { sendSuccess } from '#shared/utils/response.js';
 
 /**
  * Handle new user registration.

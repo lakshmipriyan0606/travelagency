@@ -19,13 +19,14 @@
  * src/app/gateways/b2c-admin.gateway.js
  * ============================================================================
  */
-import { authLimiter } from '#middleware/rateLimiter.middleware.js';
+import { authLimiter } from '#b2c/middleware/rateLimiter.middleware.js';
 import healthRoutes from '#health/health.routes.js';
 import metricsRoutes from '#monitoring/metrics.routes.js';
 import queueRoutes from '#monitoring/queue.routes.js';
 
 import b2cGateway from './gateways/b2c.gateway.js';
 import b2cAdminGateway from './gateways/b2c-admin.gateway.js';
+import b2bRouter from '#b2b/b2b.routes.js';
 
 export const registerRoutes = (app) => {
   // ============================================================================
@@ -44,6 +45,9 @@ export const registerRoutes = (app) => {
   // The primary entry points for business logic. Gateways encapsulate routes
   // tailored for specific consumer contexts (B2C, Admin) with API versioning.
   // ============================================================================
+
+  // B2B Gateway Router
+  app.use('/api/b2b', b2bRouter);
 
   // Public B2C Gateway
   // Mounted without auth limiters because limiters are applied on specific routes.

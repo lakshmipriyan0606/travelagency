@@ -1,5 +1,5 @@
 import express from 'express';
-import { protectRoute } from '#middleware/auth/auth.middleware.js';
+import { protectRoute } from '#b2c/middleware/auth.middleware.js';
 import { upload } from '#config/multer.js';
 import { uploadImage, getAllImages } from './upload.controller.js';
 

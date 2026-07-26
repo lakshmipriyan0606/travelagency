@@ -19,7 +19,7 @@
  * ============================================================================
  */
 import * as blogService from './blog.service.js';
-import { sendSuccess } from '#utils/response.js';
+import { sendSuccess } from '#shared/utils/response.js';
 
 export const createBlog = async (req, res, next) => {
   try {

@@ -19,7 +19,7 @@
  * ============================================================================
  */
 import * as usersService from './users.service.js';
-import { sendSuccess } from '#utils/response.js';
+import { sendSuccess } from '#shared/utils/response.js';
 
 export const getProfile = async (req, res, next) => {
   try {

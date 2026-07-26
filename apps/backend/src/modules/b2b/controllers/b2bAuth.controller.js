@@ -24,14 +24,23 @@ import crypto from 'crypto';
 import jwt from 'jsonwebtoken';
 import { Agency } from '../models/agency.model.js';
 import { AgencyUser } from '../models/agencyUser.model.js';
+import { AdminUser } from '../models/adminUser.model.js';
 import { RefreshToken } from '../models/refreshToken.model.js';
-import { AppError } from '#middleware/error/AppError.js';
-import { sendSuccess } from '#utils/response.js';
+import { AppError } from '#shared/errors/AppError.js';
+import { sendSuccess } from '#shared/utils/response.js';
 import { notifyAgency } from '../services/notifications.service.js';
-import { logger } from '#shared/logger.js';
+import { logger } from '#shared/utils/logger.js';
 
 // Centralized security configurations
 const BCRYPT_SALT_ROUNDS = 12;
+
+/**
+ * Helper to compute SHA-256 hash of a string.
+ * Used for storing and looking up refresh tokens securely.
+ */
+const hashSha256 = (token) => {
+  return crypto.createHash('sha256').update(token).digest('hex');
+};
 
 /**
  * Handles the registration of a new B2B travel agency.
@@ -240,7 +249,7 @@ export const login = async (req, res, next) => {
 
     // 8. Generate raw refresh token, hash it using SHA-256, and store in database
     const rawRefreshToken = crypto.randomBytes(32).toString('hex');
-    const tokenHash = crypto.createHash('sha256').update(rawRefreshToken).digest('hex');
+    const tokenHash = hashSha256(rawRefreshToken);
     const expiresAt = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000); // 7 days
 
     await RefreshToken.create({
@@ -269,4 +278,200 @@ export const login = async (req, res, next) => {
     logger.error({ err: error }, 'Unexpected error during B2B agency login');
     return next(new AppError('Internal server error during login', 500));
   }
+};
+
+/**
+ * Shared utility to handle Refresh Token rotation.
+ * Validates, revokes, and issues a new pair of Access & Refresh tokens.
+ */
+const rotateToken = async (req, res, next, expectedScope) => {
+  const rawRefreshToken = req.cookies.refresh_token || req.body.refreshToken;
+  if (!rawRefreshToken) {
+    return next(new AppError('Unauthorized: Missing refresh token', 401));
+  }
+
+  try {
+    const tokenHash = hashSha256(rawRefreshToken);
+    const tokenDoc = await RefreshToken.findOne({ tokenHash, scope: expectedScope });
+
+    if (!tokenDoc || tokenDoc.revoked || tokenDoc.expiresAt < new Date()) {
+      return next(new AppError('Unauthorized: Invalid, expired, or revoked refresh token', 401));
+    }
+
+    let payloadSub = tokenDoc.userId;
+    let agencyId = null;
+    let role = '';
+
+    if (expectedScope === 'agency') {
+      const user = await AgencyUser.findById(tokenDoc.userId);
+      if (!user || !user.isActive) {
+        return next(new AppError('Unauthorized: User account suspended or deleted', 401));
+      }
+      const agency = await Agency.findById(user.agencyId);
+      if (!agency || agency.status !== 'active' || agency.isDeleted) {
+        return next(new AppError('Forbidden: Agency account inactive or suspended', 403));
+      }
+      agencyId = agency._id;
+      role = user.role;
+    } else if (expectedScope === 'admin') {
+      const admin = await AdminUser.findById(tokenDoc.userId);
+      if (!admin || !admin.isActive) {
+        return next(new AppError('Unauthorized: Admin account suspended or deleted', 401));
+      }
+      role = admin.role;
+    }
+
+    // Revoke old refresh token
+    tokenDoc.revoked = true;
+    await tokenDoc.save();
+
+    // Generate new JWT Access Token
+    const jwtSecret = process.env.JWT_SECRET || 'fallback-secret-key';
+    const accessToken = jwt.sign(
+      {
+        sub: payloadSub,
+        ...(agencyId ? { agencyId } : {}),
+        scope: expectedScope,
+        role,
+      },
+      jwtSecret,
+      { expiresIn: '15m' }
+    );
+
+    // Generate new Refresh Token
+    const newRawRefreshToken = crypto.randomBytes(32).toString('hex');
+    const newHash = hashSha256(newRawRefreshToken);
+    const expiresAt = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000); // 7 days
+
+    await RefreshToken.create({
+      userId: payloadSub,
+      scope: expectedScope,
+      tokenHash: newHash,
+      expiresAt,
+    });
+
+    return sendSuccess(res, 200, 'Tokens rotated successfully', {
+      accessToken,
+      refreshToken: newRawRefreshToken,
+    });
+  } catch (error) {
+    logger.error({ err: error }, 'Token rotation execution error');
+    return next(new AppError('Internal server error during token refresh', 500));
+  }
+};
+
+/**
+ * Shared utility to handle Refresh Token revocation (logout).
+ */
+const revokeToken = async (req, res, next, expectedScope) => {
+  const rawRefreshToken = req.cookies.refresh_token || req.body.refreshToken;
+  if (rawRefreshToken) {
+    try {
+      const tokenHash = hashSha256(rawRefreshToken);
+      await RefreshToken.updateMany({ tokenHash, scope: expectedScope }, { revoked: true });
+    } catch (error) {
+      logger.warn({ err: error }, 'Error revoking token during logout');
+    }
+  }
+
+  res.clearCookie('access_token');
+  res.clearCookie('refresh_token');
+  return sendSuccess(res, 200, 'Logged out successfully');
+};
+
+// --- Agency Handlers ---
+export const refreshAgency = (req, res, next) => rotateToken(req, res, next, 'agency');
+export const logoutAgency = (req, res, next) => revokeToken(req, res, next, 'agency');
+export const meAgency = async (req, res) => {
+  return sendSuccess(res, 200, 'Profile retrieved', {
+    agencyUser: {
+      id: req.user._id,
+      name: req.user.name,
+      email: req.user.email,
+      role: req.user.role,
+    },
+    agencyStatus: req.agency.status,
+  });
+};
+
+// --- Admin Handlers ---
+/**
+ * Handles the login authentication of an AdminUser.
+ */
+export const loginAdmin = async (req, res, next) => {
+  const { email, password } = req.body;
+
+  try {
+    const normalizedEmail = String(email).toLowerCase().trim();
+
+    // Fetch AdminUser with passwordHash explicitly selected
+    const admin = await AdminUser.findOne({ email: normalizedEmail }).select('+passwordHash');
+    if (!admin) {
+      return next(new AppError('Invalid credentials', 401));
+    }
+
+    const isPasswordValid = await bcrypt.compare(password, admin.passwordHash);
+    if (!isPasswordValid) {
+      return next(new AppError('Invalid credentials', 401));
+    }
+
+    if (!admin.isActive) {
+      return next(new AppError('Forbidden: Admin account is inactive', 403));
+    }
+
+    // Generate JWT access token (15 minute expiration)
+    const jwtSecret = process.env.JWT_SECRET || 'fallback-secret-key';
+    const accessToken = jwt.sign(
+      {
+        sub: admin._id,
+        scope: 'admin',
+        role: admin.role,
+      },
+      jwtSecret,
+      { expiresIn: '15m' }
+    );
+
+    // Generate raw refresh token, hash it using SHA-256, and store in database
+    const rawRefreshToken = crypto.randomBytes(32).toString('hex');
+    const tokenHash = hashSha256(rawRefreshToken);
+    const expiresAt = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000); // 7 days
+
+    await RefreshToken.create({
+      userId: admin._id,
+      scope: 'admin',
+      tokenHash,
+      expiresAt,
+    });
+
+    // Update last login timestamp
+    admin.lastLoginAt = new Date();
+    await admin.save();
+
+    return sendSuccess(res, 200, 'Logged in successfully', {
+      accessToken,
+      refreshToken: rawRefreshToken,
+      adminUser: {
+        id: admin._id,
+        name: admin.name,
+        email: admin.email,
+        role: admin.role,
+      },
+    });
+  } catch (error) {
+    logger.error({ err: error }, 'Unexpected error during Admin login');
+    return next(new AppError('Internal server error during login', 500));
+  }
+};
+
+export const refreshAdmin = (req, res, next) => rotateToken(req, res, next, 'admin');
+export const logoutAdmin = (req, res, next) => revokeToken(req, res, next, 'admin');
+export const meAdmin = async (req, res) => {
+  return sendSuccess(res, 200, 'Profile retrieved', {
+    adminUser: {
+      id: req.admin._id,
+      name: req.admin.name,
+      email: req.admin.email,
+      role: req.admin.role,
+    },
+  });
 };

@@ -18,7 +18,7 @@
 // db.config.js
 import mongoose from 'mongoose';
 import dotenv from 'dotenv';
-import { runStartupLocalhostCleanup } from '#modules/b2c/analytics/analytics.controller.js';
+import { runStartupLocalhostCleanup } from '#b2c/analytics/analytics.controller.js';
 import mongooseProfiler from '../src/plugins/mongoose-profiler.js';
 
 dotenv.config(); // Loads .env variables

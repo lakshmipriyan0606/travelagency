@@ -50,6 +50,8 @@
   },
   "type": "module",
   "imports": {
+    "#b2b/*": "./src/modules/b2b/*",
+    "#b2c/*": "./src/modules/b2c/*",
     "#modules/*": "./src/modules/*",
     "#integrations/*": "./src/integrations/*",
     "#shared/*": "./src/shared/*",

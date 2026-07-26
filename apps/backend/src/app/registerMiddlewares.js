@@ -32,7 +32,7 @@ import mongoSanitize from 'express-mongo-sanitize';
 import { loggerMiddleware } from '#bootstrap/logger.js';
 import { prometheusMiddleware } from '#bootstrap/prometheus.js';
 import { corsMiddleware } from '#bootstrap/cors.js';
-import { globalLimiter } from '#middleware/rateLimiter.middleware.js';
+import { globalLimiter } from '#b2c/middleware/rateLimiter.middleware.js';
 
 export const registerMiddlewares = (app) => {
   // ============================================================================

@@ -1,6 +1,6 @@
 import express from 'express';
-import { protectRoute } from '#middleware/auth/auth.middleware.js';
-import { cacheResponse } from '#middleware/cache.middleware.js';
+import { protectRoute } from '#b2c/middleware/auth.middleware.js';
+import { cacheResponse } from '#shared/middleware/cache.middleware.js';
 import {
   createDestination,
   getAllDestinations,

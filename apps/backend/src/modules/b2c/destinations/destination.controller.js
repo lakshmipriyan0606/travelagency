@@ -19,7 +19,7 @@
  * ============================================================================
  */
 import * as destinationService from './destination.service.js';
-import { sendSuccess } from '#utils/response.js';
+import { sendSuccess } from '#shared/utils/response.js';
 
 export const createDestination = async (req, res, next) => {
   try {
