@@ -1,35 +1,42 @@
-import { NavLink } from "react-router-dom";
+"use client";
+
+import Link from "next/link";
+import { usePathname } from "next/navigation";
 import { navbarList } from "./constant";
 import PrimaryOutlineButton from "@/components/Button/PrimaryOutlineButton";
 
 const NavbarRenderList = () => {
-  const navbarListItems = navbarList.map((item) => (
+  const pathname = usePathname();
+  
+  const navbarListItems = navbarList.map((item) => {
+    const isActive = pathname === item.path;
+    return (
     <li key={item.key} className="navbar-list-item">
-      <NavLink
-        to={item.path}
-        className={({ isActive }) =>
-          `sm:text-[17px] transition-colors ${
+      <Link
+        href={item.path}
+        className={`sm:text-[17px] transition-colors ${
             isActive 
               ? "text-primary"
               : "text-white/80 hover:text-primary"
-          }`
-        }
+          }`}
       >
         {item.name}
-      </NavLink>
+      </Link>
     </li>
-  ));
+    );
+  });
 
   return (
     <ul className="navbar-list">
       {navbarListItems}
       <li>
-        <NavLink to="/b2b">
+        <Link href="/b2b">
             <PrimaryOutlineButton buttonName="For Agencies/ B2B"  className="h-7" animated />
-        </NavLink>
+        </Link>
       </li>
     </ul>
   );
 };
 
 export default NavbarRenderList;
+

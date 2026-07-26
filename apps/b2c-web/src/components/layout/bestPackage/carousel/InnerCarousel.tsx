@@ -5,7 +5,7 @@ import "swiper/css";
 import "swiper/css/navigation";
 import arrowLeft from "@/assets/icons/leftarrow.svg";
 import arrowRight from "@/assets/icons/rightarrow.svg";
-import { useNavigate } from "react-router-dom";
+import { useRouter } from "next/navigation";
 
 interface InnerCarouselProps {
     images: { url: string; alt: string }[] | string[];
@@ -16,7 +16,7 @@ interface InnerCarouselProps {
 
 
 export default function InnerCarousel({ images = [], offerId, packageName, isActivity }: InnerCarouselProps) {
-    const navigate = useNavigate();
+    const router = useRouter();
 
     const handleNavigation = (id: number | string) => {
         const baseRoute = isActivity ? "/activity" : "/package";
@@ -25,9 +25,9 @@ export default function InnerCarousel({ images = [], offerId, packageName, isAct
                 .toLowerCase()
                 .replace(/[^a-z0-9]+/g, "-")
                 .replace(/(^-|-$)/g, "");
-            navigate(`${baseRoute}/${slug}`);
+            router.push(`${baseRoute}/${slug}`);
         } else {
-            navigate(`${baseRoute}/${id}`);
+            router.push(`${baseRoute}/${id}`);
         }
     };
 
@@ -97,16 +97,17 @@ export default function InnerCarousel({ images = [], offerId, packageName, isAct
             <button
                 className={`inner-prev-${offerId} cursor-pointer absolute left-2 top-1/2 -translate-y-1/2 bg-black/40 hover:bg-black/70 p-2 rounded-full z-10 transition`}
             >
-                <img src={arrowLeft} alt="Prev" className="w-10 h-10" />
+                <img src={arrowLeft.src} alt="Prev" className="w-10 h-10" />
             </button>
 
             <button
                 className={`inner-next-${offerId} cursor-pointer absolute right-2 top-1/2 -translate-y-1/2 bg-black/40 hover:bg-black/70 p-2 rounded-full z-10 transition`}
             >
-                <img src={arrowRight} alt="Next" className="w-10 h-10" />
+                <img src={arrowRight.src} alt="Next" className="w-10 h-10" />
             </button>
         </div>
     );
 }
+
 
 

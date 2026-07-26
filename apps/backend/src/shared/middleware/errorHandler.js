@@ -27,6 +27,7 @@ export const globalErrorHandler = (err, req, res, next) => {
       success: false,
       error: {
         code: err.statusCode,
+        errorCode: err.code || undefined,
         message: err.message,
         details: err,
         stack: err.stack,
@@ -41,6 +42,7 @@ export const globalErrorHandler = (err, req, res, next) => {
       success: false,
       error: {
         code: err.statusCode,
+        errorCode: err.code || undefined,
         message: err.message,
       },
     });

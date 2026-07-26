@@ -1,3 +1,5 @@
+/* eslint-disable */
+'use client';
 import { useState, useRef, useEffect } from "react";
 import { Swiper, SwiperSlide } from "swiper/react";
 import { Navigation } from "swiper/modules";
@@ -95,4 +97,6 @@ export default function PackageDetailCarousel({
         </div>
     );
 }
+
+
 

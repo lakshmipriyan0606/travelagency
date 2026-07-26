@@ -1,7 +1,7 @@
 import { GetLikePackageListCount } from "@/api/user/api";
 import { UseFetchAPIQuery } from "@/Hook/UseFetchAPIQuery";
 import { Heart, User } from "lucide-react";
-import { useNavigate } from "react-router-dom";
+import { useRouter } from "next/navigation";
 
 import {
   AlertDialog,
@@ -10,7 +10,7 @@ import {
 
 
 const ProfileSection = () => {
-  const navigate = useNavigate();
+  const router = useRouter();
 
   const { data } = UseFetchAPIQuery({
     key: ["likePackage"],
@@ -21,7 +21,7 @@ const ProfileSection = () => {
   });
 
   const handleNavigate = () => {
-    navigate("/likePackage");
+    router.push("/likePackage");
   };
 
   return (
@@ -84,3 +84,4 @@ const ProfileSection = () => {
 };
 
 export default ProfileSection;
+

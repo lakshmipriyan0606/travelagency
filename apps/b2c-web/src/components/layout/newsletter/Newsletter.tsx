@@ -3,7 +3,8 @@
 import PrimaryButton from '@/components/Button/PrimaryButton';
 import NotifiationBell from '@/assets/icons/notificationBell.svg';
 import { motion } from 'framer-motion';
-import { showToast } from '@/lib/utils';
+
+import { showToast } from "@/lib/toast";
 import { useMutationAPIQuery } from '@/Hook/useMutationAPIQuery';
 import { subscribeNewsletter } from '@/api/user/api';
 // import z from 'zod';

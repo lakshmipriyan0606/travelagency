@@ -1,17 +1,37 @@
 import axiosClient from "./axiosClient";
 
 export const loginAgent = async (data: any) => {
-  const res = await axiosClient.post("/auth/login", data);
+  const res = await axiosClient.post("/b2b/agency/login", data);
   return res.data;
 };
 
 export const registerAgent = async (data: any) => {
   const payload = { ...data, role: "agent" };
-  const res = await axiosClient.post("/auth/register", payload);
+  const res = await axiosClient.post("/b2b/agency/register", payload);
   return res.data;
 };
 
 export const getAgentProfile = async () => {
-  const res = await axiosClient.get("/auth/me");
+  const res = await axiosClient.get("/b2b/agency/me");
+  return res.data;
+};
+
+export const getIssues = async () => {
+  const res = await axiosClient.get("/b2b/agency/me/issues");
+  return res.data;
+};
+
+export const resubmitCorrection = async (data: any) => {
+  const res = await axiosClient.patch("/b2b/agency/me/resubmit", data);
+  return res.data;
+};
+
+export const getRejectionReason = async () => {
+  const res = await axiosClient.get("/b2b/agency/me/rejection-reason");
+  return res.data;
+};
+
+export const reapply = async (data: any) => {
+  const res = await axiosClient.patch("/b2b/agency/me/reapply", data);
   return res.data;
 };

@@ -1,7 +1,8 @@
+"use client";
 import badgeBackground from "@/assets/icons/badgeBackground.svg";
-import { Link } from "react-router-dom";
+import Link from "next/link";
 import { useQuery } from "@tanstack/react-query";
-import { getDestinations } from "@/api/admin/destination.api";
+import { getDestinations } from "@/features/admin/destinations/api/destinations.api";
 
 const FALLBACK_DESTINATIONS = [
   {
@@ -96,7 +97,7 @@ export function BestDestination() {
                         return (
                             <Link
                                 key={dest._id}
-                                to={`/allpackage?city=${encodeURIComponent(dest.location || dest.title)}`}
+                                href={`/allpackage?city=${encodeURIComponent(dest.location || dest.title)}`}
                                 className={`
                                     ${handleColSpan(index)}
                                     rounded-[32px] relative overflow-hidden group 
@@ -111,7 +112,7 @@ export function BestDestination() {
                                     className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
                                     onError={(e) => {
                                         const img = e.currentTarget as HTMLImageElement;
-                                        img.src = "https://images.unsplash.com/photo-1488646953014-85cb44e25828?q=80&w=800&auto=format&fit=crop";
+                                        img.src = "https://images.unsplash.com/photo-1488646953014-85cb44e25828?q=80&w=800&auhref=format&fit=crop";
                                     }}
                                 />
 
@@ -123,7 +124,7 @@ export function BestDestination() {
                                     <div className="relative transform translate-y-4 group-hover:translate-y-0 transition-transform duration-500 flex flex-col items-center">
                                         <div className="relative">
                                             <img
-                                                src={badgeBackground}
+                                                src={badgeBackground.src}
                                                 alt="badge"
                                                 className="w-[160px] sm:w-[200px] h-auto object-contain drop-shadow-2xl"
                                             />
@@ -146,3 +147,4 @@ export function BestDestination() {
         </section>
     );
 }
+

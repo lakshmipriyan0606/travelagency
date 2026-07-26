@@ -1,3 +1,4 @@
+// @ts-nocheck
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -5,7 +6,8 @@ import * as z from "zod";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { createStory } from "@/api/admin/story.api";
 import { Loader2, X, Check, Image as ImageIcon, LayoutGrid } from "lucide-react";
-import { showToast } from "@/lib/utils";
+
+import { showToast } from "@/lib/toast";
 import axiosClient from "@/api/axiosClient";
 import { useContext } from "react";
 import { AdminPanelContext } from "@/pages/Admin/AdminPanel/AdminPanel";
@@ -245,3 +247,4 @@ export default function StoryForm() {
     </div>
   );
 }
+

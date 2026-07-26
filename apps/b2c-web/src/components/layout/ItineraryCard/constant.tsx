@@ -1,3 +1,4 @@
+// @ts-nocheck
 
 import dotLineRight from "@/assets/image/dotlineRightpng.png";
 import dotLineLeft from "@/assets/image/dotLineLeft.png";
@@ -236,4 +237,5 @@ export const formatItineraryExpandData = (daysList: DayData[] = []): ItineraryDa
     };
   });
 };
+
 

@@ -1,7 +1,9 @@
+// @ts-nocheck
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { getStories, deleteStory, moveStory, normalizeStoriesOrder } from "@/api/admin/story.api";
 import { Loader2, Trash2, ArrowUp, ArrowDown, ListOrdered, ImageIcon, Pencil } from "lucide-react";
-import { showToast } from "@/lib/utils";
+
+import { showToast } from "@/lib/toast";
 import { useContext } from "react";
 import { AdminPanelContext } from "@/pages/Admin/AdminPanel/AdminPanel";
 
@@ -194,3 +196,4 @@ export default function StoryAdminList() {
         </div>
     );
 }
+

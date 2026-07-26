@@ -6,21 +6,21 @@ export const getStories = async () => {
 };
 
 export const createStory = async (storyData: any) => {
-    const { data } = await axiosClient.post("/stories", storyData);
+    const { data } = await axiosClient.post("admin/stories", storyData);
     return data;
 };
 
 export const deleteStory = async (id: string) => {
-    const { data } = await axiosClient.delete(`/stories/${id}`);
+    const { data } = await axiosClient.delete(`admin/stories/${id}`);
     return data;
 };
 
 export const moveStory = async ({ id, direction }: { id: string, direction: "up" | "down" }) => {
-    const { data } = await axiosClient.post(`/stories/${id}/move`, { direction });
+    const { data } = await axiosClient.post(`admin/stories/${id}/move`, { direction });
     return data;
 };
 
 export const normalizeStoriesOrder = async () => {
-    const { data } = await axiosClient.post("/stories/normalize");
+    const { data } = await axiosClient.post("admin/stories/normalize");
     return data;
 };

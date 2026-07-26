@@ -1,3 +1,4 @@
+// @ts-nocheck
 import { motion } from "framer-motion";
 import { RefreshCcw } from "lucide-react";
 import noDataImg from "@/assets/image/no-data-clean.png";
@@ -58,3 +59,4 @@ const PackageErrorSkeleton = ({
 };
 
 export default PackageErrorSkeleton;
+

@@ -78,7 +78,17 @@ export const register = async (req, res, next) => {
     const normalizedEmail = String(email).toLowerCase().trim();
     const emailExists = await AgencyUser.findOne({ email: normalizedEmail });
     if (emailExists) {
-      return next(new AppError('Email already registered', 409));
+      const agency = await Agency.findById(emailExists.agencyId);
+      let errorCode = 'ALREADY_ACTIVE';
+      if (agency) {
+        if (agency.status === 'pending') errorCode = 'ALREADY_PENDING';
+        else if (agency.status === 'needs_correction') errorCode = 'NEEDS_CORRECTION';
+        else if (agency.status === 'suspended') errorCode = 'ACCOUNT_SUSPENDED';
+        else if (agency.status === 'rejected') errorCode = 'ACCOUNT_REJECTED';
+      }
+      const err = new AppError('Email already registered', 409);
+      err.code = errorCode;
+      return next(err);
     }
 
     // 2. Hash password with bcrypt cost factor 12
@@ -219,17 +229,12 @@ export const login = async (req, res, next) => {
     switch (agency.status) {
       case 'pending':
         return next(new AppError('Your account is pending approval', 403));
-      case 'rejected':
-        return next(
-          new AppError(
-            `Your account was rejected: ${agency.rejectionReason || 'No reason specified'}`,
-            403
-          )
-        );
       case 'suspended':
         return next(new AppError('Your account has been suspended', 403));
       case 'active':
-        break; // proceed
+      case 'needs_correction':
+      case 'rejected':
+        break; // proceed to login
       default:
         return next(new AppError('Account status error', 403));
     }

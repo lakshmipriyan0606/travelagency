@@ -1,5 +1,5 @@
 import { Button } from "@/components/ui/button";
-import { Link } from "react-router-dom";
+import Link from "next/link";
 
 interface BorderAnimatedButtonProps {
   buttonText: string;
@@ -61,7 +61,7 @@ export default function AnimatedButton({
       {asChild ? (
         children
       ) : to ? (
-        <Link to={to} className="w-full h-full flex items-center justify-center">
+        <Link href={to} className="w-full h-full flex items-center justify-center">
           {content}
         </Link>
       ) : (
@@ -70,3 +70,4 @@ export default function AnimatedButton({
     </Button>
   );
 }
+

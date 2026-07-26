@@ -6,8 +6,8 @@ function normalizeBase(url: string | undefined) {
 }
 
 export const fetchMetrics = async () => {
-  const remoteBase = normalizeBase(import.meta.env.VITE_METRICS_API_BASE_URL);
-  const token = import.meta.env.VITE_METRICS_TOKEN;
+  const remoteBase = normalizeBase(process.env.NEXT_PUBLIC_METRICS_API_BASE_URL);
+  const token = process.env.NEXT_PUBLIC_METRICS_TOKEN;
 
   // Call a *different* metrics host only when you have a shared secret (session cookies will not exist there).
   // If VITE_METRICS_API_BASE_URL is set to the raw API host but VITE_API_BASE_URL is your site proxy
@@ -31,8 +31,8 @@ export const fetchMetrics = async () => {
 };
 
 export const fetchQueueHealth = async () => {
-  const remoteBase = normalizeBase(import.meta.env.VITE_METRICS_API_BASE_URL);
-  const token = import.meta.env.VITE_METRICS_TOKEN;
+  const remoteBase = normalizeBase(process.env.NEXT_PUBLIC_METRICS_API_BASE_URL);
+  const token = process.env.NEXT_PUBLIC_METRICS_TOKEN;
 
   if (remoteBase && token) {
     const client = axios.create({
@@ -50,3 +50,4 @@ export const fetchQueueHealth = async () => {
   });
   return response.data;
 };
+

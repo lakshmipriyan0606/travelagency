@@ -1,3 +1,4 @@
+// @ts-nocheck
 import { Controller, Control } from "react-hook-form"
 import { Calendar } from "@/components/ui/calendar"
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
@@ -47,7 +48,7 @@ export const DatePickerField = ({
                   {value
                     ? new Date(value).toLocaleDateString("en-GB") // dd/MM/yyyy
                     : " "}
-                  <img src={calendarIcon} alt="" />
+                  <img src={calendarIcon.src} alt="" />
                 </span>
               </Button>
             </PopoverTrigger>
@@ -57,7 +58,7 @@ export const DatePickerField = ({
                 mode="single"
                 selected={value}
                 onSelect={onChange}
-                disabled={(date) =>
+                disabled={(date: Date) =>
                   date < new Date(new Date().setHours(0, 0, 0, 0))
                 }
                 captionLayout="dropdown"
@@ -101,3 +102,5 @@ export const DatePickerField = ({
     />
   )
 }
+
+

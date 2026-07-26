@@ -1,4 +1,4 @@
-﻿"use client";
+"use client";
 
 import { useState } from "react";
 import { useForm } from "react-hook-form";
@@ -29,11 +29,30 @@ export default function LoginFormClient() {
 
   const mutation = useMutation({
     mutationFn: loginAgent,
-    onSuccess: () => {
+    onSuccess: (data: any) => {
+      // Set the agency_status cookie based on the success response payload
+      const status = data?.user?.agency?.status || "active";
+      document.cookie = `agency_status=${status}; path=/; max-age=86400;`;
       window.location.href = "/dashboard";
     },
     onError: (err: any) => {
-      setError(err?.response?.data?.message || "Failed to login. Please check your credentials.");
+      const status = err?.response?.status;
+      const message = err?.response?.data?.error?.message || err?.response?.data?.message || "";
+      
+      // Branch on 403 reasons to route to correct informational screens
+      if (status === 403) {
+        if (message.toLowerCase().includes("pending approval")) {
+          document.cookie = "agency_status=pending; path=/; max-age=86400;";
+          window.location.href = "/pending-approval";
+          return;
+        } else if (message.toLowerCase().includes("suspended")) {
+          document.cookie = "agency_status=suspended; path=/; max-age=86400;";
+          window.location.href = "/suspended";
+          return;
+        }
+      }
+      
+      setError(message || "Failed to login. Please check your credentials.");
     }
   });
 

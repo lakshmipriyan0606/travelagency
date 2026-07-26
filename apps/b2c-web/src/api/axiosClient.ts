@@ -1,14 +1,48 @@
+import { API_BASE_URL } from '@/lib/config';
 import axios from "axios";
 
 const axiosClient = axios.create({
-  baseURL: import.meta.env.VITE_API_BASE_URL || "http://localhost:5000/api",
+  baseURL: API_BASE_URL,
   withCredentials: true,
 });
 
 axiosClient.interceptors.request.use((config) => {
-  const userId = localStorage.getItem("userId");
-  if (userId) {
-    config.headers.userId = userId;
+  // Global API Routing: Map legacy frontend paths to modularized backend paths
+  if (config.url && !config.url.startsWith("v1/")) {
+    let url = config.url;
+    // Clean leading slash for consistency
+    if (url.startsWith('/')) url = url.slice(1);
+
+    const isAdminAuth = url.startsWith('admin/login') || url.startsWith('admin/register') || url.startsWith('admin/logout') || url.startsWith('admin/session');
+    const isInfrastructure = url.startsWith('admin/metrics') || url.startsWith('admin/queue');
+    const isPackagesAdmin = url.startsWith('packages/create') || url.startsWith('packages/update') || url.startsWith('packages/delete') || url.startsWith('packages/toggle') || url.startsWith('packages/updateRank') || url.startsWith('packages/takenRanks');
+    const isUpload = url.startsWith('upload');
+    const isAdminDirect = url.startsWith('admin/');
+
+    if (isAdminAuth) {
+      config.url = 'v1/b2c-admin/auth/' + url.replace('admin/', '');
+    } else if (isInfrastructure) {
+      config.baseURL = (config.baseURL || API_BASE_URL).replace('/v1', '');
+      config.url = url; // Keep infrastructure routes as-is
+    } else if (isAdminDirect) {
+      config.url = 'v1/b2c-admin/' + url.replace('admin/', '');
+    } else if (isPackagesAdmin || isUpload) {
+      config.url = 'v1/b2c-admin/' + url;
+    } else if (url.startsWith('blogs/admin')) {
+      config.url = 'v1/b2c-admin/blogs/' + url.replace('blogs/admin/', '');
+    } else if (url.startsWith('analytics')) {
+      config.url = 'v1/b2c-admin/' + url;
+    } else {
+      // Default to public B2C gateway
+      config.url = 'v1/b2c/' + url;
+    }
+  }
+
+  if (typeof window !== 'undefined') {
+    const userId = localStorage.getItem("userId");
+    if (userId) {
+      config.headers.userId = userId;
+    }
   }
   return config;
 });
@@ -26,3 +60,5 @@ axiosClient.interceptors.response.use(
 );
 
 export default axiosClient;
+
+

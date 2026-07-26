@@ -23,7 +23,15 @@
     "react-dom": "19.2.4",
     "react-hook-form": "^7.82.0",
     "tailwind-merge": "^3.6.0",
-    "zod": "^4.4.3"
+    "zod": "^4.4.3",
+    "@travelagency/config": "workspace:*",
+    "@travelagency/types": "workspace:*",
+    "@travelagency/schemas": "workspace:*",
+    "@travelagency/api-client": "workspace:*",
+    "@travelagency/auth": "workspace:*",
+    "@travelagency/constants": "workspace:*",
+    "@travelagency/ui": "workspace:*",
+    "@travelagency/utils": "workspace:*"
   },
   "devDependencies": {
     "@tailwindcss/postcss": "^4",

@@ -1,11 +1,12 @@
+"use client";
 import 'swiper/css';
 import 'swiper/css/navigation';
 import 'swiper/css/pagination';
 import OuterCarousel from './carousel/ActivitiesCarousel';
-import { Link } from 'react-router-dom';
+import Link from 'next/link';
 import { ArrowRight } from 'lucide-react';
 
-export default function BestActivitiesSection() {
+export default function BestActivitiesSection({ initialActivities }: { initialActivities?: any[] }) {
     return (
         <div className="bg-custom-black relative text-white border-b-4 border-primary overflow-hidden">
             <div className='main__container_space relative z-10'>
@@ -15,11 +16,11 @@ export default function BestActivitiesSection() {
                     </h1>
                 </div>
 
-                <OuterCarousel />
+                <OuterCarousel initialActivities={initialActivities} />
 
                 <div className="flex justify-center mt-5">
                     <Link
-                        to="/activities"
+                        href="/activities"
                         className="group flex items-center gap-3 text-primary hover:text-white font-bold tracking-[0.25em] uppercase transition-all duration-300"
                     >
                         <span className="text-[12px] md:text-sm border-b border-primary/40 group-hover:border-primary pb-0.5">
@@ -34,3 +35,6 @@ export default function BestActivitiesSection() {
         </div>
     );
 }
+
+
+

@@ -1,6 +1,7 @@
 {
   "name": "travelagency",
   "private": true,
+  "packageManager": "pnpm@10.28.1",
   "scripts": {
     "build": "turbo build",
     "dev": "turbo dev",

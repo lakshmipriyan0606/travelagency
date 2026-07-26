@@ -2,7 +2,7 @@
 
 import { Facebook, Twitter, Instagram, Linkedin } from 'lucide-react';
 import { footerData } from './constant';
-import { Link } from 'react-router-dom';
+import Link from 'next/link';
 import { navbarList } from '../navbar/constant';
 import { WANumber } from '@/lib/utils';
 import AnimatedButton from '@/components/Button/AnimatedButton/AnimatedButton';
@@ -74,7 +74,7 @@ export default function Footer() {
                   {col.items.map((item) => (
                     <li key={item.label}>
                       {item.href.startsWith("/") ? (
-                        <Link to={item.href} className="hover:text-primary transition-colors">
+                        <Link href={item.href} className="hover:text-primary transition-colors">
                           {item.label}
                         </Link>
                       ) : (
@@ -92,7 +92,7 @@ export default function Footer() {
               <ul className="space-y-2 text-gray-400">
                 {navbarList.map((item) => (
                   <li key={item.key}>
-                    <Link to={item.path} className="hover:text-primary transition-colors">
+                    <Link href={item.path} className="hover:text-primary transition-colors">
                       {item.name}
                     </Link>
                   </li>
@@ -181,7 +181,7 @@ export default function Footer() {
                 <span key={link.name} className=''>
                   {link.href.startsWith("/") ? (
                     <Link
-                      to={link.href}
+                      href={link.href}
                       className="hover:text-primary transition-colors"
                     >
                       {link.name}
@@ -211,3 +211,4 @@ export default function Footer() {
     </footer>
   );
 }
+

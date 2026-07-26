@@ -1,11 +1,12 @@
+"use client";
 import 'swiper/css';
 import 'swiper/css/navigation';
 import 'swiper/css/pagination';
 import OuterCarousel from './carousel/OuterCarousel';
-import { Link } from 'react-router-dom';
+import Link from 'next/link';
 import { ArrowRight } from 'lucide-react';
 
-export default function BestPackage() {
+export default function BestPackage({ initialPackages }: { initialPackages?: any[] }) {
 
     return (
         <div className=" bg-custom-black relative text-white border-b-4 border-primary overflow-hidden">
@@ -19,11 +20,11 @@ export default function BestPackage() {
                     </h1>
                 </div>
 
-                <OuterCarousel />
+                <OuterCarousel initialPackages={initialPackages} />
 
                 <div className="flex justify-center mt-5">
                     <Link
-                        to="/allpackage"
+                        href="/allpackage"
                         className="group flex items-center gap-3 text-primary hover:text-white font-bold tracking-[0.25em] uppercase transition-all duration-300"
                     >
                         <span className="text-[12px] md:text-sm border-b border-primary/40 group-hover:border-primary pb-0.5">
@@ -38,3 +39,6 @@ export default function BestPackage() {
         </div>
     );
 }
+
+
+

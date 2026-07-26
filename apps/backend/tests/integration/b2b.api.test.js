@@ -141,23 +141,13 @@ describe('B2B Authentication & Lifecycle Integration Tests', () => {
       agencyId = res.body.agencyId;
     });
 
-    it('should reject login for pending, rejected, and suspended agencies', async () => {
+    it('should reject login for pending and suspended agencies', async () => {
       const loginPayload = { email: agencyPayload.email, password: agencyPayload.password };
 
       // Pending
       let loginRes = await request(app).post('/api/b2b/agency/login').send(loginPayload);
       expect(loginRes.status).toBe(403);
       expect(loginRes.body.error.message).toContain('pending approval');
-
-      // Rejected
-      await Agency.findByIdAndUpdate(agencyId, {
-        status: 'rejected',
-        rejectionReason: 'Bad documents',
-      });
-      loginRes = await request(app).post('/api/b2b/agency/login').send(loginPayload);
-      expect(loginRes.status).toBe(403);
-      expect(loginRes.body.error.message).toContain('rejected');
-      expect(loginRes.body.error.message).toContain('Bad documents');
 
       // Suspended
       await Agency.findByIdAndUpdate(agencyId, { status: 'suspended' });

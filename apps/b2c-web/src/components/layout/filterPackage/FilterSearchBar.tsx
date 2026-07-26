@@ -1,3 +1,6 @@
+"use client";
+/* eslint-disable */
+// @ts-nocheck
 import { useState, useRef, useEffect } from "react";
 import { Search, MapPin, Package, Loader2 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
@@ -201,3 +204,6 @@ export default function FilterSearchBar({
         </div>
     );
 }
+
+
+

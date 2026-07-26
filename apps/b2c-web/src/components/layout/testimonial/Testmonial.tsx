@@ -46,7 +46,7 @@ export default function Testimonials() {
                                     <SwiperSlide key={testimonial.id}>
                                         <div className="bg-white rounded-2xl shadow-lg p-6 h-[400px] md:h-[400px] flex flex-col">
                                             <div className='items-end justify-end flex'>
-                                                <img className=' w-7 h-7 ' src={QuoteIcon} alt='quote-icon' />
+                                                <img className=' w-7 h-7 ' src={QuoteIcon.src} alt='quote-icon' />
                                             </div>
                                             <div className="flex items-center justify-between gap-4 mb-4 mt-4">
                                                 <div className='flex gap-3 items-center'>
@@ -81,28 +81,28 @@ export default function Testimonials() {
                             className="outer-prev absolute left-10 xl:-left-10 -ml-4 top-1/2 -translate-y-1/2 z-[100] cursor-pointer hidden sm:block"
                             aria-label="Previous Testimonial"
                         >
-                            <img src={arrowLeft} alt="Previous" className="w-10 h-10 block" />
+                            <img src={arrowLeft.src} alt="Previous" className="w-10 h-10 block" />
                         </button>
 
                         <button
                             className="outer-next absolute right-10 xl:-right-10 -mr-4 top-1/2 -translate-y-1/2 cursor-pointer z-[100] hidden sm:block"
                             aria-label="Next Testimonial"
                         >
-                            <img src={arrowRight} alt="Next" className="w-10 h-10 block" />
+                            <img src={arrowRight.src} alt="Next" className="w-10 h-10 block" />
                         </button>
 
                         <button
                             className="outer-prev absolute left-2 top-1/2 -translate-y-1/2 bg-white cursor-pointer rounded-full p-3 shadow-md z-[100] sm:hidden"
                             aria-label="Previous Testimonial"
                         >
-                            <img src={arrowLeft} alt="Previous" className="w-6 h-6 block" />
+                            <img src={arrowLeft.src} alt="Previous" className="w-6 h-6 block" />
                         </button>
 
                         <button
                             className="outer-next absolute right-2 top-1/2 -translate-y-1/2 bg-white cursor-pointer rounded-full p-3 shadow-md z-[100] sm:hidden"
                             aria-label="Next Testimonial"
                         >
-                            <img src={arrowRight} alt="Next" className="w-6 h-6 block" />
+                            <img src={arrowRight.src} alt="Next" className="w-6 h-6 block" />
                         </button>
 
                     </div>

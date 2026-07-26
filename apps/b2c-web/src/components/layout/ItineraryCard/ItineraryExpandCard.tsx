@@ -1,3 +1,5 @@
+/* eslint-disable */
+'use client';
 import { useState, useRef, useMemo } from "react";
 import { ChevronDown, ChevronUp, Sun } from "lucide-react";
 import { CardContent } from "@/components/ui/card";
@@ -232,3 +234,4 @@ export default function ItineraryDay({ currentPackage }: ItineraryDayProps) {
     </div>
   );
 }
+

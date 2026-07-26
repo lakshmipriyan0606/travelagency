@@ -1,3 +1,4 @@
+'use client';
 /**
  * HeroEnquiryForm
  * ─────────────────────────────────────────────────────────────────────────────
@@ -25,7 +26,8 @@ import { PhoneInputField } from '@/components/forms/PhoneInputField';
 import AnimatedButton from '@/components/Button/AnimatedButton/AnimatedButton';
 import { CreateBookingForm } from '@/api/user/api';
 import { useMutationAPIQuery } from '@/Hook/useMutationAPIQuery';
-import { showToast } from '@/lib/utils';
+
+import { showToast } from "@/lib/toast";
 
 // ─── Icon map ─────────────────────────────────────────────────────────────────
 
@@ -165,7 +167,7 @@ export default function HeroEnquiryForm({
                                 <div className="flex-1 min-w-0">
                                     {field.type === 'select' && field.options ? (
                                         <SelectField
-                                            control={control}
+                                            control={control as any}
                                             name={field.name}
                                             label={field.label}
                                             options={field.options}
@@ -175,7 +177,7 @@ export default function HeroEnquiryForm({
                                         />
                                     ) : (
                                         <ReusableInput
-                                            control={control}
+                                            control={control as any}
                                             name={field.name}
                                             label={field.label}
                                             placeholder={field.placeholder}
@@ -196,7 +198,7 @@ export default function HeroEnquiryForm({
                                 </div>
                                 <div className="flex-1 min-w-0">
                                     <ReusableInput
-                                        control={control}
+                                        control={control as any}
                                         name="name"
                                         label="Name"
                                         required
@@ -212,7 +214,7 @@ export default function HeroEnquiryForm({
                                 </div>
                                 <div className="flex-1 min-w-0">
                                     <ReusableInput
-                                        control={control}
+                                        control={control as any}
                                         name="email"
                                         label="Email"
                                         type="email"
@@ -228,7 +230,7 @@ export default function HeroEnquiryForm({
                                 </div>
                                 <div className="flex-1 min-w-0">
                                     <PhoneInputField
-                                        control={control}
+                                        control={control as any}
                                         name="whatsapp"
                                         label="WhatsApp"
                                         required
@@ -243,7 +245,7 @@ export default function HeroEnquiryForm({
                                 </div>
                                 <div className="flex-1 min-w-0">
                                     <SelectField
-                                        control={control}
+                                        control={control as any}
                                         name="language"
                                         label="Preferred Language"
                                         options={languageOptions}
@@ -258,7 +260,7 @@ export default function HeroEnquiryForm({
                                 </div>
                                 <div className="flex-1 min-w-0">
                                     <ReusableTextArea
-                                        control={control}
+                                        control={control as any}
                                         name="message"
                                         label="Message (Max 500 chars)"
                                         placeholder="Add any special requests..."
@@ -299,3 +301,5 @@ export default function HeroEnquiryForm({
         </div>
     );
 }
+
+

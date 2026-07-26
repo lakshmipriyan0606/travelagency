@@ -1,3 +1,4 @@
+'use client';
 /**
  * EnquiryModal
  * ─────────────────────────────────────────────────────────────────────────────
@@ -62,3 +63,4 @@ export default function EnquiryModal({ isOpen, onClose, packageName = '' }: Enqu
         </div>
     );
 }
+

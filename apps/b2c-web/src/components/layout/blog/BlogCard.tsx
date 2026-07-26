@@ -1,4 +1,4 @@
-import { Link } from "react-router-dom";
+import Link from "next/link";
 import { Heart } from "lucide-react";
 
 interface BlogCardProps {
@@ -27,7 +27,7 @@ const BlogCard = ({
   return (
     <div className="bg-white rounded-[32px] shadow-sm border border-neutral-100 overflow-hidden flex flex-col h-full hover:shadow-xl transition-all duration-500 group/card">
       {/* Image Container */}
-      <Link to={`/blogs/${slug}`} className="relative aspect-[16/10] block overflow-hidden">
+      <Link href={`/blogs/${slug}`} className="relative aspect-[16/10] block overflow-hidden">
         <img
           src={thumbnailImage?.url || "https://placehold.co/600x400?text=No+Image"}
           alt={thumbnailImage?.alt || title}
@@ -37,7 +37,7 @@ const BlogCard = ({
 
       {/* Content Container */}
       <div className="p-8 flex flex-col flex-grow">
-        <Link to={`/blogs/${slug}`}>
+        <Link href={`/blogs/${slug}`}>
           <h3 className="text-[22px] font-semibold text-neutral-800 mb-4 line-clamp-2 hover:text-primary transition-colors leading-tight">
             {title}
           </h3>
@@ -73,7 +73,7 @@ const BlogCard = ({
               />
             </button>
             <Link
-              to={`/blogs/${slug}`}
+              href={`/blogs/${slug}`}
               className="px-6 py-2.5 bg-[#222] text-white text-[10px] font-bold uppercase tracking-[0.1em] rounded-md hover:bg-black transition-all shadow-md active:scale-95"
             >
               Read More
@@ -142,3 +142,4 @@ export const BlogCardSkeleton = () => {
 };
 
 export default BlogCard;
+

@@ -1,1 +1,0 @@
-export const heroSectionContent = 'Experience Singapore Like Never Before, Adventure Awaits Everywhere!'

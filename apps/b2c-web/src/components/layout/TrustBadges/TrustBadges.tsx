@@ -1,3 +1,4 @@
+"use client";
 import { TRUST_BADGES } from "./constant";
 
 const TrustBadges = () => {

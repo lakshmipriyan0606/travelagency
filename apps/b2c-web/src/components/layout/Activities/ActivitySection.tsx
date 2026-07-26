@@ -1,4 +1,4 @@
-import { useNavigate } from "react-router-dom";
+import { useRouter } from "next/navigation";
 import { UseFetchAPIQuery } from "@/Hook/UseFetchAPIQuery";
 import { GetActivityCategories } from "@/api/user/api";
 import { motion } from "framer-motion";
@@ -9,7 +9,7 @@ const ActivityCardSkeleton = () => (
 );
 
 const ActivitySection = () => {
-    const navigate = useNavigate();
+    const router = useRouter();
     const { data, isLoading } = UseFetchAPIQuery({
         key: ["activityCategories"],
         queryFn: GetActivityCategories,
@@ -32,7 +32,7 @@ const ActivitySection = () => {
                         Explore by  <span className="text-yellow-400">Experience</span>
                     </h2>
                     <button
-                        onClick={() => navigate("/activities")}
+                        onClick={() => router.push("/activities")}
                         className="hidden sm:flex items-center gap-2 text-[10px] font-black text-neutral-400 hover:text-primary transition-all uppercase tracking-widest group cursor-pointer"
                     >
                         View All
@@ -64,7 +64,7 @@ const ActivitySection = () => {
                                                                         categoryValue === "Skiing" ? "1551698618-102151046741" :
                                                                             categoryValue === "Cultural" ? "1467269204044-83717d07c39b" :
                                                                                 "1469474968028-56623f02e42e"
-                                }?auto=format&fit=crop&w=600&q=80`;
+                                }?auhref=format&fit=crop&w=600&q=80`;
 
                             return (
                                 <motion.div
@@ -73,7 +73,7 @@ const ActivitySection = () => {
                                     animate={{ opacity: 1, scale: 1 }}
                                     transition={{ duration: 0.5, delay: idx * 0.05 }}
                                     className="group relative h-80 rounded-[32px] overflow-hidden cursor-pointer shadow-2xl shadow-neutral-200/50"
-                                    onClick={() => navigate(`/activities?type=${encodeURIComponent(categoryValue)}`)}
+                                    onClick={() => router.push(`/activities?type=${encodeURIComponent(categoryValue)}`)}
                                 >
                                     {/* Image Background */}
                                     <img
@@ -107,7 +107,7 @@ const ActivitySection = () => {
                 {/* Mobile View All */}
                 <div className="text-center mt-8 sm:hidden px-4">
                     <button
-                        onClick={() => navigate("/activities")}
+                        onClick={() => router.push("/activities")}
                         className="w-full py-4 rounded-2xl bg-neutral-100 text-neutral-800 text-xs font-black uppercase tracking-widest active:scale-95 transition-all border border-neutral-200"
                     >
                         View All Activities →
@@ -119,3 +119,4 @@ const ActivitySection = () => {
 };
 
 export default ActivitySection;
+

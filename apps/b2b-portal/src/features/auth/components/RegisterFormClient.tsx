@@ -1,4 +1,4 @@
-﻿"use client";
+"use client";
 
 import { useState } from "react";
 import { useForm } from "react-hook-form";
@@ -6,9 +6,8 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { useMutation } from "@tanstack/react-query";
 import { registerAgent } from "@/api/auth.api";
-import { Loader2, Lock, Mail, ArrowRight, User } from "lucide-react";
+import { Loader2, Lock, Mail, ArrowRight, User, ShieldAlert, CheckCircle, Ban, AlertTriangle } from "lucide-react";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
 
 const registerSchema = z.object({
   name: z.string().min(2, "Name must be at least 2 characters"),
@@ -19,8 +18,8 @@ const registerSchema = z.object({
 type RegisterValues = z.infer<typeof registerSchema>;
 
 export default function RegisterFormClient() {
-  const router = useRouter();
   const [error, setError] = useState<string | null>(null);
+  const [regStatus, setRegStatus] = useState<string | null>(null);
 
   const {
     register,
@@ -33,10 +32,16 @@ export default function RegisterFormClient() {
   const mutation = useMutation({
     mutationFn: registerAgent,
     onSuccess: () => {
-      router.push("/login");
+      setRegStatus("SUCCESS");
     },
     onError: (err: any) => {
-      setError(err?.response?.data?.message || "Failed to register. Please try again.");
+      const status = err?.response?.status;
+      const errorCode = err?.response?.data?.error?.errorCode;
+      if (status === 409 && errorCode) {
+        setRegStatus(errorCode);
+      } else {
+        setError(err?.response?.data?.error?.message || err?.response?.data?.message || "Failed to register. Please try again.");
+      }
     }
   });
 
@@ -44,6 +49,68 @@ export default function RegisterFormClient() {
     setError(null);
     mutation.mutate(data);
   };
+
+  // Render distinct screens for conflict / success states
+  if (regStatus) {
+    let title = "";
+    let description = "";
+    let icon = <CheckCircle className="w-16 h-16 text-blue-500 mx-auto" />;
+    let showLoginLink = true;
+
+    switch (regStatus) {
+      case "SUCCESS":
+      case "ALREADY_PENDING":
+        title = "Application Pending";
+        description = "Your B2B partner application is currently pending review by our administration team. We will notify you by email once your application has been verified.";
+        icon = <CheckCircle className="w-16 h-16 text-blue-500 mx-auto" />;
+        showLoginLink = false;
+        break;
+      case "ALREADY_ACTIVE":
+        title = "Account Already Active";
+        description = "An active B2B partner account is already registered with this email address. Please sign in to access the dashboard.";
+        icon = <User className="w-16 h-16 text-emerald-500 mx-auto" />;
+        break;
+      case "NEEDS_CORRECTION":
+        title = "Correction Required";
+        description = "Your B2B application requires updates. Please sign in to view the flagged fields and resubmit your details for approval.";
+        icon = <AlertTriangle className="w-16 h-16 text-amber-500 mx-auto" />;
+        break;
+      case "ACCOUNT_SUSPENDED":
+        title = "Account Suspended";
+        description = "This partner account has been suspended by administration. Please contact B2B support to appeal or resolve this status.";
+        icon = <Ban className="w-16 h-16 text-red-500 mx-auto" />;
+        showLoginLink = false;
+        break;
+      case "ACCOUNT_REJECTED":
+        title = "Application Rejected";
+        description = "Your previous partner application was rejected. Please sign in to re-submit your registration form.";
+        icon = <ShieldAlert className="w-16 h-16 text-rose-500 mx-auto" />;
+        break;
+    }
+
+    return (
+      <div className="w-full max-w-md p-8 bg-neutral-900 border border-neutral-800 rounded-3xl shadow-2xl text-center">
+        <div className="mb-6">{icon}</div>
+        <h2 className="text-2xl font-bold text-white tracking-tight mb-4">{title}</h2>
+        <p className="text-neutral-400 text-sm leading-relaxed mb-8">{description}</p>
+        {showLoginLink ? (
+          <Link
+            href="/login"
+            className="w-full py-3.5 bg-blue-600 hover:bg-blue-500 text-white font-bold rounded-xl flex items-center justify-center gap-2 transition-all"
+          >
+            Go to Login
+          </Link>
+        ) : (
+          <Link
+            href="/login"
+            className="text-neutral-500 hover:text-neutral-400 text-sm font-medium transition-colors"
+          >
+            Back to Login
+          </Link>
+        )}
+      </div>
+    );
+  }
 
   return (
     <div className="w-full max-w-md p-8 bg-neutral-900 border border-neutral-800 rounded-3xl shadow-2xl">

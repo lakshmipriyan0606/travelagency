@@ -8,27 +8,27 @@ import Percent from '@/assets/icons/trustIcon/pricing.svg';
 export const TRUST_BADGES = [
   {
     id: 1,
-    icon: google,
+    icon: google.src,
     text: "4.8 Google Ratings",
   },
   {
     id: 2,
-    icon: Clock,
+    icon: Clock.src,
     text: "24/7 Trip Assistance",
   },
   {
     id: 3,
-    icon: Route,
+    icon: Route.src,
     text: "Destination Experts",
   },
   {
     id: 4,
-    icon: MapPin,
+    icon: MapPin.src,
     text: "100% Customized Trip",
   },
   {
     id: 5,
-    icon: Percent,
+    icon: Percent.src,
     text: "Transparent Pricing",
   },
 ];

@@ -1,3 +1,5 @@
+"use client";
+'use client';
 import { useRef, useState } from "react";
 import { Swiper, SwiperSlide } from "swiper/react";
 import { Navigation } from "swiper/modules";
@@ -8,15 +10,19 @@ import { ChevronLeft, ChevronRight, Star, MapPin } from "lucide-react";
 import { GetAllReviews } from "@/api/user/api";
 import { useQuery } from "@tanstack/react-query";
 import quoteIcon from "@/assets/icons/quoteIcon.svg";
+import Image from "next/image";
 
-const TravelExperiences = () => {
+const TravelExperiences = ({ initialReviews }: { initialReviews?: any[] }) => {
   const [activeIndex, setActiveIndex] = useState(0);
   const swiperRef = useRef<any>(null);
 
-  const { data: reviews = [], isLoading } = useQuery({
+  const { data: rawReviews, isLoading } = useQuery({
     queryKey: ["publicReviews"],
     queryFn: GetAllReviews,
+    initialData: initialReviews && initialReviews.length > 0 ? initialReviews : undefined,
   });
+
+  const reviews = Array.isArray(rawReviews) ? rawReviews : (rawReviews?.data || []);
 
   const handlePrev = () => swiperRef.current?.slidePrev();
   const handleNext = () => swiperRef.current?.slideNext();
@@ -28,11 +34,11 @@ const TravelExperiences = () => {
     <section className="bg-white overflow-hidden relative">
       {/* Large Quote Icon Background - Positioned as per image */}
       <div className="hidden md:block absolute top-0 -left-[40px] opacity-60 select-none pointer-events-none z-0">
-        <img src={quoteIcon} alt="quote" loading="lazy" className="w-64 h-64 md:w-40 md:h-40" />
+        <Image src={quoteIcon} alt="quote" className="w-64 h-64 md:w-40 md:h-40" />
       </div>
 
       <div className="hidden md:block absolute top-0 left-[120px] opacity-60 select-none pointer-events-none z-0">
-        <img src={quoteIcon} alt="quote" loading="lazy" className="w-64 h-64 md:w-40 md:h-40" />
+        <Image src={quoteIcon} alt="quote" className="w-64 h-64 md:w-40 md:h-40" />
       </div>
 
 
@@ -125,12 +131,12 @@ const TravelExperiences = () => {
                         <div className="flex flex-col gap-4 md:gap-6">
 
                           {/* Image Card (Top) */}
-                          <div className="w-full aspect-[4/3] rounded-[24px] overflow-hidden shadow-lg">
-                            <img
-                              src={exp.profileImage?.url}
+                          <div className="w-full aspect-[4/3] rounded-[24px] overflow-hidden shadow-lg relative">
+                            <Image
+                              src={exp.profileImage?.url || '/placeholder.jpg'}
                               alt={exp.name}
-                              loading="lazy"
-                              className="w-full h-full object-cover object-center"
+                              fill
+                              className="object-cover object-center"
                             />
                           </div>
 
@@ -156,12 +162,14 @@ const TravelExperiences = () => {
                             </div>
 
                             <div className="flex items-center gap-4 mt-auto pt-6 bg-white z-10">
-                              <img
-                                src={exp.profileImage?.url}
-                                alt={exp.name}
-                                loading="lazy"
-                                className="w-12 h-12 rounded-full object-cover object-center flex-shrink-0"
-                              />
+                              <div className="relative w-12 h-12 flex-shrink-0">
+                                <Image
+                                  src={exp.profileImage?.url || '/placeholder.jpg'}
+                                  alt={exp.name}
+                                  fill
+                                  className="rounded-full object-cover object-center"
+                                />
+                              </div>
                               <span className="font-bold text-[#2B2B2B] text-base truncate">
                                 {exp.name}
                               </span>
@@ -194,12 +202,14 @@ const TravelExperiences = () => {
                             </div>
 
                             <div className="flex items-center gap-4 mt-auto pt-6 bg-white z-10">
-                              <img
-                                src={nextExp.profileImage?.url}
-                                alt={nextExp.name}
-                                loading="lazy"
-                                className="w-12 h-12 rounded-full object-cover object-center flex-shrink-0"
-                              />
+                              <div className="relative w-12 h-12 flex-shrink-0">
+                                <Image
+                                  src={nextExp.profileImage?.url || '/placeholder.jpg'}
+                                  alt={nextExp.name}
+                                  fill
+                                  className="rounded-full object-cover object-center"
+                                />
+                              </div>
                               <span className="font-bold text-[#2B2B2B] text-base truncate">
                                 {nextExp.name}
                               </span>
@@ -207,12 +217,12 @@ const TravelExperiences = () => {
                           </div>
 
                           {/* Image Card (Bottom) */}
-                          <div className="w-full aspect-[4/3] rounded-[24px] overflow-hidden shadow-lg">
-                            <img
-                              src={nextExp.profileImage?.url}
+                          <div className="w-full aspect-[4/3] rounded-[24px] overflow-hidden shadow-lg relative">
+                            <Image
+                              src={nextExp.profileImage?.url || '/placeholder.jpg'}
                               alt={nextExp.name}
-                              loading="lazy"
-                              className="w-full h-full object-cover object-center"
+                              fill
+                              className="object-cover object-center"
                             />
                           </div>
 
@@ -280,3 +290,4 @@ const TravelExperiences = () => {
 };
 
 export default TravelExperiences;
+

@@ -61,7 +61,7 @@ export const GetLikedPackageList = async ({
 };
 
 export const CreateBookingForm = async (formData: any) => {
-  const { data } = await axiosClient.post("booking/create", formData);
+  const { data } = await axiosClient.post("bookings/create", formData);
   return data;
 }
 export const UpdateLikePackage = async (payload: object) => {

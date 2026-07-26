@@ -1,0 +1,139 @@
+
+> b2c-web@0.1.0 build E:\project\travelagency\apps\b2c-web
+> next build
+
+⚠ Warning: Next.js inferred your workspace root, but it may not be correct.
+ We detected multiple lockfiles and selected the directory of E:\project\travelagency\pnpm-workspace.yaml as the root directory.
+ To silence this warning, set `turbopack.root` in your Next.js config, or consider removing one of the lockfiles if it's not needed.
+   See https://nextjs.org/docs/app/api-reference/config/next-config-js/turbopack#root-directory for more information.
+ Detected additional lockfiles: 
+   * E:\project\travelagency\apps\b2c-web\pnpm-workspace.yaml
+
+▲ Next.js 16.2.11 (Turbopack)
+
+⚠ The "middleware" file convention is deprecated. Please use "proxy" instead. Learn more: https://nextjs.org/docs/messages/middleware-to-proxy
+  Creating an optimized production build ...
+Found 1 warning while optimizing generated CSS:
+
+[2m│   box-shadow: none;[22m
+[2m│ }[22m
+[2m│[22m *:where(:not(script, style)):matches([class], [id], [type]) {
+[2m┆[22m                                      [33m[2m^--[22m 'matches' is not recognized as a valid pseudo-class. Did you mean '::matches' (pseudo-element) or is this a typo?[39m
+[2m┆[22m
+[2m│   font-variant-numeric: lining-nums;[22m
+[2m│ }[22m
+
+Turbopack build encountered 1 warnings:
+./apps/b2c-web/src/app/globals.css:2:173184
+Parsing CSS source code failed
+  [90m1 |[0m ...
+[31m[1m>[0m [90m2 |[0m ...ine:none}:where(:not(script,style)):matches([[36mclass[0m], [id], [[36mtype[0m]){font-variant-numeric:...
+  [90m  |[0m                                                [31m[1m^[0m
+  [90m3 |[0m ...
+
+'matches' is not recognized as a valid pseudo-class. Did you mean '::matches' (pseudo-element) or is this a typo?
+
+Generated code of PostCSS transform of file content of apps/b2c-web/src/app/globals.css:
+./apps/b2c-web/src/app/globals.css:2:173184
+  [90m1 |[0m ...
+[31m[1m>[0m [90m2 |[0m ...ine:none}:where(:not(script,style)):matches([[36mclass[0m], [id], [[36mtype[0m]){font-variant-numeric:...
+  [90m  |[0m                                                [31m[1m^[0m
+  [90m3 |[0m ...
+
+Import trace:
+  Client Component Browser:
+    ./apps/b2c-web/src/app/globals.css [Client Component Browser]
+    ./apps/b2c-web/src/app/layout.tsx [Server Component]
+
+
+✓ Compiled successfully in 13.8s
+  Running TypeScript ...
+  Finished TypeScript in 8.9s ...
+  Collecting page data using 11 workers ...
+  Generating static pages using 11 workers (0/31) ...
+  Generating static pages using 11 workers (7/31) 
+  Generating static pages using 11 workers (15/31) 
+Failed to generate sitemap TypeError: fetch failed
+    at async R (E:\project\travelagency\apps\b2c-web\.next\server\chunks\0ry2_next_dist_1hk3fjw._.js:16:604)
+    at async $ (E:\project\travelagency\apps\b2c-web\.next\server\chunks\0ry2_next_dist_1hk3fjw._.js:16:1805) {
+  [cause]: AggregateError: 
+      at ignore-listed frames {
+    code: 'ECONNREFUSED',
+    [errors]: [ [Error], [Error] ]
+  }
+}
+  Generating static pages using 11 workers (23/31) 
+Failed to fetch best packages TypeError: fetch failed
+    at async n (E:\project\travelagency\apps\b2c-web\.next\server\chunks\ssr\[root-of-the-server]__0xke-0a._.js:1:12675) {
+  [cause]: AggregateError: 
+      at ignore-listed frames {
+    code: 'ECONNREFUSED',
+    [errors]: [ [Error], [Error] ]
+  }
+}
+Failed to fetch best activities TypeError: fetch failed
+    at async n (E:\project\travelagency\apps\b2c-web\.next\server\chunks\ssr\[root-of-the-server]__0xke-0a._.js:1:12855) {
+  [cause]: AggregateError: 
+      at ignore-listed frames {
+    code: 'ECONNREFUSED',
+    [errors]: [ [Error], [Error] ]
+  }
+}
+Failed to fetch reviews TypeError: fetch failed
+    at async n (E:\project\travelagency\apps\b2c-web\.next\server\chunks\ssr\[root-of-the-server]__0xke-0a._.js:1:13039) {
+  [cause]: AggregateError: 
+      at ignore-listed frames {
+    code: 'ECONNREFUSED',
+    [errors]: [ [Error], [Error] ]
+  }
+}
+{}
+{}
+✓ Generating static pages using 11 workers (31/31) in 846ms
+  Finalizing page optimization ...
+
+Route (app)                   Revalidate  Expire
+┌ ○ /                                 1h      1y
+├ ○ /_not-found
+├ ○ /about
+├ ○ /activities
+├ ƒ /activity/[slug]
+├ ƒ /admin/activities
+├ ƒ /admin/activities/[id]
+├ ƒ /admin/activities/new
+├ ƒ /admin/blogs
+├ ƒ /admin/blogs/[id]
+├ ƒ /admin/blogs/new
+├ ƒ /admin/bookings
+├ ƒ /admin/dashboard
+├ ƒ /admin/destinations
+├ ƒ /admin/destinations/[id]
+├ ƒ /admin/destinations/new
+├ ○ /admin/login
+├ ƒ /admin/media
+├ ƒ /admin/packages
+├ ƒ /admin/packages/[id]
+├ ƒ /admin/packages/new
+├ ƒ /admin/reviews
+├ ƒ /admin/reviews/[id]
+├ ƒ /admin/reviews/new
+├ ƒ /admin/stories
+├ ƒ /admin/stories/new
+├ ○ /admin/unauthorized
+├ ƒ /admin/website/hero
+├ ○ /allpackage
+├ ○ /b2b
+├ ○ /blogs
+├ ƒ /blogs/[slug]
+├ ○ /contact
+├ ○ /likePackage
+├ ƒ /package/[slug]
+├ ○ /sitemap.xml                      1h      1y
+└ ○ /terms
+
+
+ƒ Proxy (Middleware)
+
+○  (Static)   prerendered as static content
+ƒ  (Dynamic)  server-rendered on demand
+

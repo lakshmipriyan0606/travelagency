@@ -21,7 +21,7 @@ const MobileStickyBottomBar = () => {
                     onClick={() => setIsModalOpen(true)}
                     className="flex-1 flex items-center justify-center gap-3 h-full border-r border-white/20 hover:bg-white/5 transition-colors cursor-pointer"
                 >
-                    <img src={enquiryIcon} alt="Enquiry" className="w-[21px] h-[18px]" />
+                    <img src={enquiryIcon.src} alt="Enquiry" className="w-[21px] h-[18px]" />
                     <span className="text-white text-[11px] font-bold tracking-[0.12em] uppercase">ENQUIRY US</span>
                 </button>
 
@@ -30,7 +30,7 @@ const MobileStickyBottomBar = () => {
                     onClick={handleWhatsAppClick}
                     className="flex-1 flex items-center justify-center gap-3 h-full hover:bg-white/5 transition-colors cursor-pointer"
                 >
-                    <img src={whatsappIcon} alt="WhatsApp" className="w-[18px] h-[18px]" />
+                    <img src={whatsappIcon.src} alt="WhatsApp" className="w-[18px] h-[18px]" />
                     <span className="text-white text-[11px] font-bold tracking-[0.12em] uppercase">WHAT'SUP US</span>
                 </button>
             </div>

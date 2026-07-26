@@ -1,4 +1,5 @@
-import { Link } from "react-router-dom";
+'use client';
+import Link from "next/link";
 import { navbarList } from "./constant";
 import ProfileSection from "./ProfileSection";
 import NavbarRenderList from "./NavBarList";
@@ -61,7 +62,7 @@ const Navbar = () => {
             {navbarList.map((item) => (
               <Link
                 key={item.key}
-                to={item.path}
+                href={item.path}
                 className="text-gray-800 hover:bg-primary p-2 transition-colors duration-200 text-xl block"
                 onClick={() => setNavbarOpen(false)}
               >
@@ -69,7 +70,7 @@ const Navbar = () => {
               </Link>
             ))}
             <div className="mx-start pl-2">
-              <Link to="/b2b" onClick={() => setNavbarOpen(false)}>
+              <Link href="/b2b" onClick={() => setNavbarOpen(false)}>
                 <PrimaryOutlineButton buttonName="For Agencies/ B2B" animated />
               </Link>
             </div>
@@ -81,3 +82,5 @@ const Navbar = () => {
 };
 
 export default Navbar;
+
+
