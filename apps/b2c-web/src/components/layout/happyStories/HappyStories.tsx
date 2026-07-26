@@ -1,6 +1,6 @@
 "use client";
 import { useQuery } from "@tanstack/react-query";
-import { getStories } from "@/api/admin/story.api";
+import { getStories } from "@/api/story.api";
 import { Loader2 } from "lucide-react";
 
 const HappyStories = () => {

@@ -17,10 +17,8 @@
  */
 import cors from 'cors';
 
-const allowedOrigins = [
-  'http://localhost:5173',
-  'http://localhost:3000',
-  'http://localhost:3001',
+// Production origins (explicit allowlist)
+const productionOrigins = [
   'https://travelagency-1-odma.onrender.com',
   'https://travelagency-pearl.vercel.app',
   'https://travelagency-tawny.vercel.app',
@@ -31,9 +29,20 @@ const allowedOrigins = [
   .filter(Boolean)
   .map((origin) => origin.replace(/\/$/, ''));
 
+// Allows any localhost port (3000, 3001, 3002, 5173, etc.) during development.
+// Matches: http://localhost:<port> and http://127.0.0.1:<port>
+const LOCALHOST_ORIGIN = /^https?:\/\/(localhost|127\.0\.0\.1)(:\d+)?$/;
+
 export const corsMiddleware = cors({
   origin: function (origin, callback) {
-    if (!origin || allowedOrigins.includes(origin.replace(/\/$/, ''))) {
+    if (!origin) {
+      // Same-origin or server-to-server — always allow
+      return callback(null, true);
+    }
+
+    const normalized = origin.replace(/\/$/, '');
+
+    if (LOCALHOST_ORIGIN.test(normalized) || productionOrigins.includes(normalized)) {
       callback(null, true);
     } else {
       callback(new Error('CORS Not Allowed'));

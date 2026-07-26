@@ -1,4 +1,4 @@
-import { Button } from '../ui/button'
+import { Button } from '@travelagency/ui'
 
 interface PrimaryButtonProps {
   buttonText: string;

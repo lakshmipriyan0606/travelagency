@@ -6,8 +6,10 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { useMutation } from "@tanstack/react-query";
 import { loginAgent } from "@/api/auth.api";
-import { Loader2, Lock, Mail, ArrowRight } from "lucide-react";
+import { ArrowRight, Lock, Mail } from "lucide-react";
 import Link from "next/link";
+import { FormInput } from "@/components/ui/FormInput";
+import { FormButton } from "@/components/ui/FormButton";
 
 const loginSchema = z.object({
   email: z.string().email("Invalid email address"),
@@ -29,17 +31,19 @@ export default function LoginFormClient() {
 
   const mutation = useMutation({
     mutationFn: loginAgent,
-    onSuccess: (data: any) => {
-      // Set the agency_status cookie based on the success response payload
-      const status = data?.user?.agency?.status || "active";
+    onSuccess: (data: unknown) => {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const dataObj = data as any;
+      const status = dataObj?.user?.agency?.status || "active";
       document.cookie = `agency_status=${status}; path=/; max-age=86400;`;
       window.location.href = "/dashboard";
     },
-    onError: (err: any) => {
-      const status = err?.response?.status;
-      const message = err?.response?.data?.error?.message || err?.response?.data?.message || "";
-      
-      // Branch on 403 reasons to route to correct informational screens
+    onError: (err: unknown) => {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const errorObj = err as any;
+      const status = errorObj?.response?.status;
+      const message = errorObj?.response?.data?.error?.message || errorObj?.response?.data?.message || "";
+
       if (status === 403) {
         if (message.toLowerCase().includes("pending approval")) {
           document.cookie = "agency_status=pending; path=/; max-age=86400;";
@@ -51,7 +55,7 @@ export default function LoginFormClient() {
           return;
         }
       }
-      
+
       setError(message || "Failed to login. Please check your credentials.");
     }
   });
@@ -75,52 +79,41 @@ export default function LoginFormClient() {
       )}
 
       <form onSubmit={handleSubmit(onSubmit)} className="space-y-5">
-        <div className="space-y-2">
-          <label className="text-xs font-bold text-neutral-400 uppercase tracking-widest">Email Address</label>
-          <div className="relative">
-            <Mail className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-neutral-500" />
-            <input 
-              {...register("email")}
-              type="email" 
-              placeholder="agent@travelco.com"
-              className="w-full bg-neutral-950 border border-neutral-800 text-white pl-10 pr-4 py-3 rounded-xl focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500 outline-none transition-all"
-            />
-          </div>
-          {errors.email && <p className="text-xs text-red-400 font-medium">{errors.email.message}</p>}
-        </div>
+        <FormInput
+          registration={register("email")}
+          label="Email Address"
+          type="email"
+          placeholder="agent@travelco.com"
+          icon={Mail}
+          error={errors.email}
+        />
 
-        <div className="space-y-2">
-          <div className="flex justify-between items-center">
-            <label className="text-xs font-bold text-neutral-400 uppercase tracking-widest">Password</label>
-            <a href="#" className="text-xs text-blue-500 hover:text-blue-400 transition-colors">Forgot?</a>
-          </div>
-          <div className="relative">
-            <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-neutral-500" />
-            <input 
-              {...register("password")}
-              type="password" 
-              placeholder="********"
-              className="w-full bg-neutral-950 border border-neutral-800 text-white pl-10 pr-4 py-3 rounded-xl focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500 outline-none transition-all"
-            />
-          </div>
-          {errors.password && <p className="text-xs text-red-400 font-medium">{errors.password.message}</p>}
-        </div>
+        <FormInput
+          registration={register("password")}
+          label="Password"
+          type="password"
+          placeholder="••••••••"
+          icon={Lock}
+          error={errors.password}
+          labelRight={
+            <a href="#" className="text-xs text-blue-500 hover:text-blue-400 transition-colors">
+              Forgot?
+            </a>
+          }
+        />
 
-        <button 
-          type="submit"
-          disabled={isSubmitting || mutation.isPending}
-          className="w-full py-3.5 mt-4 bg-blue-600 hover:bg-blue-500 disabled:opacity-50 disabled:cursor-not-allowed text-white font-bold rounded-xl flex items-center justify-center gap-2 transition-all"
-        >
-          {isSubmitting || mutation.isPending ? (
-            <Loader2 className="w-5 h-5 animate-spin" />
-          ) : (
-            <>Sign In <ArrowRight size={18} /></>
-          )}
-        </button>
+        <FormButton
+          isLoading={isSubmitting || mutation.isPending}
+          label="Sign In"
+          icon={<ArrowRight size={18} />}
+        />
       </form>
 
       <div className="mt-8 text-center text-sm text-neutral-400">
-        Don't have a partner account? <Link href="/register" className="text-blue-500 hover:text-blue-400 font-medium transition-colors">Apply here</Link>
+        Don&apos;t have a partner account?{" "}
+        <Link href="/register" className="text-blue-500 hover:text-blue-400 font-medium transition-colors">
+          Apply here
+        </Link>
       </div>
     </div>
   );

@@ -1,11 +1,11 @@
 // import { useForm } from 'react-hook-form';
-// import { ReusableInput } from '@/components/forms/ReusableInput';
+// import { ReusableInput } from '@travelagency/forms';
 import PrimaryButton from '@/components/Button/PrimaryButton';
 import NotifiationBell from '@/assets/icons/notificationBell.svg';
 import { motion } from 'framer-motion';
 
 import { showToast } from "@/lib/toast";
-import { useMutationAPIQuery } from '@/Hook/useMutationAPIQuery';
+import { useMutationAPIQuery } from '@travelagency/hooks';
 import { subscribeNewsletter } from '@/api/user/api';
 // import z from 'zod';
 // import { zodResolver } from '@hookform/resolvers/zod';
@@ -103,3 +103,4 @@ export default function Newsletter() {
         </section>
     );
 }
+

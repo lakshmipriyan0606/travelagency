@@ -1,5 +1,5 @@
-import { Button } from "../ui/button";
-import { cn } from "@/lib/utils";
+import { Button } from "@travelagency/ui";
+import { cn } from "@travelagency/utils";
 
 type PrimaryOutlineButtonProps = {
   buttonName: string;
@@ -38,3 +38,4 @@ const PrimaryOutlineButton = ({
 };
 
 export default PrimaryOutlineButton;
+

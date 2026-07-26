@@ -5,7 +5,7 @@ import customArrowLeft from '@/assets/icons/arrowleft.svg'
 import customArrowRight from '@/assets/icons/arrowright.svg'
 import arrowLeft from '@/assets/icons/leftarrow.svg'
 import arrowRight from '@/assets/icons/rightarrow.svg'
-import { UseFetchAPIQuery } from "@/Hook/UseFetchAPIQuery";
+import { UseFetchAPIQuery } from "@travelagency/hooks";
 import { GetBestActivitiesList } from "@/api/user/api";
 import { useQueryClient } from "@tanstack/react-query";
 import WrapperCardSkeleton from "../../bestPackage/carousel/WrapperCardSkeleton";
@@ -142,3 +142,4 @@ export default function ActivitiesCarousel({ initialActivities }: { initialActiv
         </div>
     );
 }
+

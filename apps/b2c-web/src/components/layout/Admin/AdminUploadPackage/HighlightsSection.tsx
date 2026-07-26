@@ -1,8 +1,8 @@
 import { useFieldArray, Control } from "react-hook-form";
 import { Plus, X, List } from "lucide-react";
-import { Button } from "@/components/ui/button";
-import { ReusableInput } from "@/components/forms/ReusableInput";
-import { Card } from "@/components/ui/card";
+import { Button } from "@travelagency/ui";
+import { ReusableInput } from "@travelagency/forms";
+import { Card } from "@travelagency/ui";
 
 interface HighlightsSectionProps {
   control: Control<any>;
@@ -63,3 +63,4 @@ export const HighlightsSection = ({ control }: HighlightsSectionProps) => {
     </Card>
   );
 };
+

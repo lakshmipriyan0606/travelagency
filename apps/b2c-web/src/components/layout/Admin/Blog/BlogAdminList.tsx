@@ -14,7 +14,7 @@ import {
   AlertDialogFooter,
   AlertDialogHeader,
   AlertDialogTitle,
-} from "@/components/ui/alert-dialog";
+} from "@travelagency/ui";
 import { NiceSelect } from "@/components/common/NiceSelect";
 
 const BlogAdminList = () => {
@@ -231,6 +231,7 @@ const BlogAdminList = () => {
 };
 
 export default BlogAdminList;
+
 
 
 

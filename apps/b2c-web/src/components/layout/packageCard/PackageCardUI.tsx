@@ -34,3 +34,4 @@ export function PriceStrike({ original, final }: { original: number | string; fi
         </span>
     );
 }
+

@@ -19,8 +19,8 @@ import HeroEnquiryForm from './HeroEnquiryForm';
 import { HeroFormData } from '@/config/formConfig';
 import AnimatedButton from '@/components/Button/AnimatedButton/AnimatedButton';
 import { motion } from 'framer-motion';
-import { UseFetchAPIQuery } from '@/Hook/UseFetchAPIQuery';
-import { GetActiveWebsiteHero } from '@/api/admin/websiteHero.api';
+import { UseFetchAPIQuery } from '@travelagency/hooks';
+import { GetActiveWebsiteHero } from '@/api/websiteHero.api';
 
 const fallbackHeroImages = [
     { url: "https://res.cloudinary.com/dizocitqw/image/upload/v1775669454/websiteHero/at0nbqnm1q2hae5hzcoi.jpg", alt: "Malaysia travel experience" },
@@ -192,3 +192,4 @@ const HeroSection = () => {
 };
 
 export default HeroSection;
+

@@ -1,6 +1,6 @@
 // @ts-nocheck
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { getStories, deleteStory, moveStory, normalizeStoriesOrder } from "@/api/admin/story.api";
+import { getStories, deleteStory, moveStory, normalizeStoriesOrder } from "@/api/story.api";
 import { Loader2, Trash2, ArrowUp, ArrowDown, ListOrdered, ImageIcon, Pencil } from "lucide-react";
 
 import { showToast } from "@/lib/toast";

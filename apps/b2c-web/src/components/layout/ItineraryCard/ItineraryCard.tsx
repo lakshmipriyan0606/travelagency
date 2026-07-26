@@ -1,4 +1,4 @@
-import { cn } from "@/lib/utils";
+import { cn } from "@travelagency/utils";
 import { handleDayListFormat } from "./constant";
 
 interface TimeSlot {
@@ -117,3 +117,4 @@ const ItineraryCard: React.FC<ItineraryCardProps> = ({ currentPackage }) => {
 };
 
 export default ItineraryCard;
+

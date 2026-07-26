@@ -1,7 +1,7 @@
 import { useFormContext } from "react-hook-form";
-import { ReusableInput } from "@/components/forms/ReusableInput";
-import { SelectField } from "@/components/forms/SelectField";
-import { ReusableTextArea } from "@/components/forms/ReusableTextArea";
+import { ReusableInput } from "@travelagency/forms";
+import { SelectField } from "@travelagency/forms";
+import { ReusableTextArea } from "@travelagency/forms";
 import { slotTypeOptions } from "./constant";
 import { useCallback } from "react";
 import { useDropzone } from "react-dropzone";
@@ -137,4 +137,5 @@ export const SlotFieldSection = ({ control, dayIndex, slotIndex, removeSlot }: S
             </div>
         </div>
     );
-};
+};
+

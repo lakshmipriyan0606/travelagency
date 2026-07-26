@@ -1,5 +1,5 @@
 import { useFieldArray } from "react-hook-form";
-import { ReusableInput } from "@/components/forms/ReusableInput";
+import { ReusableInput } from "@travelagency/forms";
 import { SlotFieldSection } from "./SlotFieldSection";
 import { Trash2, Plus } from "lucide-react";
 
@@ -83,3 +83,4 @@ export const ItineraryDaySection = ({
     </div>
   );
 };
+

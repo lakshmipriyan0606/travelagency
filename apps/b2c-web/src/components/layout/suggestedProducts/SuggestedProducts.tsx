@@ -3,7 +3,7 @@
 import { useState, useMemo } from "react";
 import { Swiper, SwiperSlide } from "swiper/react";
 import { Navigation, Pagination, Autoplay } from "swiper/modules";
-import { UseFetchAPIQuery } from "@/Hook/UseFetchAPIQuery";
+import { UseFetchAPIQuery } from "@travelagency/hooks";
 import { GetAllPackageList, GetBestBackageList } from "@/api/user/api";
 import { SinglePackageCard } from "../packageCard/PackageCard";
 import PackageCardSkeleton from "../packageCard/PackageCardSkeleton";
@@ -183,3 +183,4 @@ export default function SuggestedProducts({
         </section>
     );
 }
+

@@ -1,4 +1,4 @@
-import axiosClient from "../axiosClient";
+import axiosClient from '@travelagency/api-client';
 
 export const GetBestBackageList = async () => {
   const { data } = await axiosClient.get("packages/bestpackages");

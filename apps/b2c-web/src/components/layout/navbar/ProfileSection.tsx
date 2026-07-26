@@ -1,12 +1,12 @@
 import { GetLikePackageListCount } from "@/api/user/api";
-import { UseFetchAPIQuery } from "@/Hook/UseFetchAPIQuery";
+import { UseFetchAPIQuery } from "@travelagency/hooks";
 import { Heart, User } from "lucide-react";
 import { useRouter } from "next/navigation";
 
 import {
   AlertDialog,
   AlertDialogTrigger,
-} from "@/components/ui/alert-dialog";
+} from "@travelagency/ui";
 
 
 const ProfileSection = () => {
@@ -84,4 +84,5 @@ const ProfileSection = () => {
 };
 
 export default ProfileSection;
+
 

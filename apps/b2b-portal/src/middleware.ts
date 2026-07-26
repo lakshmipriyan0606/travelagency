@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server';
 import type { NextRequest } from 'next/server';
-import { AUTH_COOKIES } from './lib/auth/constants';
+import { AUTH_COOKIES } from '@travelagency/constants';
 
 export function middleware(request: NextRequest) {
   const token = request.cookies.get(AUTH_COOKIES.ACCESS_TOKEN || 'access_token')?.value;

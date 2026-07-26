@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react';
 import { Minus, Plus, Heart, Share2 } from 'lucide-react';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
-import { toggleBlogLike } from '@/api/admin/blog.api';
+import { toggleBlogLike } from '@/api/blog.api';
 
 import { showToast } from "@/lib/toast";
 

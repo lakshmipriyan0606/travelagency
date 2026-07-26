@@ -2,7 +2,7 @@ import { useEffect, useMemo, useRef, useState, useCallback } from "react";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { useForm } from "react-hook-form";
 import { FilterState, SortOption, buildEmptyFilterConfig, filterPackages, sortPackages, buildURLParams, parseURLParams } from "./constant";
-import { UseFetchAPIQuery } from "@/Hook/UseFetchAPIQuery";
+import { UseFetchAPIQuery } from "@travelagency/hooks";
 import { GetAllPackageList, GetLikedPackageList } from "@/api/user/api";
 import { PACKAGE_CONFIG } from "@/config/packageConfig";
 

@@ -2,7 +2,7 @@
 import badgeBackground from "@/assets/icons/badgeBackground.svg";
 import Link from "next/link";
 import { useQuery } from "@tanstack/react-query";
-import { getDestinations } from "@/features/admin/destinations/api/destinations.api";
+import { getDestinations } from "@/api/destinations.api";
 
 const FALLBACK_DESTINATIONS = [
   {

@@ -5,7 +5,7 @@ import { Swiper, SwiperSlide } from "swiper/react";
 import { Navigation } from "swiper/modules";
 import "swiper/css";
 import "swiper/css/navigation";
-import { useDeviceSize } from "@/Hook/UseDevice";
+import { useDeviceSize } from "@travelagency/hooks";
 import type { Swiper as SwiperType } from "swiper";
 
 interface PackageData {
@@ -97,6 +97,7 @@ export default function PackageDetailCarousel({
         </div>
     );
 }
+
 
 
 

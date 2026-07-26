@@ -1,8 +1,8 @@
 import { AnimatePresence, motion } from "framer-motion";
 import { SinglePackageCard } from "./SinglePackageCard";
 import { PackageGridProps } from "./types";
-import { UseFetchAPIQuery } from "@/Hook/UseFetchAPIQuery";
-import { GetTakenRanks } from "@/api/admin/auth.api";
+import { UseFetchAPIQuery } from "@travelagency/hooks";
+import { GetTakenRanks } from "@/api/packages.api";
 
 export { SinglePackageCard };
 export * from "./types";
@@ -56,3 +56,4 @@ export default function PackageCard({
         </div>
     );
 }
+

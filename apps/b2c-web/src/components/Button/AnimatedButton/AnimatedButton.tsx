@@ -1,4 +1,4 @@
-import { Button } from "@/components/ui/button";
+import { Button } from "@travelagency/ui";
 import Link from "next/link";
 
 interface BorderAnimatedButtonProps {
@@ -59,7 +59,7 @@ export default function AnimatedButton({
       disabled={disabled}
     >
       {asChild ? (
-        children
+        children as any
       ) : to ? (
         <Link href={to} className="w-full h-full flex items-center justify-center">
           {content}
@@ -70,4 +70,5 @@ export default function AnimatedButton({
     </Button>
   );
 }
+
 

@@ -1,5 +1,5 @@
-import { useMutationAPIQuery } from "@/Hook/useMutationAPIQuery";
-import { DeleteCurrentPackage, UpdatePackageRank, TogglePackageStatus } from "@/api/admin/auth.api";
+import { useMutationAPIQuery } from "@travelagency/hooks";
+import { DeleteCurrentPackage, UpdatePackageRank, TogglePackageStatus } from "@/api/packages.api";
 import { UpdateLikePackage } from "@/api/user/api";
 import { useQueryClient } from "@tanstack/react-query";
 import { toast } from "react-toastify";

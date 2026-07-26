@@ -7,7 +7,7 @@ import {
     AlertDialogFooter,
     AlertDialogHeader,
     AlertDialogTitle,
-} from "@/components/ui/alert-dialog";
+} from "@travelagency/ui";
 
 interface DeleteConfirmDialogProps {
     open: boolean;
@@ -41,7 +41,7 @@ export function DeleteConfirmDialog({
                         Cancel
                     </AlertDialogCancel>
                     <AlertDialogAction
-                        onClick={(e) => {
+                        onClick={(e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
                             e.preventDefault(); // Prevent closing before onConfirm if needed, but here we just want to execute.
                             onConfirm();
                             onOpenChange(false);
@@ -55,3 +55,4 @@ export function DeleteConfirmDialog({
         </AlertDialog>
     );
 }
+

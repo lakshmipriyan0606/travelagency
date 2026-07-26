@@ -1,11 +1,11 @@
-import axiosClient from "./axiosClient";
+import axiosClient from '@travelagency/api-client';
 
-export const loginAgent = async (data: any) => {
+export const loginAgent = async (data: unknown) => {
   const res = await axiosClient.post("/b2b/agency/login", data);
   return res.data;
 };
 
-export const registerAgent = async (data: any) => {
+export const registerAgent = async (data: unknown) => {
   const payload = { ...data, role: "agent" };
   const res = await axiosClient.post("/b2b/agency/register", payload);
   return res.data;
@@ -21,7 +21,7 @@ export const getIssues = async () => {
   return res.data;
 };
 
-export const resubmitCorrection = async (data: any) => {
+export const resubmitCorrection = async (data: unknown) => {
   const res = await axiosClient.patch("/b2b/agency/me/resubmit", data);
   return res.data;
 };
@@ -31,7 +31,7 @@ export const getRejectionReason = async () => {
   return res.data;
 };
 
-export const reapply = async (data: any) => {
+export const reapply = async (data: unknown) => {
   const res = await axiosClient.patch("/b2b/agency/me/reapply", data);
   return res.data;
 };

@@ -30,6 +30,9 @@
     "@travelagency/api-client": "workspace:*",
     "@travelagency/auth": "workspace:*",
     "@travelagency/constants": "workspace:*",
+    "@travelagency/forms": "workspace:*",
+    "@travelagency/hooks": "workspace:*",
+    "@travelagency/theme": "workspace:*",
     "@travelagency/ui": "workspace:*",
     "@travelagency/utils": "workspace:*"
   },

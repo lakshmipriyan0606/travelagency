@@ -3,7 +3,7 @@
 import { useSearchParams, useRouter, usePathname } from "next/navigation";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { GetAllPackageList } from "@/api/user/api";
-import { UseFetchAPIQuery } from "@/Hook/UseFetchAPIQuery";
+import { UseFetchAPIQuery } from "@travelagency/hooks";
 import PackageCard from "@/components/layout/packageCard/PackageCard";
 import PackageCardSkeleton from "@/components/layout/packageCard/PackageCardSkeleton";
 import PackageErrorSkeleton from "@/components/layout/packageCard/PackageErrorSkeleton";
@@ -219,5 +219,6 @@ const ActivityPackageList = () => {
 };
 
 export default ActivityPackageList;
+
 
 

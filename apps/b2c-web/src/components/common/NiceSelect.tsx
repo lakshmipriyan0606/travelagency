@@ -6,8 +6,8 @@ import {
     SelectItem,
     SelectTrigger,
     SelectValue,
-} from "@/components/ui/select";
-import { cn } from "@/lib/utils";
+} from "@travelagency/ui";
+import { cn } from "@travelagency/utils";
 
 interface Option {
     value: string;
@@ -57,4 +57,5 @@ export const NiceSelect = ({
         </div>
     );
 };
+
 

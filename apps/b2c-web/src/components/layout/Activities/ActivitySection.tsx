@@ -1,5 +1,5 @@
 import { useRouter } from "next/navigation";
-import { UseFetchAPIQuery } from "@/Hook/UseFetchAPIQuery";
+import { UseFetchAPIQuery } from "@travelagency/hooks";
 import { GetActivityCategories } from "@/api/user/api";
 import { motion } from "framer-motion";
 import { GLOBAL_CONFIG } from "@/config/globalConfig";
@@ -119,4 +119,5 @@ const ActivitySection = () => {
 };
 
 export default ActivitySection;
+
 

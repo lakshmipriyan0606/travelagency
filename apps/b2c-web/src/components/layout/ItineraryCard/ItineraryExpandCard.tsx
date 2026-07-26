@@ -2,7 +2,7 @@
 'use client';
 import { useState, useRef, useMemo } from "react";
 import { ChevronDown, ChevronUp, Sun } from "lucide-react";
-import { CardContent } from "@/components/ui/card";
+import { CardContent } from "@travelagency/ui";
 import { motion, AnimatePresence } from "framer-motion";
 import { formatItineraryExpandData } from "./constant";
 
@@ -234,4 +234,5 @@ export default function ItineraryDay({ currentPackage }: ItineraryDayProps) {
     </div>
   );
 }
+
 

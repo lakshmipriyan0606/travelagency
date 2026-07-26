@@ -1,17 +1,16 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useState, useMemo } from "react";
 import { useQuery, useMutation } from "@tanstack/react-query";
 import { getAgentProfile, getRejectionReason, reapply } from "@/api/auth.api";
-import { Loader2, AlertTriangle, CheckCircle, ArrowRight, ShieldAlert } from "lucide-react";
+import { Loader2, CheckCircle, ArrowRight, ShieldAlert } from "lucide-react";
 import Link from "next/link";
+import { FormButton } from "@/components/ui/FormButton";
 
 export default function ReapplyPage() {
-  const [fields, setFields] = useState<Record<string, any>>({});
   const [formError, setFormError] = useState<string | null>(null);
   const [isResubmitted, setIsResubmitted] = useState(false);
 
-  // Fetch agent profile (contains agency) and rejection reason
   const { data: profile, isLoading: isProfileLoading } = useQuery({
     queryKey: ["agentProfile"],
     queryFn: getAgentProfile,
@@ -25,22 +24,20 @@ export default function ReapplyPage() {
   const agency = profile?.user?.agency;
   const reason = rejectionData?.rejectionReason || "No reason specified";
 
-  // Pre-fill all fields when profile loads
-  useEffect(() => {
-    if (agency) {
-      setFields({
-        companyName: agency.companyName || "",
-        tradeName: agency.tradeName || "",
-        businessType: agency.businessType || "travel_agency",
-        registrationNumber: agency.registrationNumber || "",
-        country: agency.country || "",
-        gstNumber: agency.gstNumber || "",
-        websiteUrl: agency.websiteUrl || "",
-        yearsInBusiness: agency.yearsInBusiness || 0,
-        iataNumber: agency.iataNumber || "",
-      });
-    }
-  }, [agency]);
+  // Derive initial field values from the fetched profile — avoids setState-in-effect.
+  const initialFields = useMemo(() => ({
+    companyName: agency?.companyName || "",
+    tradeName: agency?.tradeName || "",
+    businessType: agency?.businessType || "travel_agency",
+    registrationNumber: agency?.registrationNumber || "",
+    country: agency?.country || "",
+    gstNumber: agency?.gstNumber || "",
+    websiteUrl: agency?.websiteUrl || "",
+    yearsInBusiness: agency?.yearsInBusiness || 0,
+    iataNumber: agency?.iataNumber || "",
+  }), [agency]);
+
+  const [fields, setFields] = useState<Record<string, unknown>>(initialFields);
 
   const mutation = useMutation({
     mutationFn: reapply,
@@ -48,10 +45,12 @@ export default function ReapplyPage() {
       document.cookie = "agency_status=pending; path=/; max-age=86400;";
       setIsResubmitted(true);
     },
-    onError: (err: any) => {
+    onError: (err: unknown) => {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const errObj = err as any;
       setFormError(
-        err?.response?.data?.error?.message || 
-        err?.response?.data?.message || 
+        errObj?.response?.data?.error?.message ||
+        errObj?.response?.data?.message ||
         "Failed to reapply. Please verify all fields."
       );
     },
@@ -87,11 +86,8 @@ export default function ReapplyPage() {
     );
   }
 
-  const handleInputChange = (fieldName: string, value: any) => {
-    setFields((prev) => ({
-      ...prev,
-      [fieldName]: value,
-    }));
+  const handleInputChange = (fieldName: string, value: unknown) => {
+    setFields((prev) => ({ ...prev, [fieldName]: value }));
   };
 
   const handleSubmit = (e: React.FormEvent) => {
@@ -142,21 +138,25 @@ export default function ReapplyPage() {
                 </label>
                 <input
                   type={field.type}
-                  value={fields[field.name] ?? ""}
-                  onChange={(e) => handleInputChange(field.name, field.type === "number" ? parseInt(e.target.value) || 0 : e.target.value)}
+                  value={(fields[field.name] as string) ?? ""}
+                  onChange={(e) =>
+                    handleInputChange(
+                      field.name,
+                      field.type === "number" ? parseInt(e.target.value) || 0 : e.target.value
+                    )
+                  }
                   className="w-full bg-neutral-950 border border-neutral-800 text-sm px-4 py-3 rounded-xl outline-none text-white focus:ring-2 focus:ring-blue-500/30 focus:border-blue-500 transition-all"
                 />
               </div>
             ))}
           </div>
 
-          <button
-            type="submit"
-            disabled={mutation.isPending}
-            className="w-full py-4 mt-6 bg-blue-600 hover:bg-blue-500 disabled:opacity-50 disabled:cursor-not-allowed text-white font-bold rounded-xl flex items-center justify-center gap-2 transition-all"
-          >
-            {mutation.isPending ? <Loader2 className="w-5 h-5 animate-spin" /> : <>Resubmit Application <ArrowRight size={18} /></>}
-          </button>
+          <FormButton
+            isLoading={mutation.isPending}
+            label="Resubmit Application"
+            icon={<ArrowRight size={18} />}
+            className="mt-6"
+          />
         </form>
       </div>
     </main>
