@@ -21,8 +21,9 @@ async function getPackageDetail(slug: string) {
     }
 }
 
-export async function generateMetadata({ params }: { params: { slug: string } }): Promise<Metadata> {
-    const pkg = await getPackageDetail(params.slug);
+export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }): Promise<Metadata> {
+    const { slug } = await params;
+    const pkg = await getPackageDetail(slug);
     if (!pkg) return { title: 'Package Not Found' };
 
     return {
@@ -37,8 +38,9 @@ export async function generateMetadata({ params }: { params: { slug: string } })
     };
 }
 
-export default async function PackageDetailPage({ params }: { params: { slug: string } }) {
-    const pkg = await getPackageDetail(params.slug);
+export default async function PackageDetailPage({ params }: { params: Promise<{ slug: string }> }) {
+    const { slug } = await params;
+    const pkg = await getPackageDetail(slug);
     
     if (!pkg) {
         notFound();

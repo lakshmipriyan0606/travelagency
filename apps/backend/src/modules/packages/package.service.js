@@ -481,7 +481,7 @@ export const getLikeCount = async (userId) => {
   const finalAllPackages = allPackages.map((pkg) => {
     const userLike = pkg.likes?.find((like) => like.userId === userId);
     return {
-      ...pkg.toObject(),
+      ...pkg,
       userLiked: userLike ? userLike.liked : false,
     };
   });

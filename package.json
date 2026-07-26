@@ -4,8 +4,7 @@
   "scripts": {
     "build": "turbo build",
     "dev": "turbo dev",
-    "lint": "turbo lint",
-    "prepare": "husky"
+    "lint": "turbo lint"
   },
   "devDependencies": {
     "turbo": "^2.0.0"

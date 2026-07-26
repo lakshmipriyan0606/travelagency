@@ -8,9 +8,10 @@ export const metadata = {
   title: "Edit Review | Admin",
 };
 
-export default async function EditReviewPage({ params }: { params: { id: string } }) {
+export default async function EditReviewPage({ params }: { params: Promise<{ id: string }> }) {
   await requireAdmin();
   const token = await getAccessToken();
+  const { id } = await params;
 
   let review: Review | null = null;
   let totalReviews = 0;
@@ -27,7 +28,7 @@ export default async function EditReviewPage({ params }: { params: { id: string 
       const json = await res.json();
       const reviews: Review[] = json.data || json || [];
       totalReviews = reviews.length;
-      review = reviews.find(r => r._id === params.id) || null;
+      review = reviews.find(r => r._id === id) || null;
     }
   } catch (error) {
     console.error("Failed to fetch review:", error);

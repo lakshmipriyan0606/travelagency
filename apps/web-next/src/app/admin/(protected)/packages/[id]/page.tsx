@@ -11,12 +11,13 @@ export const metadata = {
 export default async function EditPackagePage({
   params,
 }: {
-  params: { id: string };
+  params: Promise<{ id: string }>;
 }) {
   await requireAdmin();
   const token = await getAccessToken();
+  const { id } = await params;
 
-  const res = await fetch(`${API_BASE_URL}/v1/b2c-admin/packages/${params.id}`, {
+  const res = await fetch(`${API_BASE_URL}/v1/b2c-admin/packages/${id}`, {
     headers: {
       Cookie: `access_token=${token}`
     },
@@ -37,7 +38,7 @@ export default async function EditPackagePage({
         <p className="text-gray-500 text-sm mt-1">Update details for {packageData?.packageName}</p>
       </div>
       
-      <PackageFormClient isActivity={false} editId={params.id} />
+      <PackageFormClient isActivity={false} editId={id} />
     </div>
   );
 }

@@ -5,11 +5,12 @@ export const metadata = {
   title: "Edit Blog | Admin",
 };
 
-export default async function EditBlogPage({ params }: { params: { id: string } }) {
+export default async function EditBlogPage({ params }: { params: Promise<{ id: string }> }) {
   await requireAdmin();
+  const { id } = await params;
   return (
     <div className="space-y-6">
-      <BlogFormClient editBlogId={params.id} />
+      <BlogFormClient editBlogId={id} />
     </div>
   );
 }

@@ -42,8 +42,9 @@ async function getSidebarBlogs(category: string) {
     }
 }
 
-export async function generateMetadata({ params }: { params: { slug: string } }): Promise<Metadata> {
-    const blog = await getBlogData(params.slug);
+export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }): Promise<Metadata> {
+    const resolvedParams = await params;
+    const blog = await getBlogData(resolvedParams.slug);
     if (!blog) return { title: 'Story Not Found' };
 
     return {
@@ -57,8 +58,9 @@ export async function generateMetadata({ params }: { params: { slug: string } })
     };
 }
 
-export default async function BlogDetailPage({ params }: { params: { slug: string } }) {
-    const blog = await getBlogData(params.slug);
+export default async function BlogDetailPage({ params }: { params: Promise<{ slug: string }> }) {
+    const resolvedParams = await params;
+    const blog = await getBlogData(resolvedParams.slug);
     
     if (!blog) {
         notFound();
