@@ -1,17 +1,16 @@
 /**
- * FormInput.tsx
- * B2B Portal — reusable dark-theme form input.
- * Wraps a raw <input> with icon slot, floating label, and error message.
+ * DarkFormInput.tsx
+ * Shared dark-theme form input for all apps (B2C admin, B2B admin, B2B portal).
+ * Wraps a raw <input> with icon slot, label row, password eye toggle, and error message.
  * Works with react-hook-form's `register` pattern.
  */
 "use client";
 
 import React, { useState } from "react";
-import { cn } from "@travelagency/utils";
 import type { FieldError, UseFormRegisterReturn } from "react-hook-form";
 import { Eye, EyeOff } from "lucide-react";
 
-interface FormInputProps {
+interface DarkFormInputProps {
   /** react-hook-form register return spread: {...register("field")} */
   registration: UseFormRegisterReturn;
   label: string;
@@ -26,7 +25,7 @@ interface FormInputProps {
   id?: string;
 }
 
-export function FormInput({
+export function DarkFormInput({
   registration,
   label,
   placeholder,
@@ -36,7 +35,7 @@ export function FormInput({
   labelRight,
   className,
   id,
-}: FormInputProps) {
+}: DarkFormInputProps) {
   const inputId = id ?? registration.name;
   const [showPassword, setShowPassword] = useState(false);
 
@@ -44,7 +43,7 @@ export function FormInput({
   const inputType = isPassword ? (showPassword ? "text" : "password") : type;
 
   return (
-    <div className={cn("space-y-2", className)}>
+    <div className={`space-y-2 ${className ?? ""}`}>
       {/* Label row */}
       <div className="flex items-center justify-between">
         <label
@@ -66,21 +65,21 @@ export function FormInput({
           type={inputType}
           placeholder={placeholder}
           {...registration}
-          className={cn(
+          className={[
             "w-full bg-neutral-950 border text-white py-3 rounded-xl",
             "focus:ring-2 focus:ring-yellow-500/50 focus:border-yellow-500 outline-none transition-all",
             Icon ? "pl-10" : "pl-4",
             isPassword ? "pr-10" : "pr-4",
             error
               ? "border-red-500/70 focus:ring-red-500/40 focus:border-red-500"
-              : "border-neutral-800"
-          )}
+              : "border-neutral-800",
+          ].join(" ")}
         />
         {isPassword && (
           <button
             type="button"
             onClick={() => setShowPassword(!showPassword)}
-            className="absolute right-3 top-1/2 -translate-y-1/2 text-neutral-500 hover:text-neutral-350 focus:outline-none"
+            className="absolute right-3 top-1/2 -translate-y-1/2 text-neutral-500 hover:text-neutral-300 focus:outline-none"
           >
             {showPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
           </button>

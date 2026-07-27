@@ -59,7 +59,7 @@ export default function ReapplyPage() {
   if (isProfileLoading || isRejectionLoading) {
     return (
       <main className="min-h-screen flex items-center justify-center bg-neutral-950 text-white">
-        <Loader2 className="w-8 h-8 animate-spin text-blue-500" />
+        <Loader2 className="w-8 h-8 animate-spin text-yellow-500" />
       </main>
     );
   }
@@ -69,7 +69,7 @@ export default function ReapplyPage() {
       <main className="min-h-screen flex items-center justify-center bg-neutral-950 p-6 text-center">
         <div className="w-full max-w-md p-8 bg-neutral-900 border border-neutral-800 rounded-3xl shadow-2xl">
           <div className="mb-6">
-            <CheckCircle className="w-16 h-16 text-blue-500 mx-auto" />
+            <CheckCircle className="w-16 h-16 text-yellow-500 mx-auto" />
           </div>
           <h2 className="text-2xl font-bold text-white tracking-tight mb-4">Re-submitted successfully</h2>
           <p className="text-neutral-400 text-sm leading-relaxed mb-8">

@@ -13,6 +13,7 @@ import { logger } from '#shared/utils/logger.js';
 export const requireAgencyAuth = async (req, res, next) => {
   try {
     const token =
+      req.cookies.b2b_portal_access_token ||
       req.cookies.access_token ||
       (req.headers.authorization && req.headers.authorization.split(' ')[1]);
 
@@ -66,6 +67,7 @@ export const requireAdminRole = (...allowedRoles) => {
   return async (req, res, next) => {
     try {
       const token =
+        req.cookies.b2b_access_token ||
         req.cookies.access_token ||
         (req.headers.authorization && req.headers.authorization.split(' ')[1]);
 

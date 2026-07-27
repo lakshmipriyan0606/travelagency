@@ -8,8 +8,7 @@ import { useMutation } from "@tanstack/react-query";
 import { loginAgent } from "@/api/auth.api";
 import { ArrowRight, Lock, Mail } from "lucide-react";
 import Link from "next/link";
-import { FormInput } from "@/components/ui/FormInput";
-import { FormButton } from "@/components/ui/FormButton";
+import { DarkFormInput, DarkFormButton } from "@travelagency/forms";
 
 const loginSchema = z.object({
   email: z.string().email("Invalid email address"),
@@ -34,7 +33,17 @@ export default function LoginFormClient() {
     onSuccess: (data: unknown) => {
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       const dataObj = data as any;
-      const status = dataObj?.user?.agency?.status || "active";
+      const resData = dataObj?.data || dataObj;
+      const accessToken = resData?.accessToken;
+      const refreshToken = resData?.refreshToken;
+      const status = resData?.agencyUser?.agency?.status || "active";
+
+      if (accessToken) {
+        document.cookie = `b2b_portal_access_token=${accessToken}; path=/; max-age=86400;`;
+      }
+      if (refreshToken) {
+        document.cookie = `b2b_portal_refresh_token=${refreshToken}; path=/; max-age=604800;`;
+      }
       document.cookie = `agency_status=${status}; path=/; max-age=86400;`;
       window.location.href = "/dashboard";
     },
@@ -79,7 +88,7 @@ export default function LoginFormClient() {
       )}
 
       <form onSubmit={handleSubmit(onSubmit)} className="space-y-5">
-        <FormInput
+        <DarkFormInput
           registration={register("email")}
           label="Email Address"
           type="email"
@@ -88,7 +97,7 @@ export default function LoginFormClient() {
           error={errors.email}
         />
 
-        <FormInput
+        <DarkFormInput
           registration={register("password")}
           label="Password"
           type="password"
@@ -96,13 +105,13 @@ export default function LoginFormClient() {
           icon={Lock}
           error={errors.password}
           labelRight={
-            <a href="#" className="text-xs text-blue-500 hover:text-blue-400 transition-colors">
+            <a href="#" className="text-xs text-yellow-500 hover:text-yellow-400 transition-colors">
               Forgot?
             </a>
           }
         />
 
-        <FormButton
+        <DarkFormButton
           isLoading={isSubmitting || mutation.isPending}
           label="Sign In"
           icon={<ArrowRight size={18} />}
@@ -111,7 +120,7 @@ export default function LoginFormClient() {
 
       <div className="mt-8 text-center text-sm text-neutral-400">
         Don&apos;t have a partner account?{" "}
-        <Link href="/register" className="text-blue-500 hover:text-blue-400 font-medium transition-colors">
+        <Link href="/register" className="text-yellow-500 hover:text-yellow-400 font-medium transition-colors">
           Apply here
         </Link>
       </div>

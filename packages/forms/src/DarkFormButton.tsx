@@ -1,14 +1,14 @@
 /**
- * FormButton.tsx
- * B2B Portal — reusable submit button with loading state.
+ * DarkFormButton.tsx
+ * Shared dark-theme submit button for all apps (B2C admin, B2B admin, B2B portal).
+ * Shows a primary-colored button with loading spinner.
  */
 "use client";
 
 import React from "react";
 import { Loader2 } from "lucide-react";
-import { cn } from "@travelagency/utils";
 
-interface FormButtonProps {
+interface DarkFormButtonProps {
   /** Loading state — shows spinner and disables button */
   isLoading?: boolean;
   /** Label shown when not loading */
@@ -20,27 +20,28 @@ interface FormButtonProps {
   type?: "submit" | "button" | "reset";
 }
 
-export function FormButton({
+export function DarkFormButton({
   isLoading = false,
   label,
   icon,
   disabled,
   className,
   type = "submit",
-}: FormButtonProps) {
+}: DarkFormButtonProps) {
   return (
     <button
       type={type}
       disabled={isLoading || disabled}
-      className={cn(
-        "w-full py-3.5 mt-4",
-        "bg-yellow-500 hover:bg-yellow-400",
+      style={{ backgroundColor: "var(--color-primary, #fcaf16)" }}
+      className={[
+        "w-full py-4 text-lg",
+        "hover:brightness-110",
         "disabled:opacity-50 disabled:cursor-not-allowed",
         "text-neutral-950 font-bold rounded-xl",
         "flex items-center justify-center gap-2",
         "transition-all duration-200",
-        className
-      )}
+        className ?? "",
+      ].join(" ")}
     >
       {isLoading ? (
         <Loader2 className="w-5 h-5 animate-spin" />

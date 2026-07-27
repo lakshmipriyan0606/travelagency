@@ -11,7 +11,8 @@ import {
   Globe, 
   LayoutDashboard,
   Star,
-  CalendarCheck
+  CalendarCheck,
+  Briefcase
 } from "lucide-react";
 
 export type AdminNavItem = {

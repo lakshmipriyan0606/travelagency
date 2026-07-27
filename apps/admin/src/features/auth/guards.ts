@@ -3,6 +3,7 @@ import { redirect } from "next/navigation";
 import { getAccessToken } from '@travelagency/auth';
 import { AdminUser, SessionData } from "./types";
 import { ADMIN_ROLES } from '@travelagency/constants';
+import { cookies } from "next/headers";
 
 export async function getCurrentAdmin(): Promise<AdminUser | null> {
   const token = await getAccessToken();
@@ -47,10 +48,48 @@ export async function getCurrentAdmin(): Promise<AdminUser | null> {
   }
 }
 
+export async function getCurrentB2BAdmin(): Promise<AdminUser | null> {
+  const cookieStore = await cookies();
+  const token = cookieStore.get('b2b_access_token')?.value;
+  
+  if (!token) {
+    return null;
+  }
+
+  try {
+    const res = await fetch(`${API_BASE_URL}/b2b/admin/me`, {
+      headers: {
+        Cookie: `access_token=${token}`,
+        Authorization: `Bearer ${token}`
+      },
+      next: { revalidate: 0 }
+    });
+
+    if (!res.ok) {
+      return null;
+    }
+
+    const json = await res.json();
+    const adminData = json.data?.adminUser || json.adminUser;
+    if (!adminData) {
+      return null;
+    }
+
+    return {
+      id: adminData.id || adminData._id,
+      role: adminData.role,
+      name: adminData.name || '',
+      email: adminData.email || '',
+    } as AdminUser;
+  } catch (error) {
+    return null;
+  }
+}
+
 export async function isAdmin(user: AdminUser | null): Promise<boolean> {
   if (!user || !user.role) return false;
   const normalizedRole = user.role.toUpperCase().replace('SUPERADMIN', 'SUPER_ADMIN');
-  return ADMIN_ROLES.includes(normalizedRole as any) || ADMIN_ROLES.includes(user.role as any);
+  return ADMIN_ROLES.includes(normalizedRole as any) || ADMIN_ROLES.includes(user.role as any) || ['OPS', 'SUPERADMIN'].includes(normalizedRole);
 }
 
 export async function requireAdmin(): Promise<AdminUser> {
@@ -58,7 +97,18 @@ export async function requireAdmin(): Promise<AdminUser> {
   const valid = await isAdmin(admin);
   
   if (!valid) {
-    redirect("/admin/login");
+    redirect("/b2c/admin/login");
+  }
+
+  return admin!;
+}
+
+export async function requireB2BAdmin(): Promise<AdminUser> {
+  const admin = await getCurrentB2BAdmin();
+  const valid = await isAdmin(admin);
+  
+  if (!valid) {
+    redirect("/b2b/admin/login");
   }
 
   return admin!;

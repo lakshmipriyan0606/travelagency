@@ -3,7 +3,7 @@ import type { NextRequest } from 'next/server';
 import { AUTH_COOKIES } from '@travelagency/constants';
 
 export function middleware(request: NextRequest) {
-  const token = request.cookies.get(AUTH_COOKIES.ACCESS_TOKEN || 'access_token')?.value;
+  const token = request.cookies.get('b2b_portal_access_token')?.value;
   const status = request.cookies.get('agency_status')?.value;
   const path = request.nextUrl.pathname;
 
@@ -12,8 +12,14 @@ export function middleware(request: NextRequest) {
     return NextResponse.next();
   }
 
-  // Require login token for protected sections
+  // Require login token for protected sections (except pending approval and suspended states)
   if (!token) {
+    if (path.startsWith('/pending-approval') && status === 'pending') {
+      return NextResponse.next();
+    }
+    if (path.startsWith('/suspended') && status === 'suspended') {
+      return NextResponse.next();
+    }
     return NextResponse.redirect(new URL('/login', request.url));
   }
 
