@@ -23,21 +23,14 @@ export interface Package {
 
 export interface PackageCardProps {
     offer: Package;
-    isAdmin: boolean;
-    setEditPackageId: (id: string) => void;
-    setActive: (active: string) => void;
     refetch?: () => void | any;
     handleLikeUpdate?: (id: string, liked: boolean) => void;
     isAllPackagePage?: boolean;
     className?: string;
-    takenRanks?: { rank: number; packageId: string; packageName: string }[];
 }
 
 export interface PackageGridProps {
     filterList: Package[];
-    isAdmin: boolean;
-    setEditPackageId: (id: string) => void;
-    setActive: (active: string) => void;
     refetch?: () => void | any;
     handleLikeUpdate?: (id: string, liked: boolean) => void;
     isAllPackagePage?: boolean;

@@ -94,9 +94,6 @@ export default function ActivitiesCarousel({ initialActivities }: { initialActiv
                         <div className="mt-3 h-full shadow-lg">
                             <SinglePackageCard
                                 offer={offer}
-                                isAdmin={false}
-                                setEditPackageId={() => { }}
-                                setActive={() => { }}
                                 handleLikeUpdate={(id, liked) => {
                                     queryClient.setQueryData(["bestActivities"], (oldData: any) => {
                                         if (!oldData) return oldData;

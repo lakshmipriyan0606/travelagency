@@ -6,6 +6,7 @@ import { Loader2, Trash2, ArrowUp, ArrowDown, ListOrdered, ImageIcon, Pencil, Pl
 import { showToast } from "@/lib/toast";
 import { useRouter } from "next/navigation";
 import { Destination } from "../validation/destination.schema";
+import { ROUTES } from "@/lib/routes";
 
 import { DestinationCard } from "./DestinationCard";
 
@@ -46,7 +47,7 @@ export default function DestinationListClient({ initialDestinations }: { initial
     });
 
     const handleEdit = (id: string) => {
-        router.push(`/admin/destinations/${id}`);
+        router.push(ROUTES.destinations.edit(id));
     };
 
     if (isLoading) {
@@ -84,7 +85,7 @@ export default function DestinationListClient({ initialDestinations }: { initial
                         
                         {destinations.length < 4 ? (
                             <button
-                                onClick={() => router.push("/admin/destinations/new")}
+                                onClick={() => router.push(ROUTES.destinations.new)}
                                 className="flex-1 sm:flex-none bg-primary text-white px-8 py-4 rounded-[20px] text-sm font-black shadow-xl shadow-primary/30 hover:bg-primary/90 transition-all active:scale-95 cursor-pointer flex items-center gap-2"
                             >
                                 <Plus size={18} /> ADD DESTINATION
@@ -123,7 +124,7 @@ export default function DestinationListClient({ initialDestinations }: { initial
                         
                         {destinations.length > 0 && destinations.length < 4 && (
                             <button 
-                                onClick={() => router.push("/admin/destinations/new")}
+                                onClick={() => router.push(ROUTES.destinations.new)}
                                 className="border-2 border-dashed border-neutral-100 rounded-[32px] p-6 hover:border-primary/30 hover:bg-primary/[0.02] transition-all flex flex-col items-center justify-center gap-3 group"
                             >
                                 <div className="w-12 h-12 rounded-full bg-neutral-50 text-neutral-300 flex items-center justify-center group-hover:bg-primary group-hover:text-white transition-all shadow-sm">

@@ -10,6 +10,7 @@ import { b2bAdminLogin } from "@/api/b2bAdmin.api";
 import { setAdminUser } from "@/store/adminAuthSlice";
 import { useDispatch } from "react-redux";
 import { ArrowRight, Lock, Mail } from "lucide-react";
+import { ROUTES } from "@/lib/routes";
 
 export default function B2BLoginPage() {
     const dispatch = useDispatch();
@@ -45,7 +46,7 @@ export default function B2BLoginPage() {
                     isLoggedIn: true,
                 })
             );
-            window.location.href = "/b2b/admin/dashboard";
+            window.location.href = ROUTES.b2b.dashboard;
         },
         onError(error: any) {
             const rawMessage = error?.message;

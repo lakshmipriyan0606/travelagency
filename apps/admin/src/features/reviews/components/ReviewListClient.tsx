@@ -6,6 +6,7 @@ import { Loader2, Trash2, Edit2, ArrowUp, ArrowDown, Star, MapPin, ListOrdered }
 import { showToast } from "@/lib/toast";
 import { useRouter } from "next/navigation";
 import { Review } from "../validation/review.schema";
+import { ROUTES } from "@/lib/routes";
 
 import { ReviewTableRow } from "./ReviewTableRow";
 
@@ -52,7 +53,7 @@ export default function ReviewListClient({ initialReviews }: { initialReviews: R
   });
 
   const handleEdit = (id: string) => {
-    router.push(`/admin/reviews/${id}`);
+    router.push(ROUTES.reviews.edit(id));
   };
 
   if (isLoading) {
@@ -86,7 +87,7 @@ export default function ReviewListClient({ initialReviews }: { initialReviews: R
             FIX ALL ORDERS
           </button>
           <button
-            onClick={() => router.push("/admin/reviews/new")}
+            onClick={() => router.push(ROUTES.reviews.new)}
             className="bg-primary text-white px-5 py-2.5 rounded-xl text-sm font-bold shadow-lg shadow-primary/20 hover:bg-primary/90 transition-all"
           >
             Add New Review

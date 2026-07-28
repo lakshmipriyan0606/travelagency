@@ -1,4 +1,4 @@
-import { API_BASE_URL } from '@/lib/config';
+import { ENDPOINTS } from '@/lib/endpoints';
 import { Metadata } from "next";
 import { BestDestination } from "@/components/layout/bestDestination/BestDestination";
 import BestPackage from "@/components/layout/bestPackage/BestPackage";
@@ -18,14 +18,12 @@ export const metadata: Metadata = {
 };
 
 export default async function HomePage() {
-  const API_BASE = API_BASE_URL;
-  
   let initialBestPackages = [];
   let initialBestActivities = [];
   let initialReviews = [];
 
   try {
-    const res = await fetch(`${API_BASE}/packages/bestpackages`, { next: { revalidate: 3600 } });
+    const res = await fetch(ENDPOINTS.server.bestPackages(), { next: { revalidate: 3600 } });
     if (res.ok) {
       const data = await res.json();
       initialBestPackages = data?.data || [];
@@ -35,7 +33,7 @@ export default async function HomePage() {
   }
 
   try {
-    const res = await fetch(`${API_BASE}/packages/bestactivities`, { next: { revalidate: 3600 } });
+    const res = await fetch(ENDPOINTS.server.bestActivities(), { next: { revalidate: 3600 } });
     if (res.ok) {
       const data = await res.json();
       initialBestActivities = data?.data || [];
@@ -45,7 +43,7 @@ export default async function HomePage() {
   }
 
   try {
-    const res = await fetch(`${API_BASE}/reviews?status=Published`, { next: { revalidate: 3600 } });
+    const res = await fetch(ENDPOINTS.server.reviews(), { next: { revalidate: 3600 } });
     if (res.ok) {
       const data = await res.json();
       initialReviews = data?.data || [];

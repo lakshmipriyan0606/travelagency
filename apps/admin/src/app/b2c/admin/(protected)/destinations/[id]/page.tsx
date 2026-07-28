@@ -1,8 +1,10 @@
+import { config } from "@/lib/config";
 import { requireAdmin } from "@/features/auth/guards";
 import DestinationFormClient from "@/features/destinations/components/DestinationFormClient";
 import { getAccessToken } from '@travelagency/auth';
 import { Destination } from "@/features/destinations/validation/destination.schema";
 import { notFound } from "next/navigation";
+import { ENDPOINTS } from "@/lib/endpoints";
 
 export const metadata = {
   title: "Edit Destination | Admin",
@@ -17,9 +19,9 @@ export default async function EditDestinationPage({ params }: { params: Promise<
   let totalDestinations = 0;
   
   try {
-    const res = await fetch(`/destinations`, {
+    const res = await fetch(`${config.apiBaseUrl}${ENDPOINTS.server.destinations}`, {
       headers: {
-        Cookie: "access_token="
+        Cookie: `access_token=${token}`
       },
       next: { revalidate: 0 },
     });

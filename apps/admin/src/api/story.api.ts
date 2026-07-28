@@ -1,26 +1,27 @@
-import axiosClient from '@travelagency/api-client';
+import axiosClient from '@/lib/apiClient';
+import { ENDPOINTS } from '@/lib/endpoints';
 
 export const getStories = async () => {
-    const { data } = await axiosClient.get("/stories");
+    const { data } = await axiosClient.get(ENDPOINTS.client.stories.public);
     return data;
 };
 
 export const createStory = async (storyData: any) => {
-    const { data } = await axiosClient.post("admin/stories", storyData);
+    const { data } = await axiosClient.post(ENDPOINTS.client.stories.list, storyData);
     return data;
 };
 
 export const deleteStory = async (id: string) => {
-    const { data } = await axiosClient.delete(`admin/stories/${id}`);
+    const { data } = await axiosClient.delete(ENDPOINTS.client.stories.byId(id));
     return data;
 };
 
 export const moveStory = async ({ id, direction }: { id: string, direction: "up" | "down" }) => {
-    const { data } = await axiosClient.post(`admin/stories/${id}/move`, { direction });
+    const { data } = await axiosClient.post(ENDPOINTS.client.stories.move(id), { direction });
     return data;
 };
 
 export const normalizeStoriesOrder = async () => {
-    const { data } = await axiosClient.post("admin/stories/normalize");
+    const { data } = await axiosClient.post(ENDPOINTS.client.stories.normalize);
     return data;
 };

@@ -1,37 +1,38 @@
-import axiosClient from '@travelagency/api-client';
+import axiosClient from '@/lib/apiClient';
+import { ENDPOINTS } from '@/lib/endpoints';
 
 export const loginAgent = async (data: unknown) => {
-  const res = await axiosClient.post("/b2b/agency/login", data);
+  const res = await axiosClient.post(ENDPOINTS.client.login, data);
   return res.data;
 };
 
 export const registerAgent = async (data: unknown) => {
   const payload = { ...data, role: "agent" };
-  const res = await axiosClient.post("/b2b/agency/register", payload);
+  const res = await axiosClient.post(ENDPOINTS.client.register, payload);
   return res.data;
 };
 
 export const getAgentProfile = async () => {
-  const res = await axiosClient.get("/b2b/agency/me");
+  const res = await axiosClient.get(ENDPOINTS.client.me);
   return res.data;
 };
 
 export const getIssues = async () => {
-  const res = await axiosClient.get("/b2b/agency/me/issues");
+  const res = await axiosClient.get(ENDPOINTS.client.issues);
   return res.data;
 };
 
 export const resubmitCorrection = async (data: unknown) => {
-  const res = await axiosClient.patch("/b2b/agency/me/resubmit", data);
+  const res = await axiosClient.patch(ENDPOINTS.client.resubmit, data);
   return res.data;
 };
 
 export const getRejectionReason = async () => {
-  const res = await axiosClient.get("/b2b/agency/me/rejection-reason");
+  const res = await axiosClient.get(ENDPOINTS.client.rejectionReason);
   return res.data;
 };
 
 export const reapply = async (data: unknown) => {
-  const res = await axiosClient.patch("/b2b/agency/me/reapply", data);
+  const res = await axiosClient.patch(ENDPOINTS.client.reapply, data);
   return res.data;
 };

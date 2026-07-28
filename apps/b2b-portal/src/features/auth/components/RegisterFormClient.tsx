@@ -11,6 +11,7 @@ import Link from "next/link";
 import { FormInput } from "@/components/ui/FormInput";
 import { FormButton } from "@/components/ui/FormButton";
 import { cn } from "@travelagency/utils";
+import { ROUTES } from "@/lib/routes";
 
 // Full Zod validation schema matching the backend registerSchema
 const registerSchema = z.object({
@@ -177,14 +178,14 @@ export default function RegisterFormClient() {
         <p className="text-neutral-400 text-sm leading-relaxed mb-8">{description}</p>
         {showLoginLink ? (
           <Link
-            href="/login"
+            href={ROUTES.login}
             className="w-full py-3.5 bg-yellow-500 hover:bg-yellow-400 text-neutral-950 font-bold rounded-xl flex items-center justify-center gap-2 transition-all"
           >
             Go to Login
           </Link>
         ) : (
           <Link
-            href="/login"
+            href={ROUTES.login}
             className="text-neutral-500 hover:text-neutral-400 text-sm font-medium transition-colors"
           >
             Back to Login
@@ -457,10 +458,9 @@ export default function RegisterFormClient() {
           )}
         </div>
       </form>
-
       <div className="mt-8 text-center text-sm text-neutral-400">
         Already a partner?{" "}
-        <Link href="/login" className="text-yellow-500 hover:text-yellow-400 font-medium transition-colors">
+        <Link href={ROUTES.login} className="text-yellow-500 hover:text-yellow-400 font-medium transition-colors">
           Sign in
         </Link>
       </div>

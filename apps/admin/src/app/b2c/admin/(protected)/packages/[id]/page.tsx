@@ -1,8 +1,9 @@
-import { API_BASE_URL } from "@/lib/config";
+import { config } from "@/lib/config";
 import { requireAdmin } from "@/features/auth/guards";
 import PackageFormClient from "@/features/packages/components/PackageFormClient";
 import { getAccessToken } from '@travelagency/auth';
 import { notFound } from "next/navigation";
+import { ENDPOINTS } from "@/lib/endpoints";
 
 export const metadata = {
   title: "Edit Package | Admin",
@@ -17,7 +18,7 @@ export default async function EditPackagePage({
   const token = await getAccessToken();
   const { id } = await params;
 
-  const res = await fetch(`${API_BASE_URL}/v1/b2c-admin/packages/${id}`, {
+  const res = await fetch(`${config.apiBaseUrl}${ENDPOINTS.server.packageById(id)}`, {
     headers: {
       Cookie: `access_token=${token}`
     },

@@ -11,6 +11,7 @@ import { loginAPI } from "@/api/auth.api";
 import { setAdminUser } from "@/store/adminAuthSlice";
 import { useDispatch } from "react-redux";
 import { ArrowRight, Lock, Mail } from "lucide-react";
+import { ROUTES } from "@/lib/routes";
 
 export default function LoginPage() {
     const router = useRouter();
@@ -37,7 +38,7 @@ export default function LoginPage() {
                 role: data.user.role,
                 isLoggedIn: true,
             }));
-            router.push('/b2c/admin/dashboard');
+            router.push(ROUTES.dashboard);
         },
         onError(error: any) {
             const rawMessage = error?.message;

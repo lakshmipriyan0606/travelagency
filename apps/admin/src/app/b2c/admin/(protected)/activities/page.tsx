@@ -1,5 +1,7 @@
 import Link from "next/link";
-import { API_BASE_URL } from "@/lib/config";
+import { config } from "@/lib/config";
+import { ROUTES } from "@/lib/routes";
+import { ENDPOINTS } from "@/lib/endpoints";
 
 export const metadata = {
   title: "Activities | Admin",
@@ -7,7 +9,7 @@ export const metadata = {
 
 async function getActivities() {
   try {
-    const res = await fetch(`${API_BASE_URL}/admin/packages?type=activity`, { cache: "no-store" });
+    const res = await fetch(`${config.apiBaseUrl}${ENDPOINTS.server.activities}`, { cache: "no-store" });
     if (!res.ok) return [];
     const data = await res.json();
     return data.packages ?? data ?? [];
@@ -27,7 +29,7 @@ export default async function ActivitiesListPage() {
           <p className="text-gray-500 text-sm mt-1">Manage all activity-type packages.</p>
         </div>
         <Link
-          href="/activities/new"
+          href={ROUTES.activities.new}
           className="inline-flex items-center gap-2 bg-amber-500 hover:bg-amber-600 text-white px-4 py-2 rounded-lg font-semibold text-sm transition-colors"
         >
           + New Activity
@@ -59,7 +61,7 @@ export default async function ActivitiesListPage() {
                     </span>
                   </td>
                   <td className="px-4 py-3">
-                    <Link href={`/activities/${act._id}`} className="text-amber-600 hover:text-amber-800 text-xs font-medium mr-3">Edit</Link>
+                    <Link href={ROUTES.activities.edit(act._id)} className="text-amber-600 hover:text-amber-800 text-xs font-medium mr-3">Edit</Link>
                   </td>
                 </tr>
               ))}

@@ -7,11 +7,9 @@ import { toast } from "react-toastify";
 import { PackageCardProps } from "./types";
 import { usePackageActions } from "./usePackageActions";
 import { Row, Divider, IconText, PriceStrike } from "./PackageCardUI";
-import { PackageCardAdminControls } from "./PackageCardAdmin";
 
 import AnimatedButton from "@/components/Button/AnimatedButton/AnimatedButton";
 import InnerCarousel from "../bestPackage/carousel/InnerCarousel";
-import { DeleteConfirmDialog } from "../DeleteConfirmDialog/DeleteConfirmDialog";
 import EnquiryModal from "../herosection/EnquiryModal";
 
 import whatsappIcon from "@/assets/icons/whatsapp.svg";
@@ -27,30 +25,16 @@ const calculateDiscountPercentage = (price: number, offerPrice: number) => {
 
 export function SinglePackageCard({
     offer,
-    isAdmin,
-    setEditPackageId,
-    setActive,
     refetch,
-    handleLikeUpdate = () => { },
+    handleLikeUpdate = () => {},
     isAllPackagePage = false,
     className = "",
-    takenRanks = []
 }: PackageCardProps) {
     const [isModalOpen, setIsModalOpen] = useState(false);
-    const [open, setOpen] = useState(false);
-    const [deleteId, setDeleteId] = useState<string | null>(null);
 
-    const { deletePackage, updateLike, updateRank, toggleStatus } = usePackageActions(refetch);
+    const { updateLike } = usePackageActions(refetch);
 
     const isActivity = offer.type === "activity" || (!!(offer.activityCategory && offer.activityCategory !== "" && offer.activityCategory !== "none"));
-
-    const handleDelete = () => {
-        if (deleteId) {
-            deletePackage(deleteId);
-            setOpen(false);
-            setDeleteId(null);
-        }
-    };
 
     const handleToggleLike = (packageId: string, liked: boolean) => {
         const userId = typeof window !== 'undefined' ? localStorage.getItem("userId") : null;
@@ -71,20 +55,6 @@ export function SinglePackageCard({
 
     return (
         <div className={`relative flex flex-col bg-white rounded-lg text-gray-900 h-full ${className}`}>
-            {isAdmin && (
-                <PackageCardAdminControls
-                    offer={offer}
-                    setEditPackageId={setEditPackageId}
-                    setActive={setActive}
-                    setOpen={setOpen}
-                    setDeleteId={setDeleteId}
-                    updateRankMutate={updateRank}
-                    toggleStatusMutate={toggleStatus}
-                    takenRanks={takenRanks}
-                    isActivity={isActivity}
-                />
-            )}
-
             <div className="relative">
                 <InnerCarousel images={offer.images} offerId={offer._id} packageName={offer.packageName} isActivity={isActivity} />
 
@@ -142,7 +112,7 @@ export function SinglePackageCard({
                             onClick={() => handleSendToWhatsApp(offer)}
                         />
                         <AnimatedButton
-                            buttonText={isActivity ? "EXPLORE ACTIVITY" : (isAllPackagePage ? "EXPLORE PACKAGE" : "EXPLORE PACKAGE")}
+                            buttonText={isActivity ? "EXPLORE ACTIVITY" : "EXPLORE PACKAGE"}
                             className="flex-1 hover:bg-custom-black py-2.5"
                             borderButtonColor="bg-white"
                             textColor="text-white"
@@ -154,17 +124,6 @@ export function SinglePackageCard({
             </div>
 
             <EnquiryModal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} />
-
-            {open && (
-                <DeleteConfirmDialog
-                    open={open}
-                    onOpenChange={setOpen}
-                    onConfirm={handleDelete}
-                    title="Delete Package?"
-                    description="Are you sure you want to delete this package permanently?"
-                />
-            )}
         </div>
     );
 }
-

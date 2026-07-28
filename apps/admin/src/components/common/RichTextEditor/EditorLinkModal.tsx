@@ -6,7 +6,8 @@ import { Input } from '@travelagency/ui'
 import { Button } from '@travelagency/ui'
 import { Loader2, Upload } from 'lucide-react'
 import { showToast } from "@/lib/toast";
-import axiosClient from '@travelagency/api-client'
+import axiosClient from '@/lib/apiClient'
+import { ENDPOINTS } from '@/lib/endpoints'
 
 export interface PromptConfig {
   isOpen: boolean;
@@ -36,7 +37,7 @@ export const EditorLinkModal = ({ promptConfig, setPromptConfig }: EditorLinkMod
       const formData = new FormData()
       formData.append('image', file)
       
-      const { data } = await axiosClient.post('/upload/image', formData, {
+      const { data } = await axiosClient.post(ENDPOINTS.client.upload.image, formData, {
         headers: { 'Content-Type': 'multipart/form-data' }
       })
 

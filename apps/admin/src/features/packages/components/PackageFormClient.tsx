@@ -14,6 +14,8 @@ import { PackageFormImages } from "./PackageForm/PackageFormImages";
 import { PackageFormItinerary } from "./PackageForm/PackageFormItinerary";
 import { PackageFormControls } from "./PackageForm/PackageFormControls";
 
+import { ROUTES } from "@/lib/routes";
+
 export default function AdminUploadPackageForm({ 
   isActivity: isActivityProp = false,
   editId = null
@@ -23,7 +25,7 @@ export default function AdminUploadPackageForm({
 }) {
   const router = useRouter();
   const handleSuccessRedirect = () => {
-    router.push(isActivityProp ? "/admin/activities" : "/admin/packages");
+    router.push(isActivityProp ? ROUTES.activities.list : ROUTES.packages.list);
     router.refresh();
   };
   const { methods, mainImageFiles, setMainImageFiles, mainImageUrls, setMainImageUrls, activeStep, setActiveStep, onSubmit, isSubmitting, isActivity } = usePackageForm(editId, handleSuccessRedirect, () => {}, isActivityProp);

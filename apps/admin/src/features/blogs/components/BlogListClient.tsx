@@ -7,6 +7,7 @@ import { BlogListTable } from "./BlogListTable";
 import { Plus, Search, FileText } from "lucide-react";
 import { showToast } from "@/lib/toast";
 import { useRouter } from "next/navigation";
+import { ROUTES } from "@/lib/routes";
 
 export default function BlogListClient() {
   const router = useRouter();
@@ -58,7 +59,7 @@ export default function BlogListClient() {
           <p className="text-sm text-neutral-500 mt-1">Manage your website's articles and news.</p>
         </div>
         <button
-          onClick={() => router.push("/admin/blogs/new")}
+          onClick={() => router.push(ROUTES.blogs.new)}
           className="flex items-center gap-2 px-5 py-2.5 bg-primary text-white rounded-xl font-bold hover:bg-primary/90 transition-all shadow-lg shadow-primary/20"
         >
           <Plus size={18} />
@@ -105,7 +106,7 @@ export default function BlogListClient() {
           blogs={blogsData.data} 
           onDelete={(id) => setDeleteId(id)} 
           onToggleStatus={(blog) => toggleStatusMutation.mutate(blog)} 
-          onEdit={(id) => router.push(`/admin/blogs/${id}`)}
+          onEdit={(id) => router.push(ROUTES.blogs.edit(id))}
         />
       )}
 

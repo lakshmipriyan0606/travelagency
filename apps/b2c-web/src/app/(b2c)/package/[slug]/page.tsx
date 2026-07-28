@@ -7,11 +7,11 @@ import BookingFomField from '@/components/layout/reachus/BookingFomField';
 import SuggestedProducts from '@/components/layout/suggestedProducts/SuggestedProducts';
 import { PackageTabs } from '@/components/layout/packageDetail/PackageClientComponents';
 import { Clock, Zap, ShieldCheck, Globe } from 'lucide-react';
-import { API_BASE_URL } from '@/lib/config';
+import { ENDPOINTS } from '@/lib/endpoints';
 
 async function getPackageDetail(slug: string) {
     try {
-        const res = await fetch(`${API_BASE_URL}/v1/b2c/packages/${slug}`, { next: { revalidate: 3600 } });
+        const res = await fetch(ENDPOINTS.server.packageBySlug(slug), { next: { revalidate: 3600 } });
         if (!res.ok) return null;
         const data = await res.json();
         return data?.data || null;

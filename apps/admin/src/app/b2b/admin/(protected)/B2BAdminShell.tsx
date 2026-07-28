@@ -7,6 +7,7 @@ import { AdminUser } from "@/features/auth/types";
 import { Building2, LogOut, Menu, X, Globe, User } from "lucide-react";
 import { b2bAdminLogout } from "@/api/b2bAdmin.api";
 import { showToast } from "@/lib/toast";
+import { ROUTES } from "@/lib/routes";
 
 interface B2BAdminShellProps {
   user: AdminUser;
@@ -25,7 +26,7 @@ export default function B2BAdminShell({ user, children }: B2BAdminShellProps) {
       document.cookie = "b2b_access_token=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT;";
       document.cookie = "b2b_refresh_token=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT;";
       showToast({ type: "success", content: "Logged out successfully" });
-      router.push("/b2b/admin/login");
+      router.push(ROUTES.b2b.login);
     } catch {
       showToast({ type: "error", content: "Logout failed." });
     }
@@ -34,7 +35,7 @@ export default function B2BAdminShell({ user, children }: B2BAdminShellProps) {
   const menuItems = [
     {
       title: "Agencies Dashboard",
-      href: "/b2b/admin/dashboard",
+      href: ROUTES.b2b.dashboard,
       icon: Building2,
     },
   ];

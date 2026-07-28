@@ -1,5 +1,6 @@
-import axios from "axios";
-import axiosClient from '@travelagency/api-client';
+import axios from 'axios';
+import axiosClient from '@/lib/apiClient';
+import { ENDPOINTS } from "@/lib/endpoints";
 
 function normalizeBase(url: string | undefined) {
   return (url || "").replace(/\/$/, "");
@@ -13,18 +14,18 @@ export const fetchMetrics = async () => {
   // If VITE_METRICS_API_BASE_URL is set to the raw API host but VITE_API_BASE_URL is your site proxy
   // (e.g. sastikaatravel.com/api), cookies live on the site — calling Render directly would always 401.
   if (remoteBase && token) {
-    const client = axios.create({
+    const clientInstance = axios.create({
       baseURL: remoteBase,
       withCredentials: false,
     });
-    const response = await client.get("admin/metrics", {
+    const response = await clientInstance.get(ENDPOINTS.client.metrics.dashboard, {
       headers: { "x-metrics-token": token },
     });
     return response.data;
   }
 
   // Same host as login/session (withCredentials) — fixes 401 when admin UI is proxied on the main domain.
-  const response = await axiosClient.get("admin/metrics", {
+  const response = await axiosClient.get(ENDPOINTS.client.metrics.dashboard, {
     headers: token ? { "x-metrics-token": token } : undefined,
   });
   return response.data;
@@ -35,17 +36,17 @@ export const fetchQueueHealth = async () => {
   const token = process.env.NEXT_PUBLIC_METRICS_TOKEN;
 
   if (remoteBase && token) {
-    const client = axios.create({
+    const clientInstance = axios.create({
       baseURL: remoteBase,
       withCredentials: false,
     });
-    const response = await client.get("admin/queue/health", {
+    const response = await clientInstance.get(ENDPOINTS.client.metrics.queueHealth, {
       headers: { "x-metrics-token": token },
     });
     return response.data;
   }
 
-  const response = await axiosClient.get("admin/queue/health", {
+  const response = await axiosClient.get(ENDPOINTS.client.metrics.queueHealth, {
     headers: token ? { "x-metrics-token": token } : undefined,
   });
   return response.data;

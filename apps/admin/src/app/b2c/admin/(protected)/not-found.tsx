@@ -2,6 +2,8 @@ import Link from "next/link";
 import { FileQuestion } from "lucide-react";
 import { Button } from "@travelagency/ui";
 
+import { ROUTES } from "@/lib/routes";
+
 export default function AdminNotFound() {
   return (
     <div className="flex flex-col items-center justify-center min-h-[400px] p-6 text-center">
@@ -12,7 +14,7 @@ export default function AdminNotFound() {
       <p className="text-gray-600 mb-8 max-w-md">
         The admin page you are looking for does not exist or has been moved.
       </p>
-      <Link href="/admin/dashboard">
+      <Link href={ROUTES.dashboard}>
         <Button variant="default">
           Back to Dashboard
         </Button>

@@ -1,4 +1,5 @@
-import axiosClient from '@travelagency/api-client';
+import axiosClient from '@/lib/apiClient';
+import { ENDPOINTS } from "@/lib/endpoints";
 
 export type WebsiteHeroConfig = {
   title: string;
@@ -7,12 +8,12 @@ export type WebsiteHeroConfig = {
 };
 
 export const GetWebsiteHeroConfig = async () => {
-  const { data } = await axiosClient.get("ui-config/website-hero");
+  const { data } = await axiosClient.get(ENDPOINTS.client.uiConfig.hero);
   return data;
 };
 
 export const UpdateWebsiteHeroConfig = async (payload: Partial<WebsiteHeroConfig>) => {
-  const { data } = await axiosClient.put("admin/ui-config/website-hero", payload);
+  const { data } = await axiosClient.put(ENDPOINTS.client.uiConfig.adminHero, payload);
   return data;
 };
 

@@ -1,5 +1,6 @@
 import { ArrowRight, Briefcase } from "lucide-react";
 import Link from "next/link";
+import { ROUTES } from "@/lib/routes";
 
 export default function Home() {
   return (
@@ -18,14 +19,14 @@ export default function Home() {
 
       <div className="mt-10 flex flex-col sm:flex-row gap-4">
         <Link 
-          href="/login"
+          href={ROUTES.login}
           className="px-8 py-4 bg-blue-600 hover:bg-blue-500 text-white font-bold rounded-full flex items-center justify-center gap-2 transition-all"
         >
           Partner Login
           <ArrowRight size={18} />
         </Link>
         <Link 
-          href="/register"
+          href={ROUTES.register}
           className="px-8 py-4 bg-neutral-900 border border-neutral-800 hover:bg-neutral-800 text-white font-bold rounded-full flex items-center justify-center gap-2 transition-all"
         >
           Apply for Partnership

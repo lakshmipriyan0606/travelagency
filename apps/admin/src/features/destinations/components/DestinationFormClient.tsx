@@ -7,10 +7,11 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { createDestination, updateDestination } from "../api/destinations.api";
 import { Loader2, X, Check, Image as ImageIcon, Type } from "lucide-react";
 import { showToast } from "@/lib/toast";
-import axiosClient from '@travelagency/api-client';
+import axiosClient from '@/lib/apiClient';
 import { SelectField } from "@travelagency/forms";
 import { GLOBAL_CONFIG } from "@/config/globalConfig";
 import { useRouter } from "next/navigation";
+import { ROUTES } from "@/lib/routes";
 import { Destination, destinationSchema, DestinationFormValues } from "../validation/destination.schema";
 
 import { DestinationImageUpload } from "./DestinationImageUpload";
@@ -74,7 +75,7 @@ export default function DestinationFormClient({
     onSuccess: () => {
       showToast({ type: "success", content: "Destination saved successfully!" });
       queryClient.invalidateQueries({ queryKey: ["adminDestinations"] });
-      router.push("/admin/destinations");
+      router.push(ROUTES.destinations.list);
       router.refresh();
     },
     onError: (err: any) => {
@@ -92,7 +93,7 @@ export default function DestinationFormClient({
       formData.append("image", file);
       formData.append("folder", "destinations");
 
-      const { data } = await axiosClient.post("/upload/image", formData, {
+      const { data } = await axiosClient.post(ENDPOINTS.client.upload.image, formData, {
         headers: { "Content-Type": "multipart/form-data" },
       });
 
@@ -124,7 +125,7 @@ export default function DestinationFormClient({
               <p className="text-[11px] text-neutral-400 font-black uppercase tracking-[0.2em] mt-1">Manage popular destination tiles</p>
             </div>
           </div>
-          <button onClick={() => router.push("/admin/destinations")} className="p-3 rounded-2xl text-neutral-400 hover:bg-neutral-100 transition-all">
+          <button onClick={() => router.push(ROUTES.destinations.list)} className="p-3 rounded-2xl text-neutral-400 hover:bg-neutral-100 transition-all">
             <X size={24} />
           </button>
         </div>

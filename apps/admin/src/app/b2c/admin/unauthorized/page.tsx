@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { ShieldAlert } from "lucide-react";
 import { Button } from "@travelagency/ui";
+import { ROUTES } from "@/lib/routes";
 
 export default function UnauthorizedPage() {
   return (
@@ -12,7 +13,7 @@ export default function UnauthorizedPage() {
       <p className="text-gray-600 mb-8 max-w-md">
         You do not have the required permissions to access this administrative area.
       </p>
-      <Link href="/admin/login">
+      <Link href={ROUTES.login}>
         <Button variant="default">
           Return to Login
         </Button>

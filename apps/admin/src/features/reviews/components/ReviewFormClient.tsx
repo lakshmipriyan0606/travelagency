@@ -7,8 +7,9 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { createReview, updateReview } from "../api/reviews.api";
 import { Loader2, X, Check, Image as ImageIcon, Star, MapPin, Quote } from "lucide-react";
 import { showToast } from "@/lib/toast";
-import axiosClient from '@travelagency/api-client';
+import axiosClient from '@/lib/apiClient';
 import { useRouter } from "next/navigation";
+import { ROUTES } from "@/lib/routes";
 import { Review, reviewSchema, ReviewFormValues } from "../validation/review.schema";
 
 import { ReviewLeftColumn } from "./ReviewLeftColumn";
@@ -71,7 +72,7 @@ export default function ReviewFormClient({
     onSuccess: () => {
       showToast({ type: "success", content: "Review saved successfully!" });
       queryClient.invalidateQueries({ queryKey: ["adminReviews"] });
-      router.push("/admin/reviews");
+      router.push(ROUTES.reviews.list);
       router.refresh();
     },
     onError: (err: any) => {
@@ -89,7 +90,7 @@ export default function ReviewFormClient({
       formData.append("image", file);
       formData.append("folder", "reviews");
 
-      const { data } = await axiosClient.post("/upload/image", formData, {
+      const { data } = await axiosClient.post(ENDPOINTS.client.upload.image, formData, {
         headers: { "Content-Type": "multipart/form-data" },
       });
 
@@ -129,7 +130,7 @@ export default function ReviewFormClient({
               </p>
             </div>
           </div>
-          <button onClick={() => router.push("/admin/reviews")} className="p-3 rounded-2xl text-neutral-400 hover:bg-neutral-100 transition-all">
+          <button onClick={() => router.push(ROUTES.reviews.list)} className="p-3 rounded-2xl text-neutral-400 hover:bg-neutral-100 transition-all">
             <X size={24} />
           </button>
         </div>

@@ -76,7 +76,7 @@ export default function ReapplyPage() {
             Your application was re-submitted successfully. Your application status is now pending review.
           </p>
           <Link
-            href="/login"
+            href={ROUTES.login}
             className="w-full py-3.5 bg-neutral-800 hover:bg-neutral-700 text-white font-bold rounded-xl flex items-center justify-center transition-all"
           >
             Back to Login

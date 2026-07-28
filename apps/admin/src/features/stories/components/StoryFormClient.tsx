@@ -4,6 +4,7 @@ import { useForm, FormProvider } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useRouter } from "next/navigation";
+import { ROUTES } from "@/lib/routes";
 import { Image as ImageIcon, X } from "lucide-react";
 
 import { storySchema, StoryFormValues } from "../validation/story.schema";
@@ -30,7 +31,7 @@ export default function StoryFormClient() {
     onSuccess: () => {
       showToast({ type: "success", content: "Story added to marquee!" });
       queryClient.invalidateQueries({ queryKey: ["adminStories"] });
-      router.push("/admin/stories");
+      router.push(ROUTES.stories.list);
     },
     onError: (err: any) => {
       showToast({ type: "error", content: err.message || "Failed to add story" });
@@ -55,7 +56,7 @@ export default function StoryFormClient() {
                 <p className="text-[11px] text-neutral-400 font-black uppercase tracking-[0.2em] mt-1">Enhance your homepage marquee</p>
               </div>
             </div>
-            <button onClick={() => router.push("/admin/stories")} className="p-3 rounded-2xl text-neutral-400 hover:bg-neutral-100 transition-all cursor-pointer">
+            <button onClick={() => router.push(ROUTES.stories.list)} className="p-3 rounded-2xl text-neutral-400 hover:bg-neutral-100 transition-all cursor-pointer">
               <X size={24} />
             </button>
           </div>

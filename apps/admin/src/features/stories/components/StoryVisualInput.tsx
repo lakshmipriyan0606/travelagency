@@ -4,8 +4,9 @@ import { useFormContext } from "react-hook-form";
 import { StoryFormValues } from "../validation/story.schema";
 import { Loader2, X, Check, Image as ImageIcon } from "lucide-react";
 import { useState } from "react";
-import axiosClient from '@travelagency/api-client';
+import axiosClient from '@/lib/apiClient';
 import { showToast } from "@/lib/toast";
+import { ENDPOINTS } from "@/lib/endpoints";
 
 export function StoryVisualInput() {
   const { register, watch, setValue, formState: { errors } } = useFormContext<StoryFormValues>();
@@ -23,7 +24,7 @@ export function StoryVisualInput() {
       formData.append("image", file);
       formData.append("folder", "happyStories");
 
-      const { data } = await axiosClient.post("/upload/image", formData, {
+      const { data } = await axiosClient.post(ENDPOINTS.client.upload.image, formData, {
         headers: { "Content-Type": "multipart/form-data" },
       });
 

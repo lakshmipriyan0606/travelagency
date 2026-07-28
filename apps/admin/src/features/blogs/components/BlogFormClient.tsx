@@ -11,6 +11,7 @@ import { blogSchema, BlogFormValues } from "../validation/blog.schema";
 import { BlogFormImageUpload } from "./BlogFormImageUpload";
 import { BlogFormFaqs } from "./BlogFormFaqs";
 import { useRouter } from "next/navigation";
+import { ROUTES } from "@/lib/routes";
 import dynamic from "next/dynamic";
 
 const RichTextEditor = dynamic(() => import("@/components/common/RichTextEditor"), { ssr: false });
@@ -66,7 +67,7 @@ export default function BlogFormClient({ editBlogId }: { editBlogId?: string }) 
     onSuccess: (_, vars) => {
       showToast({ type: "success", content: `Blog ${editBlogId ? "updated" : "created"} and ${vars.status === "Draft" ? "saved as draft" : "published"}!` });
       queryClient.invalidateQueries({ queryKey: ["adminBlogs"] });
-      router.push("/admin/blogs");
+      router.push(ROUTES.blogs.list);
     },
     onError: (e: any) => showToast({ type: "error", content: e.message || "Something went wrong!" }),
   });
@@ -81,7 +82,7 @@ export default function BlogFormClient({ editBlogId }: { editBlogId?: string }) 
   return (
     <div className="bg-white rounded-2xl shadow-sm border border-neutral-200 p-6 md:p-8 animate-in fade-in duration-300">
       <div className="flex items-center gap-4 mb-8">
-        <button onClick={() => router.push("/admin/blogs")} className="p-2 hover:bg-neutral-100 rounded-full"><ArrowLeft size={20} /></button>
+        <button onClick={() => router.push(ROUTES.blogs.list)} className="p-2 hover:bg-neutral-100 rounded-full"><ArrowLeft size={20} /></button>
         <h2 className="text-2xl font-bold text-neutral-800">{editBlogId ? "Edit Blog" : "Create New Blog"}</h2>
       </div>
       <form className="space-y-8">

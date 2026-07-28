@@ -1,8 +1,9 @@
-import { API_BASE_URL } from '@/lib/config';
+import { config } from '@/lib/config';
 import { requireAdmin } from "@/features/auth/guards";
 import { getAccessToken } from '@travelagency/auth';
 import DestinationListClient from "@/features/destinations/components/DestinationListClient";
 import { Destination } from "@/features/destinations/validation/destination.schema";
+import { ENDPOINTS } from '@/lib/endpoints';
 
 export const metadata = {
   title: "Destinations | Admin",
@@ -16,7 +17,7 @@ export default async function DestinationsListPage() {
   // Fetch initial data from backend to pass to Client Component
   let destinations: Destination[] = [];
   try {
-    const res = await fetch(`${API_BASE_URL}/v1/b2c/destinations`, {
+    const res = await fetch(`${config.apiBaseUrl}${ENDPOINTS.server.destinations}`, {
       headers: {
         Cookie: `access_token=${token}`
       },

@@ -1,7 +1,8 @@
 "use client";
 
 import { useEffect, useState } from 'react';
-import axiosClient from '@travelagency/api-client';
+import axiosClient from '@/lib/apiClient';
+import { ENDPOINTS } from '@/lib/endpoints';
 import { Activity } from 'lucide-react';
 import { VisitorData, ApiRouteStat, ApiRouteDetail, ApiUsageData } from '../types';
 import { MetricsStatCards } from './MetricsStatCards';
@@ -38,8 +39,8 @@ const MetricsDashboardClient = () => {
         const loadDashboardData = async () => {
             try {
                 const [visitorRes, apiUsageRes] = await Promise.all([
-                    axiosClient.get("/analytics/daily"),
-                    axiosClient.get("/analytics/api-usage"),
+                    axiosClient.get(ENDPOINTS.client.analytics.daily),
+                    axiosClient.get(ENDPOINTS.client.analytics.apiUsage),
                 ]);
                 setVisitorStats(visitorRes.data.data || []);
                 const apiUsage: ApiUsageData = apiUsageRes.data;

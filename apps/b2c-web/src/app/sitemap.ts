@@ -1,15 +1,15 @@
-import { API_BASE_URL } from '@/lib/config';
+import { config } from '@/lib/config';
+import { ENDPOINTS } from '@/lib/endpoints';
 import { MetadataRoute } from 'next';
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
-    const API_BASE = API_BASE_URL;
-    const BASE_URL = process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000';
+    const BASE_URL = config.siteUrl;
 
     try {
         // Fetch all packages and blogs for sitemap
         const [packagesRes, blogsRes] = await Promise.all([
-            fetch(`${API_BASE}/packages?limit=1000`, { next: { revalidate: 3600 } }),
-            fetch(`${API_BASE}/blogs?limit=1000`, { next: { revalidate: 3600 } })
+            fetch(ENDPOINTS.server.sitemapPackages(), { next: { revalidate: 3600 } }),
+            fetch(ENDPOINTS.server.sitemapBlogs(), { next: { revalidate: 3600 } })
         ]);
 
         const packages = packagesRes.ok ? await packagesRes.json() : { data: [] };

@@ -18,11 +18,10 @@ interface PackageListResultsProps {
   resetAndRefetch: () => void;
   refetch: () => void;
   setPackageList: React.Dispatch<React.SetStateAction<any[]>>;
-  isAdminMode?: boolean;
 }
 
 export const PackageListResults: React.FC<PackageListResultsProps> = ({
-  packageList, filteredPackages, groupedPackages, filters, isLoading, isError, hasMore, totalCount, resetAndRefetch, refetch, setPackageList, isAdminMode = false
+  packageList, filteredPackages, groupedPackages, filters, isLoading, isError, hasMore, totalCount, resetAndRefetch, refetch, setPackageList
 }) => {
   const citiesFromConfig = GLOBAL_CONFIG.destinations.map((d: { value: string }) => d.value);
 
@@ -40,7 +39,7 @@ export const PackageListResults: React.FC<PackageListResultsProps> = ({
 
   if (isLoading && !packageList.length) {
     return (
-      <div className={isAdminMode ? "grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6" : "grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6"}>
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
         {[1, 2, 3, 4, 5, 6, 7, 8].map((n) => <PackageCardSkeleton key={n} />)}
       </div>
     );
@@ -59,7 +58,7 @@ export const PackageListResults: React.FC<PackageListResultsProps> = ({
             {filters.city} <span className="text-primary font-medium ml-2">({filteredPackages.length})</span>
           </h2>
         </div>
-        <PackageCard filterList={filteredPackages} isAdmin={isAdminMode} setEditPackageId={() => {}} setActive={() => {}} refetch={resetAndRefetch} handleLikeUpdate={handleLikeUpdate} />
+        <PackageCard filterList={filteredPackages} refetch={resetAndRefetch} handleLikeUpdate={handleLikeUpdate} />
       </section>
     );
   }
@@ -77,7 +76,7 @@ export const PackageListResults: React.FC<PackageListResultsProps> = ({
                 {cityName} <span className="text-primary font-medium ml-2">({packages.length})</span>
               </h2>
             </div>
-            <PackageCard filterList={packages} isAdmin={isAdminMode} setEditPackageId={() => {}} setActive={() => {}} refetch={resetAndRefetch} handleLikeUpdate={handleLikeUpdate} />
+            <PackageCard filterList={packages} refetch={resetAndRefetch} handleLikeUpdate={handleLikeUpdate} />
           </section>
         );
       })}
@@ -90,12 +89,12 @@ export const PackageListResults: React.FC<PackageListResultsProps> = ({
               Other Locations <span className="text-gray-400 font-medium ml-2">({groupedPackages["Other"].length})</span>
             </h2>
           </div>
-          <PackageCard filterList={groupedPackages["Other"]} isAdmin={isAdminMode} setEditPackageId={() => {}} setActive={() => {}} refetch={resetAndRefetch} handleLikeUpdate={handleLikeUpdate} />
+          <PackageCard filterList={groupedPackages["Other"]} refetch={resetAndRefetch} handleLikeUpdate={handleLikeUpdate} />
         </section>
       )}
 
       {isLoading && packageList.length > 0 && (
-        <div className={isAdminMode ? "grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 mt-6" : "grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mt-6"}>
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mt-6">
           <PackageCardSkeleton />
         </div>
       )}

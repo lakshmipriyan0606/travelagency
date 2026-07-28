@@ -1,8 +1,9 @@
-import { API_BASE_URL } from '@/lib/config';
+import { config } from '@/lib/config';
 import { requireAdmin } from "@/features/auth/guards";
 import { getAccessToken } from '@travelagency/auth';
 import ReviewListClient from "@/features/reviews/components/ReviewListClient";
 import { Review } from "@/features/reviews/validation/review.schema";
+import { ENDPOINTS } from '@/lib/endpoints';
 
 export const metadata = {
   title: "Reviews | Admin",
@@ -15,7 +16,7 @@ export default async function ReviewsListPage() {
   
   let reviews: Review[] = [];
   try {
-    const res = await fetch(`${API_BASE_URL}/v1/b2c/reviews`, {
+    const res = await fetch(`${config.apiBaseUrl}${ENDPOINTS.server.reviews}`, {
       headers: {
         Cookie: `access_token=${token}`
       },

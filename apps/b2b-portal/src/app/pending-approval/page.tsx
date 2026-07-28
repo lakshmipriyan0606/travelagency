@@ -1,6 +1,7 @@
 import { Metadata } from "next";
 import { CheckCircle } from "lucide-react";
 import Link from "next/link";
+import { ROUTES } from "@/lib/routes";
 
 export const metadata: Metadata = {
   title: "Application Pending | B2B Portal",
@@ -19,7 +20,7 @@ export default function PendingApprovalPage() {
           We will notify you by email once your application has been verified.
         </p>
         <Link
-          href="/login"
+          href={ROUTES.login}
           className="w-full py-3.5 bg-neutral-800 hover:bg-neutral-700 text-white font-bold rounded-xl flex items-center justify-center transition-all"
         >
           Back to Login

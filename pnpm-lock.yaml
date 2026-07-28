@@ -609,6 +609,9 @@ importers:
 
   packages/api-client:
     dependencies:
+      '@travelagency/config':
+        specifier: workspace:*
+        version: link:../config
       axios:
         specifier: ^1.7.9
         version: 1.18.1

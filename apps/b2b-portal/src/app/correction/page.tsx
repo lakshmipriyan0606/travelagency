@@ -6,6 +6,7 @@ import { getAgentProfile, getIssues, resubmitCorrection } from "@/api/auth.api";
 import { Loader2, AlertTriangle, CheckCircle, ArrowRight } from "lucide-react";
 import Link from "next/link";
 import { FormButton } from "@/components/ui/FormButton";
+import { ROUTES } from "@/lib/routes";
 
 interface Issue {
   field: string;
@@ -82,7 +83,7 @@ export default function CorrectionPage() {
             Your corrections have been submitted. Your application status is now pending review.
           </p>
           <Link
-            href="/login"
+            href={ROUTES.login}
             className="w-full py-3.5 bg-neutral-800 hover:bg-neutral-700 text-white font-bold rounded-xl flex items-center justify-center transition-all"
           >
             Back to Login

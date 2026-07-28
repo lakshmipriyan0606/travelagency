@@ -9,6 +9,7 @@ import { loginAgent } from "@/api/auth.api";
 import { ArrowRight, Lock, Mail } from "lucide-react";
 import Link from "next/link";
 import { DarkFormInput, DarkFormButton } from "@travelagency/forms";
+import { ROUTES } from "@/lib/routes";
 
 const loginSchema = z.object({
   email: z.string().email("Invalid email address"),
@@ -45,7 +46,7 @@ export default function LoginFormClient() {
         document.cookie = `b2b_portal_refresh_token=${refreshToken}; path=/; max-age=604800;`;
       }
       document.cookie = `agency_status=${status}; path=/; max-age=86400;`;
-      window.location.href = "/dashboard";
+      window.location.href = ROUTES.dashboard;
     },
     onError: (err: unknown) => {
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -56,11 +57,11 @@ export default function LoginFormClient() {
       if (status === 403) {
         if (message.toLowerCase().includes("pending approval")) {
           document.cookie = "agency_status=pending; path=/; max-age=86400;";
-          window.location.href = "/pending-approval";
+          window.location.href = ROUTES.pendingApproval;
           return;
         } else if (message.toLowerCase().includes("suspended")) {
           document.cookie = "agency_status=suspended; path=/; max-age=86400;";
-          window.location.href = "/suspended";
+          window.location.href = ROUTES.suspended;
           return;
         }
       }
@@ -120,7 +121,7 @@ export default function LoginFormClient() {
 
       <div className="mt-8 text-center text-sm text-neutral-400">
         Don&apos;t have a partner account?{" "}
-        <Link href="/register" className="text-yellow-500 hover:text-yellow-400 font-medium transition-colors">
+        <Link href={ROUTES.register} className="text-yellow-500 hover:text-yellow-400 font-medium transition-colors">
           Apply here
         </Link>
       </div>

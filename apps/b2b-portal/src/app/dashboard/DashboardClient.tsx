@@ -8,7 +8,7 @@ import {
   TrendingUp, Award, Calendar, DollarSign
 } from "lucide-react";
 import { useState } from "react";
-import Link from "next/link";
+import { ROUTES } from "@/lib/routes";
 
 export default function DashboardClient() {
   const [activeTab, setActiveTab] = useState("overview");
@@ -23,7 +23,7 @@ export default function DashboardClient() {
     document.cookie = "b2b_portal_access_token=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT;";
     document.cookie = "b2b_portal_refresh_token=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT;";
     document.cookie = "agency_status=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT;";
-    window.location.href = "/login";
+    window.location.href = ROUTES.login;
   };
 
   if (isLoading) {

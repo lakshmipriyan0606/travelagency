@@ -150,9 +150,6 @@ export default function SuggestedProducts({
                             <div className="h-full py-2">
                                 <SinglePackageCard
                                     offer={offer}
-                                    isAdmin={false}
-                                    setEditPackageId={() => { }}
-                                    setActive={() => { }}
                                     handleLikeUpdate={(id, liked) => {
                                         // Standard like update logic
                                         queryClient.setQueryData(["relatedPackages", { activityCategory, packageType, location, currentPackageId, onlyActivities, excludeActivities }], (oldData: any) => {

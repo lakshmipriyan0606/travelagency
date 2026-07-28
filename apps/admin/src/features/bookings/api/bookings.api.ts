@@ -1,4 +1,5 @@
-import axiosClient from '@travelagency/api-client';
+import axiosClient from '@/lib/apiClient';
+import { ENDPOINTS } from '@/lib/endpoints';
 
 export interface Booking {
   _id: string;
@@ -27,6 +28,6 @@ export interface BookingResponse {
 }
 
 export const getBookings = async (): Promise<BookingResponse> => {
-  const response = await axiosClient.get(`/auth/admin/bookings`);
+  const response = await axiosClient.get(ENDPOINTS.client.bookings.admin);
   return response.data;
 };

@@ -1,4 +1,6 @@
-import { API_BASE_URL } from '@/lib/config';
+import { config } from '@/lib/config';
+import { ROUTES } from '@/lib/routes';
+import { ENDPOINTS } from '@/lib/endpoints';
 import { redirect } from "next/navigation";
 import { getAccessToken } from '@travelagency/auth';
 import { AdminUser, SessionData } from "./types";
@@ -15,7 +17,7 @@ export async function getCurrentAdmin(): Promise<AdminUser | null> {
   try {
     // Make a lightweight server-to-server fetch to validate the session
     console.log('Sending session request to backend with token:', token.substring(0, 10) + '...');
-    const res = await fetch(`${API_BASE_URL}/v1/b2c-admin/auth/session`, {
+    const res = await fetch(`${config.apiBaseUrl}${ENDPOINTS.server.session}`, {
       headers: {
         Cookie: `access_token=${token}`
       },
@@ -57,7 +59,7 @@ export async function getCurrentB2BAdmin(): Promise<AdminUser | null> {
   }
 
   try {
-    const res = await fetch(`${API_BASE_URL}/b2b/admin/me`, {
+    const res = await fetch(`${config.apiBaseUrl}${ENDPOINTS.server.b2bMe}`, {
       headers: {
         Cookie: `access_token=${token}`,
         Authorization: `Bearer ${token}`
@@ -97,7 +99,7 @@ export async function requireAdmin(): Promise<AdminUser> {
   const valid = await isAdmin(admin);
   
   if (!valid) {
-    redirect("/b2c/admin/login");
+    redirect(ROUTES.login);
   }
 
   return admin!;
@@ -108,7 +110,7 @@ export async function requireB2BAdmin(): Promise<AdminUser> {
   const valid = await isAdmin(admin);
   
   if (!valid) {
-    redirect("/b2b/admin/login");
+    redirect(ROUTES.b2b.login);
   }
 
   return admin!;

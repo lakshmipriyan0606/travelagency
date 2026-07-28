@@ -11,10 +11,9 @@ const PAGE_SIZE = PACKAGE_CONFIG.INITIAL_LOAD_LIMIT;
 interface UsePackageFilterProps {
   likePackageOnly?: boolean;
   mode?: 'packages' | 'activities' | 'all';
-  isAdminMode?: boolean;
 }
 
-export function usePackageFilter({ likePackageOnly = false, mode = 'all', isAdminMode = false }: UsePackageFilterProps) {
+export function usePackageFilter({ likePackageOnly = false, mode = 'all' }: UsePackageFilterProps) {
   const pathname = usePathname();
   const router = useRouter();
   const searchParams = useSearchParams();
@@ -45,8 +44,8 @@ export function usePackageFilter({ likePackageOnly = false, mode = 'all', isAdmi
   }, []);
 
   const queryKey = useMemo(
-    () => ["allPackage", cursor, filters.search, filters.city, isAdminMode, mode, likePackageOnly, activeTab],
-    [cursor, filters.search, filters.city, isAdminMode, mode, likePackageOnly, activeTab]
+    () => ["allPackage", cursor, filters.search, filters.city, mode, likePackageOnly, activeTab],
+    [cursor, filters.search, filters.city, mode, likePackageOnly, activeTab]
   );
 
   const { data, isLoading, isError, refetch } = UseFetchAPIQuery({
@@ -61,7 +60,7 @@ export function usePackageFilter({ likePackageOnly = false, mode = 'all', isAdmi
       const excludeActivities = mode === 'packages';
       return GetAllPackageList({
         limit: PAGE_SIZE, lastId: cursor, search: filters.search, city: filters.city,
-        isAdmin: isAdminMode, onlyActivities, excludeActivities
+        onlyActivities, excludeActivities
       });
     },
     options: { enabled: false },

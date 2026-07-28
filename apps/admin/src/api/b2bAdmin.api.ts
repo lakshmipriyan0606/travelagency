@@ -1,4 +1,5 @@
-import axiosClient from '@travelagency/api-client';
+import axiosClient from '@/lib/apiClient';
+import { ENDPOINTS } from "@/lib/endpoints";
 
 export interface B2BAgency {
   _id: string;
@@ -24,9 +25,13 @@ export interface B2BAgency {
   commissionRate: number;
   createdAt: string;
   updatedAt: string;
+  changedBy?: {
+    name: string;
+    email: string;
+  };
 }
 
-export interface StatusLogEntry {
+export interface B2BAgencyStatusLog {
   _id: string;
   agencyId: string;
   previousStatus: string;
@@ -40,46 +45,46 @@ export interface StatusLogEntry {
 }
 
 export const b2bAdminLogin = async (payload: object) => {
-  const { data } = await axiosClient.post("b2b/admin/login", payload);
+  const { data } = await axiosClient.post(ENDPOINTS.client.b2b.login, payload);
   return data;
 };
 
 export const b2bAdminLogout = async () => {
-  const { data } = await axiosClient.post("b2b/admin/logout");
+  const { data } = await axiosClient.post(ENDPOINTS.client.b2b.logout);
   return data;
 };
 
 export const b2bAdminRefresh = async () => {
-  const { data } = await axiosClient.post("b2b/admin/refresh");
+  const { data } = await axiosClient.post(ENDPOINTS.client.b2b.refresh);
   return data;
 };
 
 export const getB2BAgencies = async () => {
-  const { data } = await axiosClient.get("b2b/admin/agencies");
+  const { data } = await axiosClient.get(ENDPOINTS.client.b2b.agencies);
   return data?.data?.data || data?.data || [];
 };
 
 export const approveB2BAgency = async (id: string) => {
-  const { data } = await axiosClient.patch(`b2b/admin/agencies/${id}/approve`);
+  const { data } = await axiosClient.patch(ENDPOINTS.client.b2b.agencyAction(id, 'approve'));
   return data;
 };
 
 export const rejectB2BAgency = async ({ id, reason }: { id: string; reason: string }) => {
-  const { data } = await axiosClient.patch(`b2b/admin/agencies/${id}/reject`, { reason });
+  const { data } = await axiosClient.patch(ENDPOINTS.client.b2b.agencyAction(id, 'reject'), { reason });
   return data;
 };
 
 export const suspendB2BAgency = async (id: string) => {
-  const { data } = await axiosClient.patch(`b2b/admin/agencies/${id}/suspend`);
+  const { data } = await axiosClient.patch(ENDPOINTS.client.b2b.agencyAction(id, 'suspend'));
   return data;
 };
 
 export const reactivateB2BAgency = async (id: string) => {
-  const { data } = await axiosClient.patch(`b2b/admin/agencies/${id}/reactivate`);
+  const { data } = await axiosClient.patch(ENDPOINTS.client.b2b.agencyAction(id, 'reactivate'));
   return data;
 };
 
 export const getB2BAgencyStatusLog = async (id: string) => {
-  const { data } = await axiosClient.get(`b2b/admin/agencies/${id}/status-log`);
+  const { data } = await axiosClient.get(ENDPOINTS.client.b2b.agencyStatusLog(id));
   return data?.data?.data || data?.data || [];
 };

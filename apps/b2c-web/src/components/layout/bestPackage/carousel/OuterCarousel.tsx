@@ -105,9 +105,6 @@ export default function OuterCarousel({ initialPackages }: { initialPackages?: a
                         <div className="mt-3 h-full">
                             <SinglePackageCard
                                 offer={offer}
-                                isAdmin={false} // Best Package carousel is typically for users
-                                setEditPackageId={() => { }}
-                                setActive={() => { }}
                                 handleLikeUpdate={(id, liked) => {
                                     // Custom like update for BestPackage query
                                     queryClient.setQueryData(["bestPackage"], (oldData: any) => {

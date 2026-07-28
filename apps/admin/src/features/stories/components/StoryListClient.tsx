@@ -6,6 +6,7 @@ import { Loader2, Trash2, ArrowUp, ArrowDown, ListOrdered, Image as ImageIcon, P
 import { showToast } from "@/lib/toast";
 import { useRouter } from "next/navigation";
 import { Story } from "../validation/story.schema";
+import { ROUTES } from "@/lib/routes";
 
 export default function StoryListClient() {
   const router = useRouter();
@@ -43,7 +44,7 @@ export default function StoryListClient() {
   });
 
   const handleEdit = (id: string) => {
-    router.push(`/admin/stories/${id}`);
+    router.push(ROUTES.stories.edit(id));
   };
 
   if (isLoading) {
@@ -145,7 +146,7 @@ export default function StoryListClient() {
               {normalizeMutation.isPending ? <Loader2 size={14} className="animate-spin" /> : <ListOrdered size={16} />}
               FIX ORDERING
             </button>
-            <button onClick={() => router.push("/admin/stories/new")} className="flex-1 sm:flex-none bg-primary text-white px-8 py-4 rounded-[20px] text-sm font-black shadow-xl shadow-primary/30 hover:bg-primary/90 transition-all active:scale-95 cursor-pointer">
+            <button onClick={() => router.push(ROUTES.stories.new)} className="flex-1 sm:flex-none bg-primary text-white px-8 py-4 rounded-[20px] text-sm font-black shadow-xl shadow-primary/30 hover:bg-primary/90 transition-all active:scale-95 cursor-pointer">
               + ADD STORY
             </button>
           </div>

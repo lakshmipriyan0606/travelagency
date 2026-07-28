@@ -1,7 +1,9 @@
+import { config } from "@/lib/config";
 import { requireAdmin } from "@/features/auth/guards";
 import ReviewFormClient from "@/features/reviews/components/ReviewFormClient";
 import { getAccessToken } from '@travelagency/auth';
 import { Review } from "@/features/reviews/validation/review.schema";
+import { ENDPOINTS } from "@/lib/endpoints";
 
 export const metadata = {
   title: "Add Review | Admin",
@@ -13,9 +15,9 @@ export default async function NewReviewPage() {
 
   let totalReviews = 0;
   try {
-    const res = await fetch(`/reviews/admin`, {
+    const res = await fetch(`${config.apiBaseUrl}${ENDPOINTS.server.reviews}`, {
       headers: {
-        Cookie: "access_token="
+        Cookie: `access_token=${token}`
       },
       next: { revalidate: 0 },
     });

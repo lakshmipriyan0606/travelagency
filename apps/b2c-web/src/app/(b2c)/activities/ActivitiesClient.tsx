@@ -97,9 +97,6 @@ const ActivityPackageList = () => {
                 {packageList.length > 0 ? (
                     <PackageCard
                         filterList={packageList}
-                        isAdmin={false}
-                        setEditPackageId={() => { }}
-                        setActive={() => { }}
                         isAllPackagePage
                         handleLikeUpdate={(id, liked) => {
                             setPackageList((prev) =>

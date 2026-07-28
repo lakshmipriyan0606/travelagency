@@ -15,6 +15,8 @@ import {
   Briefcase
 } from "lucide-react";
 
+import { ROUTES } from "@/lib/routes";
+
 export type AdminNavItem = {
   title: string;
   href: string;
@@ -25,7 +27,7 @@ export type AdminNavItem = {
 export const adminNavigation: AdminNavItem[] = [
   {
     title: "System Dashboard",
-    href: "/admin/dashboard",
+    href: ROUTES.dashboard,
     icon: LayoutDashboard,
   },
   {
@@ -33,59 +35,59 @@ export const adminNavigation: AdminNavItem[] = [
     href: "#",
     icon: PlusCircle,
     children: [
-      { title: "Create Package", href: "/admin/packages/new", icon: Package },
-      { title: "Create Activity", href: "/admin/activities/new", icon: Sparkles },
-      { title: "Create Blog", href: "/admin/blogs/new", icon: PenTool },
-      { title: "Create Destination", href: "/admin/destinations/new", icon: MapPin },
-      { title: "Create Story", href: "/admin/stories/new", icon: PlusCircle },
+      { title: "Create Package", href: ROUTES.packages.new, icon: Package },
+      { title: "Create Activity", href: ROUTES.activities.new, icon: Sparkles },
+      { title: "Create Blog", href: ROUTES.blogs.new, icon: PenTool },
+      { title: "Create Destination", href: ROUTES.destinations.new, icon: MapPin },
+      { title: "Create Story", href: ROUTES.stories.new, icon: PlusCircle },
     ],
   },
   {
     title: "All Packages",
-    href: "/admin/packages",
+    href: ROUTES.packages.list,
     icon: Package,
   },
   {
     title: "All Activities",
-    href: "/admin/activities",
+    href: ROUTES.activities.list,
     icon: Activity,
   },
   {
     title: "All Blogs",
-    href: "/admin/blogs",
+    href: ROUTES.blogs.list,
     icon: FileText,
   },
   {
     title: "All Destinations",
-    href: "/admin/destinations",
+    href: ROUTES.destinations.list,
     icon: MapPin,
   },
   {
     title: "All Stories",
-    href: "/admin/stories",
+    href: ROUTES.stories.list,
     icon: Sparkles,
   },
   {
     title: "All Reviews",
-    href: "/admin/reviews",
+    href: ROUTES.reviews.list,
     icon: Star,
   },
   {
     title: "Bookings",
-    href: "/admin/bookings",
+    href: ROUTES.bookings,
     icon: CalendarCheck,
   },
   {
     title: "Media Gallery",
-    href: "/admin/media",
+    href: ROUTES.media,
     icon: ImageIcon,
   },
   {
     title: "Website",
-    href: "/admin/website",
+    href: "#",
     icon: Globe,
     children: [
-      { title: "Hero Sections", href: "/admin/website/hero", icon: ImageIcon },
+      { title: "Hero Sections", href: ROUTES.website.hero, icon: ImageIcon },
     ]
   }
 ];
