@@ -6,6 +6,7 @@ import { getAgentProfile, getRejectionReason, reapply } from "@/api/auth.api";
 import { Loader2, CheckCircle, ArrowRight, ShieldAlert } from "lucide-react";
 import Link from "next/link";
 import { FormButton } from "@/components/ui/FormButton";
+import { ROUTES } from "@/lib/routes";
 
 export default function ReapplyPage() {
   const [formError, setFormError] = useState<string | null>(null);
@@ -58,7 +59,7 @@ export default function ReapplyPage() {
 
   if (isProfileLoading || isRejectionLoading) {
     return (
-      <main className="min-h-screen flex items-center justify-center bg-neutral-950 text-white">
+      <main className="min-h-screen flex items-center justify-center bg-[#050505] text-white">
         <Loader2 className="w-8 h-8 animate-spin text-yellow-500" />
       </main>
     );
@@ -66,18 +67,18 @@ export default function ReapplyPage() {
 
   if (isResubmitted) {
     return (
-      <main className="min-h-screen flex items-center justify-center bg-neutral-950 p-6 text-center">
-        <div className="w-full max-w-md p-8 bg-neutral-900 border border-neutral-800 rounded-3xl shadow-2xl">
+      <main className="min-h-screen flex items-center justify-center bg-[#050505] p-6 text-center">
+        <div className="w-full max-w-md p-8 bg-[#121212] border border-white/5 rounded-3xl shadow-2xl">
           <div className="mb-6">
             <CheckCircle className="w-16 h-16 text-yellow-500 mx-auto" />
           </div>
           <h2 className="text-2xl font-bold text-white tracking-tight mb-4">Re-submitted successfully</h2>
-          <p className="text-neutral-400 text-sm leading-relaxed mb-8">
+          <p className="text-white/60 text-sm leading-relaxed mb-8">
             Your application was re-submitted successfully. Your application status is now pending review.
           </p>
           <Link
             href={ROUTES.login}
-            className="w-full py-3.5 bg-neutral-800 hover:bg-neutral-700 text-white font-bold rounded-xl flex items-center justify-center transition-all"
+            className="w-full py-3.5 bg-white/5 hover:bg-white/10 text-white font-bold rounded-xl flex items-center justify-center transition-all"
           >
             Back to Login
           </Link>
@@ -97,8 +98,8 @@ export default function ReapplyPage() {
   };
 
   return (
-    <main className="min-h-screen bg-neutral-950 py-12 px-6 flex items-center justify-center text-white">
-      <div className="w-full max-w-2xl bg-neutral-900 border border-neutral-800 p-8 rounded-3xl shadow-2xl">
+    <main className="min-h-screen bg-[#050505] py-12 px-6 flex items-center justify-center text-white">
+      <div className="w-full max-w-2xl bg-[#121212] border border-white/5 p-8 rounded-3xl shadow-2xl">
         <div className="flex items-center gap-3 mb-6 text-rose-500">
           <ShieldAlert className="w-8 h-8" />
           <h2 className="text-2xl font-bold tracking-tight text-white">Reapply Partner Application</h2>

@@ -6,9 +6,8 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { useMutation } from "@tanstack/react-query";
 import { loginAgent } from "@/api/auth.api";
-import { ArrowRight, Lock, Mail } from "lucide-react";
+import { ArrowRight, Lock, Mail, Loader2 } from "lucide-react";
 import Link from "next/link";
-import { DarkFormInput, DarkFormButton } from "@travelagency/forms";
 import { ROUTES } from "@/lib/routes";
 
 const loginSchema = z.object({
@@ -75,55 +74,114 @@ export default function LoginFormClient() {
     mutation.mutate(data);
   };
 
+  const isLoading = isSubmitting || mutation.isPending;
+
   return (
-    <div className="w-full max-w-md p-8 bg-neutral-900 border border-neutral-800 rounded-3xl shadow-2xl">
-      <div className="mb-8 text-center">
-        <h2 className="text-2xl font-bold text-white tracking-tight">Partner Login</h2>
-        <p className="text-neutral-400 text-sm mt-2">Welcome back to the B2B Portal</p>
+    <div className="w-full max-w-[460px] p-8 lg:p-10 bg-[#141414]/75 backdrop-blur-[24px] border border-white/8 rounded-[32px] shadow-[0_20px_50px_rgba(248,180,0,0.03)] flex flex-col justify-between">
+      <div>
+        {/* Header */}
+        <div className="mb-8">
+          <h2 className="text-3xl font-black text-white tracking-tight leading-tight">Welcome Back</h2>
+          <p className="text-[#B4B4B4] text-sm mt-1.5">Access your partner B2B dashboard</p>
+        </div>
+
+        {error && (
+          <div className="mb-6 p-4 bg-red-900/30 border border-red-500/50 rounded-xl text-red-400 text-xs font-semibold text-center">
+            {error}
+          </div>
+        )}
+
+        <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
+          {/* Email Input */}
+          <div className="flex flex-col">
+            <label className="text-[10px] font-bold tracking-wider text-[#FFD54A] uppercase mb-2">
+              Email Address
+            </label>
+            <div className="relative group">
+              <Mail className="absolute left-4 top-3.5 text-[#B4B4B4] group-focus-within:text-[#FFD54A] transition-colors" size={16} />
+              <input
+                {...register("email")}
+                type="email"
+                placeholder="agent@travelco.com"
+                className="w-full bg-[#090909] border border-white/10 rounded-xl py-3.5 pl-12 pr-4 text-white text-sm outline-none focus:border-[#FFD54A]/50 focus:ring-1 focus:ring-[#FFD54A]/30 transition-all placeholder-neutral-600"
+              />
+            </div>
+            {errors.email && (
+              <span className="text-red-500 text-[10px] font-bold mt-1.5">{errors.email.message}</span>
+            )}
+          </div>
+
+          {/* Password Input */}
+          <div className="flex flex-col">
+            <div className="flex justify-between items-center mb-2">
+              <label className="text-[10px] font-bold tracking-wider text-[#FFD54A] uppercase">
+                Password
+              </label>
+              <a href="#" className="text-xs text-[#B4B4B4] hover:text-[#FFD54A] transition-colors">
+                Forgot?
+              </a>
+            </div>
+            <div className="relative group">
+              <Lock className="absolute left-4 top-3.5 text-[#B4B4B4] group-focus-within:text-[#FFD54A] transition-colors" size={16} />
+              <input
+                {...register("password")}
+                type="password"
+                placeholder="••••••••"
+                className="w-full bg-[#090909] border border-white/10 rounded-xl py-3.5 pl-12 pr-4 text-white text-sm outline-none focus:border-[#FFD54A]/50 focus:ring-1 focus:ring-[#FFD54A]/30 transition-all placeholder-neutral-600"
+              />
+            </div>
+            {errors.password && (
+              <span className="text-red-500 text-[10px] font-bold mt-1.5">{errors.password.message}</span>
+            )}
+          </div>
+
+          {/* Remember Me */}
+          <div className="flex items-center gap-2">
+            <input
+              type="checkbox"
+              id="remember"
+              className="w-4 h-4 rounded bg-[#090909] border border-white/10 text-[#FFD54A] focus:ring-0 focus:ring-offset-0 cursor-pointer"
+            />
+            <label htmlFor="remember" className="text-xs text-[#B4B4B4] select-none cursor-pointer">
+              Remember me on this device
+            </label>
+          </div>
+
+          {/* Sign In Button */}
+          <button
+            type="submit"
+            disabled={isLoading}
+            className="w-full rounded-full bg-gradient-to-r from-[#FFD54A] to-[#F8B400] hover:from-[#FFE066] hover:to-[#FFC425] text-black font-extrabold text-xs py-4 shadow-[0_4px_20px_rgba(248,180,0,0.2)] hover:shadow-[0_4px_30px_rgba(248,180,0,0.4)] hover:-translate-y-0.5 active:translate-y-0 transition-all duration-200 uppercase tracking-wider flex items-center justify-center gap-2 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
+          >
+            {isLoading ? (
+              <>
+                <Loader2 size={16} className="animate-spin" />
+                <span>Signing In...</span>
+              </>
+            ) : (
+              <>
+                <span>Sign In</span>
+                <ArrowRight size={16} />
+              </>
+            )}
+          </button>
+        </form>
       </div>
 
-      {error && (
-        <div className="mb-6 p-4 bg-red-900/30 border border-red-500/50 rounded-xl text-red-400 text-sm text-center font-medium">
-          {error}
+      {/* Footer Options */}
+      <div className="mt-8 pt-8 border-t border-white/5 space-y-4">
+        <div className="text-center text-xs text-[#B4B4B4]">
+          Don&apos;t have a partner account?{" "}
+          <Link href={ROUTES.register} className="text-[#FFD54A] hover:text-[#FFE066] font-bold transition-colors">
+            Create Account
+          </Link>
         </div>
-      )}
 
-      <form onSubmit={handleSubmit(onSubmit)} className="space-y-5">
-        <DarkFormInput
-          registration={register("email")}
-          label="Email Address"
-          type="email"
-          placeholder="agent@travelco.com"
-          icon={Mail}
-          error={errors.email}
-        />
-
-        <DarkFormInput
-          registration={register("password")}
-          label="Password"
-          type="password"
-          placeholder="••••••••"
-          icon={Lock}
-          error={errors.password}
-          labelRight={
-            <a href="#" className="text-xs text-yellow-500 hover:text-yellow-400 transition-colors">
-              Forgot?
-            </a>
-          }
-        />
-
-        <DarkFormButton
-          isLoading={isSubmitting || mutation.isPending}
-          label="Sign In"
-          icon={<ArrowRight size={18} />}
-        />
-      </form>
-
-      <div className="mt-8 text-center text-sm text-neutral-400">
-        Don&apos;t have a partner account?{" "}
-        <Link href={ROUTES.register} className="text-yellow-500 hover:text-yellow-400 font-medium transition-colors">
-          Apply here
-        </Link>
+        <div className="flex justify-between text-[10px] text-neutral-600 font-bold uppercase tracking-wider">
+          <a href="#" className="hover:text-neutral-400 transition-colors">Terms</a>
+          <a href="#" className="hover:text-neutral-400 transition-colors">Privacy</a>
+          <span>v1.0.0</span>
+        </div>
       </div>
     </div>
   );

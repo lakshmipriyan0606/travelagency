@@ -172,10 +172,10 @@ export default function RegisterFormClient() {
     }
 
     return (
-      <div className="w-full max-w-md p-8 bg-neutral-900 border border-neutral-800 rounded-3xl shadow-2xl text-center">
+      <div className="w-full max-w-md p-8 bg-[#121212] border border-white/5 rounded-3xl shadow-2xl text-center">
         <div className="mb-6">{icon}</div>
         <h2 className="text-2xl font-bold text-white tracking-tight mb-4">{title}</h2>
-        <p className="text-neutral-400 text-sm leading-relaxed mb-8">{description}</p>
+        <p className="text-white/60 text-sm leading-relaxed mb-8">{description}</p>
         {showLoginLink ? (
           <Link
             href={ROUTES.login}
@@ -186,7 +186,7 @@ export default function RegisterFormClient() {
         ) : (
           <Link
             href={ROUTES.login}
-            className="text-neutral-500 hover:text-neutral-400 text-sm font-medium transition-colors"
+            className="text-white/40 hover:text-white/60 text-sm font-medium transition-colors"
           >
             Back to Login
           </Link>
@@ -196,12 +196,12 @@ export default function RegisterFormClient() {
   }
 
   return (
-    <div className="w-full max-w-xl p-8 bg-neutral-900 border border-neutral-800 rounded-3xl shadow-2xl relative overflow-hidden">
+    <div className="w-full max-w-xl p-8 bg-[#121212] border border-white/5 rounded-3xl shadow-2xl relative overflow-hidden">
       <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-yellow-500/10 via-yellow-500/50 to-yellow-500/10"></div>
       
       <div className="mb-8 text-center">
         <h2 className="text-2xl font-bold text-white tracking-tight">Partner Application</h2>
-        <p className="text-neutral-400 text-sm mt-1">Join our B2B agency network</p>
+        <p className="text-white/60 text-sm mt-1">Join our B2B agency network</p>
       </div>
 
       {/* Stepper Header Component */}
@@ -216,12 +216,12 @@ export default function RegisterFormClient() {
                     ? "bg-yellow-500 border-yellow-500 text-neutral-950 shadow-lg shadow-yellow-500/20"
                     : step > stepNumber
                     ? "bg-emerald-600 border-emerald-500 text-white"
-                    : "bg-neutral-950 border-neutral-800 text-neutral-500"
+                    : "bg-[#1a1a1a] border-white/10 text-white/40"
                 )}
               >
                 {step > stepNumber ? "✓" : stepNumber}
               </div>
-              <span className="text-[10px] uppercase tracking-widest font-black mt-2 text-neutral-400">
+              <span className="text-[10px] uppercase tracking-widest font-black mt-2 text-white/50">
                 {stepNumber === 1 ? "Account" : stepNumber === 2 ? "Business" : "Address"}
               </span>
             </div>
@@ -229,7 +229,7 @@ export default function RegisterFormClient() {
               <div
                 className={cn(
                   "h-[2px] flex-1 mx-4 -mt-6 transition-all duration-300",
-                  step > stepNumber ? "bg-emerald-600" : "bg-neutral-800"
+                  step > stepNumber ? "bg-emerald-600" : "bg-white/5"
                 )}
               />
             )}

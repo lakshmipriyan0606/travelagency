@@ -7,8 +7,8 @@ export const metadata: Metadata = {
 
 export default function SuspendedPage() {
   return (
-    <main className="min-h-screen flex items-center justify-center bg-neutral-950 p-6 text-center">
-      <div className="w-full max-w-md p-8 bg-neutral-900 border border-neutral-800 rounded-3xl shadow-2xl">
+    <main className="min-h-screen flex items-center justify-center bg-[#050505] p-6 text-center">
+      <div className="w-full max-w-md p-8 bg-[#121212] border border-white/5 rounded-3xl shadow-2xl">
         <div className="mb-6">
           <Ban className="w-16 h-16 text-red-500 mx-auto" />
         </div>

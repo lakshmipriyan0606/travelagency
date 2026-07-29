@@ -7,13 +7,18 @@ export const loginAgent = async (data: unknown) => {
 };
 
 export const registerAgent = async (data: unknown) => {
-  const payload = { ...data, role: "agent" };
+  const payload = { ...(data as Record<string, unknown>), role: "agent" };
   const res = await axiosClient.post(ENDPOINTS.client.register, payload);
   return res.data;
 };
 
 export const getAgentProfile = async () => {
   const res = await axiosClient.get(ENDPOINTS.client.me);
+  return res.data;
+};
+
+export const updateAgentProfile = async (data: unknown) => {
+  const res = await axiosClient.patch(ENDPOINTS.client.me, data);
   return res.data;
 };
 

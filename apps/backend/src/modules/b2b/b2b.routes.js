@@ -1,10 +1,11 @@
 import express from 'express';
 import * as b2bAuth from './controllers/b2bAuth.controller.js';
 import * as b2bLifecycle from './controllers/b2bLifecycle.controller.js';
+import * as quoteRequest from './controllers/quoteRequest.controller.js';
 import { requireAgencyAuth, requireAdminRole } from './middleware/b2bAuth.middleware.js';
 import { b2bLoginLimiter } from './middleware/b2bRateLimiter.middleware.js';
 import { validateBody } from '#shared/middleware/validation.middleware.js';
-import { registerSchema } from './b2b.validation.js';
+import { registerSchema, createQuoteSchema, saveDraftSchema } from './b2b.validation.js';
 
 const router = express.Router();
 
@@ -14,6 +15,31 @@ router.post('/agency/login', b2bLoginLimiter, b2bAuth.login);
 router.post('/agency/refresh', b2bAuth.refreshAgency);
 router.post('/agency/logout', b2bAuth.logoutAgency);
 router.get('/agency/me', requireAgencyAuth, b2bAuth.meAgency);
+router.patch('/agency/me', requireAgencyAuth, b2bAuth.updateProfileAgency);
+
+// --- Agency Quote Request Routes ---
+router.post(
+  '/agency/quotes',
+  requireAgencyAuth,
+  validateBody(createQuoteSchema),
+  quoteRequest.create
+);
+router.patch(
+  '/agency/quotes/:id/draft',
+  requireAgencyAuth,
+  validateBody(saveDraftSchema),
+  quoteRequest.saveDraft
+);
+router.get('/agency/quotes', requireAgencyAuth, quoteRequest.getQuotes);
+router.get('/agency/quotes/:id', requireAgencyAuth, quoteRequest.getQuoteById);
+router.patch('/agency/quotes/:id/status', requireAgencyAuth, quoteRequest.updateStatus);
+
+// --- Agency Dashboard Routes ---
+router.get(
+  '/agency/dashboard/summary',
+  requireAgencyAuth,
+  quoteRequest.getDashboardSummary
+);
 
 // --- Admin Auth Routes ---
 router.post('/admin/login', b2bLoginLimiter, b2bAuth.loginAdmin);
@@ -50,3 +76,4 @@ router.get(
 );
 
 export default router;
+

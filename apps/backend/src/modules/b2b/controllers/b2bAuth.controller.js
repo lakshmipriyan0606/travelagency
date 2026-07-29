@@ -393,10 +393,57 @@ export const meAgency = async (req, res) => {
       id: req.user._id,
       name: req.user.name,
       email: req.user.email,
+      phone: req.user.phone,
+      designation: req.user.designation,
       role: req.user.role,
     },
+    agency: req.agency,
     agencyStatus: req.agency.status,
   });
+};
+
+export const updateProfileAgency = async (req, res, next) => {
+  const { name, phone, designation, companyName, tradeName, officeAddress, websiteUrl, yearsInBusiness, iataNumber } = req.body;
+
+  try {
+    // 1. Update Agency User details
+    if (name) req.user.name = name;
+    if (phone) req.user.phone = phone;
+    if (designation !== undefined) req.user.designation = designation;
+    await req.user.save();
+
+    // 2. Update Agency details
+    if (companyName) req.agency.companyName = companyName;
+    if (tradeName !== undefined) req.agency.tradeName = tradeName;
+    if (websiteUrl !== undefined) req.agency.websiteUrl = websiteUrl;
+    if (yearsInBusiness !== undefined) req.agency.yearsInBusiness = yearsInBusiness;
+    if (iataNumber !== undefined) req.agency.iataNumber = iataNumber;
+
+    if (officeAddress) {
+      req.agency.officeAddress = {
+        ...req.agency.officeAddress.toObject(),
+        ...officeAddress,
+      };
+    }
+
+    await req.agency.save();
+
+    return sendSuccess(res, 200, 'Profile updated successfully', {
+      agencyUser: {
+        id: req.user._id,
+        name: req.user.name,
+        email: req.user.email,
+        phone: req.user.phone,
+        designation: req.user.designation,
+        role: req.user.role,
+      },
+      agency: req.agency,
+      agencyStatus: req.agency.status,
+    });
+  } catch (error) {
+    logger.error({ err: error }, 'Error updating Agency profile');
+    return next(new AppError('Error updating profile information', 500));
+  }
 };
 
 // --- Admin Handlers ---

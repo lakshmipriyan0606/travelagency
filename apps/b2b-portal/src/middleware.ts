@@ -7,7 +7,12 @@ export function middleware(request: NextRequest) {
   const status = request.cookies.get('agency_status')?.value;
   const path = request.nextUrl.pathname;
 
-  // Let authentication endpoints go through
+  // Redirect already authenticated users away from login/register pages
+  if (token && (path.startsWith('/login') || path.startsWith('/register'))) {
+    return NextResponse.redirect(new URL('/dashboard', request.url));
+  }
+
+  // Let authentication endpoints go through if they don't have a token
   if (path.startsWith('/login') || path.startsWith('/register')) {
     return NextResponse.next();
   }
@@ -57,7 +62,10 @@ export function middleware(request: NextRequest) {
 
 export const config = {
   matcher: [
+    '/login',
+    '/register',
     '/dashboard/:path*',
+    '/profile/:path*',
     '/settings/:path*',
     '/correction/:path*',
     '/reapply/:path*',
