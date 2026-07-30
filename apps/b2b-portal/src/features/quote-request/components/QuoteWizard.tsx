@@ -105,8 +105,24 @@ export default function QuoteWizard() {
   // Auto-save draft trigger on step transitions or input changes
   const handleSaveDraft = async () => {
     const values = getValues();
+    const currentErrors = methods.formState.errors;
+
+    // If there are any active validation errors, skip autosave silently
+    // (prevents "AUTOSAVE FAILED" banner when user has invalid data like a past date)
+    if (Object.keys(currentErrors).length > 0) {
+      return;
+    }
+
+    // Only save if we have at least some meaningful data
+    const hasMeaningfulData =
+      values.destination?.trim() ||
+      values.travelStart ||
+      values.contactPerson?.name?.trim();
+
+    if (!hasMeaningfulData) return;
+
     setSaveStatus("saving");
-    
+
     // Build partial DTO for saving draft
     const dto = {
       destination: values.destination || undefined,
@@ -349,6 +365,7 @@ export default function QuoteWizard() {
                   <label className="text-[10px] font-black uppercase tracking-widest text-text-secondary">Travel Start Date <span className="text-primary-accent">*</span></label>
                   <input
                     type="date"
+                    min={new Date().toISOString().split("T")[0]}
                     {...methods.register("travelStart")}
                     className="w-full bg-neutral-50 border border-neutral-200 text-text-primary focus:border-neutral-300 text-sm px-4 py-3 rounded-xl outline-none focus:border-neutral-700 transition text-white"
                   />
@@ -358,6 +375,7 @@ export default function QuoteWizard() {
                   <label className="text-[10px] font-black uppercase tracking-widest text-text-secondary">Travel End Date <span className="text-primary-accent">*</span></label>
                   <input
                     type="date"
+                    min={new Date().toISOString().split("T")[0]}
                     {...methods.register("travelEnd")}
                     className="w-full bg-neutral-50 border border-neutral-200 text-text-primary focus:border-neutral-300 text-sm px-4 py-3 rounded-xl outline-none focus:border-neutral-700 transition text-white"
                   />

@@ -1,0 +1,19 @@
+
+> admin@0.1.0 build E:\project\travelagency\apps\admin
+> next build
+
+▲ Next.js 16.2.11 (Turbopack)
+
+⚠ The "middleware" file convention is deprecated. Please use "proxy" instead. Learn more: https://nextjs.org/docs/messages/middleware-to-proxy
+  Creating an optimized production build ...
+Error: "./enterprise-light.css" is not exported under the condition "style" from package E:\project\travelagency\apps\admin\node_modules\@travelagency\theme (see exports field in E:\project\travelagency\apps\admin\node_modules\@travelagency\theme\package.json)
+    [2m[at E:\project\travelagency\node_modules\.pnpm\enhanced-resolve@5.24.3\node_modules\enhanced-resolve\lib\ExportsFieldPlugin.js:135:7][0m
+    [2m[at Hook.eval [as callAsync] (eval at create (E:\project\travelagency\node_modules\.pnpm\tapable@2.3.3\node_modules\tapable\lib\HookCodeFactory.js:31:10), <anonymous>:22:1)][0m
+    [2m[at Resolver.doResolve (E:\project\travelagency\node_modules\.pnpm\enhanced-resolve@5.24.3\node_modules\enhanced-resolve\lib\Resolver.js:1117:17)][0m
+    [2m[at E:\project\travelagency\node_modules\.pnpm\enhanced-resolve@5.24.3\node_modules\enhanced-resolve\lib\DescriptionFilePlugin.js:85:17][0m
+    [2m[at onLevelDone (E:\project\travelagency\node_modules\.pnpm\enhanced-resolve@5.24.3\node_modules\enhanced-resolve\lib\DescriptionFileUtils.js:187:22)][0m
+    [2m[at E:\project\travelagency\node_modules\.pnpm\enhanced-resolve@5.24.3\node_modules\enhanced-resolve\lib\forEachBail.js:39:13][0m
+    [2m[at onJson (E:\project\travelagency\node_modules\.pnpm\enhanced-resolve@5.24.3\node_modules\enhanced-resolve\lib\DescriptionFileUtils.js:118:4)][0m
+    [2m[at E:\project\travelagency\node_modules\.pnpm\enhanced-resolve@5.24.3\node_modules\enhanced-resolve\lib\DescriptionFileUtils.js:145:5][0m
+    [2m[at SyncAsyncFileSystemDecorator.readJson (E:\project\travelagency\node_modules\.pnpm\enhanced-resolve@5.24.3\node_modules\enhanced-resolve\lib\SyncAsyncFileSystemDecorator.js:204:6)][0m
+    [2m[at iterFilename (E:\project\travelagency\node_modules\.pnpm\enhanced-resolve@5.24.3\node_modules\enhanced-resolve\lib\DescriptionFileUtils.js:126:24)][0m

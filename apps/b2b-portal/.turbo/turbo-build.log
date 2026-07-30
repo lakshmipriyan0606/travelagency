@@ -1,0 +1,79 @@
+
+> b2b-portal@0.1.0 build E:\project\travelagency\apps\b2b-portal
+> next build
+
+⚠ Warning: Next.js inferred your workspace root, but it may not be correct.
+ We detected multiple lockfiles and selected the directory of E:\project\travelagency\pnpm-workspace.yaml as the root directory.
+ To silence this warning, set `turbopack.root` in your Next.js config, or consider removing one of the lockfiles if it's not needed.
+   See https://nextjs.org/docs/app/api-reference/config/next-config-js/turbopack#root-directory for more information.
+ Detected additional lockfiles: 
+   * E:\project\travelagency\apps\b2b-portal\pnpm-workspace.yaml
+
+▲ Next.js 16.2.11 (Turbopack)
+
+⚠ The "middleware" file convention is deprecated. Please use "proxy" instead. Learn more: https://nextjs.org/docs/messages/middleware-to-proxy
+  Creating an optimized production build ...
+Error: "./enterprise-light.css" is not exported under the condition "style" from package E:\project\travelagency\apps\b2b-portal\node_modules\@travelagency\theme (see exports field in E:\project\travelagency\apps\b2b-portal\node_modules\@travelagency\theme\package.json)
+    [2m[at E:\project\travelagency\node_modules\.pnpm\enhanced-resolve@5.24.3\node_modules\enhanced-resolve\lib\ExportsFieldPlugin.js:135:7][0m
+    [2m[at Hook.eval [as callAsync] (eval at create (E:\project\travelagency\node_modules\.pnpm\tapable@2.3.3\node_modules\tapable\lib\HookCodeFactory.js:31:10), <anonymous>:22:1)][0m
+    [2m[at Resolver.doResolve (E:\project\travelagency\node_modules\.pnpm\enhanced-resolve@5.24.3\node_modules\enhanced-resolve\lib\Resolver.js:1117:17)][0m
+    [2m[at E:\project\travelagency\node_modules\.pnpm\enhanced-resolve@5.24.3\node_modules\enhanced-resolve\lib\DescriptionFilePlugin.js:85:17][0m
+    [2m[at onLevelDone (E:\project\travelagency\node_modules\.pnpm\enhanced-resolve@5.24.3\node_modules\enhanced-resolve\lib\DescriptionFileUtils.js:187:22)][0m
+    [2m[at E:\project\travelagency\node_modules\.pnpm\enhanced-resolve@5.24.3\node_modules\enhanced-resolve\lib\forEachBail.js:39:13][0m
+    [2m[at onJson (E:\project\travelagency\node_modules\.pnpm\enhanced-resolve@5.24.3\node_modules\enhanced-resolve\lib\DescriptionFileUtils.js:118:4)][0m
+    [2m[at E:\project\travelagency\node_modules\.pnpm\enhanced-resolve@5.24.3\node_modules\enhanced-resolve\lib\DescriptionFileUtils.js:145:5][0m
+    [2m[at SyncAsyncFileSystemDecorator.readJson (E:\project\travelagency\node_modules\.pnpm\enhanced-resolve@5.24.3\node_modules\enhanced-resolve\lib\SyncAsyncFileSystemDecorator.js:204:6)][0m
+    [2m[at iterFilename (E:\project\travelagency\node_modules\.pnpm\enhanced-resolve@5.24.3\node_modules\enhanced-resolve\lib\DescriptionFileUtils.js:126:24)][0m
+
+> Build error occurred
+Error: Turbopack build failed with 2 errors:
+./apps/b2b-portal/src/app/globals.css
+Error evaluating Node.js code
+CssSyntaxError: tailwindcss: E:\project\travelagency\apps\b2b-portal\src\app\globals.css:1:1: "./enterprise-light.css" is not exported under the condition "style" from package E:\project\travelagency\apps\b2b-portal\node_modules\@travelagency\theme (see exports field in E:\project\travelagency\apps\b2b-portal\node_modules\@travelagency\theme\package.json)
+    at Input.error (node_modules/.pnpm/postcss@8.4.31/node_modules/postcss/lib/input.js:106:16) [E:\project\travelagency\apps\b2b-portal\.next\build\chunks\node_modules__pnpm_0ovhuz_._.js:4122:22]
+    at error (node_modules/.pnpm/postcss@8.4.31/node_modules/postcss/lib/node.js:115:32) [E:\project\travelagency\apps\b2b-portal\.next\build\chunks\node_modules__pnpm_0ovhuz_._.js:895:38]
+    [at Object.Once (E:\project\travelagency\node_modules\.pnpm\@tailwindcss+postcss@4.3.3\node_modules\@tailwindcss\postcss\dist\index.js:10:7013)]
+    [at process.processTicksAndRejections (node:internal/process/task_queues:105:5)]
+    at async LazyResult.runAsync (node_modules/.pnpm/postcss@8.4.31/node_modules/postcss/lib/lazy-result.js:261:11) [E:\project\travelagency\apps\b2b-portal\.next\build\chunks\node_modules__pnpm_0ovhuz_._.js:6042:21]
+    at async transform (turbopack:///[turbopack-node]/transforms/postcss.ts:70:34) [E:\project\travelagency\apps\b2b-portal\.next\build\chunks\[root-of-the-server]__08ut6mk._.js:146:36]
+    at async run (turbopack:///[turbopack-node]/child_process/evaluate.ts:89:23) [E:\project\travelagency\apps\b2b-portal\.next\build\chunks\[root-of-the-server]__02av0hq._.js:443:31]
+
+Import trace:
+  Client Component Browser:
+    ./apps/b2b-portal/src/app/globals.css [Client Component Browser]
+    ./apps/b2b-portal/src/app/layout.tsx [Server Component]
+
+
+./packages/ui/src/enterprise-sidebar.tsx:6:1
+Module not found: Can't resolve 'framer-motion'
+  [90m4 |[0m [36mimport[0m [33mLink[0m [36mfrom[0m [32m"next/link"[0m;
+  [90m5 |[0m [36mimport[0m { usePathname } [36mfrom[0m [32m"next/navigation"[0m;
+[31m[1m>[0m [90m6 |[0m [36mimport[0m { motion, [33mAnimatePresence[0m } [36mfrom[0m [32m"framer-motion"[0m;
+  [90m  |[0m [31m[1m^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^[0m
+  [90m7 |[0m [36mimport[0m {
+  [90m8 |[0m   [33mChevronLeft[0m,
+  [90m9 |[0m   [33mChevronRight[0m,
+
+
+
+Import traces:
+  Client Component Browser:
+    ./packages/ui/src/enterprise-sidebar.tsx [Client Component Browser]
+    ./apps/b2b-portal/src/components/layout/AppShell.tsx [Client Component Browser]
+    ./apps/b2b-portal/src/app/profile/page.tsx [Client Component Browser]
+    ./apps/b2b-portal/src/app/profile/page.tsx [Server Component]
+
+  Client Component SSR:
+    ./packages/ui/src/enterprise-sidebar.tsx [Client Component SSR]
+    ./apps/b2b-portal/src/components/layout/AppShell.tsx [Client Component SSR]
+    ./apps/b2b-portal/src/app/profile/page.tsx [Client Component SSR]
+    ./apps/b2b-portal/src/app/profile/page.tsx [Server Component]
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+    at async transform (turbopack:///[turbopack-node]/transforms/postcss.ts:70:34) [E:\project\travelagency\apps\b2b-portal\.next\build\chunks\[root-of-the-server]__08ut6mk._.js:146:36])
+    at async run (turbopack:///[turbopack-node]/child_process/evaluate.ts:89:23) [E:\project\travelagency\apps\b2b-portal\.next\build\chunks\[root-of-the-server]__02av0hq._.js:443:31])
+    at <unknown> (./packages/ui/src/enterprise-sidebar.tsx:6:1)
+    at <unknown> (https://nextjs.org/docs/messages/module-not-found)
+ ELIFECYCLE  Command failed with exit code 1.

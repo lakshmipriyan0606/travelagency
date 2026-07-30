@@ -41,5 +41,6 @@ export const ROUTES = {
     prefix: '/b2b/admin',
     login: '/b2b/admin/login',
     dashboard: '/b2b/admin/dashboard',
+    agencyDetails: '/b2b/admin/agency-details',
   }
 } as const;

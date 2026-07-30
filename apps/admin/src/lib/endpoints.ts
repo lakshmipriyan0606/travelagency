@@ -71,8 +71,15 @@ export const ENDPOINTS = {
       logout: 'b2b/admin/logout',
       refresh: 'b2b/admin/refresh',
       agencies: 'b2b/admin/agencies',
+      agencyById: (id: string) => `b2b/admin/agencies/${id}`,
+      agencyUsers: (id: string) => `b2b/admin/agencies/${id}/users`,
       agencyAction: (id: string, action: 'approve' | 'reject' | 'suspend' | 'reactivate') => `b2b/admin/agencies/${id}/${action}`,
       agencyStatusLog: (id: string) => `b2b/admin/agencies/${id}/status-log`,
+      // Quote admin endpoints
+      quotes: 'b2b/admin/quotes',
+      quoteById: (id: string) => `b2b/admin/quotes/${id}`,
+      quoteStatusUpdate: (id: string) => `b2b/admin/quotes/${id}/status`,
+      quotesByAgency: (agencyId: string) => `b2b/admin/agencies/${agencyId}/quotes`,
     },
     auth: {
       login: 'admin/login',

@@ -1,230 +1,43 @@
 @import "tailwindcss";
 @import "@travelagency/theme/theme.css";
 
-/* ─── Global Variables & Semantic Tokens ────────────────────────────────── */
+/* ─── Global Variables & Semantic Tokens (Premium Dark Theme) ────────────── */
 :root {
-  --background: #f4f6f9;
-  --foreground: #0f172a;
+  --background: #090909;
+  --foreground: #FFFFFF;
   
-  /* Semantic Neutral Grays (Inverted for Light Mode) */
-  --neutral-50: #0f172a;
-  --neutral-100: #1e293b;
-  --neutral-200: #334155;
-  --neutral-300: #475569;
-  --neutral-400: #64748b;
-  --neutral-500: #94a3b8;
-  --neutral-600: #cbd5e1;
-  --neutral-700: #e2e8f0;
-  --neutral-800: #f1f5f9;
-  --neutral-900: #f8fafc;
-  --neutral-950: #ffffff;
-
-  /* App Surfaces & Layers */
-  --surface: #ffffff;
-  --surface-hover: #f8fafc;
-  --card: #ffffff;
-  --card-hover: #f8fafc;
-  --border: #e2e8f0;
-  --divider: #f1f5f9;
-  --overlay: rgba(255, 255, 255, 0.85);
+  --surface: #121212;
+  --surface-hover: #1A1A1A;
+  --card: #181818;
+  --border: rgba(255, 255, 255, 0.08);
   
-  /* Text Styles */
-  --text-primary: #0f172a;
-  --text-secondary: #475569;
-  --text-muted: #94a3b8;
+  --text-primary: #FFFFFF;
+  --text-secondary: #A1A1AA;
 
-  /* Brand and Accent (Warm Gold / Premium Yellow) */
-  --primary-accent: #f59e0b;
-  --primary-accent-hover: #d97706;
-  --primary-accent-light: rgba(245, 158, 11, 0.08);
+  --primary-accent: #F8B400;
+  --primary-accent-hover: #FFD54A;
 
-  /* Status Colors */
-  --success: #10b981;
-  --success-bg: rgba(16, 185, 129, 0.08);
-  --success-border: rgba(16, 185, 129, 0.2);
-  
-  --warning: #f59e0b;
-  --warning-bg: rgba(245, 158, 11, 0.08);
-  --warning-border: rgba(245, 158, 11, 0.2);
-  
-  --error: #ef4444;
-  --error-bg: rgba(239, 68, 68, 0.08);
-  --error-border: rgba(239, 68, 68, 0.2);
-  
-  --info: #3b82f6;
-  --info-bg: rgba(59, 130, 246, 0.08);
-  --info-border: rgba(59, 130, 246, 0.2);
+  --success: #10B981;
+  --warning: #F59E0B;
+  --error: #EF4444;
+  --info: #3B82F6;
 
-  /* Layout Specific Tokens */
-  --sidebar-bg: #ffffff;
-  --sidebar-border: #e2e8f0;
-  --topbar-bg: rgba(255, 255, 255, 0.85);
-  --topbar-border: #e2e8f0;
-
-  /* Form Controls */
-  --input-bg: #ffffff;
-  --input-border: #cbd5e1;
-  --input-focus-border: #f59e0b;
-  --input-focus-ring: rgba(245, 158, 11, 0.12);
-
-  /* Elevation & Shadows */
-  --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
-  --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03);
-  --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.05), 0 4px 6px -2px rgba(0, 0, 0, 0.02);
-  --shadow-glow: 0 0 20px 1px rgba(245, 158, 11, 0.08);
-
-  /* Radii */
-  --radius-sm: 8px;
-  --radius-md: 12px;
-  --radius-lg: 18px;
-  --radius-xl: 26px;
+  --sidebar-bg: #121212;
+  --sidebar-border: rgba(255, 255, 255, 0.08);
+  --topbar-bg: #121212;
+  --topbar-border: rgba(255, 255, 255, 0.08);
 }
 
-/* ─── Tailwind v4 Theme Configuration ───────────────────────────────────── */
-@theme {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-
-  /* Semantic Color Mapping */
-  --color-surface: var(--surface);
-  --color-surface-hover: var(--surface-hover);
-  --color-card: var(--card);
-  --color-card-hover: var(--card-hover);
-  --color-border: var(--border);
-  --color-divider: var(--divider);
-  
-  --color-text-primary: var(--text-primary);
-  --color-text-secondary: var(--text-secondary);
-  --color-text-muted: var(--text-muted);
-
-  --color-primary-accent: var(--primary-accent);
-  --color-primary-accent-hover: var(--primary-accent-hover);
-  --color-primary-accent-light: var(--primary-accent-light);
-
-  --color-success: var(--success);
-  --color-success-bg: var(--success-bg);
-  --color-success-border: var(--success-border);
-
-  --color-warning: var(--warning);
-  --color-warning-bg: var(--warning-bg);
-  --color-warning-border: var(--warning-border);
-
-  --color-error: var(--error);
-  --color-error-bg: var(--error-bg);
-  --color-error-border: var(--error-border);
-
-  --color-info: var(--info);
-  --color-info-bg: var(--info-bg);
-  --color-info-border: var(--info-border);
-
-  /* Grays Override */
-  --color-gray-50: var(--neutral-50);
-  --color-gray-100: var(--neutral-100);
-  --color-gray-200: var(--neutral-200);
-  --color-gray-300: var(--neutral-300);
-  --color-gray-400: var(--neutral-400);
-  --color-gray-500: var(--neutral-500);
-  --color-gray-600: var(--neutral-600);
-  --color-gray-700: var(--neutral-700);
-  --color-gray-800: var(--neutral-800);
-  --color-gray-900: var(--neutral-900);
-  --color-gray-950: var(--neutral-950);
-
-  /* Shadows override */
-  --shadow-sm: var(--shadow-sm);
-  --shadow-md: var(--shadow-md);
-  --shadow-lg: var(--shadow-lg);
-  --shadow-glow: var(--shadow-glow);
-
-  /* Radii Override */
-  --radius-sm: var(--radius-sm);
-  --radius-md: var(--radius-md);
-  --radius-lg: var(--radius-lg);
-  --radius-xl: var(--radius-xl);
-
-  /* Font Families */
-  --font-sans: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-  --font-mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
-}
-
-/* ─── Global Elements Base Styling ───────────────────────────────────────── */
 html,
 body {
   background-color: var(--background);
-  background-image: 
-    radial-gradient(at 0% 0%, rgba(245, 158, 11, 0.05) 0px, transparent 60%),
-    radial-gradient(at 100% 0%, rgba(99, 102, 241, 0.04) 0px, transparent 50%);
   color: var(--foreground);
-  font-family: var(--font-sans);
+  font-family: var(--font-sans), system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  scroll-behavior: smooth;
   min-height: 100vh;
 }
 
-/* Scrollbar Customization */
-::-webkit-scrollbar {
-  width: 6px;
-  height: 6px;
-}
-::-webkit-scrollbar-track {
-  background: var(--background);
-}
-::-webkit-scrollbar-thumb {
-  background: var(--neutral-800);
-  border-radius: var(--radius-sm);
-}
-::-webkit-scrollbar-thumb:hover {
-  background: var(--neutral-700);
-}
-
-/* Clean Custom Focus Ring Outline */
-*:focus-visible {
-  outline: 2px solid var(--primary-accent);
-  outline-offset: 2px;
-}
-
-/* Loading Shimmer Animation */
-@keyframes shimmer {
-  0% {
-    background-position: -200% 0;
-  }
-  100% {
-    background-position: 200% 0;
-  }
-}
-
-.animate-shimmer {
-  background: linear-gradient(90deg, #18181b 25%, #27272a 50%, #18181b 75%);
-  background-size: 200% 100%;
-  animation: shimmer 1.5s infinite linear;
-}
-
-.glass-panel {
-  background-color: rgba(255, 255, 255, 0.75);
-  backdrop-filter: blur(20px) saturate(180%);
-  -webkit-backdrop-filter: blur(20px) saturate(180%);
-}
-
-.shadow-premium {
-  box-shadow: 
-    0 1px 2px rgba(0, 0, 0, 0.02),
-    0 4px 16px rgba(0, 0, 0, 0.02),
-    0 12px 32px rgba(0, 0, 0, 0.03);
-}
-
-.shadow-premium-lg {
-  box-shadow: 
-    0 1px 3px rgba(0, 0, 0, 0.01),
-    0 8px 30px rgba(0, 0, 0, 0.03),
-    0 16px 40px rgba(0, 0, 0, 0.04);
-}
-
-.border-premium {
-  border: 1px solid rgba(241, 245, 249, 0.8);
-}
-
-/* Ensure all interactive buttons and elements display cursor pointer on hover */
 button,
 a,
 select,
@@ -233,13 +46,3 @@ input[type="radio"],
 [role="button"] {
   cursor: pointer;
 }
-
-@keyframes float {
-  0%, 100% {
-    transform: translateY(0px);
-  }
-  50% {
-    transform: translateY(-10px);
-  }
-}
-

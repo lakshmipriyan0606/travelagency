@@ -31,16 +31,25 @@ export interface B2BAgency {
   };
 }
 
-export interface B2BAgencyStatusLog {
+
+
+export interface StatusLogEntry {
   _id: string;
   agencyId: string;
   previousStatus: string;
   newStatus: string;
   reason?: string;
-  changedBy: {
-    name: string;
-    email: string;
-  };
+  changedBy: { name: string; email: string; };
+  createdAt: string;
+}
+
+export interface B2BAgencyUser {
+  _id: string;
+  name: string;
+  email: string;
+  phone?: string;
+  designation?: string;
+  role: string;
   createdAt: string;
 }
 
@@ -61,6 +70,16 @@ export const b2bAdminRefresh = async () => {
 
 export const getB2BAgencies = async () => {
   const { data } = await axiosClient.get(ENDPOINTS.client.b2b.agencies);
+  return data?.data?.data || data?.data || [];
+};
+
+export const getB2BAgencyById = async (id: string) => {
+  const { data } = await axiosClient.get(ENDPOINTS.client.b2b.agencyById(id));
+  return data?.data || data;
+};
+
+export const getB2BAgencyUsers = async (id: string) => {
+  const { data } = await axiosClient.get(ENDPOINTS.client.b2b.agencyUsers(id));
   return data?.data?.data || data?.data || [];
 };
 
@@ -87,4 +106,41 @@ export const reactivateB2BAgency = async (id: string) => {
 export const getB2BAgencyStatusLog = async (id: string) => {
   const { data } = await axiosClient.get(ENDPOINTS.client.b2b.agencyStatusLog(id));
   return data?.data?.data || data?.data || [];
+};
+
+// ─── Quote Admin Types ─────────────────────────────────────────────────────────
+
+export interface AdminQuoteRequest {
+  _id: string;
+  reference: string;
+  agencyId: string;
+  agencyName?: string;
+  destination: string;
+  travelStart: string;
+  travelEnd: string;
+  adults: number;
+  children: number;
+  rooms: number;
+  budgetCategory: 'economy' | 'standard' | 'premium' | 'luxury';
+  status: 'draft' | 'submitted' | 'under_review' | 'vendor_sourcing' | 'quotation_preparation' | 'quotation_ready' | 'revision_requested' | 'quotation_updated' | 'accepted';
+  contactPerson: { name: string; email: string; phone: string; designation?: string; };
+  createdAt: string;
+  updatedAt: string;
+}
+
+// ─── Quote Admin API Functions ─────────────────────────────────────────────────
+
+export const getAdminQuotes = async (params?: { page?: number; pageSize?: number; status?: string; agencyId?: string }) => {
+  const { data } = await axiosClient.get(ENDPOINTS.client.b2b.quotes, { params });
+  return data?.data?.data || data?.data || [];
+};
+
+export const getAdminQuotesByAgency = async (agencyId: string) => {
+  const { data } = await axiosClient.get(ENDPOINTS.client.b2b.quotesByAgency(agencyId));
+  return data?.data?.data || data?.data || [];
+};
+
+export const updateAdminQuoteStatus = async (id: string, status: string, notes?: string) => {
+  const { data } = await axiosClient.patch(ENDPOINTS.client.b2b.quoteStatusUpdate(id), { status, notes });
+  return data?.data || data;
 };

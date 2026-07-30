@@ -1,0 +1,88 @@
+
+> b2c-web@0.1.0 build E:\project\travelagency\apps\b2c-web
+> next build
+
+⚠ Warning: Next.js inferred your workspace root, but it may not be correct.
+ We detected multiple lockfiles and selected the directory of E:\project\travelagency\pnpm-workspace.yaml as the root directory.
+ To silence this warning, set `turbopack.root` in your Next.js config, or consider removing one of the lockfiles if it's not needed.
+   See https://nextjs.org/docs/app/api-reference/config/next-config-js/turbopack#root-directory for more information.
+ Detected additional lockfiles: 
+   * E:\project\travelagency\apps\b2c-web\pnpm-workspace.yaml
+
+▲ Next.js 16.2.11 (Turbopack)
+
+⚠ The "middleware" file convention is deprecated. Please use "proxy" instead. Learn more: https://nextjs.org/docs/messages/middleware-to-proxy
+  Creating an optimized production build ...
+Found 1 warning while optimizing generated CSS:
+
+[2m│   box-shadow: none;[22m
+[2m│ }[22m
+[2m│[22m *:where(:not(script, style)):matches([class], [id], [type]) {
+[2m┆[22m                                      [33m[2m^--[22m 'matches' is not recognized as a valid pseudo-class. Did you mean '::matches' (pseudo-element) or is this a typo?[39m
+[2m┆[22m
+[2m│   font-variant-numeric: lining-nums;[22m
+[2m│ }[22m
+
+Turbopack build encountered 1 warnings:
+./apps/b2c-web/src/app/globals.css:2:132326
+Parsing CSS source code failed
+  [90m1 |[0m ...
+[31m[1m>[0m [90m2 |[0m ...ine:none}:where(:not(script,style)):matches([[36mclass[0m], [id], [[36mtype[0m]){font-variant-numeric:...
+  [90m  |[0m                                                [31m[1m^[0m
+  [90m3 |[0m ...
+
+'matches' is not recognized as a valid pseudo-class. Did you mean '::matches' (pseudo-element) or is this a typo?
+
+Generated code of PostCSS transform of file content of apps/b2c-web/src/app/globals.css:
+./apps/b2c-web/src/app/globals.css:2:132326
+  [90m1 |[0m ...
+[31m[1m>[0m [90m2 |[0m ...ine:none}:where(:not(script,style)):matches([[36mclass[0m], [id], [[36mtype[0m]){font-variant-numeric:...
+  [90m  |[0m                                                [31m[1m^[0m
+  [90m3 |[0m ...
+
+Import trace:
+  Client Component Browser:
+    ./apps/b2c-web/src/app/globals.css [Client Component Browser]
+    ./apps/b2c-web/src/app/layout.tsx [Server Component]
+
+
+
+> Build error occurred
+Error: Turbopack build failed with 1 errors:
+./packages/ui/src/enterprise-sidebar.tsx:6:1
+Module not found: Can't resolve 'framer-motion'
+  [90m4 |[0m [36mimport[0m [33mLink[0m [36mfrom[0m [32m"next/link"[0m;
+  [90m5 |[0m [36mimport[0m { usePathname } [36mfrom[0m [32m"next/navigation"[0m;
+[31m[1m>[0m [90m6 |[0m [36mimport[0m { motion, [33mAnimatePresence[0m } [36mfrom[0m [32m"framer-motion"[0m;
+  [90m  |[0m [31m[1m^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^[0m
+  [90m7 |[0m [36mimport[0m {
+  [90m8 |[0m   [33mChevronLeft[0m,
+  [90m9 |[0m   [33mChevronRight[0m,
+
+
+
+Import traces:
+  Client Component Browser:
+    ./packages/ui/src/enterprise-sidebar.tsx [Client Component Browser]
+    ./packages/ui/src/index.ts [Client Component Browser]
+    ./apps/b2c-web/src/components/Button/AnimatedButton/AnimatedButton.tsx [Client Component Browser]
+    ./apps/b2c-web/src/components/layout/packageCard/SinglePackageCard.tsx [Client Component Browser]
+    ./apps/b2c-web/src/components/layout/suggestedProducts/SuggestedProducts.tsx [Client Component Browser]
+    ./apps/b2c-web/src/components/layout/suggestedProducts/SuggestedProducts.tsx [Server Component]
+    ./apps/b2c-web/src/app/(b2c)/package/[slug]/page.tsx [Server Component]
+
+  Client Component SSR:
+    ./packages/ui/src/enterprise-sidebar.tsx [Client Component SSR]
+    ./packages/ui/src/index.ts [Client Component SSR]
+    ./apps/b2c-web/src/components/Button/AnimatedButton/AnimatedButton.tsx [Client Component SSR]
+    ./apps/b2c-web/src/components/layout/packageCard/SinglePackageCard.tsx [Client Component SSR]
+    ./apps/b2c-web/src/components/layout/suggestedProducts/SuggestedProducts.tsx [Client Component SSR]
+    ./apps/b2c-web/src/components/layout/suggestedProducts/SuggestedProducts.tsx [Server Component]
+    ./apps/b2c-web/src/app/(b2c)/package/[slug]/page.tsx [Server Component]
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+    at <unknown> (./packages/ui/src/enterprise-sidebar.tsx:6:1)
+    at <unknown> (https://nextjs.org/docs/messages/module-not-found)
+ ELIFECYCLE  Command failed with exit code 1.
