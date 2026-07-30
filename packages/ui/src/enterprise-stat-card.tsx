@@ -63,14 +63,14 @@ export function EnterpriseStatCard({
 
       {/* Middle Row: Label & Large Metric */}
       <div className="flex flex-col gap-1">
-        <span className="text-[12px] font-semibold text-zinc-400 tracking-wide uppercase">
+        <span className="text-[12px] font-bold text-zinc-200 tracking-wide uppercase">
           {label}
         </span>
         <span className="text-[32px] font-black text-white leading-none tracking-tight">
           {value}
         </span>
         {subtext && (
-          <span className="text-[12px] text-zinc-500 mt-1">{subtext}</span>
+          <span className="text-[12px] text-zinc-400 mt-1 font-medium">{subtext}</span>
         )}
       </div>
 

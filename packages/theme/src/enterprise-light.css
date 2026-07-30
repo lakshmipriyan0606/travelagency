@@ -5,11 +5,11 @@
   --ent-card: #141417;
 
   /* Actual Application Brand Colors */
-  --ent-primary: #FCAF16;
-  --ent-primary-hover: #E59A0F;
-  --ent-secondary: #D97706;
-  --ent-secondary-hover: #B45309;
-  --ent-accent: #FCD34D;
+  --ent-primary: #F8B400;
+  --ent-primary-hover: #E8A800;
+  --ent-secondary: #71717A;
+  --ent-secondary-hover: #A1A1AA;
+  --ent-accent: #F8B400;
 
   --ent-text-main: #F4F4F5;
   --ent-text-muted: #A1A1AA;
@@ -20,11 +20,11 @@
   --ent-danger: #EF4444;
   --ent-info: #3B82F6;
 
-  --radius-input: 12px;
-  --radius-button: 12px;
+  --radius-input: 8px;
+  --radius-button: 9999px;
   --radius-card: 20px;
-  --radius-modal: 24px;
-  --radius-table: 20px;
+  --radius-modal: 16px;
+  --radius-table: 16px;
 }
 
 @theme inline {
@@ -36,7 +36,7 @@
   --color-ent-secondary: var(--ent-secondary);
   --color-ent-secondary-hover: var(--ent-secondary-hover);
   --color-ent-text: var(--ent-text-main);
-  --color-ent-muted: var(--ent-text-muted);
+  --color-ent-[#6B7280]: var(--ent-text-muted);
   --color-ent-border: var(--ent-border);
 }
 
@@ -50,7 +50,7 @@
 
 .ent-card-hover:hover {
   transform: translateY(-2px);
-  border-color: rgba(252, 175, 22, 0.3);
+  border-color: rgba(248, 180, 0, 0.3);
   box-shadow: 0 12px 36px 0 rgba(0, 0, 0, 0.6);
 }
 
@@ -58,26 +58,23 @@
 body {
   background-color: #09090B;
   color: #F4F4F5;
-  background-image: 
-    radial-gradient(at 0% 0%, rgba(252, 175, 22, 0.05) 0px, transparent 50%),
-    radial-gradient(at 100% 100%, rgba(217, 119, 6, 0.03) 0px, transparent 50%);
 }
 
-/* Custom Scrollbar for Dark Enterprise Apps */
+/* Custom Scrollbar for Enterprise Apps */
 ::-webkit-scrollbar {
   width: 6px;
   height: 6px;
 }
 
 ::-webkit-scrollbar-track {
-  background: #09090B;
+  background: #F6F8FC;
 }
 
 ::-webkit-scrollbar-thumb {
-  background: #27272A;
+  background: #D1D5DB;
   border-radius: 9999px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: #3F3F46;
+  background: #9CA3AF;
 }

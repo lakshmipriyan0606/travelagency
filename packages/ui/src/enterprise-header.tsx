@@ -6,12 +6,11 @@ import { Button } from "./button";
 
 export interface EnterpriseHeaderProps {
   pageTitle?: string;
+  breadcrumbs?: Array<{ label: string; href?: string }>;
   onSearchChange?: (query: string) => void;
   searchValue?: string;
   onPrimaryAction?: () => void;
   primaryActionLabel?: string;
-  activeTab?: string;
-  onTabChange?: (tab: string) => void;
   userProfile?: {
     name: string;
     role?: string;
@@ -22,55 +21,45 @@ export interface EnterpriseHeaderProps {
 
 export function EnterpriseHeader({
   pageTitle = "Dashboard",
+  breadcrumbs = [{ label: "Enterprise", href: "#" }, { label: "Overview" }],
   onSearchChange,
   searchValue = "",
   onPrimaryAction,
-  primaryActionLabel = "+ New Booking",
-  activeTab = "Dashboard",
-  onTabChange,
-  userProfile = { name: "Ops Admin", role: "ENTERPRISE ACCESS" },
+  primaryActionLabel = "+ Action",
+  userProfile = { name: "Ops Admin", role: "ADMINISTRATOR" },
   actions,
 }: EnterpriseHeaderProps) {
-  const tabs = ["Dashboard", "Inventory", "Analytics", "Settings"];
-
   return (
-    <header className="sticky top-0 z-20 flex items-center justify-between h-[76px] px-6 bg-[#0A0A0C] border-b border-white/[0.08] shadow-[0_4px_24px_rgba(0,0,0,0.6)] shrink-0 select-none">
-      {/* Left: Global Search Input */}
-      <div className="flex items-center gap-4 min-w-0">
-        <div className="relative w-64 md:w-80">
+    <header className="sticky top-0 z-20 flex items-center justify-between h-[72px] px-8 bg-[#0A0A0C] border-b border-white/[0.08] shadow-[0_4px_24px_rgba(0,0,0,0.6)] shrink-0 select-none">
+      {/* Left: Breadcrumbs & Page Title Context */}
+      <div className="flex items-center gap-6 min-w-0">
+        <div className="flex flex-col">
+          <nav className="flex items-center gap-1.5 text-xs text-zinc-300 font-medium">
+            {breadcrumbs.map((item, idx) => (
+              <React.Fragment key={idx}>
+                {idx > 0 && <span className="text-zinc-500">/</span>}
+                <span className={idx === breadcrumbs.length - 1 ? "text-white font-bold" : "hover:text-white"}>
+                  {item.label}
+                </span>
+              </React.Fragment>
+            ))}
+          </nav>
+        </div>
+
+        {/* Global Search Input */}
+        <div className="relative w-64 md:w-72 hidden sm:block">
           <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-zinc-400" />
           <input
             type="text"
-            placeholder="Search operations, bookings,..."
+            placeholder="Search operations, bookings..."
             value={searchValue}
             onChange={(e) => onSearchChange && onSearchChange(e.target.value)}
-            className="h-10 w-full pl-10 pr-4 rounded-xl border border-white/[0.08] bg-[#141416] text-[13px] text-white placeholder:text-zinc-500 focus:bg-[#18181A] focus:border-[#F8B400] focus:ring-2 focus:ring-[#F8B400]/30 outline-none transition-all duration-150 shadow-inner"
+            className="h-10 w-full pl-10 pr-4 rounded-xl border border-white/[0.08] bg-[#141416] text-[14px] text-white placeholder:text-zinc-500 focus:bg-[#18181A] focus:border-[#F8B400] focus:ring-2 focus:ring-[#F8B400]/30 outline-none transition-all duration-150"
           />
         </div>
       </div>
 
-      {/* Center: Navigation Tabs */}
-      <nav className="hidden lg:flex items-center gap-6 h-full">
-        {tabs.map((tab) => {
-          const isActive = (activeTab || pageTitle).toLowerCase() === tab.toLowerCase();
-          return (
-            <button
-              key={tab}
-              onClick={() => onTabChange && onTabChange(tab)}
-              className={`relative h-full flex items-center px-1 text-[14px] font-bold transition-colors cursor-pointer ${
-                isActive ? "text-[#F8B400]" : "text-zinc-400 hover:text-white"
-              }`}
-            >
-              {tab}
-              {isActive && (
-                <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-[#F8B400] rounded-t-full shadow-[0_0_8px_#F8B400]" />
-              )}
-            </button>
-          );
-        })}
-      </nav>
-
-      {/* Right: Actions, New Booking, Notifications, User */}
+      {/* Right: Actions, Notifications, User */}
       <div className="flex items-center gap-3 shrink-0">
         {actions}
 
@@ -78,7 +67,7 @@ export function EnterpriseHeader({
         {onPrimaryAction && (
           <Button
             onClick={onPrimaryAction}
-            className="h-10 px-5 rounded-full bg-[#F8B400] text-black font-bold hover:bg-[#FFD54A] shadow-[0_4px_16px_rgba(248,180,0,0.35)] text-[13px]"
+            className="h-10 px-4 rounded-full bg-[#F8B400] text-black font-bold hover:bg-[#E8A800] shadow-[0_4px_16px_rgba(248,180,0,0.35)] text-[14px]"
           >
             {primaryActionLabel}
           </Button>
@@ -104,14 +93,14 @@ export function EnterpriseHeader({
         {/* User Profile Capsule */}
         <div className="flex items-center gap-3 pl-3 border-l border-white/[0.08]">
           <div className="flex flex-col text-right hidden sm:flex">
-            <span className="text-[13px] font-bold text-white leading-tight">
+            <span className="text-[14px] font-bold text-white leading-tight">
               {userProfile.name}
             </span>
-            <span className="text-[9px] font-extrabold tracking-widest text-[#F8B400] uppercase mt-0.5">
-              {userProfile.role || "ENTERPRISE ACCESS"}
+            <span className="text-[10px] font-bold tracking-widest text-[#F8B400] uppercase mt-0.5">
+              {userProfile.role || "ADMINISTRATOR"}
             </span>
           </div>
-          <div className="flex items-center justify-center h-10 w-10 rounded-xl bg-gradient-to-br from-[#F8B400] to-[#E8A800] text-black font-black text-base shadow-[0_0_12px_rgba(248,180,0,0.3)] shrink-0">
+          <div className="flex items-center justify-center h-10 w-10 rounded-xl bg-gradient-to-br from-[#F8B400] to-[#E8A800] text-black font-extrabold text-sm shadow-[0_0_12px_rgba(248,180,0,0.3)] shrink-0">
             {userProfile.name.charAt(0)}
           </div>
         </div>

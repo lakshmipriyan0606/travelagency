@@ -52,11 +52,11 @@ export default function B2BAdminShell({ user, children }: B2BAdminShellProps) {
   const currentTitle = pageTitleMap[pathname] || "B2B Admin Overview";
 
   return (
-    <div className="flex h-screen w-full bg-[#090909] overflow-hidden text-white">
+    <div className="flex h-screen w-full bg-[#09090B] overflow-hidden text-white">
       {/* Shared Unified Enterprise Sidebar */}
       <EnterpriseSidebar
-        appName="B2B Admin"
-        appLogoSubtitle="Agency Control Portal"
+        appName="TravelHero"
+        appLogoSubtitle="B2B PORTAL"
         navItems={navItems}
         userProfile={{
           name: user.name,
@@ -83,7 +83,7 @@ export default function B2BAdminShell({ user, children }: B2BAdminShellProps) {
         />
 
         {/* Dynamic Page Content Container */}
-        <main className="flex-1 overflow-y-auto p-6 md:p-8 space-y-6">
+        <main className="flex-1 overflow-y-auto p-8 space-y-8 max-w-[1440px] w-full mx-auto">
           {children}
         </main>
       </div>
