@@ -24,8 +24,9 @@ export function usePackageForm(id: string | null | undefined, setActive: (a: str
     mode: 'onChange'
   });
 
-  const { reset, watch } = methods;
-  const isActivity = isActivityProp || (watch("activityCategory") && watch("activityCategory") !== "" && watch("activityCategory") !== "none");
+  const { reset } = methods;
+  // Route pages always pass isActivity explicitly — don't flip package edit into activity mode via legacy category
+  const isActivity = !!isActivityProp;
 
   const createMutation = useMutationAPIQuery(CreatePackage, {
     onSuccess: () => { toast.success("Package created successfully!"); reset(); setActive("AllPackages"); triggerRefresh?.(); },

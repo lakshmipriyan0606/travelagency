@@ -1,4 +1,4 @@
-import { ArrowUp, ArrowDown, Star, MapPin, Edit2, Trash2 } from "lucide-react";
+import { ArrowUp, ArrowDown, Star, MapPin, Edit2, Trash2, CheckCircle2, Clock } from "lucide-react";
 import { Review } from "../validation/review.schema";
 
 interface Props {
@@ -18,84 +18,117 @@ export function ReviewTableRow({
   onEdit,
   onDelete,
 }: Props) {
+  const isPublished = review.status === "Published";
+
   return (
-    <tr className="hover:bg-neutral-50/50 transition-colors group">
-      <td className="px-6 py-4">
-        <div className="flex items-center gap-2">
-          <span className="font-bold text-neutral-400 w-6">{review.orderNumber}</span>
-          <div className="flex flex-col gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+    <tr className="group hover:bg-white/[0.035] transition-colors duration-150">
+      <td className="px-5 py-4 whitespace-nowrap">
+        <div className="flex items-center gap-2.5">
+          <span className="font-semibold text-white/50 tabular-nums w-6 text-sm">
+            {review.orderNumber}
+          </span>
+          <div className="flex flex-col gap-0.5 opacity-0 group-hover:opacity-100 transition-opacity">
             <button
+              type="button"
               onClick={() => onMove(review._id!, "up")}
               disabled={index === 0}
-              className="p-1 hover:bg-white hover:text-primary rounded shadow-sm disabled:opacity-30"
+              className="inline-flex items-center justify-center w-6 h-6 rounded-md text-white/40 border border-transparent hover:text-[#F8B400] hover:bg-[#F8B400]/10 hover:border-[#F8B400]/20 disabled:opacity-25 disabled:hover:bg-transparent disabled:hover:text-white/40 disabled:hover:border-transparent transition-all"
+              title="Move up"
             >
               <ArrowUp size={12} />
             </button>
             <button
+              type="button"
               onClick={() => onMove(review._id!, "down")}
               disabled={index === totalLength - 1}
-              className="p-1 hover:bg-white hover:text-primary rounded shadow-sm disabled:opacity-30"
+              className="inline-flex items-center justify-center w-6 h-6 rounded-md text-white/40 border border-transparent hover:text-[#F8B400] hover:bg-[#F8B400]/10 hover:border-[#F8B400]/20 disabled:opacity-25 disabled:hover:bg-transparent disabled:hover:text-white/40 disabled:hover:border-transparent transition-all"
+              title="Move down"
             >
               <ArrowDown size={12} />
             </button>
           </div>
         </div>
       </td>
-      <td className="px-6 py-4">
-        <div className="flex items-center gap-3">
+
+      <td className="px-5 py-4">
+        <div className="flex items-center gap-3.5 min-w-0">
           {review.profileImage?.url ? (
             <img
               src={review.profileImage.url}
-              className="w-10 h-10 rounded-full object-cover border-2 border-white shadow-sm"
+              className="w-11 h-11 rounded-full object-cover flex-shrink-0 border border-[#F8B400]/35 ring-2 ring-[#F8B400]/15 shadow-[0_0_0_1px_rgba(0,0,0,0.35)]"
               alt={review.name}
             />
           ) : (
-            <div className="w-10 h-10 rounded-full bg-neutral-200 border-2 border-white shadow-sm flex items-center justify-center text-neutral-500 text-xs font-bold">
+            <div className="w-11 h-11 rounded-full flex-shrink-0 bg-white/[0.06] border border-[#F8B400]/25 ring-2 ring-[#F8B400]/10 flex items-center justify-center text-[#F8B400] text-sm font-bold">
               {review.name.charAt(0)}
             </div>
           )}
-          <div>
-            <p className="font-bold text-neutral-800 text-sm tracking-tight">{review.name}</p>
-            <p className="text-[11px] text-neutral-500 line-clamp-1 max-w-[200px] italic">"{review.content}"</p>
+          <div className="min-w-0">
+            <p className="font-semibold text-white text-sm tracking-tight leading-snug">
+              {review.name}
+            </p>
+            <p
+              className="text-[12px] text-white/50 line-clamp-1 max-w-[220px] mt-0.5 leading-relaxed"
+              title={review.content}
+            >
+              &ldquo;{review.content}&rdquo;
+            </p>
           </div>
         </div>
       </td>
-      <td className="px-6 py-4">
-        <div className="flex items-center gap-1.5 text-neutral-600 text-sm">
-          <MapPin size={14} className="text-primary/60" />
+
+      <td className="px-5 py-4 whitespace-nowrap">
+        <div className="inline-flex items-center gap-1.5 text-sm text-white/70 font-medium">
+          <MapPin size={14} className="text-[#F8B400]/70 shrink-0" />
           {review.location}
         </div>
       </td>
-      <td className="px-6 py-4">
-        <div className="flex text-amber-400">
+
+      <td className="px-5 py-4 whitespace-nowrap">
+        <div className="flex items-center gap-0.5 text-[#F8B400]" aria-label={`${review.rating} of 5 stars`}>
           {[...Array(5)].map((_, i) => (
-            <Star key={i} size={12} fill={i < review.rating ? "currentColor" : "none"} strokeWidth={i < review.rating ? 0 : 2} />
+            <Star
+              key={i}
+              size={13}
+              fill={i < review.rating ? "currentColor" : "none"}
+              className={i < review.rating ? "" : "text-white/20"}
+              strokeWidth={i < review.rating ? 0 : 1.75}
+            />
           ))}
         </div>
       </td>
-      <td className="px-6 py-4">
-        <span className={`px-2.5 py-1 rounded-full text-[10px] font-black uppercase tracking-widest ${
-          review.status === "Published" ? "bg-green-50 text-green-600" : "bg-amber-50 text-amber-600"
-        }`}>
+
+      <td className="px-5 py-4 whitespace-nowrap">
+        <span
+          className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-semibold border ${
+            isPublished
+              ? "bg-emerald-500/15 text-emerald-300 border-emerald-500/20"
+              : "bg-[#F8B400]/12 text-[#F8B400] border-[#F8B400]/20"
+          }`}
+        >
+          {isPublished ? <CheckCircle2 size={13} /> : <Clock size={13} />}
           {review.status}
         </span>
       </td>
-      <td className="px-6 py-4 text-right">
-        <div className="flex justify-end gap-2">
+
+      <td className="px-5 py-4 whitespace-nowrap text-right">
+        <div className="flex items-center justify-end gap-1.5">
           <button
+            type="button"
             onClick={() => onEdit(review._id!)}
-            className="p-2 text-neutral-400 hover:text-primary hover:bg-primary/5 rounded-lg transition-all"
+            className="inline-flex items-center justify-center w-9 h-9 rounded-lg text-white/45 border border-transparent hover:text-[#F8B400] hover:bg-[#F8B400]/10 hover:border-[#F8B400]/20 transition-all"
             title="Edit"
           >
             <Edit2 size={16} />
           </button>
           <button
+            type="button"
             onClick={() => {
               if (window.confirm("Are you sure you want to delete this review?")) {
                 onDelete(review._id!);
               }
             }}
-            className="p-2 text-neutral-400 hover:text-red-500 hover:bg-red-50 rounded-lg transition-all"
+            className="inline-flex items-center justify-center w-9 h-9 rounded-lg text-white/45 border border-transparent hover:text-red-400 hover:bg-red-500/10 hover:border-red-500/20 transition-all"
             title="Delete"
           >
             <Trash2 size={16} />

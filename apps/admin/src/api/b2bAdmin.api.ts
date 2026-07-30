@@ -132,7 +132,11 @@ export interface AdminQuoteRequest {
 
 export const getAdminQuotes = async (params?: { page?: number; pageSize?: number; status?: string; agencyId?: string }) => {
   const { data } = await axiosClient.get(ENDPOINTS.client.b2b.quotes, { params });
-  return data?.data?.data || data?.data || [];
+  // sendSuccess(array) → { data: Quote[], meta }
+  if (Array.isArray(data?.data)) return data.data as AdminQuoteRequest[];
+  if (Array.isArray(data?.data?.data)) return data.data.data as AdminQuoteRequest[];
+  if (Array.isArray(data)) return data as AdminQuoteRequest[];
+  return [];
 };
 
 export const getAdminQuotesByAgency = async (agencyId: string) => {

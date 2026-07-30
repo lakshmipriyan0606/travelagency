@@ -69,28 +69,49 @@ export default function AdminUploadPackageForm({
 
   return (
     <FormProvider {...methods}>
-      <div className="max-w-5xl mx-auto space-y-6 pb-24 animate-in fade-in slide-in-from-bottom-4 duration-1000">
+      <div className="max-w-5xl mx-auto space-y-6 pb-24 animate-in fade-in slide-in-from-bottom-4 duration-700">
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 px-4">
           <div>
-            <h1 className="text-2xl font-black text-neutral-800 tracking-tight flex items-center gap-3">
-              <div className="w-1.5 h-8 bg-primary rounded-full" />
-              {isActivity ? "Create Activity" : (editId ? "Sync Changes" : "Create Adventure")}
+            <h1 className="text-2xl font-black text-white tracking-tight flex items-center gap-3">
+              <div className="w-1.5 h-8 bg-[#F8B400] rounded-full" />
+              {isActivity
+                ? (editId ? "Edit Activity" : "Create Activity")
+                : (editId ? "Edit Package" : "Create Package")}
             </h1>
           </div>
         </div>
 
         <div className="px-4">
-          <div className="relative flex justify-between items-center max-w-3xl mx-auto mb-6">
-            <div className="absolute top-1/2 left-0 w-full h-0.5 bg-neutral-100 -translate-y-1/2 z-0" />
-            <div className="absolute top-1/2 left-0 h-0.5 bg-primary -translate-y-1/2 z-0 transition-all duration-500" style={{ width: `${(activeStep / (filteredSteps.length - 1)) * 100}%` }} />
+          <div className="relative flex justify-between items-center max-w-3xl mx-auto mb-10">
+            <div className="absolute top-1/2 left-0 w-full h-0.5 bg-white/[0.08] -translate-y-1/2 z-0" />
+            <div
+              className="absolute top-1/2 left-0 h-0.5 bg-[#F8B400] -translate-y-1/2 z-0 transition-all duration-500"
+              style={{ width: `${(activeStep / (filteredSteps.length - 1)) * 100}%` }}
+            />
             {filteredSteps.map((step, idx) => {
               const Icon = step.icon;
+              const isActive = activeStep === idx;
+              const isDone = activeStep > idx;
               return (
                 <div key={idx} className="relative z-10 flex flex-col items-center">
-                  <button type="button" onClick={() => idx < activeStep && setActiveStep(idx)} className={`w-12 h-12 rounded-2xl flex items-center justify-center transition-all duration-500 border-4 ${activeStep === idx ? "bg-primary text-white border-white scale-110" : activeStep > idx ? "bg-neutral-800 text-white border-white" : "bg-white text-neutral-300 border-neutral-50"}`}>
+                  <button
+                    type="button"
+                    onClick={() => idx < activeStep && setActiveStep(idx)}
+                    className={`w-12 h-12 rounded-2xl flex items-center justify-center transition-all duration-500 border ${
+                      isActive
+                        ? "bg-gradient-to-br from-[#FFD54A] to-[#F8B400] text-[#0c0c0f] border-[#F8B400] scale-105 shadow-[0_4px_20px_rgba(248,180,0,0.4)]"
+                        : isDone
+                          ? "bg-[#1c1c22] text-[#F8B400] border-[#F8B400]/45 shadow-[0_0_12px_rgba(248,180,0,0.12)]"
+                          : "bg-[#101014] text-zinc-500 border-white/[0.1]"
+                    }`}
+                  >
                     <Icon size={20} />
                   </button>
-                  <p className={`absolute -bottom-8 text-[9px] font-bold uppercase tracking-wider ${activeStep === idx ? "text-primary scale-105" : "text-neutral-400 opacity-60"}`}>{step.title}</p>
+                  <p className={`absolute -bottom-8 text-[9px] font-bold uppercase tracking-wider whitespace-nowrap ${
+                    isActive ? "text-[#F8B400]" : "text-zinc-500"
+                  }`}>
+                    {step.title}
+                  </p>
                 </div>
               );
             })}

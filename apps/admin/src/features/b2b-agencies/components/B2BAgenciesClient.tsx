@@ -5,6 +5,7 @@ import { getB2BAgencies, approveB2BAgency, rejectB2BAgency, suspendB2BAgency, re
 import { useState } from "react";
 import { Check, X, ShieldAlert, RotateCcw, Building2, Globe, FileText, Calendar, Plus, MessageSquare } from "lucide-react";
 import { showToast } from "@/lib/toast";
+import { AirplaneLoader } from "@travelagency/ui";
 
 export default function B2BAgenciesClient() {
   const queryClient = useQueryClient();
@@ -91,11 +92,7 @@ export default function B2BAgenciesClient() {
   };
 
   if (isLoading) {
-    return (
-      <div className="flex items-center justify-center p-12 h-[60vh]">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div>
-      </div>
-    );
+    return <AirplaneLoader size="lg" label="Loading agencies…" fullPage className="h-[60vh]" />;
   }
 
   return (

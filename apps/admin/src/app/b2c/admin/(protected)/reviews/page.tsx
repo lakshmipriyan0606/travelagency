@@ -33,15 +33,7 @@ export default async function ReviewsListPage() {
 
   return (
     <div className="space-y-6">
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-        <div>
-          <h1 className="text-2xl font-bold text-gray-900">Review Management</h1>
-          <p className="text-gray-500 text-sm mt-1">Manage customer testimonials across the site.</p>
-        </div>
-      </div>
-
       <ReviewListClient initialReviews={reviews} />
     </div>
   );
 }
-

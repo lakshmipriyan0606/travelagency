@@ -124,6 +124,7 @@ export interface QuoteListItem {
   readonly children: number;
   readonly status: QuoteStatus;
   readonly budgetCategory: BudgetCategory;
+  readonly contactPerson?: ContactPerson;
   readonly createdAt: string;
 }
 

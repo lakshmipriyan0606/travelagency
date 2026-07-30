@@ -18,6 +18,7 @@ interface ReusableTextAreaProps {
   className?: string;
   textareaProps?: React.TextareaHTMLAttributes<HTMLTextAreaElement>;
   variant?: "classic" | "floating";
+  appearance?: "light" | "dark";
   maxLength?: number;
 }
 
@@ -33,8 +34,11 @@ export const ReusableTextArea = ({
   className,
   textareaProps,
   variant = "classic",
+  appearance,
   maxLength,
 }: ReusableTextAreaProps) => {
+  const isDark = (appearance ?? (variant === "floating" ? "dark" : "light")) === "dark";
+
   return (
     <Controller
       control={control}
@@ -42,40 +46,41 @@ export const ReusableTextArea = ({
       render={({ field, fieldState: { error } }) => {
         if (variant === "floating") {
           return (
-            <div className={cn("mb-4 relative", mainContainerClassName, className)}>
+            <div className={cn("relative group w-full", mainContainerClassName, className)}>
               <Textarea
                 {...field}
-                placeholder={placeholder || " "}
+                placeholder=" "
                 maxLength={maxLength}
                 className={cn(
-                  `peer w-full pt-5 pb-1 px-3 h-[100px] resize-none
-                   border border-gray-200 rounded-lg
-                   bg-white
-                   focus:outline-none focus:ring-1 focus:ring-yellow-50/1
-                   focus:border-yellow-400
-                   transition-all duration-300 font-body`,
+                  "peer w-full pt-6 pb-2 px-3.5 min-h-[108px] resize-none rounded-xl transition-all duration-200 font-body text-[15px]",
+                  isDark
+                    ? "border border-white/[0.12] bg-[var(--ent-surface,#101014)] text-white placeholder:text-transparent hover:border-white/[0.18] focus:outline-none focus:ring-[3px] focus:ring-[#F8B400]/22 focus:border-[#F8B400] focus:shadow-[0_0_18px_rgba(248,180,0,0.12)]"
+                    : "border border-gray-200 bg-white focus:outline-none focus:ring-1 focus:ring-yellow-50/1 focus:border-yellow-400",
                   textareaClassName,
-                  error && "border-red-500 focus:border-red-500/2 focus:ring-red-500"
+                  error && (isDark
+                    ? "border-red-500 focus:border-red-500 focus:ring-red-500/20"
+                    : "border-red-500 focus:border-red-500/2 focus:ring-red-500")
                 )}
                 {...textareaProps}
               />
 
-              <div className="absolute top-1/2 -translate-y-1/2 left-3 flex items-center gap-2 pointer-events-none transition-all duration-300 peer-focus:top-0 peer-focus:text-xs peer-[:not(:placeholder-shown)]:top-0 peer-[:not(:placeholder-shown)]:text-xs">
-                {label && (
-                  <label
-                    className={cn(
-                      "text-gray-400 font-medium bg-white px-1",
-                      labelClassName
-                    )}
-                  >
-                    {label}
-                    {required && <span className="text-red-500 ml-[2px]">*</span>}
-                  </label>
-                )}
-              </div>
+              {label && (
+                <label
+                  className={cn(
+                    "absolute left-3.5 top-4 pointer-events-none transition-all duration-200 ease-[cubic-bezier(0.22,1,0.36,1)] z-[1] text-[14px] font-medium",
+                    isDark
+                      ? "text-zinc-400 peer-focus:top-1.5 peer-focus:text-[11px] peer-focus:tracking-wide peer-focus:text-[#F8B400] peer-[&:not(:placeholder-shown)]:top-1.5 peer-[&:not(:placeholder-shown)]:text-[11px] peer-[&:not(:placeholder-shown)]:tracking-wide peer-[&:not(:placeholder-shown)]:text-[#F8B400]"
+                      : "text-gray-400 peer-focus:top-1.5 peer-focus:text-xs peer-focus:text-yellow-600 peer-[:not(:placeholder-shown)]:top-1.5 peer-[:not(:placeholder-shown)]:text-xs peer-[:not(:placeholder-shown)]:text-yellow-600",
+                    labelClassName
+                  )}
+                >
+                  {label}
+                  {required && <span className="text-red-500 ml-[2px]">*</span>}
+                </label>
+              )}
 
               {error && (
-                <p className="mt-1 text-[9px] font-semibold text-red-500 uppercase tracking-wider px-1">{error.message}</p>
+                <p className="mt-1.5 text-[10px] font-semibold text-red-400 uppercase tracking-wider px-1">{error.message}</p>
               )}
             </div>
           );
@@ -85,7 +90,11 @@ export const ReusableTextArea = ({
         return (
           <div className={cn("flex flex-col font-body", mainContainerClassName, className)}>
             {label && (
-              <label className={cn("text-gray-600 text-[15px] font-semibold mb-[-4px]", labelClassName)}>
+              <label className={cn(
+                "text-[15px] font-semibold mb-[-4px]",
+                isDark ? "text-zinc-300" : "text-gray-600",
+                labelClassName
+              )}>
                 {label}
                 {required && <span className="text-red-500 ml-[2px]">*</span>}
               </label>
@@ -97,7 +106,8 @@ export const ReusableTextArea = ({
               className={cn(
                 "!border-none !ring-0 !shadow-none bg-transparent p-0 min-h-[80px] w-full",
                 "focus:!outline-none focus:!ring-0 focus:!border-none",
-                "transition-all duration-300 font-body text-gray-500 text-sm",
+                "transition-all duration-300 font-body text-sm",
+                isDark ? "text-zinc-200" : "text-gray-500",
                 textareaClassName,
                 error && "text-red-400"
               )}

@@ -5,6 +5,7 @@ import { useForm, Controller, useFieldArray } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { showToast } from "@/lib/toast";
+import { AirplaneLoader } from "@travelagency/ui";
 import { Loader2, ArrowLeft } from "lucide-react";
 import { createBlog, updateBlog, getBlogById } from "../api/blogs.api";
 import { blogSchema, BlogFormValues } from "../validation/blog.schema";
@@ -77,7 +78,9 @@ export default function BlogFormClient({ editBlogId }: { editBlogId?: string }) 
     mutation.mutate({ ...values, status: submitStatus });
   };
 
-  if (isLoadingBlog) return <div className="flex justify-center py-20"><Loader2 className="w-8 h-8 animate-spin text-primary" /></div>;
+  if (isLoadingBlog) {
+    return <AirplaneLoader size="lg" label="Loading blog…" fullPage className="py-20" />;
+  }
 
   return (
     <div className="bg-white rounded-2xl shadow-sm border border-neutral-200 p-6 md:p-8 animate-in fade-in duration-300">

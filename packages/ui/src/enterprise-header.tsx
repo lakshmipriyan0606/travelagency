@@ -30,7 +30,7 @@ export function EnterpriseHeader({
   actions,
 }: EnterpriseHeaderProps) {
   return (
-    <header className="sticky top-0 z-20 flex items-center justify-between h-[72px] px-8 bg-[#0A0A0C] border-b border-white/[0.08] shadow-[0_4px_24px_rgba(0,0,0,0.6)] shrink-0 select-none">
+    <header className="sticky top-0 z-20 flex items-center justify-between h-[72px] px-8 bg-[#07070a]/90 backdrop-blur-md border-b border-white/[0.08] shadow-[0_4px_24px_rgba(0,0,0,0.55)] shrink-0 select-none">
       {/* Left: Breadcrumbs & Page Title Context */}
       <div className="flex items-center gap-6 min-w-0">
         <div className="flex flex-col">
@@ -54,7 +54,7 @@ export function EnterpriseHeader({
             placeholder="Search operations, bookings..."
             value={searchValue}
             onChange={(e) => onSearchChange && onSearchChange(e.target.value)}
-            className="h-10 w-full pl-10 pr-4 rounded-xl border border-white/[0.08] bg-[#141416] text-[14px] text-white placeholder:text-zinc-500 focus:bg-[#18181A] focus:border-[#F8B400] focus:ring-2 focus:ring-[#F8B400]/30 outline-none transition-all duration-150"
+            className="h-10 w-full pl-10 pr-4 rounded-xl border border-white/[0.08] bg-[#101014] text-[14px] text-white placeholder:text-zinc-500 focus:bg-[#16161b] focus:border-[#F8B400] focus:ring-[3px] focus:ring-[#F8B400]/22 outline-none transition-all duration-200"
           />
         </div>
       </div>

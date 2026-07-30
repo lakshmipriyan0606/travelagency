@@ -31,6 +31,8 @@ export function useBookingList(initialBookings: Booking[]) {
     queryKey: ["adminBookings"],
     queryFn: getBookings,
     initialData: { bookings: initialBookings },
+    // Keep SSR rows visible if a background refetch fails
+    placeholderData: (prev) => prev ?? { bookings: initialBookings },
   });
 
   const visibleErrorLogs = (selected?.errorLogs || []).filter(

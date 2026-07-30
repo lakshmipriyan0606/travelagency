@@ -12,12 +12,11 @@ export default async function NewPackagePage() {
   return (
     <div className="max-w-5xl mx-auto space-y-6">
       <div>
-        <h1 className="text-2xl font-bold text-gray-900">Create New Package</h1>
-        <p className="text-gray-500 text-sm mt-1">Configure all details, itineraries, and pricing.</p>
+        <h1 className="admin-page-title text-2xl font-bold">Create New Package</h1>
+        <p className="admin-page-subtitle text-sm mt-1">Configure all details, itineraries, and pricing.</p>
       </div>
       
       <PackageFormClient isActivity={false} editId={null} />
     </div>
   );
 }
-

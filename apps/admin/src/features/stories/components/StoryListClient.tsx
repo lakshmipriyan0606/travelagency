@@ -3,6 +3,7 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { getStories, deleteStory, moveStory, normalizeStoriesOrder } from "@/api/story.api";
 import { Loader2, Trash2, ArrowUp, ArrowDown, ListOrdered, Image as ImageIcon, Pencil } from "lucide-react";
+import { AirplaneLoader } from "@travelagency/ui";
 import { showToast } from "@/lib/toast";
 import { useRouter } from "next/navigation";
 import { Story } from "../validation/story.schema";
@@ -12,10 +13,12 @@ export default function StoryListClient() {
   const router = useRouter();
   const queryClient = useQueryClient();
 
-  const { data: stories = [], isLoading } = useQuery({
+  const { data: storiesData = [], isLoading } = useQuery({
     queryKey: ["adminStories"],
     queryFn: getStories,
   });
+
+  const stories = Array.isArray(storiesData) ? storiesData : [];
 
   const deleteMutation = useMutation({
     mutationFn: (id: string) => deleteStory(id),
@@ -49,10 +52,12 @@ export default function StoryListClient() {
 
   if (isLoading) {
     return (
-      <div className="flex flex-col items-center justify-center py-20 gap-4">
-        <Loader2 className="w-10 h-10 text-primary animate-spin" />
-        <p className="text-neutral-500 font-medium">Loading stories...</p>
-      </div>
+      <AirplaneLoader
+        size="lg"
+        label="Loading stories…"
+        fullPage
+        className="py-20"
+      />
     );
   }
 

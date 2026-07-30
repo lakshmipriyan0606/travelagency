@@ -75,5 +75,18 @@ router.get(
   b2bLifecycle.getStatusLog
 );
 
+// --- Admin Quote Routes ---
+router.get('/admin/quotes', requireAdminRole('superadmin', 'ops'), quoteRequest.getAdminQuotes);
+router.get(
+  '/admin/agencies/:id/quotes',
+  requireAdminRole('superadmin', 'ops'),
+  quoteRequest.getAdminQuotesByAgency
+);
+router.patch(
+  '/admin/quotes/:id/status',
+  requireAdminRole('superadmin', 'ops'),
+  quoteRequest.adminUpdateQuoteStatus
+);
+
 export default router;
 

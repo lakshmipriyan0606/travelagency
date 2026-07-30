@@ -39,14 +39,15 @@ export function EnterpriseStatCard({
     <div
       onClick={onClick}
       className={cn(
-        "relative flex flex-col justify-between p-5 rounded-[20px] bg-[#141416] border border-white/[0.08] shadow-[0_8px_32px_rgba(0,0,0,0.5)] transition-all duration-150 group overflow-hidden",
-        onClick && "cursor-pointer hover:border-[#F8B400]/40 hover:-translate-y-0.5",
+        "relative flex flex-col justify-between p-5 rounded-[20px] bg-[var(--ent-card,#16161b)] border border-white/[0.08] shadow-[0_8px_28px_rgba(0,0,0,0.45)] transition-all duration-200 ease-[cubic-bezier(0.22,1,0.36,1)] group overflow-hidden",
+        "before:pointer-events-none before:absolute before:inset-x-0 before:top-0 before:h-px before:bg-gradient-to-r before:from-transparent before:via-[#F8B400]/35 before:to-transparent",
+        onClick && "cursor-pointer hover:border-[#F8B400]/40 hover:-translate-y-0.5 hover:shadow-[0_14px_36px_rgba(0,0,0,0.55)]",
         className
       )}
     >
       {/* Top Row: Icon + Badge */}
       <div className="flex items-center justify-between gap-2 mb-3">
-        <div className="flex items-center justify-center h-10 w-10 rounded-xl bg-[#1C1C20] border border-white/[0.08] text-[#F8B400] group-hover:border-[#F8B400]/30 transition-colors">
+        <div className="flex items-center justify-center h-10 w-10 rounded-xl bg-[#F8B400]/10 border border-[#F8B400]/25 text-[#F8B400] group-hover:shadow-[0_0_14px_rgba(248,180,0,0.25)] transition-all">
           <Icon className="h-5 w-5" />
         </div>
         {badgeText && (

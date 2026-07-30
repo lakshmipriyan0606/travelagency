@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { usePathname, useRouter } from "next/navigation";
 import { AdminUser } from "@/features/auth/types";
 import { adminNavigation } from "@/features/navigation";
@@ -46,17 +46,27 @@ export default function AdminShell({ user, children }: AdminShellProps) {
     ];
   });
 
-  const activeItem = navItems.find(
-    (n) => n.href === pathname || (n.href !== "#" && pathname.startsWith(n.href))
-  );
+  const activeHref = useMemo(() => {
+    const hrefs = navItems.map((n) => n.href);
+    const candidates = hrefs.filter(
+      (href) =>
+        href &&
+        href !== "#" &&
+        (pathname === href || pathname.startsWith(`${href}/`))
+    );
+    if (candidates.length === 0) return null;
+    return candidates.reduce((best, href) => (href.length > best.length ? href : best));
+  }, [pathname, navItems]);
+
+  const activeItem = navItems.find((n) => n.href === activeHref);
   const currentTitle = activeItem ? activeItem.label : "B2C Admin Panel";
 
   return (
-    <div className="flex h-screen w-full bg-[#090909] overflow-hidden text-white">
+    <div className="flex h-screen w-full ent-ambient-bg overflow-hidden text-[var(--ent-text-main,#F4F4F5)]" data-admin-portal>
       {/* Shared Unified Enterprise Sidebar */}
       <EnterpriseSidebar
-        appName="B2C Admin"
-        appLogoSubtitle="Consumer Admin Portal"
+        appName="TravelHero"
+        appLogoSubtitle="B2C ADMIN PORTAL"
         navItems={navItems}
         userProfile={{
           name: user.name,
@@ -83,7 +93,7 @@ export default function AdminShell({ user, children }: AdminShellProps) {
         />
 
         {/* Content Area */}
-        <main className="flex-1 overflow-y-auto p-6 md:p-8 space-y-6">
+        <main className="flex-1 overflow-y-auto ent-scrollbar p-8 space-y-8 max-w-[1440px] w-full mx-auto">
           {children}
         </main>
       </div>

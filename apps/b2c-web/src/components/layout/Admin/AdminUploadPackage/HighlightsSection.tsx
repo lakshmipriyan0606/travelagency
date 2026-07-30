@@ -45,6 +45,7 @@ export const HighlightsSection = ({ control }: HighlightsSectionProps) => {
                 name={`highlights.${index}.item`}
                 placeholder={`Highlight #${index + 1}`}
                 variant="floating"
+                appearance="light"
               />
             </div>
             <button

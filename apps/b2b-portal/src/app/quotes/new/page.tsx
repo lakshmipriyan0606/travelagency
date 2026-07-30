@@ -15,7 +15,7 @@ export const metadata = {
 export default function NewQuotePage() {
   return (
     <AppShell>
-      <div className="w-full max-w-4xl mx-auto">
+      <div className="w-full">
         <QuoteWizard />
       </div>
     </AppShell>

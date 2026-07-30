@@ -569,7 +569,8 @@ export const getPackageById = async (id) => {
 };
 
 export const updateRank = async (packageId, bestRank) => {
-  const currentPackage = await packageRepository.findById(packageId);
+  // Must be a Mongoose document — repository defaults to lean() plain objects (no .save)
+  const currentPackage = await packageRepository.findById(packageId, { lean: false });
   if (!currentPackage) {
     const error = new Error('Package not found');
     error.statusCode = 404;
@@ -583,6 +584,13 @@ export const updateRank = async (packageId, bestRank) => {
     return { message: 'Rank removed', data: currentPackage };
   }
 
+  const targetRank = Number(bestRank);
+  if (!Number.isFinite(targetRank) || targetRank < 1) {
+    const error = new Error('Invalid rank');
+    error.statusCode = 400;
+    throw error;
+  }
+
   const isCurrentActivity =
     currentPackage.type === 'activity' ||
     !!(
@@ -590,8 +598,9 @@ export const updateRank = async (packageId, bestRank) => {
       currentPackage.activityCategory !== '' &&
       currentPackage.activityCategory !== 'none'
     );
+  // Query with Number so conflict matches schema type (frontend may send string)
   const conflictQuery = {
-    bestRank,
+    bestRank: targetRank,
     isBestPackage: true,
     _id: { $ne: packageId },
   };
@@ -602,7 +611,7 @@ export const updateRank = async (packageId, bestRank) => {
     conflictQuery.type = 'package';
   }
 
-  const existingWithRank = await packageRepository.findOne(conflictQuery);
+  const existingWithRank = await packageRepository.findOne(conflictQuery, { lean: false });
 
   if (existingWithRank) {
     if (currentPackage.isBestPackage && currentPackage.bestRank) {
@@ -616,14 +625,14 @@ export const updateRank = async (packageId, bestRank) => {
   }
 
   currentPackage.isBestPackage = true;
-  currentPackage.bestRank = bestRank;
+  currentPackage.bestRank = targetRank;
   await currentPackage.save();
 
   return { message: 'Rank updated', data: currentPackage };
 };
 
 export const toggleStatus = async (id) => {
-  const pkg = await packageRepository.findById(id);
+  const pkg = await packageRepository.findById(id, { lean: false });
   if (!pkg) {
     const error = new Error('Package not found');
     error.statusCode = 404;

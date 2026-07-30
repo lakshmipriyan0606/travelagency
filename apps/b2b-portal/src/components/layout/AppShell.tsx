@@ -1,25 +1,35 @@
 "use client";
 
 import React, { useState } from "react";
-import { usePathname, useRouter } from "next/navigation";
-import { LayoutDashboard, FileText, User } from "lucide-react";
+import { usePathname } from "next/navigation";
 import { ROUTES } from "@/lib/routes";
-import { EnterpriseSidebar, EnterpriseHeader } from "@travelagency/ui";
+import { TravelHeroSidebar } from "./TravelHeroSidebar";
+import { TravelHeroHeader } from "./TravelHeroHeader";
 
-interface AppShellProps {
+export interface AppShellProps {
   children: React.ReactNode;
-  user?: { name: string; email: string };
-  agencyStatus?: string;
+  agencyName?: string;
+  partnerTier?: string;
+  notificationCount?: number;
   onLogout?: () => void;
+}
+
+function getPageTitle(pathname: string): string {
+  if (pathname.startsWith(ROUTES.quotes)) return "Quote Request Portal";
+  if (pathname.startsWith(ROUTES.profile)) return "Agency Profile";
+  return "Dashboard";
 }
 
 export default function AppShell({
   children,
-  user = { name: "Agent Partner", email: "partner@travelagency.com" },
+  agencyName = "Apex Travel Agency",
+  partnerTier = "standard",
+  notificationCount = 3,
   onLogout,
 }: AppShellProps) {
   const pathname = usePathname();
-  const router = useRouter();
+  const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [searchValue, setSearchValue] = useState("");
 
   const handleLogout = () => {
@@ -30,64 +40,32 @@ export default function AppShell({
     window.location.href = ROUTES.login;
   };
 
-  const navItems = [
-    {
-      label: "Agency Dashboard",
-      href: ROUTES.dashboard,
-      icon: LayoutDashboard,
-    },
-    {
-      label: "Quotes Management",
-      href: ROUTES.quotes,
-      icon: FileText,
-    },
-    {
-      label: "Agency Profile",
-      href: ROUTES.profile,
-      icon: User,
-    },
-  ];
-
-  const getPageTitle = () => {
-    if (pathname.startsWith(ROUTES.quotes)) return "Quotes Management";
-    if (pathname.startsWith(ROUTES.profile)) return "Agency Profile";
-    return "Agency Dashboard";
-  };
-
   return (
-    <div className="flex h-screen w-full bg-[#090909] overflow-hidden text-white">
-      {/* Shared Unified Enterprise Sidebar */}
-      <EnterpriseSidebar
-        appName="B2B Portal"
-        appLogoSubtitle="Travel Partner Suite"
-        navItems={navItems}
-        userProfile={{
-          name: user.name,
-          email: user.email,
-          role: "Authorized Agency Partner",
-        }}
+    <div className="flex h-screen w-full bg-[#0B0E14] overflow-hidden text-white">
+      <TravelHeroSidebar
+        agencyName={agencyName}
+        partnerTier={partnerTier}
+        collapsed={sidebarCollapsed}
+        onToggleCollapse={() => setSidebarCollapsed((v) => !v)}
         onLogout={handleLogout}
+        mobileOpen={mobileMenuOpen}
+        onMobileClose={() => setMobileMenuOpen(false)}
       />
 
-      {/* Main Container */}
       <div className="flex-1 flex flex-col h-full overflow-hidden min-w-0">
-        {/* Shared Unified Enterprise Header */}
-        <EnterpriseHeader
-          pageTitle={getPageTitle()}
-          breadcrumbs={[
-            { label: "B2B Portal", href: ROUTES.dashboard },
-            { label: getPageTitle() },
-          ]}
-          userProfile={{
-            name: user.name,
-          }}
+        <TravelHeroHeader
+          pageTitle={getPageTitle(pathname)}
+          agencyName={agencyName}
           searchValue={searchValue}
           onSearchChange={setSearchValue}
+          notificationCount={notificationCount}
+          onMenuClick={() => setMobileMenuOpen(true)}
         />
 
-        {/* Content Body */}
-        <main className="flex-1 overflow-y-auto p-6 md:p-8 space-y-6">
-          {children}
+        <main className="flex-1 overflow-y-auto">
+          <div className="max-w-[1440px] mx-auto px-4 sm:px-6 lg:px-8 py-6 lg:py-8">
+            {children}
+          </div>
         </main>
       </div>
     </div>

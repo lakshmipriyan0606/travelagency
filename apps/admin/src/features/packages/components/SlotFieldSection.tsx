@@ -39,9 +39,8 @@ export const SlotFieldSection = ({ control, dayIndex, slotIndex, removeSlot }: S
     });
 
     return (
-        <div className="bg-neutral-50/70 border border-neutral-200/50 p-5 rounded-[20px] mb-3 hover:bg-white hover:border-primary/20 hover:shadow-lg hover:shadow-neutral-100 transition-all group/slot">
+        <div className="bg-white/[0.03] border border-white/[0.08] p-5 rounded-[20px] mb-3 hover:bg-white/[0.05] hover:border-[#F8B400]/25 transition-all group/slot">
             <div className="flex flex-col gap-5">
-                {/* Header & Primary Fields */}
                 <div className="flex flex-col md:flex-row gap-3 items-end">
                     <div className="flex-1 w-full text-left">
                         <SelectField
@@ -50,6 +49,7 @@ export const SlotFieldSection = ({ control, dayIndex, slotIndex, removeSlot }: S
                             label="Category"
                             options={slotTypeOptions}
                             required
+                            appearance="dark"
                         />
                     </div>
                     <div className="flex-[2] w-full text-left">
@@ -58,34 +58,35 @@ export const SlotFieldSection = ({ control, dayIndex, slotIndex, removeSlot }: S
                             name={`days.${dayIndex}.slots.${slotIndex}.title`}
                             label="Activity Title"
                             required
+                            appearance="dark"
                         />
                     </div>
                     <button 
                         type="button" 
                         onClick={() => removeSlot(slotIndex)}
-                        className="w-10 h-10 rounded-lg bg-white border border-neutral-100 text-neutral-400 flex items-center justify-center hover:bg-red-50 hover:text-red-500 hover:border-red-100 transition-all shadow-sm"
+                        className="w-10 h-10 rounded-lg bg-[var(--ent-elevated,#1c1c22)] border border-white/[0.08] text-zinc-400 flex items-center justify-center hover:bg-red-500/15 hover:text-red-400 hover:border-red-500/20 transition-all"
                         title="Remove Activity"
                     >
                         <Trash2 size={14} />
                     </button>
                 </div>
 
-                {/* Content & Media */}
                 <div className="grid grid-cols-1 lg:grid-cols-12 gap-5 items-start">
                     <div className="lg:col-span-9 text-left">
                         <ReusableTextArea
                             control={control}
                             name={`days.${dayIndex}.slots.${slotIndex}.description`}
                             label="Schedule Details"
+                            appearance="dark"
                         />
                     </div>
 
                     <div className="lg:col-span-3 self-stretch">
-                        <div className={`h-full min-h-[140px] border-2 border-dashed rounded-2xl transition-all cursor-pointer relative flex items-center justify-center overflow-hidden ${isDragActive ? "border-primary bg-primary/5" : "border-neutral-200 hover:border-primary/40 bg-white shadow-inner"}`}>
+                        <div className={`h-full min-h-[140px] border-2 border-dashed rounded-2xl transition-all cursor-pointer relative flex items-center justify-center overflow-hidden ${isDragActive ? "border-[#F8B400] bg-[#F8B400]/5" : "border-white/[0.12] hover:border-[#F8B400]/40 bg-[var(--ent-surface,#121216)]"}`}>
                             {!imagePreview && (
                                 <div {...getRootProps()} className="absolute inset-0 flex flex-col items-center justify-center z-10">
                                     <input {...getInputProps()} />
-                                    <div className="flex flex-col items-center gap-1.5 text-neutral-400 group-hover/slot:text-primary transition-colors p-3">
+                                    <div className="flex flex-col items-center gap-1.5 text-zinc-500 group-hover/slot:text-[#F8B400] transition-colors p-3">
                                         <Camera size={20} />
                                         <div className="text-center">
                                             <p className="text-[9px] font-bold uppercase tracking-widest leading-tight">Drop Image</p>
@@ -112,14 +113,14 @@ export const SlotFieldSection = ({ control, dayIndex, slotIndex, removeSlot }: S
                                     </button>
                                 </div>
                              ) : (
-                                <div className="absolute bottom-0 left-0 right-0 p-2 bg-neutral-50 border-t border-neutral-100 flex gap-1 z-20">
+                                <div className="absolute bottom-0 left-0 right-0 p-2 bg-[var(--ent-elevated,#1c1c22)] border-t border-white/[0.08] flex gap-1 z-20">
                                     <input 
                                         type="text" 
                                         placeholder="Or Paste URL..." 
                                         value={typeof currentImage === 'string' ? currentImage : ""}
                                         onChange={(e) => setValue(`days.${dayIndex}.slots.${slotIndex}.imageUrl`, e.target.value)}
                                         onKeyDown={(e) => e.key === 'Enter' && e.preventDefault()}
-                                        className="w-full bg-white border border-neutral-200 px-2 py-1 rounded-lg text-[8px] focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none"
+                                        className="w-full admin-field px-2 py-1 text-[8px]"
                                     />
                                 </div>
                              )}
@@ -130,6 +131,7 @@ export const SlotFieldSection = ({ control, dayIndex, slotIndex, removeSlot }: S
                                 name={`days.${dayIndex}.slots.${slotIndex}.imageAlt`}
                                 label="Image Alt Text"
                                 placeholder="Descriptive text for SEO"
+                                appearance="dark"
                             />
                         </div>
                     </div>
@@ -139,5 +141,3 @@ export const SlotFieldSection = ({ control, dayIndex, slotIndex, removeSlot }: S
         </div>
     );
 };
-
-

@@ -27,7 +27,19 @@ export interface BookingResponse {
   bookings: Booking[];
 }
 
+/** sendSuccess flattens `{ bookings }` onto the envelope; arrays land under `.data`. */
+function unwrapBookings(payload: unknown): Booking[] {
+  if (!payload || typeof payload !== 'object') {
+    return Array.isArray(payload) ? (payload as Booking[]) : [];
+  }
+  const body = payload as { bookings?: unknown; data?: unknown };
+  if (Array.isArray(body.bookings)) return body.bookings as Booking[];
+  if (Array.isArray(body.data)) return body.data as Booking[];
+  if (Array.isArray(payload)) return payload as Booking[];
+  return [];
+}
+
 export const getBookings = async (): Promise<BookingResponse> => {
   const response = await axiosClient.get(ENDPOINTS.client.bookings.admin);
-  return response.data;
+  return { bookings: unwrapBookings(response.data) };
 };

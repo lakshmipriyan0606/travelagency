@@ -2,7 +2,8 @@
 
 import { useMutation, useQueryClient, useQuery } from "@tanstack/react-query";
 import { deleteDestination, moveDestination, normalizeDestinationsOrder, getDestinations } from "../api/destinations.api";
-import { Loader2, Trash2, ArrowUp, ArrowDown, ListOrdered, ImageIcon, Pencil, Plus, Check, MapPin } from "lucide-react";
+import { Loader2, ListOrdered, ImageIcon, Plus, Check } from "lucide-react";
+import { AirplaneLoader } from "@travelagency/ui";
 import { showToast } from "@/lib/toast";
 import { useRouter } from "next/navigation";
 import { Destination } from "../validation/destination.schema";
@@ -14,11 +15,13 @@ export default function DestinationListClient({ initialDestinations }: { initial
     const router = useRouter();
     const queryClient = useQueryClient();
 
-    const { data: destinations = initialDestinations, isLoading } = useQuery({
+    const { data: destinationsData = initialDestinations, isLoading } = useQuery({
         queryKey: ["adminDestinations"],
         queryFn: getDestinations,
         initialData: initialDestinations
     });
+
+    const destinations = Array.isArray(destinationsData) ? destinationsData : [];
 
     const deleteMutation = useMutation({
         mutationFn: (id: string) => deleteDestination(id),
@@ -52,10 +55,12 @@ export default function DestinationListClient({ initialDestinations }: { initial
 
     if (isLoading) {
         return (
-            <div className="flex flex-col items-center justify-center py-20 gap-4">
-                <Loader2 className="w-10 h-10 text-primary animate-spin" />
-                <p className="text-neutral-500 font-medium">Loading items...</p>
-            </div>
+            <AirplaneLoader
+                size="lg"
+                label="Loading destinations…"
+                fullPage
+                className="py-20"
+            />
         );
     }
 

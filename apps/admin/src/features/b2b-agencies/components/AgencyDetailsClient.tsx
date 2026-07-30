@@ -10,6 +10,7 @@ import {
   StatusLogEntry,
 } from "@/api/b2bAdmin.api";
 import { useState } from "react";
+import { AirplaneLoader } from "@travelagency/ui";
 import {
   Building2,
   Users,
@@ -393,11 +394,7 @@ export default function AgencyDetailsClient() {
   });
 
   if (isLoading) {
-    return (
-      <div className="flex items-center justify-center h-[60vh]">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary" />
-      </div>
-    );
+    return <AirplaneLoader size="lg" label="Loading agencies…" fullPage className="h-[60vh]" />;
   }
 
   return (

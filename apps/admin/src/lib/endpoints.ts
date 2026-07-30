@@ -6,8 +6,8 @@ export const ENDPOINTS = {
     destinations: '/v1/b2c/destinations',
     reviews: '/v1/b2c/reviews',
     packageById: (id: string) => `/v1/b2c-admin/packages/${id}`,
-    packages: '/admin/packages',
-    activities: '/admin/packages?type=activity',
+    packages: '/v1/b2c-admin/packages?isAdmin=true&limit=100&excludeActivities=true',
+    activities: '/v1/b2c-admin/packages?isAdmin=true&limit=100&onlyActivities=true',
   },
   client: {
     websiteHero: {
@@ -47,7 +47,8 @@ export const ENDPOINTS = {
       apiUsage: '/analytics/api-usage',
     },
     bookings: {
-      admin: '/auth/admin/bookings',
+      // Rewrites via apiClient to v1/b2c/bookings/all (b2c gateway)
+      admin: 'bookings/all',
     },
     metrics: {
       dashboard: 'admin/metrics',
@@ -93,7 +94,8 @@ export const ENDPOINTS = {
       updateRank: (id: string) => `admin/packages/updateRank/${id}`,
       toggleStatus: (id: string) => `admin/packages/toggleStatus/${id}`,
       takenRanks: 'admin/packages/takenRanks',
-      bookingsAll: 'admin/bookings/all',
+      // Must be b2c path — admin/bookings/all would rewrite to missing v1/b2c-admin/bookings/all
+      bookingsAll: 'bookings/all',
     },
   },
 } as const;

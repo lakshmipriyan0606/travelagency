@@ -23,3 +23,4 @@ export * from "./enterprise-sidebar";
 export * from "./enterprise-header";
 export * from "./enterprise-table";
 export * from "./enterprise-stat-card";
+export * from "./airplane-loader";

@@ -3,8 +3,15 @@
 import { useEffect, useMemo, useState } from "react";
 import { useForm } from "react-hook-form";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { PanelsTopLeft } from "lucide-react";
 import { showToast } from "@/lib/toast";
-import { getAllWebsiteHeroes, createWebsiteHero, updateWebsiteHero, deleteWebsiteHero, WebsiteHeroCard } from "../api/website-hero.api";
+import {
+  getAllWebsiteHeroes,
+  createWebsiteHero,
+  updateWebsiteHero,
+  deleteWebsiteHero,
+  WebsiteHeroCard,
+} from "../api/website-hero.api";
 import { uploadMediaAsset, getMediaAssets } from "../../media/api/media.api";
 import { WebsiteHeroSidebar } from "./WebsiteHeroSidebar";
 import { WebsiteHeroForm } from "./WebsiteHeroForm";
@@ -26,10 +33,15 @@ export default function WebsiteHeroClient({ startWithNew = false }: { startWithN
     queryFn: getAllWebsiteHeroes,
   });
 
-  const [selectedId, setSelectedId] = useState<string | "__new__" | null>(startWithNew ? "__new__" : null);
-  
+  const [selectedId, setSelectedId] = useState<string | "__new__" | null>(
+    startWithNew ? "__new__" : null
+  );
+
   const selected = useMemo(
-    () => (typeof selectedId === "string" ? heroes.find((h: WebsiteHeroCard) => h._id === selectedId) || null : null),
+    () =>
+      typeof selectedId === "string"
+        ? heroes.find((h: WebsiteHeroCard) => h._id === selectedId) || null
+        : null,
     [heroes, selectedId]
   );
   const isDraft = selectedId === "__new__";
@@ -107,7 +119,7 @@ export default function WebsiteHeroClient({ startWithNew = false }: { startWithN
       queryClient.invalidateQueries({ queryKey: ["websiteHeroes"] });
       refetch();
     },
-    onError: (e: any) => showToast({ type: "error", content: e?.message || "Create failed" })
+    onError: (e: any) => showToast({ type: "error", content: e?.message || "Create failed" }),
   });
 
   const updateMutation = useMutation({
@@ -117,7 +129,7 @@ export default function WebsiteHeroClient({ startWithNew = false }: { startWithN
       queryClient.invalidateQueries({ queryKey: ["websiteHeroes"] });
       refetch();
     },
-    onError: (e: any) => showToast({ type: "error", content: e?.message || "Update failed" })
+    onError: (e: any) => showToast({ type: "error", content: e?.message || "Update failed" }),
   });
 
   const deleteMutation = useMutation({
@@ -128,7 +140,7 @@ export default function WebsiteHeroClient({ startWithNew = false }: { startWithN
       queryClient.invalidateQueries({ queryKey: ["websiteHeroes"] });
       refetch();
     },
-    onError: (e: any) => showToast({ type: "error", content: e?.message || "Delete failed" })
+    onError: (e: any) => showToast({ type: "error", content: e?.message || "Delete failed" }),
   });
 
   const addImage = () => {
@@ -166,14 +178,21 @@ export default function WebsiteHeroClient({ startWithNew = false }: { startWithN
   const isPending = createMutation.isPending || updateMutation.isPending || isLoading;
 
   return (
-    <div className="max-w-7xl mx-auto space-y-6">
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
-        <WebsiteHeroSidebar 
-          heroes={heroes} 
-          selectedId={selectedId} 
-          setSelectedId={setSelectedId} 
-        />
-        <WebsiteHeroForm 
+    <div className="space-y-6 animate-in fade-in duration-300">
+      <div>
+        <h1 className="text-2xl font-bold text-white tracking-tight flex items-center gap-3">
+          <span className="ent-gold-bar h-7 shrink-0" />
+          <PanelsTopLeft className="text-[#F8B400] shrink-0" size={24} />
+          Hero Sections
+        </h1>
+        <p className="text-sm text-white/60 mt-1.5 ml-[15px]">
+          Manage homepage hero titles, copy, and background imagery.
+        </p>
+      </div>
+
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 lg:gap-8">
+        <WebsiteHeroSidebar heroes={heroes} selectedId={selectedId} setSelectedId={setSelectedId} />
+        <WebsiteHeroForm
           register={register}
           handleSubmit={handleSubmit}
           onSubmit={onSubmit}
@@ -189,7 +208,7 @@ export default function WebsiteHeroClient({ startWithNew = false }: { startWithN
         />
       </div>
 
-      <MediaPickerModal 
+      <MediaPickerModal
         pickerOpen={pickerOpen}
         closePicker={closePicker}
         gallerySearch={gallerySearch}
@@ -206,4 +225,4 @@ export default function WebsiteHeroClient({ startWithNew = false }: { startWithN
       />
     </div>
   );
-}
+};

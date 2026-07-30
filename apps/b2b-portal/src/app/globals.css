@@ -1,38 +1,65 @@
 @import "tailwindcss";
 @import "@travelagency/theme/theme.css";
 
-/* ─── Global Variables & Semantic Tokens (Premium Dark Theme) ────────────── */
+@source "../../../../packages/ui/src/**/*.{js,ts,jsx,tsx}";
+@source "../../../../packages/forms/src/**/*.{js,ts,jsx,tsx}";
+
+/* Portaled select menus — gold hover always (body portal, not under shell) */
+[data-slot="select-item"][data-highlighted] {
+  background-color: #f8b400 !important;
+  color: #0c0c0f !important;
+  font-weight: 700 !important;
+}
+
+/* ─── TravelHero B2B Portal — Design Tokens ─────────────────────────────── */
 :root {
-  --background: #090909;
-  --foreground: #FFFFFF;
-  
-  --surface: #121212;
-  --surface-hover: #1A1A1A;
-  --card: #181818;
+  --background: #0b0e14;
+  --foreground: #ffffff;
+
+  --surface: #0a0a0c;
+  --surface-elevated: #141416;
+  --surface-hover: #1c1c20;
+  --card: #141416;
   --border: rgba(255, 255, 255, 0.08);
-  
-  --text-primary: #FFFFFF;
-  --text-secondary: #A1A1AA;
 
-  --primary-accent: #F8B400;
-  --primary-accent-hover: #FFD54A;
+  --text-primary: #ffffff;
+  --text-secondary: #a1a1aa;
+  --text-muted: #71717a;
 
-  --success: #10B981;
-  --warning: #F59E0B;
-  --error: #EF4444;
-  --info: #3B82F6;
+  --primary-accent: #f8b400;
+  --primary-accent-hover: #ffd54a;
+  --primary-accent-glow: rgba(248, 180, 0, 0.35);
 
-  --sidebar-bg: #121212;
-  --sidebar-border: rgba(255, 255, 255, 0.08);
-  --topbar-bg: #121212;
-  --topbar-border: rgba(255, 255, 255, 0.08);
+  --success: #10b981;
+  --warning: #f59e0b;
+  --error: #ef4444;
+  --info: #3b82f6;
+
+  --sidebar-bg: #0a0a0c;
+  --topbar-bg: #0a0a0c;
+
+  --radius-card: 20px;
+  --radius-button: 12px;
+  --spacing-unit: 8px;
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-primary-accent: var(--primary-accent);
+  --color-surface: var(--surface);
+  --color-card: var(--card);
 }
 
 html,
 body {
   background-color: var(--background);
+  background-image:
+    radial-gradient(ellipse 80% 50% at 12% -8%, rgba(248, 180, 0, 0.07), transparent 55%),
+    radial-gradient(ellipse 55% 35% at 95% 5%, rgba(248, 180, 0, 0.03), transparent 50%);
   color: var(--foreground);
-  font-family: var(--font-sans), system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  font-family: var(--font-sans, "Inter"), system-ui, -apple-system, BlinkMacSystemFont,
+    "Segoe UI", Roboto, sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   min-height: 100vh;
@@ -45,4 +72,23 @@ input[type="checkbox"],
 input[type="radio"],
 [role="button"] {
   cursor: pointer;
+}
+
+/* Custom scrollbar for dark theme */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.12);
+  border-radius: 999px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 255, 255, 0.2);
 }

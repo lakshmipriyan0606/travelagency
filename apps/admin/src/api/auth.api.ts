@@ -42,19 +42,7 @@ export const DeleteCurrentPackage = async (id: string) => {
 };
 
 export const GetAllBookings = async () => {
-  const { data } = await axiosClient.get(ENDPOINTS.client.auth.bookingsAll); // Wait, this is booking/all!
-  // Wait! In endpoints.ts, bookingsAll is defined under ENDPOINTS.server.bookingsAll (which has /v1/b2c prefix).
-  // But here it fetches "admin/bookings/all" with axiosClient!
-  // Ah! "admin/bookings/all" in axiosClient gets rewritten to "v1/b2c-admin/admin/bookings/all".
-  // Wait, let's look at the original string: "admin/bookings/all".
-  // Let's check where that endpoint is defined in endpoints.ts.
-  // Wait! In endpoints.ts, did we define `admin/bookings/all`?
-  // Let's check: in `endpoints.ts`, under `client.auth.takenRanks` is `admin/packages/takenRanks`.
-  // Let's look at what endpoints we mapped under `auth` in endpoints.ts:
-  // We missed `admin/bookings/all` in `endpoints.ts` client.auth!
-  // Let's add it: `bookingsAll: 'admin/bookings/all'` under `ENDPOINTS.client.auth`!
-  // Let's do that! Let's write client.auth.bookingsAll.
-  // Let's first make sure we do the replacement, and we will update endpoints.ts.
+  const { data } = await axiosClient.get(ENDPOINTS.client.auth.bookingsAll);
   return data;
 };
 

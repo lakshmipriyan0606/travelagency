@@ -4,6 +4,7 @@ import * as React from "react";
 import { Search, ChevronLeft, ChevronRight, Inbox } from "lucide-react";
 import { cn } from "@travelagency/utils";
 import { Button } from "./button";
+import { AirplaneLoader } from "./airplane-loader";
 
 export interface Column<T> {
   key: string;
@@ -46,10 +47,10 @@ export function EnterpriseTable<T>({
   emptyDescription = "There are no data records to display at this moment.",
 }: EnterpriseTableProps<T>) {
   return (
-    <div className="flex flex-col bg-[#181818] rounded-[20px] border border-white/[0.08] shadow-[0_8px_32px_rgba(0,0,0,0.4)] overflow-hidden">
+    <div className="relative flex flex-col bg-[var(--ent-card,#16161b)] rounded-[20px] border border-white/[0.08] shadow-[0_8px_28px_rgba(0,0,0,0.45)] overflow-hidden before:pointer-events-none before:absolute before:inset-x-0 before:top-0 before:h-px before:bg-gradient-to-r before:from-transparent before:via-[#F8B400]/30 before:to-transparent">
       {/* Table Toolbar */}
       {(onSearchChange || filters || actions) && (
-        <div className="flex flex-col md:flex-row items-stretch md:items-center justify-between gap-4 p-5 border-b border-white/[0.08] bg-[#121212]">
+        <div className="flex flex-col md:flex-row items-stretch md:items-center justify-between gap-4 p-5 border-b border-white/[0.08] bg-[var(--ent-surface,#101014)]">
           <div className="flex items-center gap-3 flex-1">
             {onSearchChange && (
               <div className="relative w-full max-w-sm">
@@ -83,16 +84,11 @@ export function EnterpriseTable<T>({
           </thead>
           <tbody className="divide-y divide-white/[0.05] text-[15px] text-white">
             {isLoading ? (
-              // Loading Skeleton
-              Array.from({ length: 5 }).map((_, idx) => (
-                <tr key={idx} className="animate-pulse">
-                  {columns.map((col) => (
-                    <td key={col.key} className="py-4 px-6">
-                      <div className="h-5 bg-zinc-800 rounded-md w-3/4" />
-                    </td>
-                  ))}
-                </tr>
-              ))
+              <tr>
+                <td colSpan={columns.length} className="py-16">
+                  <AirplaneLoader size="md" label="Loading records…" />
+                </td>
+              </tr>
             ) : data.length === 0 ? (
               // Empty State
               <tr>

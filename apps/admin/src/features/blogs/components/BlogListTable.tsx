@@ -10,63 +10,90 @@ interface BlogListTableProps {
 
 export const BlogListTable: React.FC<BlogListTableProps> = ({ blogs, onDelete, onToggleStatus, onEdit }) => {
   return (
-    <div className="overflow-x-auto rounded-xl border border-neutral-200">
-      <table className="w-full text-left text-sm text-neutral-600">
-        <thead className="bg-neutral-50 text-neutral-700 text-xs uppercase font-bold border-b border-neutral-200">
+    <div className="overflow-x-auto rounded-xl border border-white/[0.08] bg-[var(--ent-elevated,#1c1c22)]/40 shadow-[0_8px_28px_rgba(0,0,0,0.35)]">
+      <table className="min-w-full divide-y divide-white/[0.06] text-left">
+        <thead className="bg-[var(--ent-elevated,#1c1c22)]/70">
           <tr>
-            <th className="px-6 py-4">Blog Title</th>
-            <th className="px-6 py-4">Category</th>
-            <th className="px-6 py-4">Author</th>
-            <th className="px-6 py-4">Date</th>
-            <th className="px-6 py-4">Status</th>
-            <th className="px-6 py-4 text-right">Actions</th>
+            {["Blog Title", "Category", "Author", "Date", "Status", "Actions"].map((label) => (
+              <th
+                key={label}
+                className={`px-5 py-3.5 text-[11px] font-semibold text-white/55 uppercase tracking-wider ${
+                  label === "Actions" ? "text-right" : "text-left"
+                }`}
+              >
+                {label}
+              </th>
+            ))}
           </tr>
         </thead>
-        <tbody className="divide-y divide-neutral-200 bg-white">
+        <tbody className="divide-y divide-white/[0.06]">
           {blogs.map((blog) => (
-            <tr key={blog._id} className="hover:bg-neutral-50/50 transition-colors">
-              <td className="px-6 py-4">
-                <div className="flex items-center gap-3">
-                  <div className="w-10 h-10 rounded-md overflow-hidden bg-neutral-100 flex-shrink-0 flex items-center justify-center">
+            <tr
+              key={blog._id}
+              className="group hover:bg-white/[0.035] transition-colors duration-150"
+            >
+              <td className="px-5 py-4">
+                <div className="flex items-center gap-3.5 min-w-0">
+                  <div className="w-11 h-11 rounded-lg overflow-hidden bg-white/[0.04] border border-white/[0.1] ring-1 ring-white/[0.04] flex-shrink-0 flex items-center justify-center shadow-[inset_0_0_0_1px_rgba(0,0,0,0.25)]">
                     {blog.thumbnailImage?.url ? (
-                      <img src={blog.thumbnailImage.url} alt={blog.title} className="w-full h-full object-cover" />
+                      <img
+                        src={blog.thumbnailImage.url}
+                        alt={blog.title}
+                        className="w-full h-full object-cover"
+                      />
                     ) : (
-                      <FileText className="w-5 h-5 text-neutral-400" />
+                      <FileText className="w-5 h-5 text-white/30" />
                     )}
                   </div>
-                  <div className="font-bold text-neutral-800 line-clamp-2 max-w-[200px]" title={blog.title}>
+                  <div
+                    className="font-semibold text-white text-sm leading-snug line-clamp-2 max-w-[240px]"
+                    title={blog.title}
+                  >
                     {blog.title}
                   </div>
                 </div>
               </td>
-              <td className="px-6 py-4 whitespace-nowrap">
-                <span className="px-2.5 py-1 bg-neutral-100 text-neutral-700 rounded-md text-xs font-bold">
+              <td className="px-5 py-4 whitespace-nowrap">
+                <span className="inline-flex px-2.5 py-1 rounded-md text-xs font-medium bg-white/[0.06] text-white/75 border border-white/[0.08]">
                   {blog.category}
                 </span>
               </td>
-              <td className="px-6 py-4 whitespace-nowrap font-medium">{blog.author}</td>
-              <td className="px-6 py-4 whitespace-nowrap text-xs text-neutral-500">
+              <td className="px-5 py-4 whitespace-nowrap text-sm text-white/70 font-medium">
+                {blog.author}
+              </td>
+              <td className="px-5 py-4 whitespace-nowrap text-sm text-white/55 tabular-nums">
                 {new Date(blog.date).toLocaleDateString()}
               </td>
-              <td className="px-6 py-4 whitespace-nowrap">
+              <td className="px-5 py-4 whitespace-nowrap">
                 <button
+                  type="button"
                   onClick={() => onToggleStatus(blog)}
-                  className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-bold transition-colors ${
+                  className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-semibold transition-colors border ${
                     blog.status === "Published"
-                      ? "bg-green-50 text-green-600 hover:bg-green-100"
-                      : "bg-amber-50 text-amber-600 hover:bg-amber-100"
+                      ? "bg-emerald-500/15 text-emerald-300 border-emerald-500/20 hover:bg-emerald-500/25"
+                      : "bg-[#F8B400]/12 text-[#F8B400] border-[#F8B400]/20 hover:bg-[#F8B400]/20"
                   }`}
                 >
-                  {blog.status === "Published" ? <CheckCircle2 size={14} /> : <Clock size={14} />}
+                  {blog.status === "Published" ? <CheckCircle2 size={13} /> : <Clock size={13} />}
                   {blog.status}
                 </button>
               </td>
-              <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-                <div className="flex items-center justify-end gap-2">
-                  <button onClick={() => onEdit(blog._id)} className="p-2 text-blue-600 hover:bg-blue-50 rounded-lg transition-colors" title="Edit Blog">
+              <td className="px-5 py-4 whitespace-nowrap text-right">
+                <div className="flex items-center justify-end gap-1.5">
+                  <button
+                    type="button"
+                    onClick={() => onEdit(blog._id)}
+                    className="inline-flex items-center justify-center w-9 h-9 rounded-lg text-white/45 border border-transparent hover:text-[#F8B400] hover:bg-[#F8B400]/10 hover:border-[#F8B400]/20 transition-all"
+                    title="Edit Blog"
+                  >
                     <Edit size={16} />
                   </button>
-                  <button onClick={() => onDelete(blog._id)} className="p-2 text-red-600 hover:bg-red-50 rounded-lg transition-colors" title="Delete Blog">
+                  <button
+                    type="button"
+                    onClick={() => onDelete(blog._id)}
+                    className="inline-flex items-center justify-center w-9 h-9 rounded-lg text-white/45 border border-transparent hover:text-red-400 hover:bg-red-500/10 hover:border-red-500/20 transition-all"
+                    title="Delete Blog"
+                  >
                     <Trash2 size={16} />
                   </button>
                 </div>

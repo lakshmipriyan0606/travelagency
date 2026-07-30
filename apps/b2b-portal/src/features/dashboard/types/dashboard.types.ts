@@ -95,6 +95,18 @@ export interface DashboardSummary {
   readonly recentActivity: readonly ActivityEntry[];
   readonly notifications: readonly PortalNotification[];
   readonly unreadNotificationCount: number;
+  readonly destinationStats?: readonly {
+    readonly name: string;
+    readonly count: number;
+    readonly percent: number;
+  }[];
+  readonly monthlyQuoteVolume?: readonly {
+    readonly month: string;
+    readonly year: number;
+    readonly value: number;
+  }[];
+  readonly conversionRate?: number;
+  readonly totalQuotes?: number;
 }
 
 // ─── DTOs ─────────────────────────────────────────────────────────────────────

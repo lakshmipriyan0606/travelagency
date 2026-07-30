@@ -1,80 +1,283 @@
-/* Enterprise Design System - Application Theme Tokens */
+/* Enterprise Design System - Premium dark + gold portal tokens */
 :root {
-  --ent-bg: #09090B;
-  --ent-surface: #101012;
-  --ent-card: #141417;
+  --ent-bg: #08080b;
+  --ent-surface: #101014;
+  --ent-card: #16161b;
+  --ent-elevated: #1c1c22;
 
-  /* Actual Application Brand Colors */
-  --ent-primary: #F8B400;
-  --ent-primary-hover: #E8A800;
-  --ent-secondary: #71717A;
-  --ent-secondary-hover: #A1A1AA;
-  --ent-accent: #F8B400;
+  /* Brand gold — strong hierarchy for CTAs / active / focus */
+  --ent-primary: #f8b400;
+  --ent-primary-hover: #ffc933;
+  --ent-primary-pressed: #e8a800;
+  --ent-primary-soft: rgba(248, 180, 0, 0.12);
+  --ent-primary-glow: rgba(248, 180, 0, 0.35);
+  --ent-secondary: #71717a;
+  --ent-secondary-hover: #a1a1aa;
+  --ent-accent: #f8b400;
 
-  --ent-text-main: #F4F4F5;
-  --ent-text-muted: #A1A1AA;
-  --ent-border: #242427;
+  --ent-text-main: #f4f4f5;
+  --ent-text-muted: #a1a1aa;
+  --ent-text-subtle: #71717a;
+  --ent-border: #2e2e36;
+  --ent-border-subtle: rgba(255, 255, 255, 0.08);
+  --ent-border-gold: rgba(248, 180, 0, 0.28);
 
-  --ent-success: #22C55E;
-  --ent-warning: #F59E0B;
-  --ent-danger: #EF4444;
-  --ent-info: #3B82F6;
+  --ent-success: #22c55e;
+  --ent-warning: #f59e0b;
+  --ent-danger: #ef4444;
+  --ent-info: #3b82f6;
 
-  --radius-input: 8px;
-  --radius-button: 9999px;
+  --radius-input: 12px;
+  --radius-button: 12px;
   --radius-card: 20px;
   --radius-modal: 16px;
   --radius-table: 16px;
+
+  --ent-shadow-card: 0 8px 28px rgba(0, 0, 0, 0.45), 0 0 0 1px rgba(255, 255, 255, 0.04);
+  --ent-shadow-card-hover: 0 14px 36px rgba(0, 0, 0, 0.55), 0 0 0 1px rgba(248, 180, 0, 0.22);
+  --ent-shadow-gold: 0 4px 20px rgba(248, 180, 0, 0.32);
+  --ent-ease-out: cubic-bezier(0.22, 1, 0.36, 1);
+  --ent-duration: 180ms;
 }
 
 @theme inline {
   --color-ent-bg: var(--ent-bg);
   --color-ent-surface: var(--ent-surface);
   --color-ent-card: var(--ent-card);
+  --color-ent-elevated: var(--ent-elevated);
   --color-ent-primary: var(--ent-primary);
   --color-ent-primary-hover: var(--ent-primary-hover);
   --color-ent-secondary: var(--ent-secondary);
   --color-ent-secondary-hover: var(--ent-secondary-hover);
   --color-ent-text: var(--ent-text-main);
-  --color-ent-[#6B7280]: var(--ent-text-muted);
+  --color-ent-muted: var(--ent-text-muted);
+  --color-ent-subtle: var(--ent-text-subtle);
   --color-ent-border: var(--ent-border);
+  --color-ent-success: var(--ent-success);
+  --color-ent-warning: var(--ent-warning);
+  --color-ent-danger: var(--ent-danger);
+  --color-ent-info: var(--ent-info);
 }
 
 .ent-card-shadow {
-  box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.4);
+  box-shadow: var(--ent-shadow-card);
 }
 
 .ent-card-hover {
-  transition: transform 150ms ease, box-shadow 150ms ease, border-color 150ms ease;
+  transition:
+    transform var(--ent-duration) var(--ent-ease-out),
+    box-shadow var(--ent-duration) var(--ent-ease-out),
+    border-color var(--ent-duration) var(--ent-ease-out);
 }
 
 .ent-card-hover:hover {
   transform: translateY(-2px);
-  border-color: rgba(248, 180, 0, 0.3);
-  box-shadow: 0 12px 36px 0 rgba(0, 0, 0, 0.6);
+  border-color: var(--ent-border-gold);
+  box-shadow: var(--ent-shadow-card-hover);
 }
 
-/* Premium Dark Background Mesh with Primary Gold Accents */
-body {
-  background-color: #09090B;
-  color: #F4F4F5;
+/* Ambient canvas — subtle gold wash so pure black never feels flat */
+.ent-ambient-bg {
+  background-color: var(--ent-bg);
+  background-image:
+    radial-gradient(ellipse 80% 50% at 15% -10%, rgba(248, 180, 0, 0.09), transparent 55%),
+    radial-gradient(ellipse 60% 40% at 90% 0%, rgba(248, 180, 0, 0.04), transparent 50%),
+    radial-gradient(ellipse 50% 30% at 50% 100%, rgba(248, 180, 0, 0.03), transparent 60%);
 }
 
-/* Custom Scrollbar for Enterprise Apps */
-::-webkit-scrollbar {
+.ent-gold-bar {
+  width: 3px;
+  border-radius: 9999px;
+  background: linear-gradient(180deg, #ffd54a 0%, #f8b400 55%, #e8a800 100%);
+  box-shadow: 0 0 12px rgba(248, 180, 0, 0.45);
+}
+
+@keyframes ent-fade-up {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes ent-soft-glow {
+  0%,
+  100% {
+    box-shadow: 0 0 0 0 rgba(248, 180, 0, 0);
+  }
+  50% {
+    box-shadow: 0 0 20px 0 rgba(248, 180, 0, 0.22);
+  }
+}
+
+@keyframes ent-check-pop {
+  0% {
+    transform: scale(0.6);
+    opacity: 0;
+  }
+  60% {
+    transform: scale(1.12);
+  }
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+.ent-animate-in {
+  animation: ent-fade-up 0.35s var(--ent-ease-out) both;
+}
+
+/* Dark portal scrollbar — must target descendant scroll containers
+   (`main`, sidebar `nav`). The `data-admin-portal` root is overflow-hidden. */
+.ent-scrollbar,
+[data-admin-portal] {
+  scrollbar-width: thin;
+  scrollbar-color: #3f3f46 var(--ent-surface);
+}
+
+.ent-scrollbar::-webkit-scrollbar,
+[data-admin-portal] ::-webkit-scrollbar,
+[data-admin-portal]::-webkit-scrollbar {
   width: 6px;
   height: 6px;
 }
 
-::-webkit-scrollbar-track {
-  background: #F6F8FC;
+.ent-scrollbar::-webkit-scrollbar-track,
+[data-admin-portal] ::-webkit-scrollbar-track,
+[data-admin-portal]::-webkit-scrollbar-track {
+  background: var(--ent-surface);
 }
 
-::-webkit-scrollbar-thumb {
-  background: #D1D5DB;
+.ent-scrollbar::-webkit-scrollbar-thumb,
+[data-admin-portal] ::-webkit-scrollbar-thumb,
+[data-admin-portal]::-webkit-scrollbar-thumb {
+  background: #3f3f46;
   border-radius: 9999px;
 }
 
-::-webkit-scrollbar-thumb:hover {
-  background: #9CA3AF;
+.ent-scrollbar::-webkit-scrollbar-thumb:hover,
+[data-admin-portal] ::-webkit-scrollbar-thumb:hover,
+[data-admin-portal]::-webkit-scrollbar-thumb:hover {
+  background: #f8b400;
+}
+
+/* Airplane loader motion */
+@keyframes ent-plane-fly {
+  0% {
+    transform: translate(-8%, 18%) rotate(-8deg);
+    opacity: 0;
+  }
+  12% {
+    opacity: 1;
+  }
+  50% {
+    transform: translate(35%, -28%) rotate(4deg);
+    opacity: 1;
+  }
+  88% {
+    opacity: 1;
+  }
+  100% {
+    transform: translate(88%, 8%) rotate(12deg);
+    opacity: 0;
+  }
+}
+
+@keyframes ent-contrail-pulse {
+  0%,
+  100% {
+    opacity: 0.25;
+    transform: translate(-50%, -50%) scaleX(0.7);
+  }
+  50% {
+    opacity: 0.7;
+    transform: translate(-50%, -50%) scaleX(1);
+  }
+}
+
+@keyframes ent-flight-dash {
+  to {
+    stroke-dashoffset: -40;
+  }
+}
+
+.ent-plane-fly {
+  animation: ent-plane-fly 2.2s cubic-bezier(0.22, 1, 0.36, 1) infinite;
+}
+
+.ent-contrail {
+  animation: ent-contrail-pulse 2.2s ease-in-out infinite;
+}
+
+.ent-flight-path {
+  animation: ent-flight-dash 1.4s linear infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ent-plane-fly,
+  .ent-contrail,
+  .ent-flight-path {
+    animation: none !important;
+  }
+  .ent-plane-fly {
+    opacity: 1;
+    transform: translate(40%, -10%) rotate(0deg);
+  }
+}
+
+/* Premium Select dropdown — CSS so hover works even when portaled outside app
+   shells and when Tailwind has not scanned packages/ui class strings. */
+[data-slot="select-content"] {
+  border: 1px solid rgba(248, 180, 0, 0.35) !important;
+  background-color: var(--ent-card, #16161b) !important;
+  color: var(--ent-text-main, #f4f4f5) !important;
+  box-shadow:
+    0 16px 40px rgba(0, 0, 0, 0.55),
+    0 0 0 1px rgba(248, 180, 0, 0.12) !important;
+  border-radius: 12px !important;
+  overflow: hidden;
+  z-index: 200;
+}
+
+[data-slot="select-content"][data-light="true"],
+[data-slot="select-content"].ent-select-light {
+  border: 1px solid #d4d4d8 !important;
+  background-color: #ffffff !important;
+  color: #18181b !important;
+  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.12) !important;
+}
+
+[data-slot="select-item"] {
+  border-radius: 8px !important;
+  cursor: pointer;
+  transition:
+    background-color 120ms ease,
+    color 120ms ease;
+}
+
+[data-slot="select-item"][data-highlighted] {
+  background-color: #f8b400 !important;
+  color: #0c0c0f !important;
+  font-weight: 700 !important;
+}
+
+[data-slot="select-item"][data-state="checked"]:not([data-highlighted]) {
+  background-color: rgba(248, 180, 0, 0.18) !important;
+  color: #f8b400 !important;
+  font-weight: 600 !important;
+}
+
+[data-slot="select-content"][data-light="true"] [data-slot="select-item"][data-state="checked"]:not([data-highlighted]),
+[data-slot="select-content"].ent-select-light [data-slot="select-item"][data-state="checked"]:not([data-highlighted]) {
+  background-color: rgba(248, 180, 0, 0.15) !important;
+  color: #b45309 !important;
+}
+
+[data-slot="select-trigger"][data-state="open"] {
+  border-color: #f8b400 !important;
+  box-shadow: 0 0 0 3px rgba(248, 180, 0, 0.28) !important;
 }

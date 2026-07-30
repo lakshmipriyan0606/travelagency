@@ -11,9 +11,9 @@ import { destinationOptions } from "@/config/destinations";
 export function PackageFormBasicInfo({ formControl, isActivity, watch }: { formControl: any, isActivity: boolean, watch: any }) {
   return (
     <div className="animate-in fade-in slide-in-from-right-4 duration-500">
-      <Card className="p-6 border border-neutral-200/60 shadow-xl shadow-neutral-200/30 rounded-[24px] overflow-hidden bg-white/80 backdrop-blur-md transition-all">
+      <Card className="p-6 md:p-8 rounded-[20px] overflow-visible transition-all ent-animate-in gap-5" hoverable={false}>
         <SectionHeader icon={Package} title="General Information" subtitle="Define the core identity of this travel package" />
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-1 mt-2">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-x-5 gap-y-5 mt-2 items-start">
           <StyledField>
             <ReusableInput control={formControl} name="packageName" label={isActivity ? "Activity Name" : "Package Name"} required variant="floating" />
           </StyledField>
@@ -51,7 +51,7 @@ export function PackageFormBasicInfo({ formControl, isActivity, watch }: { formC
             </StyledField>
           )}
           {isActivity && (
-            <StyledField>
+            <StyledField className="md:col-span-2">
               <SelectField
                 control={formControl}
                 name="activityCategory"
@@ -61,8 +61,8 @@ export function PackageFormBasicInfo({ formControl, isActivity, watch }: { formC
                 required
               />
               {!watch("activityCategory") && (
-                <p className="text-[10px] text-amber-600 font-bold mt-1 animate-pulse">
-                  ⚠️ Please select an activity category for this to show in the Activity section!
+                <p className="mt-2.5 text-[11px] text-[#F8B400] font-semibold leading-relaxed">
+                  Please select an activity category for this to show in the Activity section.
                 </p>
               )}
             </StyledField>
@@ -70,9 +70,9 @@ export function PackageFormBasicInfo({ formControl, isActivity, watch }: { formC
         </div>
       </Card>
 
-      <Card className="p-6 border border-neutral-200/60 shadow-xl shadow-neutral-200/30 rounded-[24px] overflow-hidden bg-white/80 backdrop-blur-md transition-all mt-6">
+      <Card className="p-6 md:p-8 rounded-[20px] overflow-visible transition-all mt-6 ent-animate-in gap-5" hoverable={false}>
         <SectionHeader icon={Tag} title="SEO Configuration" subtitle="Optimize your package for search engines" />
-        <div className="grid grid-cols-1 gap-1 mt-2">
+        <div className="grid grid-cols-1 gap-y-5 mt-2">
           <StyledField>
             <ReusableInput control={formControl} name="seo.title" label="SEO Title" variant="floating" />
           </StyledField>
@@ -87,4 +87,3 @@ export function PackageFormBasicInfo({ formControl, isActivity, watch }: { formC
     </div>
   );
 }
-

@@ -16,15 +16,15 @@ export default async function BookingsListPage() {
   let bookings: Booking[] = [];
   try {
     const res = await fetch(`${config.apiBaseUrl}${ENDPOINTS.server.bookingsAll}`, {
-      headers: {
-        Cookie: `access_token=${token}`
-      },
-      next: { revalidate: 0 },
+      headers: token ? { Cookie: `access_token=${token}` } : {},
+      cache: "no-store",
     });
-    
+
     if (res.ok) {
       const json = await res.json();
-      bookings = json.bookings || json.data || [];
+      if (Array.isArray(json?.bookings)) bookings = json.bookings;
+      else if (Array.isArray(json?.data)) bookings = json.data;
+      else if (Array.isArray(json)) bookings = json;
     }
   } catch (error) {
     console.error("Failed to fetch bookings:", error);

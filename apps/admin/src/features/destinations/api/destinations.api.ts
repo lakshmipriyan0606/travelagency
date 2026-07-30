@@ -2,9 +2,18 @@ import axiosClient from '@/lib/apiClient';
 import { Destination, DestinationFormValues } from "../validation/destination.schema";
 import { ENDPOINTS } from "@/lib/endpoints";
 
+/** sendSuccess puts arrays under `.data`; objects are flattened onto the envelope. */
+function unwrapList<T>(payload: unknown): T[] {
+    if (Array.isArray(payload)) return payload as T[];
+    if (payload && typeof payload === "object" && Array.isArray((payload as { data?: unknown }).data)) {
+        return (payload as { data: T[] }).data;
+    }
+    return [];
+}
+
 export const getDestinations = async (): Promise<Destination[]> => {
     const response = await axiosClient.get(ENDPOINTS.client.destinations.list);
-    return response.data;
+    return unwrapList<Destination>(response.data);
 };
 
 export const getDestinationById = async (id: string): Promise<Destination> => {

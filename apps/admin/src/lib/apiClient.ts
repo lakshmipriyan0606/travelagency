@@ -12,6 +12,7 @@ apiClient.interceptors.request.use((config) => {
     const isInfrastructure = url.startsWith('admin/metrics') || url.startsWith('admin/queue');
     const isAdminDirect = url.startsWith('admin/');
     const isUpload = url.startsWith('upload');
+    const isAnalytics = url.startsWith('analytics/');
 
     if (isAdminAuth) {
       config.url = 'v1/b2c-admin/auth/' + url.replace('admin/', '');
@@ -21,6 +22,9 @@ apiClient.interceptors.request.use((config) => {
     } else if (isAdminDirect) {
       config.url = 'v1/b2c-admin/' + url.replace('admin/', '');
     } else if (isUpload) {
+      config.url = 'v1/b2c-admin/' + url;
+    } else if (isAnalytics) {
+      // Dashboard metrics live on the admin gateway, not public B2C
       config.url = 'v1/b2c-admin/' + url;
     } else if (url.startsWith('blogs/admin')) {
       config.url = 'v1/b2c-admin/blogs/' + url.replace('blogs/admin/', '');

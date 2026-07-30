@@ -2,9 +2,18 @@ import axiosClient from '@/lib/apiClient';
 import { Review, ReviewFormValues } from "../validation/review.schema";
 import { ENDPOINTS } from "@/lib/endpoints";
 
+/** sendSuccess puts arrays under `.data`; objects are flattened onto the envelope. */
+function unwrapList<T>(payload: unknown): T[] {
+    if (Array.isArray(payload)) return payload as T[];
+    if (payload && typeof payload === "object" && Array.isArray((payload as { data?: unknown }).data)) {
+        return (payload as { data: T[] }).data;
+    }
+    return [];
+}
+
 export const getAdminReviews = async (): Promise<Review[]> => {
     const response = await axiosClient.get(ENDPOINTS.client.reviews.adminList);
-    return response.data;
+    return unwrapList<Review>(response.data);
 };
 
 export const createReview = async (data: ReviewFormValues & { orderNumber: number }): Promise<Review> => {

@@ -1,9 +1,37 @@
 @import "tailwindcss";
 @import "@travelagency/theme/theme.css";
 
+/* Ensure utilities used in shared packages are generated for admin */
+@source "../../../../packages/ui/src/**/*.{js,ts,jsx,tsx}";
+@source "../../../../packages/forms/src/**/*.{js,ts,jsx,tsx}";
+
+/* Ensure dark thin scrollbars on every admin scroll surface */
+html,
+body {
+  scrollbar-width: thin;
+  scrollbar-color: #3f3f46 #101014;
+}
+
+html::-webkit-scrollbar,
+body::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+html::-webkit-scrollbar-thumb,
+body::-webkit-scrollbar-thumb {
+  background: #3f3f46;
+  border-radius: 9999px;
+}
+
+html::-webkit-scrollbar-thumb:hover,
+body::-webkit-scrollbar-thumb:hover {
+  background: #f8b400;
+}
+
 :root {
-  --background: #090909;
-  --foreground: #FFFFFF;
+  --background: var(--ent-bg);
+  --foreground: var(--ent-text-main);
 }
 
 body {
@@ -14,6 +42,197 @@ body {
   -moz-osx-font-smoothing: grayscale;
 }
 
+/* Admin portal surface helpers — prefer these over raw white/black */
+[data-admin-portal] {
+  color: var(--ent-text-main);
+  background-color: var(--ent-bg);
+  background-image:
+    radial-gradient(ellipse 80% 50% at 12% -8%, rgba(248, 180, 0, 0.08), transparent 55%),
+    radial-gradient(ellipse 55% 35% at 95% 5%, rgba(248, 180, 0, 0.035), transparent 50%);
+}
+
+[data-admin-portal] .admin-page-title {
+  color: var(--ent-text-main);
+}
+
+[data-admin-portal] .admin-page-subtitle {
+  color: var(--ent-text-muted);
+}
+
+[data-admin-portal] .admin-surface {
+  background-color: var(--ent-card);
+  border: 1px solid var(--ent-border-subtle);
+  border-radius: var(--radius-card);
+  box-shadow: var(--ent-shadow-card);
+  position: relative;
+}
+
+[data-admin-portal] .admin-surface::before {
+  content: "";
+  position: absolute;
+  inset: 0 0 auto 0;
+  height: 1px;
+  border-radius: var(--radius-card) var(--radius-card) 0 0;
+  background: linear-gradient(90deg, transparent, rgba(248, 180, 0, 0.35), transparent);
+  pointer-events: none;
+}
+
+[data-admin-portal] .admin-surface-elevated {
+  background-color: var(--ent-elevated);
+  border: 1px solid var(--ent-border-subtle);
+}
+
+[data-admin-portal] .admin-field {
+  background-color: var(--ent-surface);
+  border: 1px solid var(--ent-border);
+  color: var(--ent-text-main);
+  border-radius: var(--radius-input);
+  transition:
+    border-color var(--ent-duration) var(--ent-ease-out),
+    box-shadow var(--ent-duration) var(--ent-ease-out);
+}
+
+[data-admin-portal] .admin-field:focus,
+[data-admin-portal] .admin-field:focus-within {
+  border-color: var(--ent-primary);
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(248, 180, 0, 0.2), 0 0 18px rgba(248, 180, 0, 0.12);
+}
+
+[data-admin-portal] .admin-badge-success {
+  background: rgba(34, 197, 94, 0.12);
+  color: #4ade80;
+}
+
+[data-admin-portal] .admin-badge-warning {
+  background: rgba(248, 180, 0, 0.12);
+  color: #fbbf24;
+}
+
+[data-admin-portal] .admin-badge-danger {
+  background: rgba(239, 68, 68, 0.12);
+  color: #f87171;
+}
+
+[data-admin-portal] .admin-badge-muted {
+  background: rgba(161, 161, 170, 0.12);
+  color: #a1a1aa;
+}
+
+[data-admin-portal] .admin-badge-info {
+  background: rgba(59, 130, 246, 0.12);
+  color: #60a5fa;
+}
+
+/* Floating form field polish — shared across admin forms */
+[data-admin-portal] [data-slot="input"],
+[data-admin-portal] [data-slot="textarea"],
+[data-admin-portal] [data-slot="select-trigger"] {
+  transition:
+    border-color 180ms cubic-bezier(0.22, 1, 0.36, 1),
+    box-shadow 180ms cubic-bezier(0.22, 1, 0.36, 1),
+    background-color 180ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+[data-admin-portal] [data-slot="select-content"] {
+  /* Width comes from Radix + SelectContent classes.
+     Do NOT animate transform here — it fights popper positioning. */
+  z-index: 200;
+  min-width: var(--radix-select-trigger-width);
+  width: var(--radix-select-trigger-width);
+}
+
+/* Portaled menus render on document.body — still force gold hover */
+[data-slot="select-item"][data-highlighted] {
+  background-color: #f8b400 !important;
+  color: #0c0c0f !important;
+  font-weight: 700 !important;
+}
+
+[data-slot="select-item"][data-state="checked"]:not([data-highlighted]) {
+  background-color: rgba(248, 180, 0, 0.18) !important;
+  color: #f8b400 !important;
+}
+
+[data-admin-portal] [data-slot="checkbox"] {
+  width: 1.25rem;
+  height: 1.25rem;
+  border-radius: 6px;
+  border-color: rgba(255, 255, 255, 0.22);
+  background: var(--ent-surface);
+  transition:
+    background-color 160ms ease,
+    border-color 160ms ease,
+    box-shadow 160ms ease,
+    transform 120ms ease;
+}
+
+[data-admin-portal] [data-slot="checkbox"][data-state="checked"] {
+  background: var(--ent-primary);
+  border-color: var(--ent-primary);
+  color: #0c0c0f;
+  box-shadow: 0 0 12px rgba(248, 180, 0, 0.35);
+}
+
+[data-admin-portal] [data-slot="checkbox"][data-state="checked"] [data-slot="checkbox-indicator"] {
+  animation: ent-check-pop 0.22s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+/* Compatibility bridge: remapped light-era utilities still present on feature pages */
+[data-admin-portal] .text-gray-900,
+[data-admin-portal] .text-neutral-900,
+[data-admin-portal] .text-neutral-800 {
+  color: var(--ent-text-main) !important;
+}
+
+[data-admin-portal] .text-gray-600,
+[data-admin-portal] .text-neutral-600,
+[data-admin-portal] .text-gray-500,
+[data-admin-portal] .text-neutral-500 {
+  color: var(--ent-text-muted) !important;
+}
+
+[data-admin-portal] .text-gray-400,
+[data-admin-portal] .text-neutral-400 {
+  color: var(--ent-text-subtle) !important;
+}
+
+[data-admin-portal] .bg-white,
+[data-admin-portal] .bg-white\/80,
+[data-admin-portal] .bg-white\/90,
+[data-admin-portal] .bg-neutral-50,
+[data-admin-portal] .bg-neutral-50\/30,
+[data-admin-portal] .bg-neutral-50\/50,
+[data-admin-portal] .bg-neutral-50\/70,
+[data-admin-portal] .bg-neutral-100 {
+  background-color: var(--ent-card) !important;
+}
+
+[data-admin-portal] .border-neutral-100,
+[data-admin-portal] .border-neutral-200,
+[data-admin-portal] .border-neutral-200\/50,
+[data-admin-portal] .border-neutral-200\/60,
+[data-admin-portal] .border-gray-200 {
+  border-color: var(--ent-border-subtle) !important;
+}
+
+[data-admin-portal] .shadow-neutral-100\/50,
+[data-admin-portal] .shadow-neutral-200\/30,
+[data-admin-portal] .shadow-neutral-200\/40,
+[data-admin-portal] .shadow-xl.shadow-neutral-200\/30 {
+  --tw-shadow-color: rgba(0, 0, 0, 0.4) !important;
+  box-shadow: var(--ent-shadow-card) !important;
+}
+
+[data-admin-portal] .hover\:bg-neutral-50:hover,
+[data-admin-portal] .hover\:bg-neutral-100:hover {
+  background-color: rgba(255, 255, 255, 0.04) !important;
+}
+
+[data-admin-portal] .divide-neutral-100 > :not([hidden]) ~ :not([hidden]) {
+  border-color: var(--ent-border-subtle) !important;
+}
+
 @keyframes slide-in-right {
   from { transform: translateX(100%); opacity: 0; }
   to   { transform: translateX(0);    opacity: 1; }
@@ -21,4 +240,14 @@ body {
 
 .animate-slide-in-right {
   animation: slide-in-right 0.28s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  [data-admin-portal] *,
+  [data-admin-portal] *::before,
+  [data-admin-portal] *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
 }

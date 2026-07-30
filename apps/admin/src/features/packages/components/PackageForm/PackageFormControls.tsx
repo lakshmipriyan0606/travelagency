@@ -3,12 +3,12 @@ import { ArrowRight, CheckCircle, Loader2 } from "lucide-react";
 export function PackageFormControls({ activeStep, totalSteps, nextStep, prevStep, isSubmitting, isDirty, id }: { activeStep: number, totalSteps: number, nextStep: (e?: React.MouseEvent) => void, prevStep: () => void, isSubmitting: boolean, isDirty: boolean, id: string }) {
   return (
     <div className="sticky bottom-6 z-50 px-4 mt-12">
-      <div className="max-w-3xl mx-auto flex items-center gap-4 bg-white/80 backdrop-blur-xl p-3 rounded-[24px] border border-white shadow-xl shadow-neutral-200">
+      <div className="max-w-3xl mx-auto flex items-center gap-3 bg-[var(--ent-card,#16161b)]/95 backdrop-blur-xl p-3 rounded-[20px] border border-white/[0.1] shadow-[0_12px_36px_rgba(0,0,0,0.55),0_0_0_1px_rgba(248,180,0,0.08)]">
         {activeStep > 0 && (
           <button
             type="button"
             onClick={prevStep}
-            className="px-6 py-3 rounded-xl font-bold text-[10px] tracking-wider uppercase text-neutral-500 bg-neutral-100 hover:bg-neutral-200 transition-all"
+            className="px-6 py-3 rounded-xl font-bold text-[10px] tracking-wider uppercase text-zinc-300 bg-[var(--ent-elevated,#1c1c22)] hover:bg-white/[0.08] border border-white/[0.08] transition-all"
           >
             Back
           </button>
@@ -17,7 +17,7 @@ export function PackageFormControls({ activeStep, totalSteps, nextStep, prevStep
           <button
             type="button"
             onClick={(e) => nextStep(e)}
-            className="flex-1 py-3 rounded-xl font-bold text-[10px] tracking-wider uppercase text-white bg-neutral-800 hover:bg-neutral-900 shadow-lg shadow-neutral-200 transition-all flex items-center justify-center gap-2"
+            className="flex-1 py-3 rounded-xl font-extrabold text-[11px] tracking-wider uppercase text-[#0c0c0f] bg-gradient-to-r from-[#FFD54A] via-[#F8B400] to-[#E8A800] hover:brightness-105 shadow-[0_4px_18px_rgba(248,180,0,0.35)] transition-all duration-200 active:scale-[0.98] flex items-center justify-center gap-2"
           >
             <span>Next Step</span>
             <ArrowRight size={14} />
@@ -26,7 +26,7 @@ export function PackageFormControls({ activeStep, totalSteps, nextStep, prevStep
           <button
             type="submit"
             disabled={isSubmitting || !isDirty}
-            className={`flex-1 py-3 rounded-xl font-bold text-[10px] tracking-wider uppercase flex items-center justify-center gap-2 shadow-xl transition-all ${isSubmitting || !isDirty ? "bg-neutral-200 text-neutral-400 cursor-not-allowed" : "bg-gradient-to-r from-primary to-[#F69520] text-white hover:shadow-primary/40 active:scale-[0.99]"}`}
+            className={`flex-1 py-3 rounded-xl font-extrabold text-[11px] tracking-wider uppercase flex items-center justify-center gap-2 transition-all duration-200 ${isSubmitting || !isDirty ? "bg-zinc-800 text-zinc-500 cursor-not-allowed" : "bg-gradient-to-r from-[#FFD54A] via-[#F8B400] to-[#E8A800] text-[#0c0c0f] hover:brightness-105 shadow-[0_4px_18px_rgba(248,180,0,0.35)] active:scale-[0.98]"}`}
           >
             {isSubmitting ? (
               <>

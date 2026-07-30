@@ -52,7 +52,7 @@ export default function B2BAdminShell({ user, children }: B2BAdminShellProps) {
   const currentTitle = pageTitleMap[pathname] || "B2B Admin Overview";
 
   return (
-    <div className="flex h-screen w-full bg-[#09090B] overflow-hidden text-white">
+    <div className="flex h-screen w-full ent-ambient-bg overflow-hidden text-[var(--ent-text-main,#F4F4F5)]" data-admin-portal>
       {/* Shared Unified Enterprise Sidebar */}
       <EnterpriseSidebar
         appName="TravelHero"
@@ -83,7 +83,7 @@ export default function B2BAdminShell({ user, children }: B2BAdminShellProps) {
         />
 
         {/* Dynamic Page Content Container */}
-        <main className="flex-1 overflow-y-auto p-8 space-y-8 max-w-[1440px] w-full mx-auto">
+        <main className="flex-1 overflow-y-auto ent-scrollbar p-8 space-y-8 max-w-[1440px] w-full mx-auto">
           {children}
         </main>
       </div>

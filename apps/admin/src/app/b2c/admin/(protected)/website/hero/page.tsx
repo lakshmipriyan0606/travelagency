@@ -9,7 +9,7 @@ export default async function WebsiteHeroPage() {
   await requireAdmin();
 
   return (
-    <div className="max-w-6xl mx-auto space-y-6 pb-24">
+    <div className="pb-24">
       <WebsiteHeroClient />
     </div>
   );

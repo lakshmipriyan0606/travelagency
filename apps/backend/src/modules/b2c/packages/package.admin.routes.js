@@ -23,6 +23,14 @@ import {
 
 const router = express.Router();
 
+// Admin list/read — must be registered before /:id
+router.get('/', protectRoute, adminOnly, (req, res, next) => {
+  req.query.isAdmin = 'true';
+  next();
+}, getAllPackages);
+router.get('/takenRanks', protectRoute, adminOnly, getTakenRanks);
+router.get('/:id', protectRoute, adminOnly, getPackageById);
+
 router.post(
   '/create',
   protectRoute,
