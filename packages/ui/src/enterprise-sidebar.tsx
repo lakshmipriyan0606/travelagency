@@ -7,8 +7,6 @@ import { motion } from "framer-motion";
 import {
   ChevronLeft,
   ChevronRight,
-  LogOut,
-  Settings,
   Building2,
   LucideIcon,
 } from "lucide-react";
@@ -25,13 +23,6 @@ export interface EnterpriseSidebarProps {
   appName: string;
   appLogoSubtitle?: string;
   navItems: NavItem[];
-  userProfile?: {
-    name: string;
-    email: string;
-    role?: string;
-    avatarUrl?: string;
-  };
-  onLogout?: () => void;
 }
 
 /** Prefer the longest matching href so /activities/new does not also activate /activities. */
@@ -48,12 +39,6 @@ export function EnterpriseSidebar({
   appName,
   appLogoSubtitle = "ENTERPRISE",
   navItems,
-  userProfile = {
-    name: "Admin User",
-    email: "admin@travelagency.com",
-    role: "System Administrator",
-  },
-  onLogout,
 }: EnterpriseSidebarProps) {
   const pathname = usePathname();
   const [isCollapsed, setIsCollapsed] = React.useState(false);
@@ -69,9 +54,21 @@ export function EnterpriseSidebar({
       transition={{ duration: 0.25, ease: [0.22, 1, 0.36, 1] }}
       className="relative flex flex-col h-screen sticky top-0 z-30 bg-[#07070a] border-r border-white/[0.08] shadow-[4px_0_28px_rgba(0,0,0,0.7)] select-none shrink-0"
     >
-      {/* Brand Header */}
-      <div className="flex items-center justify-between h-[72px] px-5 border-b border-white/[0.08] bg-[#07070a]">
-        <div className="flex items-center gap-3 overflow-hidden">
+      {/* Brand Header + collapse toggle */}
+      <div
+        className={cn(
+          "flex border-b border-white/[0.08] bg-[#07070a] shrink-0",
+          isCollapsed
+            ? "flex-col items-center gap-2 py-4 px-2"
+            : "items-center justify-between h-[72px] px-5"
+        )}
+      >
+        <div
+          className={cn(
+            "flex items-center gap-3 overflow-hidden min-w-0",
+            isCollapsed && "justify-center"
+          )}
+        >
           <div className="flex items-center justify-center h-10 w-10 rounded-xl bg-gradient-to-br from-[#FFD54A] to-[#F8B400] text-black font-bold shadow-[0_0_18px_rgba(248,180,0,0.45)] shrink-0">
             <Building2 className="h-5 w-5 text-black" />
           </div>
@@ -92,10 +89,24 @@ export function EnterpriseSidebar({
             </motion.div>
           )}
         </div>
+
+        <button
+          type="button"
+          onClick={() => setIsCollapsed(!isCollapsed)}
+          className="flex items-center justify-center h-9 w-9 rounded-xl bg-[#121216] border border-white/[0.08] text-zinc-400 hover:text-[#F8B400] hover:border-[#F8B400]/30 hover:bg-white/[0.06] transition-colors shrink-0 cursor-pointer"
+          title={isCollapsed ? "Expand Sidebar" : "Collapse Sidebar"}
+          aria-label={isCollapsed ? "Expand sidebar" : "Collapse sidebar"}
+        >
+          {isCollapsed ? (
+            <ChevronRight className="h-4 w-4" />
+          ) : (
+            <ChevronLeft className="h-4 w-4" />
+          )}
+        </button>
       </div>
 
-      {/* Navigation List */}
-      <nav className="flex-1 overflow-y-auto ent-scrollbar px-3 py-6 space-y-1.5">
+      {/* Navigation List — fills remaining height */}
+      <nav className="flex-1 min-h-0 overflow-y-auto ent-scrollbar px-3 py-6 space-y-1.5">
         {navItems.map((item) => {
           const Icon = item.icon;
           const isActive = activeHref !== null && item.href === activeHref;
@@ -152,69 +163,6 @@ export function EnterpriseSidebar({
           );
         })}
       </nav>
-
-      {/* Fixed Bottom Profile & Logout Section */}
-      <div className="p-3 border-t border-white/[0.08] bg-[#050507] flex flex-col gap-2.5 shrink-0">
-        <div
-          className={cn(
-            "p-2.5 rounded-xl bg-[#121216] border border-white/[0.08] flex items-center gap-3 shadow-inner",
-            isCollapsed && "justify-center p-2"
-          )}
-        >
-          <div className="h-9 w-9 rounded-lg bg-[#F8B400]/20 text-[#F8B400] flex items-center justify-center font-bold text-sm shrink-0 border border-[#F8B400]/30">
-            {userProfile.name.charAt(0).toUpperCase()}
-          </div>
-          {!isCollapsed && (
-            <div className="flex flex-col min-w-0 flex-1">
-              <span className="text-[13px] font-bold text-white truncate">
-                {userProfile.name}
-              </span>
-              <span className="text-[11px] text-zinc-400 truncate">
-                {userProfile.email}
-              </span>
-            </div>
-          )}
-        </div>
-
-        <div className="flex items-center justify-between gap-2">
-          {onLogout ? (
-            <button
-              onClick={onLogout}
-              className={cn(
-                "flex items-center gap-2 h-9 px-3 rounded-xl text-red-400 hover:bg-red-500/10 transition-colors text-[13px] font-bold flex-1 justify-start cursor-pointer border border-transparent hover:border-red-500/20",
-                isCollapsed && "justify-center px-0 w-9 h-9"
-              )}
-              title="Logout"
-            >
-              <LogOut className="h-4 w-4 shrink-0 text-red-400" />
-              {!isCollapsed && <span>SIGN OUT</span>}
-            </button>
-          ) : (
-            <Link
-              href="/settings"
-              className={cn(
-                "flex items-center gap-2 h-9 px-3 rounded-xl text-zinc-400 hover:text-white hover:bg-white/[0.06] transition-colors text-[13px] font-medium flex-1",
-                isCollapsed && "justify-center px-0 w-9 h-9"
-              )}
-            >
-              <Settings className="h-4 w-4 shrink-0" />
-              {!isCollapsed && <span>Settings</span>}
-            </Link>
-          )}
-
-          <button
-            onClick={() => setIsCollapsed(!isCollapsed)}
-            className="flex items-center justify-center h-9 w-9 rounded-xl bg-[#121216] border border-white/[0.08] text-zinc-400 hover:text-[#F8B400] hover:border-[#F8B400]/30 hover:bg-white/[0.06] transition-colors shrink-0 cursor-pointer"
-            title={isCollapsed ? "Expand Sidebar" : "Collapse Sidebar"}
-          >
-            {isCollapsed ? (
-              <ChevronRight className="h-4 w-4" />
-            ) : (
-              <ChevronLeft className="h-4 w-4" />
-            )}
-          </button>
-        </div>
-      </div>
     </motion.aside>
   );
 }

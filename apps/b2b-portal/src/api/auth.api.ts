@@ -6,8 +6,25 @@ export const loginAgent = async (data: unknown) => {
   return res.data;
 };
 
+export const logoutAgent = async (refreshToken?: string | null) => {
+  const res = await axiosClient.post(ENDPOINTS.client.logout, {
+    refreshToken: refreshToken || undefined,
+  });
+  return res.data;
+};
+
+export const forgotPasswordAgent = async (data: { email: string }) => {
+  const res = await axiosClient.post(ENDPOINTS.client.forgotPassword, data);
+  return res.data;
+};
+
+export const resetPasswordAgent = async (data: { token: string; password: string }) => {
+  const res = await axiosClient.post(ENDPOINTS.client.resetPassword, data);
+  return res.data;
+};
+
 export const registerAgent = async (data: unknown) => {
-  const payload = { ...(data as Record<string, unknown>), role: "agent" };
+    const payload = { ...(data as Record<string, unknown>), role: "agent" };
   const res = await axiosClient.post(ENDPOINTS.client.register, payload);
   return res.data;
 };

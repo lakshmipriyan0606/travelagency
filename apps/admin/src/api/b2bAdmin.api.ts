@@ -36,20 +36,12 @@ export interface B2BAgency {
 export interface StatusLogEntry {
   _id: string;
   agencyId: string;
-  previousStatus: string;
-  newStatus: string;
+  /** Matches AgencyStatusLog.fromStatus on the backend */
+  fromStatus: string;
+  /** Matches AgencyStatusLog.toStatus on the backend */
+  toStatus: string;
   reason?: string;
   changedBy: { name: string; email: string; };
-  createdAt: string;
-}
-
-export interface B2BAgencyUser {
-  _id: string;
-  name: string;
-  email: string;
-  phone?: string;
-  designation?: string;
-  role: string;
   createdAt: string;
 }
 
@@ -58,8 +50,20 @@ export const b2bAdminLogin = async (payload: object) => {
   return data;
 };
 
-export const b2bAdminLogout = async () => {
-  const { data } = await axiosClient.post(ENDPOINTS.client.b2b.logout);
+export const b2bAdminForgotPassword = async (payload: { email: string }) => {
+  const { data } = await axiosClient.post(ENDPOINTS.client.b2b.forgotPassword, payload);
+  return data;
+};
+
+export const b2bAdminResetPassword = async (payload: { token: string; password: string }) => {
+  const { data } = await axiosClient.post(ENDPOINTS.client.b2b.resetPassword, payload);
+  return data;
+};
+
+export const b2bAdminLogout = async (refreshToken?: string | null) => {
+  const { data } = await axiosClient.post(ENDPOINTS.client.b2b.logout, {
+    refreshToken: refreshToken || undefined,
+  });
   return data;
 };
 
@@ -76,11 +80,6 @@ export const getB2BAgencies = async () => {
 export const getB2BAgencyById = async (id: string) => {
   const { data } = await axiosClient.get(ENDPOINTS.client.b2b.agencyById(id));
   return data?.data || data;
-};
-
-export const getB2BAgencyUsers = async (id: string) => {
-  const { data } = await axiosClient.get(ENDPOINTS.client.b2b.agencyUsers(id));
-  return data?.data?.data || data?.data || [];
 };
 
 export const approveB2BAgency = async (id: string) => {
@@ -115,6 +114,7 @@ export interface AdminQuoteRequest {
   reference: string;
   agencyId: string;
   agencyName?: string;
+  agencyTradeName?: string;
   destination: string;
   travelStart: string;
   travelEnd: string;
@@ -124,6 +124,8 @@ export interface AdminQuoteRequest {
   budgetCategory: 'economy' | 'standard' | 'premium' | 'luxury';
   status: 'draft' | 'submitted' | 'under_review' | 'vendor_sourcing' | 'quotation_preparation' | 'quotation_ready' | 'revision_requested' | 'quotation_updated' | 'accepted';
   contactPerson: { name: string; email: string; phone: string; designation?: string; };
+  adminFeedback?: string;
+  internalNotes?: string;
   createdAt: string;
   updatedAt: string;
 }
@@ -139,12 +141,26 @@ export const getAdminQuotes = async (params?: { page?: number; pageSize?: number
   return [];
 };
 
-export const getAdminQuotesByAgency = async (agencyId: string) => {
-  const { data } = await axiosClient.get(ENDPOINTS.client.b2b.quotesByAgency(agencyId));
-  return data?.data?.data || data?.data || [];
+export const getAdminQuotesByAgency = async (
+  agencyId: string,
+  params?: { page?: number; pageSize?: number; status?: string },
+) => {
+  const { data } = await axiosClient.get(ENDPOINTS.client.b2b.quotesByAgency(agencyId), { params });
+  if (Array.isArray(data?.data)) return data.data as AdminQuoteRequest[];
+  if (Array.isArray(data?.data?.data)) return data.data.data as AdminQuoteRequest[];
+  if (Array.isArray(data)) return data as AdminQuoteRequest[];
+  return [];
 };
 
-export const updateAdminQuoteStatus = async (id: string, status: string, notes?: string) => {
-  const { data } = await axiosClient.patch(ENDPOINTS.client.b2b.quoteStatusUpdate(id), { status, notes });
+export const updateAdminQuoteStatus = async (
+  id: string,
+  status: string,
+  notes?: string,
+) => {
+  const { data } = await axiosClient.patch(ENDPOINTS.client.b2b.quoteStatusUpdate(id), {
+    status,
+    notes,
+    adminFeedback: notes,
+  });
   return data?.data || data;
 };

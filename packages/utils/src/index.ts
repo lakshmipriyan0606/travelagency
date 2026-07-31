@@ -6,3 +6,11 @@
  */
 
 export { cn } from "./cn";
+export {
+  decodeJwtPayload,
+  getJwtExpirySeconds,
+  maxAgeSecondsFromJwt,
+  readBrowserCookie,
+  clearBrowserCookie,
+  type JwtPayload,
+} from "./jwt";

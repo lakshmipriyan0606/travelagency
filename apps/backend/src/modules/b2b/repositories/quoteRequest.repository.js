@@ -13,14 +13,16 @@ export const findByReference = async (reference, options = {}) => {
   return await QuoteRequest.findOne({ reference }, null, options).populate('agencyId').lean();
 };
 
-export const findSorted = async (filter = {}, sort = { createdAt: -1 }, page = 1, pageSize = 10, options = {}) => {
+export const findSorted = async (
+  filter = {},
+  sort = { createdAt: -1 },
+  page = 1,
+  pageSize = 10,
+  options = {}
+) => {
   const skip = (page - 1) * pageSize;
   const [data, total] = await Promise.all([
-    QuoteRequest.find(filter, null, options)
-      .sort(sort)
-      .skip(skip)
-      .limit(pageSize)
-      .lean(),
+    QuoteRequest.find(filter, null, options).sort(sort).skip(skip).limit(pageSize).lean(),
     QuoteRequest.countDocuments(filter, options),
   ]);
   return { data, total };
@@ -36,4 +38,8 @@ export const countDocuments = async (filter = {}, options = {}) => {
 
 export const aggregate = async (pipeline, options = {}) => {
   return await QuoteRequest.aggregate(pipeline, options);
+};
+
+export const deleteById = async (id, options = {}) => {
+  return await QuoteRequest.findByIdAndDelete(id, options);
 };

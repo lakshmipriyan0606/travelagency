@@ -18,6 +18,8 @@ const agencyUserSchema = new mongoose.Schema(
     phone: { type: String, required: true },
     designation: { type: String },
     passwordHash: { type: String, required: true, select: false },
+    passwordResetTokenHash: { type: String, select: false },
+    passwordResetExpires: { type: Date, select: false },
     role: {
       type: String,
       enum: ['owner', 'staff'],

@@ -103,6 +103,9 @@ export interface QuoteRequest {
   // Contact
   readonly contactPerson: ContactPerson;
 
+  /** Admin comment visible when status is Needs Changes. */
+  readonly adminFeedback?: string;
+
   // Metadata
   readonly timeline: readonly QuoteTimelineEvent[];
   readonly createdAt: string; // ISO-8601
@@ -125,6 +128,7 @@ export interface QuoteListItem {
   readonly status: QuoteStatus;
   readonly budgetCategory: BudgetCategory;
   readonly contactPerson?: ContactPerson;
+  readonly adminFeedback?: string;
   readonly createdAt: string;
 }
 

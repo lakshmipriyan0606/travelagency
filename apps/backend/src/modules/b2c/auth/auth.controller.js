@@ -66,12 +66,40 @@ export const register = async (req, res, next) => {
  */
 export const login = async (req, res, next) => {
   try {
-    const { email, password } = req.body;
-    const { accessToken, refreshToken, user } = await authService.loginUser(email, password);
+    const { email, password, rememberMe } = req.body;
+    const { accessToken, refreshToken, user } = await authService.loginUser(
+      email,
+      password,
+      Boolean(rememberMe)
+    );
 
-    setAuthCookies(res, accessToken, refreshToken);
+    setAuthCookies(res, accessToken, refreshToken, { rememberMe: Boolean(rememberMe) });
 
-    return sendSuccess(res, 200, 'Logged in', { user, accessToken });
+    return sendSuccess(res, 200, 'Logged in', {
+      user,
+      accessToken,
+      rememberMe: Boolean(rememberMe),
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+export const forgotPassword = async (req, res, next) => {
+  try {
+    const baseUrl = process.env.ADMIN_URL?.trim() || req.get('origin') || 'http://localhost:3002';
+    const result = await authService.requestPasswordReset(req.body?.email, { baseUrl });
+    return sendSuccess(res, 200, result.message);
+  } catch (error) {
+    next(error);
+  }
+};
+
+export const resetPassword = async (req, res, next) => {
+  try {
+    const { token, password } = req.body || {};
+    const result = await authService.resetPasswordWithToken(token, password);
+    return sendSuccess(res, 200, result.message);
   } catch (error) {
     next(error);
   }

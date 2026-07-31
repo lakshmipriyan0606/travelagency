@@ -78,7 +78,7 @@ export const KPI_DISPLAY: readonly KpiDisplayConfig[] = [
   },
   {
     key: "acceptedQuotes",
-    label: "Accepted",
+    label: "Approved",
     icon: CheckSquare,
     iconColor: "text-green-400 bg-green-500/10",
     sparkColor: "#22C55E",
@@ -100,13 +100,25 @@ export const KPI_DISPLAY: readonly KpiDisplayConfig[] = [
 
 // ─── Demo Pipeline (fallback when API empty) ─────────────────────────────────
 
+/** Agency-facing pipeline labels — keep in sync with Quote Portal STATUS_THEMES. */
+export type PipelineStatusLabel =
+  | "Draft"
+  | "Pending"
+  | "Approved"
+  | "Sourcing Vendors"
+  | "Preparing Proposal"
+  | "Ready"
+  | "Needs Changes"
+  | "Proposal Updated"
+  | "Accepted";
+
 export interface PipelineRow {
   readonly id: string;
   readonly quoteId: string;
   readonly customer: string;
   readonly destination: string;
   readonly amount: string;
-  readonly status: "Submitted" | "In Review" | "Pending" | "Draft" | "Ready" | "Accepted";
+  readonly status: PipelineStatusLabel;
 }
 
 export const DEMO_PIPELINE: readonly PipelineRow[] = [];
@@ -126,11 +138,14 @@ export const DEMO_OPERATIONS_FEED: readonly OperationsFeedItem[] = [];
 
 // Chart constants removed — volumes/destinations/conversion come from API.
 
-export const STATUS_STYLES = {
-  Submitted: "bg-blue-500/15 text-blue-400 border-blue-500/30",
-  "In Review": "bg-amber-500/15 text-amber-400 border-amber-500/30",
-  Pending: "bg-orange-500/15 text-orange-400 border-orange-500/30",
+export const STATUS_STYLES: Record<PipelineStatusLabel, string> = {
   Draft: "bg-zinc-500/15 text-zinc-400 border-zinc-500/30",
+  Pending: "bg-blue-500/15 text-blue-400 border-blue-500/30",
+  Approved: "bg-emerald-500/15 text-emerald-400 border-emerald-500/30",
+  "Sourcing Vendors": "bg-sky-500/15 text-sky-400 border-sky-500/30",
+  "Preparing Proposal": "bg-indigo-500/15 text-indigo-400 border-indigo-500/30",
   Ready: "bg-emerald-500/15 text-emerald-400 border-emerald-500/30",
+  "Needs Changes": "bg-red-500/15 text-red-400 border-red-500/30",
+  "Proposal Updated": "bg-teal-500/15 text-teal-400 border-teal-500/30",
   Accepted: "bg-green-500/15 text-green-400 border-green-500/30",
-} as const;
+};

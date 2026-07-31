@@ -23,6 +23,15 @@ import { AppError } from '#shared/errors/AppError.js';
 import * as userRepository from '../users/users.repository.js';
 import cache from '#config/cache.js';
 import { generateAccessToken, generateRefreshToken } from './auth.utils.js';
+import User from '../users/user.model.js';
+import {
+  buildResetUrl,
+  createPasswordResetToken,
+  hashPasswordResetToken,
+  PASSWORD_RESET_REQUEST_MESSAGE,
+  sendPasswordResetEmail,
+} from '#shared/utils/passwordReset.js';
+import { logger } from '#shared/utils/logger.js';
 
 /**
  * Registers a new user with a securely hashed password.
@@ -68,7 +77,7 @@ export const findUserById = async (id) => {
   return await userRepository.findById(id);
 };
 
-export const loginUser = async (email, password) => {
+export const loginUser = async (email, password, rememberMe = false) => {
   const user = await findUserByEmail(email);
   if (!user) throw new AppError('No user found', 404);
 
@@ -76,7 +85,7 @@ export const loginUser = async (email, password) => {
   if (!match) throw new AppError('Wrong password', 401);
 
   const accessToken = generateAccessToken(user);
-  const refreshToken = generateRefreshToken(user);
+  const refreshToken = generateRefreshToken(user, rememberMe);
 
   const decodedToken = jwt.decode(accessToken);
   const userObj = typeof user.toObject === 'function' ? user.toObject() : { ...user };
@@ -84,7 +93,69 @@ export const loginUser = async (email, password) => {
     userObj.exp = decodedToken.exp;
   }
 
-  return { accessToken, refreshToken, user: userObj };
+  return { accessToken, refreshToken, user: userObj, rememberMe: Boolean(rememberMe) };
+};
+
+export const requestPasswordReset = async (email, { baseUrl } = {}) => {
+  const normalizedEmail = String(email || '')
+    .toLowerCase()
+    .trim();
+  if (!normalizedEmail) {
+    throw new AppError('Email is required', 400);
+  }
+
+  const user = await User.findOne({ email: normalizedEmail }).select(
+    '+passwordResetTokenHash +passwordResetExpires'
+  );
+
+  if (user && !user.isDeleted) {
+    const { rawToken, tokenHash, expiresAt } = createPasswordResetToken();
+    user.passwordResetTokenHash = tokenHash;
+    user.passwordResetExpires = expiresAt;
+    await user.save();
+
+    const resetBase = baseUrl || process.env.ADMIN_URL?.trim() || 'http://localhost:3002';
+    const resetUrl = buildResetUrl(resetBase, '/b2c/admin/reset-password', rawToken);
+
+    try {
+      await sendPasswordResetEmail({
+        to: normalizedEmail,
+        resetUrl,
+        productName: 'TravelAgency Admin',
+      });
+    } catch (mailErr) {
+      user.passwordResetTokenHash = undefined;
+      user.passwordResetExpires = undefined;
+      await user.save();
+      logger.error({ err: mailErr }, 'B2C admin password reset email failed');
+      throw new AppError('Unable to send reset email. Please try again later.', 503);
+    }
+  }
+
+  return { message: PASSWORD_RESET_REQUEST_MESSAGE };
+};
+
+export const resetPasswordWithToken = async (token, password) => {
+  if (!token || !password || String(password).length < 6) {
+    throw new AppError('Valid token and password (min 6 characters) are required', 400);
+  }
+
+  const tokenHash = hashPasswordResetToken(token);
+  const user = await User.findOne({
+    passwordResetTokenHash: tokenHash,
+    passwordResetExpires: { $gt: new Date() },
+  }).select('+passwordResetTokenHash +passwordResetExpires');
+
+  if (!user) {
+    throw new AppError('Invalid or expired reset token', 400);
+  }
+
+  user.password = await bcrypt.hash(String(password), 10);
+  user.passwordResetTokenHash = undefined;
+  user.passwordResetExpires = undefined;
+  await user.save();
+
+  return { message: 'Password reset successfully' };
 };
 
 export const refreshUserToken = async (refreshToken) => {
@@ -94,7 +165,7 @@ export const refreshUserToken = async (refreshToken) => {
   if (cache.status === 'ready') {
     try {
       isRevoked = await cache.get(`revoked_token:${refreshToken}`);
-    } catch (err) {
+    } catch {
       // Ignored cache error
     }
   }
@@ -105,14 +176,14 @@ export const refreshUserToken = async (refreshToken) => {
   let decoded;
   try {
     decoded = jwt.verify(refreshToken, process.env.JWT_REFRESH_SECRET || process.env.JWT_SECRET);
-  } catch (err) {
+  } catch {
     throw new AppError('Invalid refresh token', 403);
   }
 
   const newAccessToken = jwt.sign(
     { id: decoded.id, role: decoded.role },
     process.env.JWT_ACCESS_SECRET || process.env.JWT_SECRET,
-    { expiresIn: process.env.JWT_ACCESS_EXPIRE || '59m' }
+    { expiresIn: process.env.JWT_ACCESS_EXPIRE || '1h' }
   );
 
   return newAccessToken;
@@ -127,12 +198,12 @@ export const logoutUser = async (refreshToken) => {
       if (timeToLive > 0 && cache.status === 'ready') {
         try {
           await cache.set(`revoked_token:${refreshToken}`, 'revoked', 'EX', timeToLive);
-        } catch (err) {
+        } catch {
           // Ignored cache error
         }
       }
     }
-  } catch (err) {
+  } catch {
     // Ignored for logout
   }
 };
@@ -159,7 +230,7 @@ export const getSessionData = async (token) => {
         exp: decoded.exp,
       },
     };
-  } catch (err) {
+  } catch {
     return { isLoggedIn: false };
   }
 };

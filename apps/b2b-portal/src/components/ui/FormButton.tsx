@@ -33,11 +33,13 @@ export function FormButton({
       type={type}
       disabled={isLoading || disabled}
       className={cn(
-        "w-full py-3.5 mt-4",
-        "bg-yellow-500 hover:bg-yellow-400",
-        "disabled:opacity-50 disabled:cursor-not-allowed",
-        "text-neutral-950 font-bold rounded-xl",
-        "flex items-center justify-center gap-2",
+        "w-full py-4 mt-2",
+        "rounded-full bg-gradient-to-r from-[#FFD54A] to-[#F8B400]",
+        "hover:from-[#FFE066] hover:to-[#FFC425] hover:-translate-y-0.5",
+        "shadow-[0_4px_20px_rgba(248,180,0,0.25)] hover:shadow-[0_8px_32px_rgba(248,180,0,0.45)]",
+        "disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:translate-y-0",
+        "text-black font-extrabold text-xs uppercase tracking-wider",
+        "flex items-center justify-center gap-2 cursor-pointer",
         "transition-all duration-200",
         className
       )}

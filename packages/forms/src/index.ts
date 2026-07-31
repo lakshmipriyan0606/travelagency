@@ -1,6 +1,7 @@
 "use client";
 export * from "./DarkFormButton";
 export * from "./DarkFormInput";
+export * from "./DarkRememberCheckbox";
 export * from "./DatePickerField";
 export * from "./PhoneInputField";
 export * from "./ReusableCheckbox";
@@ -8,3 +9,4 @@ export * from "./ReusableInput";
 export * from "./ReusableRadioGroup";
 export * from "./ReusableTextArea";
 export * from "./SelectField";
+export * from "./rememberMe";

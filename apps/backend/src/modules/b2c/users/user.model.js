@@ -22,6 +22,8 @@ const userSchema = new mongoose.Schema(
     name: { type: String, default: '' },
     email: { type: String, unique: true, required: true },
     password: { type: String, required: true },
+    passwordResetTokenHash: { type: String, select: false },
+    passwordResetExpires: { type: Date, select: false },
 
     // Core Role-Based Access Control (RBAC) identifier
     role: { type: String, enum: ['user', 'agent', 'admin', 'superadmin'], default: 'user' },

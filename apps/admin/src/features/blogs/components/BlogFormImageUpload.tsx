@@ -2,6 +2,7 @@ import { Image as ImageIcon } from "lucide-react";
 import { UseFormRegister } from "react-hook-form";
 import { BlogFormValues } from "../validation/blog.schema";
 import { useDropzone } from "react-dropzone";
+import { cn } from "@travelagency/utils";
 
 interface BlogFormImageUploadProps {
   label: string;
@@ -13,12 +14,24 @@ interface BlogFormImageUploadProps {
   preview: string | null;
   setPreview: (url: string | null) => void;
   setFile: (file: File | null) => void;
+  required?: boolean;
+  hint?: string;
 }
 
 export const BlogFormImageUpload: React.FC<BlogFormImageUploadProps> = ({
-  label, register, urlFieldName, altFieldName, mode, setMode, preview, setPreview, setFile
+  label,
+  register,
+  urlFieldName,
+  altFieldName,
+  mode,
+  setMode,
+  preview,
+  setPreview,
+  setFile,
+  required,
+  hint,
 }) => {
-  const { getRootProps, getInputProps } = useDropzone({
+  const { getRootProps, getInputProps, isDragActive } = useDropzone({
     onDrop: (acceptedFiles) => {
       if (acceptedFiles[0]) {
         setFile(acceptedFiles[0]);
@@ -31,45 +44,95 @@ export const BlogFormImageUpload: React.FC<BlogFormImageUploadProps> = ({
 
   return (
     <div className="space-y-4">
-      <div className="flex items-center justify-between">
-        <label className="text-sm font-semibold text-neutral-700">{label}</label>
-        <div className="flex bg-neutral-100 p-1 rounded-lg text-[10px] font-bold">
-          <button type="button" onClick={() => setMode("upload")} className={`px-3 py-1 rounded-md transition-all ${mode === "upload" ? "bg-white shadow-sm text-primary" : "text-neutral-500"}`}>UPLOAD</button>
-          <button type="button" onClick={() => setMode("url")} className={`px-3 py-1 rounded-md transition-all ${mode === "url" ? "bg-white shadow-sm text-primary" : "text-neutral-500"}`}>URL</button>
+      <div className="flex items-start justify-between gap-3">
+        <div className="min-w-0">
+          <label className="text-[11px] font-semibold uppercase tracking-[0.16em] text-white/50">
+            {label}
+            {required && <span className="text-[#F8B400] ml-1">*</span>}
+          </label>
+          {hint && <p className="text-xs text-white/40 mt-1">{hint}</p>}
+        </div>
+        <div className="flex shrink-0 bg-white/[0.04] border border-white/[0.08] p-1 rounded-lg text-[10px] font-bold">
+          <button
+            type="button"
+            onClick={() => setMode("upload")}
+            className={cn(
+              "px-3 py-1.5 rounded-md transition-all tracking-wider",
+              mode === "upload"
+                ? "bg-[#F8B400] text-black shadow-[0_0_12px_rgba(248,180,0,0.25)]"
+                : "text-white/45 hover:text-white/70"
+            )}
+          >
+            UPLOAD
+          </button>
+          <button
+            type="button"
+            onClick={() => setMode("url")}
+            className={cn(
+              "px-3 py-1.5 rounded-md transition-all tracking-wider",
+              mode === "url"
+                ? "bg-[#F8B400] text-black shadow-[0_0_12px_rgba(248,180,0,0.25)]"
+                : "text-white/45 hover:text-white/70"
+            )}
+          >
+            URL
+          </button>
         </div>
       </div>
 
       {mode === "upload" ? (
-        <div {...getRootProps()} className={`border-2 border-dashed rounded-xl p-6 flex flex-col items-center justify-center cursor-pointer transition-colors min-h-[200px] ${preview ? "border-primary/50 bg-primary/5" : "border-neutral-300 hover:border-primary/50 hover:bg-neutral-50"}`}>
+        <div
+          {...getRootProps()}
+          className={cn(
+            "border-2 border-dashed rounded-xl p-6 flex flex-col items-center justify-center cursor-pointer transition-colors min-h-[200px]",
+            preview
+              ? "border-[#F8B400]/40 bg-[#F8B400]/05"
+              : isDragActive
+                ? "border-[#F8B400]/60 bg-[#F8B400]/08"
+                : "border-white/[0.12] hover:border-[#F8B400]/40 hover:bg-white/[0.03]"
+          )}
+        >
           <input {...getInputProps()} />
           {preview ? (
             <div className="relative w-full aspect-video rounded-lg overflow-hidden group">
               <img src={preview} alt="Preview" className="w-full h-full object-cover" />
-              <div className="absolute inset-0 bg-black/40 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
+              <div className="absolute inset-0 bg-black/50 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
                 <p className="text-white text-sm font-medium">Click or drag to replace</p>
               </div>
             </div>
           ) : (
             <div className="text-center">
-              <div className="w-12 h-12 bg-neutral-100 rounded-full flex items-center justify-center mx-auto mb-3 text-neutral-400"><ImageIcon size={24} /></div>
-              <p className="text-sm text-neutral-600 font-medium">Drop image here</p>
+              <div className="w-12 h-12 bg-[#F8B400]/10 border border-[#F8B400]/25 rounded-full flex items-center justify-center mx-auto mb-3 text-[#F8B400]">
+                <ImageIcon size={22} />
+              </div>
+              <p className="text-sm text-white/70 font-medium">Drop image here</p>
+              <p className="text-xs text-white/35 mt-1">or click to browse</p>
             </div>
           )}
         </div>
       ) : (
         <div className="space-y-3">
-          <input {...register(urlFieldName)} className="w-full px-4 py-3 rounded-xl border border-neutral-300 focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none" placeholder="Paste URL here..." onChange={(e) => setPreview(e.target.value)} />
+          <input
+            {...register(urlFieldName)}
+            className="admin-field w-full h-11 px-4 text-sm text-white placeholder:text-white/30 outline-none"
+            placeholder="Paste image URL here…"
+            onChange={(e) => setPreview(e.target.value)}
+          />
           {preview && (
-            <div className="w-full aspect-video rounded-xl overflow-hidden border border-neutral-200">
+            <div className="w-full aspect-video rounded-xl overflow-hidden border border-white/[0.1]">
               <img src={preview} className="w-full h-full object-cover" alt="Preview" />
             </div>
           )}
         </div>
       )}
 
-      <div className="space-y-1">
-        <p className="text-[10px] font-black text-neutral-400 uppercase tracking-widest pl-1">Alt Text</p>
-        <input {...register(altFieldName)} className="w-full px-4 py-2 text-sm rounded-lg border border-neutral-200 focus:border-primary outline-none" placeholder="Describe this image for SEO..." />
+      <div className="space-y-1.5">
+        <p className="text-[10px] font-bold text-white/35 uppercase tracking-widest">Alt text</p>
+        <input
+          {...register(altFieldName)}
+          className="admin-field w-full h-10 px-4 text-sm text-white placeholder:text-white/30 outline-none"
+          placeholder="Describe this image for SEO…"
+        />
       </div>
     </div>
   );

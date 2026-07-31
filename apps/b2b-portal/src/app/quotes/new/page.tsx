@@ -1,11 +1,9 @@
 /**
  * B2B Portal — New Quote Request Page.
- *
- * Mounts the multi-step QuoteWizard form inside the B2B routing layout.
  */
 import React from "react";
-import QuoteWizard from "@/features/quote-request/components/QuoteWizard";
 import { AppShell } from "@/components/layout";
+import NewQuoteClient from "./NewQuoteClient";
 
 export const metadata = {
   title: "New Quote Request | B2B Portal",
@@ -16,7 +14,7 @@ export default function NewQuotePage() {
   return (
     <AppShell>
       <div className="w-full">
-        <QuoteWizard />
+        <NewQuoteClient />
       </div>
     </AppShell>
   );

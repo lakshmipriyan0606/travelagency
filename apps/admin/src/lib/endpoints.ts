@@ -69,11 +69,12 @@ export const ENDPOINTS = {
     },
     b2b: {
       login: 'b2b/admin/login',
+      forgotPassword: 'b2b/admin/forgot-password',
+      resetPassword: 'b2b/admin/reset-password',
       logout: 'b2b/admin/logout',
       refresh: 'b2b/admin/refresh',
       agencies: 'b2b/admin/agencies',
       agencyById: (id: string) => `b2b/admin/agencies/${id}`,
-      agencyUsers: (id: string) => `b2b/admin/agencies/${id}/users`,
       agencyAction: (id: string, action: 'approve' | 'reject' | 'suspend' | 'reactivate') => `b2b/admin/agencies/${id}/${action}`,
       agencyStatusLog: (id: string) => `b2b/admin/agencies/${id}/status-log`,
       // Quote admin endpoints
@@ -85,6 +86,8 @@ export const ENDPOINTS = {
     auth: {
       login: 'admin/login',
       register: 'admin/register',
+      forgotPassword: 'admin/forgot-password',
+      resetPassword: 'admin/reset-password',
       logout: 'admin/logout',
       session: 'admin/session',
       createPackage: 'admin/packages/create',

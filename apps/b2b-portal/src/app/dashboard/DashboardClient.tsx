@@ -1,7 +1,8 @@
 "use client";
 
-import React, { useTransition } from "react";
+import React, { useCallback, useState } from "react";
 import { RefreshCw } from "lucide-react";
+import { useQueryClient } from "@tanstack/react-query";
 import { AppShell } from "@/components/layout";
 import { DashboardHero } from "@/components/sections/DashboardHero";
 import { KpiGrid } from "@/components/sections/KpiGrid";
@@ -12,22 +13,27 @@ import { DestinationsChart } from "@/components/sections/DestinationsChart";
 import { ConversionChart } from "@/components/sections/ConversionChart";
 import { DashboardFooter } from "@/components/common/DashboardFooter";
 import { useDashboardSummary } from "@/features/dashboard/hooks/useDashboard";
-import type { PipelineRow } from "@/features/dashboard/config/dashboard-ui.config";
-import type { OperationsFeedItem } from "@/features/dashboard/config/dashboard-ui.config";
-import { ROUTES } from "@/lib/routes";
+import { DASHBOARD_QUERY_KEYS } from "@/features/dashboard/config/dashboard.config";
+import { QUOTE_QUERY_KEYS } from "@/features/quote-request/config/quote.config";
+import type {
+  PipelineRow,
+  PipelineStatusLabel,
+  OperationsFeedItem,
+} from "@/features/dashboard/config/dashboard-ui.config";
 import { QuoteStatus, BudgetCategory } from "@/features/quote-request/types/quote.types";
 import type { QuoteListItem } from "@/features/quote-request/types/quote.types";
 import type { ActivityEntry } from "@/features/dashboard/types/dashboard.types";
 
-const STATUS_MAP: Record<QuoteStatus, PipelineRow["status"]> = {
+/** Same agency-facing labels as Quote Portal list (STATUS_THEMES). */
+const STATUS_MAP: Record<QuoteStatus, PipelineStatusLabel> = {
   [QuoteStatus.DRAFT]: "Draft",
-  [QuoteStatus.SUBMITTED]: "Submitted",
-  [QuoteStatus.UNDER_REVIEW]: "In Review",
-  [QuoteStatus.VENDOR_SOURCING]: "In Review",
-  [QuoteStatus.QUOTATION_PREPARATION]: "In Review",
+  [QuoteStatus.SUBMITTED]: "Pending",
+  [QuoteStatus.UNDER_REVIEW]: "Approved",
+  [QuoteStatus.VENDOR_SOURCING]: "Sourcing Vendors",
+  [QuoteStatus.QUOTATION_PREPARATION]: "Preparing Proposal",
   [QuoteStatus.QUOTATION_READY]: "Ready",
-  [QuoteStatus.REVISION_REQUESTED]: "Pending",
-  [QuoteStatus.QUOTATION_UPDATED]: "Submitted",
+  [QuoteStatus.REVISION_REQUESTED]: "Needs Changes",
+  [QuoteStatus.QUOTATION_UPDATED]: "Proposal Updated",
   [QuoteStatus.ACCEPTED]: "Accepted",
 };
 
@@ -98,21 +104,22 @@ function mapActivityToFeed(items: readonly ActivityEntry[]): OperationsFeedItem[
 }
 
 export default function DashboardClient() {
-  const [isRefreshing, startTransition] = useTransition();
-  const { data, isLoading, isError, refetch } = useDashboardSummary();
+  const queryClient = useQueryClient();
+  const [isManualRefresh, setIsManualRefresh] = useState(false);
+  const { data, isLoading, isError, isFetching, refetch } = useDashboardSummary();
 
-  const handleRefresh = () => {
-    startTransition(async () => {
-      await refetch();
-    });
-  };
-
-  const handleLogout = () => {
-    document.cookie = "b2b_portal_access_token=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT;";
-    document.cookie = "b2b_portal_refresh_token=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT;";
-    document.cookie = "agency_status=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT;";
-    window.location.href = ROUTES.login;
-  };
+  const handleRefresh = useCallback(async () => {
+    setIsManualRefresh(true);
+    try {
+      // Invalidate summary (KPIs/charts/pipeline/feed) and quote lists together.
+      await Promise.all([
+        queryClient.invalidateQueries({ queryKey: DASHBOARD_QUERY_KEYS.all }),
+        queryClient.invalidateQueries({ queryKey: QUOTE_QUERY_KEYS.all }),
+      ]);
+    } finally {
+      setIsManualRefresh(false);
+    }
+  }, [queryClient]);
 
   if (isLoading) {
     return (
@@ -146,7 +153,6 @@ export default function DashboardClient() {
   const agencyName = data?.agency?.agencyName || "Partner Agency";
   const partnerTier = data?.agency?.partnerTier ?? "standard";
   const kpis = data?.kpis ?? EMPTY_KPIS;
-  const notificationCount = data?.unreadNotificationCount ?? 0;
   const pipelineRows = mapQuotesToPipeline(data?.recentQuotes ?? []);
   const feedItems = mapActivityToFeed(data?.recentActivity ?? []);
   const destinationData = (data?.destinationStats ?? []).map((d, i) => ({
@@ -163,15 +169,14 @@ export default function DashboardClient() {
     <AppShell
       agencyName={agencyName}
       partnerTier={partnerTier}
-      notificationCount={notificationCount}
-      onLogout={handleLogout}
+      agencyStatus={data?.agency?.status}
     >
       <div className="space-y-6">
         <DashboardHero
           agencyName={agencyName}
           partnerTier={partnerTier}
           onRefresh={handleRefresh}
-          isRefreshing={isRefreshing}
+          isRefreshing={isManualRefresh || isFetching}
         />
 
         <KpiGrid kpis={kpis} />

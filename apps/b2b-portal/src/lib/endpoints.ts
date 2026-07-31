@@ -14,6 +14,9 @@ export const ENDPOINTS = {
     // ─── Authentication ───────────────────────────────────────────────────
     login: '/b2b/agency/login',
     register: '/b2b/agency/register',
+    forgotPassword: '/b2b/agency/forgot-password',
+    resetPassword: '/b2b/agency/reset-password',
+    logout: '/b2b/agency/logout',
     me: '/b2b/agency/me',
     issues: '/b2b/agency/me/issues',
     resubmit: '/b2b/agency/me/resubmit',
@@ -56,6 +59,8 @@ export const ENDPOINTS = {
       accept: (id: string) => `/b2b/agency/quotes/${id}/accept`,
       /** Update quote status (accept/request revision) */
       status: (id: string) => `/b2b/agency/quotes/${id}/status`,
+      /** Permanently delete a draft quote (DELETE) */
+      delete: (id: string) => `/b2b/agency/quotes/${id}`,
     },
   },
 } as const;

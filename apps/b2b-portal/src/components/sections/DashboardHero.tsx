@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { Plus, RefreshCw } from "lucide-react";
+import { Loader2, Plus, RefreshCw } from "lucide-react";
 import { Button } from "@travelagency/ui";
 import { Badge } from "@/components/ui/Badge";
 import { DashboardCard } from "@/components/cards/DashboardCard";
@@ -25,8 +25,13 @@ export function DashboardHero({
 
   return (
     <DashboardCard padding="lg" className="relative overflow-hidden min-h-[180px] bg-[#141417] border border-white/[0.08]">
+      {/* Decorative globe — left side, behind welcome copy only */}
+      <div className="pointer-events-none absolute inset-y-0 left-0 w-[min(42%,280px)] hidden sm:block">
+        <GlobeIllustration variant="left" />
+      </div>
+
       <div className="relative z-10 flex flex-col lg:flex-row lg:items-center lg:justify-between gap-6">
-        <div className="space-y-3 max-w-2xl">
+        <div className="space-y-3 max-w-2xl sm:pl-44 lg:max-w-xl">
           <div className="flex items-center gap-3">
             <span className="px-3 py-1 text-[10px] font-bold uppercase tracking-widest bg-[#F8B400]/15 text-[#F8B400] border border-[#F8B400]/30 rounded-full">
               {tierLabel}
@@ -40,15 +45,20 @@ export function DashboardHero({
           </p>
         </div>
 
-        <div className="flex items-center gap-3 shrink-0">
+        <div className="flex items-center gap-3 shrink-0 relative z-20">
           <Button
             variant="outline"
             size="sm"
             onClick={onRefresh}
-            isLoading={isRefreshing}
+            disabled={isRefreshing}
+            aria-busy={isRefreshing}
             className="rounded-xl border-white/[0.1] bg-[#1C1C20] hover:bg-[#222226] text-white font-bold h-10 px-4 text-xs"
           >
-            <RefreshCw className="h-4 w-4 text-zinc-300" />
+            {isRefreshing ? (
+              <Loader2 className="h-4 w-4 animate-spin text-zinc-300" />
+            ) : (
+              <RefreshCw className="h-4 w-4 text-zinc-300" />
+            )}
             Refresh
           </Button>
           <Link href={ROUTES.quoteNew}>
@@ -62,7 +72,6 @@ export function DashboardHero({
           </Link>
         </div>
       </div>
-      <GlobeIllustration />
     </DashboardCard>
   );
 }

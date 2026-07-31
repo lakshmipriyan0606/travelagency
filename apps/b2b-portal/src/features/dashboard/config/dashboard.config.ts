@@ -35,14 +35,14 @@ export const KPI_DEFINITIONS: readonly KPIDefinition[] = [
     label: 'Open Requests',
     iconName: 'FolderOpen',
     colorClass: 'text-blue-400',
-    description: 'Active quote requests in progress',
+    description: 'Pending quote requests awaiting admin review',
   },
   {
     key: 'submittedToday',
     label: 'Submitted Today',
     iconName: 'SendHorizonal',
     colorClass: 'text-violet-400',
-    description: 'Requests submitted in the last 24 hours',
+    description: 'Non-draft requests created today',
   },
   {
     key: 'quotesReady',
@@ -53,17 +53,17 @@ export const KPI_DEFINITIONS: readonly KPIDefinition[] = [
   },
   {
     key: 'acceptedQuotes',
-    label: 'Accepted',
+    label: 'Approved',
     iconName: 'BadgeCheck',
     colorClass: 'text-amber-400',
-    description: 'Quotes accepted this month',
+    description: 'Admin-approved quote requests in the ops pipeline',
   },
   {
     key: 'pendingRevisions',
     label: 'Pending Revisions',
     iconName: 'RotateCcw',
     colorClass: 'text-yellow-400',
-    description: 'Revisions requested, awaiting update',
+    description: 'Needs changes — awaiting agency update',
   },
 ] as const;
 

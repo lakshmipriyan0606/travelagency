@@ -26,7 +26,6 @@ import {
   Percent,
   ChevronRight,
   FileText,
-  MapPin,
   Users,
   TrendingUp,
   Eye,
@@ -76,11 +75,11 @@ function QuoteBadge({ status }: { status: string }) {
   const m: Record<string, string> = {
     draft:                "admin-badge-muted",
     submitted:            "admin-badge-info",
-    under_review:         "bg-indigo-500/15 text-indigo-300",
+    under_review:         "bg-emerald-500/15 text-emerald-300",
     vendor_sourcing:      "bg-purple-500/15 text-purple-300",
     quotation_preparation:"bg-orange-500/15 text-orange-300",
     quotation_ready:      "admin-badge-success",
-    revision_requested:   "admin-badge-warning",
+    revision_requested:   "bg-red-500/15 text-red-300",
     quotation_updated:    "bg-teal-500/15 text-teal-300",
     accepted:             "admin-badge-success",
   };
@@ -239,18 +238,31 @@ export default function B2BDashboardClient() {
           {!isQuotesLoading && recentQuotes.length > 0 && (
             <div className="divide-y divide-white/[0.06] -mx-6 -my-6">
               {recentQuotes.map((q) => (
-                <div key={q._id} className="flex items-center gap-3 px-5 py-3 hover:bg-white/[0.03] transition-colors">
+                <Link
+                  key={q._id}
+                  href={ROUTES.b2b.agencyDetail({ agencyId: q.agencyId, tab: 'quotes', quoteId: q._id })}
+                  className="flex items-center gap-3 px-5 py-3 hover:bg-white/[0.03] transition-colors group"
+                >
                   <div className="w-8 h-8 rounded-xl bg-indigo-500/10 border border-indigo-500/20 flex items-center justify-center shrink-0">
-                    <MapPin size={13} className="text-indigo-400" />
+                    <Building2 size={13} className="text-[#F8B400]" />
                   </div>
                   <div className="flex-1 min-w-0">
-                    <p className="text-sm font-black text-zinc-100 truncate">{q.destination}</p>
-                    <p className="text-xs text-zinc-500 font-medium truncate">
-                      {q.reference} · {q.adults}A {q.children > 0 ? `${q.children}C` : ""} · {formatDate(q.travelStart)}
+                    <p className="text-sm font-black text-zinc-100 truncate group-hover:text-[#F8B400] transition-colors">
+                      {q.agencyName ?? 'Agency'}
+                      {q.agencyTradeName && q.agencyTradeName !== q.agencyName && (
+                        <span className="text-zinc-500 font-semibold"> · {q.agencyTradeName}</span>
+                      )}
+                    </p>
+                    <p className="text-xs text-zinc-400 font-medium truncate">
+                      {q.destination} · {q.reference}
+                    </p>
+                    <p className="text-[10px] text-zinc-500 font-medium truncate mt-0.5">
+                      {q.adults}A {q.children > 0 ? `${q.children}C` : ''} · {formatDate(q.travelStart)} – {formatDate(q.travelEnd)}
                     </p>
                   </div>
                   <QuoteBadge status={q.status} />
-                </div>
+                  <ChevronRight size={14} className="text-zinc-600 group-hover:text-[#F8B400] shrink-0 transition-colors" />
+                </Link>
               ))}
             </div>
           )}

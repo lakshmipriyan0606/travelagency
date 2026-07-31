@@ -6,6 +6,16 @@ export const loginAPI = async (payload: object) => {
   return data;
 };
 
+export const forgotPasswordAPI = async (payload: { email: string }) => {
+  const { data } = await axiosClient.post(ENDPOINTS.client.auth.forgotPassword, payload);
+  return data;
+};
+
+export const resetPasswordAPI = async (payload: { token: string; password: string }) => {
+  const { data } = await axiosClient.post(ENDPOINTS.client.auth.resetPassword, payload);
+  return data;
+};
+
 export const registerAPI = async (payload: object) => {
   const { data } = await axiosClient.post(ENDPOINTS.client.auth.register, payload);
   return data;

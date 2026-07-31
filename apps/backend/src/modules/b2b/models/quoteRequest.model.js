@@ -25,26 +25,33 @@ const timelineEventSchema = new mongoose.Schema(
   { _id: false }
 );
 
+/** Draft rows may omit travel fields until later wizard steps. */
+const requiredUnlessDraft = function requiredUnlessDraft() {
+  return this.status !== 'draft';
+};
+
 const quoteRequestSchema = new mongoose.Schema(
   {
     reference: { type: String, required: true, unique: true, index: true },
     agencyId: { type: mongoose.Schema.Types.ObjectId, ref: 'Agency', required: true, index: true },
     contactPerson: {
-      name: { type: String, required: true },
-      email: { type: String, required: true },
-      phone: { type: String, required: true },
+      // Nested `this` is the subdoc — keep optional; final submit validates via Zod/API.
+      name: { type: String },
+      email: { type: String },
+      phone: { type: String },
       designation: { type: String },
     },
-    destination: { type: String, required: true },
-    travelStart: { type: Date, required: true, index: true },
-    travelEnd: { type: Date, required: true, index: true },
-    adults: { type: Number, required: true },
+    destination: { type: String, required: requiredUnlessDraft },
+    travelStart: { type: Date, required: requiredUnlessDraft, index: true },
+    travelEnd: { type: Date, required: requiredUnlessDraft, index: true },
+    adults: { type: Number, required: requiredUnlessDraft, default: 1 },
     children: { type: Number, default: 0 },
     rooms: { type: Number, default: 1 },
     budgetCategory: {
       type: String,
       enum: ['economy', 'standard', 'premium', 'luxury'],
-      required: true,
+      required: requiredUnlessDraft,
+      default: 'standard',
     },
     preferredHotels: { type: String },
     transfers: {
@@ -80,7 +87,10 @@ const quoteRequestSchema = new mongoose.Schema(
       ref: 'AdminUser',
       default: null,
     },
+    /** Ops-only notes — not shown to the agency portal. */
     internalNotes: { type: String },
+    /** Admin feedback visible to the agency when changes are requested. */
+    adminFeedback: { type: String },
     timeline: { type: [timelineEventSchema], default: [] },
     createdBy: { type: mongoose.Schema.Types.ObjectId, ref: 'AgencyUser', required: true },
     updatedBy: { type: mongoose.Schema.Types.ObjectId, ref: 'AgencyUser' },

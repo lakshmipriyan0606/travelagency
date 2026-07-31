@@ -18,7 +18,7 @@ const RichTextEditor = ({ content, onChange }: RichTextEditorProps) => {
   const editor = useEditorConfig(content, onChange)
 
   return (
-    <div className="relative border border-neutral-200 rounded-xl overflow-visible focus-within:ring-2 focus-within:ring-primary/20 focus-within:border-primary transition-all">
+    <div className="relative border border-white/[0.12] rounded-xl overflow-visible bg-[var(--ent-surface,#121216)] focus-within:border-[#F8B400] focus-within:shadow-[0_0_0_3px_rgba(248,180,0,0.2)] transition-all">
       <EditorToolbar editor={editor} onOpenPrompt={(config) => setPromptConfig({ ...config, isOpen: true })} />
       <EditorContent editor={editor} />
       <EditorLinkModal promptConfig={promptConfig} setPromptConfig={setPromptConfig} />

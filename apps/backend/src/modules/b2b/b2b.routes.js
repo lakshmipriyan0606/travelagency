@@ -12,6 +12,8 @@ const router = express.Router();
 // --- Agency Auth Routes ---
 router.post('/agency/register', validateBody(registerSchema), b2bAuth.register);
 router.post('/agency/login', b2bLoginLimiter, b2bAuth.login);
+router.post('/agency/forgot-password', b2bLoginLimiter, b2bAuth.forgotPasswordAgency);
+router.post('/agency/reset-password', b2bLoginLimiter, b2bAuth.resetPasswordAgency);
 router.post('/agency/refresh', b2bAuth.refreshAgency);
 router.post('/agency/logout', b2bAuth.logoutAgency);
 router.get('/agency/me', requireAgencyAuth, b2bAuth.meAgency);
@@ -32,17 +34,16 @@ router.patch(
 );
 router.get('/agency/quotes', requireAgencyAuth, quoteRequest.getQuotes);
 router.get('/agency/quotes/:id', requireAgencyAuth, quoteRequest.getQuoteById);
+router.delete('/agency/quotes/:id', requireAgencyAuth, quoteRequest.deleteQuote);
 router.patch('/agency/quotes/:id/status', requireAgencyAuth, quoteRequest.updateStatus);
 
 // --- Agency Dashboard Routes ---
-router.get(
-  '/agency/dashboard/summary',
-  requireAgencyAuth,
-  quoteRequest.getDashboardSummary
-);
+router.get('/agency/dashboard/summary', requireAgencyAuth, quoteRequest.getDashboardSummary);
 
 // --- Admin Auth Routes ---
 router.post('/admin/login', b2bLoginLimiter, b2bAuth.loginAdmin);
+router.post('/admin/forgot-password', b2bLoginLimiter, b2bAuth.forgotPasswordAdmin);
+router.post('/admin/reset-password', b2bLoginLimiter, b2bAuth.resetPasswordAdmin);
 router.post('/admin/refresh', b2bAuth.refreshAdmin);
 router.post('/admin/logout', b2bAuth.logoutAdmin);
 router.get('/admin/me', requireAdminRole(), b2bAuth.meAdmin);
@@ -89,4 +90,3 @@ router.patch(
 );
 
 export default router;
-

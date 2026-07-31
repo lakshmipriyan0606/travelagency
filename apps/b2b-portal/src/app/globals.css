@@ -11,6 +11,29 @@
   font-weight: 700 !important;
 }
 
+/* Quote wizard date picker — gold selected day (overrides theme primary blue) */
+.quote-date-popover [data-selected-single="true"],
+.quote-date-popover [data-range-start="true"],
+.quote-date-popover [data-range-end="true"] {
+  background-color: #f8b400 !important;
+  color: #0a0a0a !important;
+}
+
+.quote-date-popover [data-slot="calendar"] {
+  --primary: #f8b400;
+  --primary-foreground: #0a0a0a;
+  --accent: rgba(248, 180, 0, 0.18);
+  --accent-foreground: #ffd54a;
+  --muted-foreground: #a1a1aa;
+  background: #171717;
+  color: #fff;
+}
+
+.quote-date-popover button[data-selected-single="true"]:hover {
+  background-color: #ffd54a !important;
+  color: #0a0a0a !important;
+}
+
 /* ─── TravelHero B2B Portal — Design Tokens ─────────────────────────────── */
 :root {
   --background: #0b0e14;
@@ -65,6 +88,13 @@ body {
   min-height: 100vh;
 }
 
+/* Auth routes: lock document scroll on desktop */
+html:has([data-portal-auth]),
+body:has([data-portal-auth]) {
+  overflow: hidden;
+  height: 100%;
+}
+
 button,
 a,
 select,
@@ -91,4 +121,70 @@ input[type="radio"],
 
 ::-webkit-scrollbar-thumb:hover {
   background: rgba(255, 255, 255, 0.2);
+}
+
+/* ─── Auth shell (login / register) ─────────────────────────────────────── */
+.auth-grid-bg {
+  background-image:
+    linear-gradient(rgba(248, 180, 0, 0.035) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(248, 180, 0, 0.035) 1px, transparent 1px);
+  background-size: 48px 48px;
+  mask-image: radial-gradient(ellipse 70% 60% at 40% 40%, black 20%, transparent 75%);
+}
+
+.auth-map-glow {
+  background:
+    radial-gradient(ellipse 50% 40% at 55% 45%, rgba(248, 180, 0, 0.07), transparent 70%),
+    radial-gradient(ellipse 30% 25% at 20% 70%, rgba(248, 180, 0, 0.04), transparent 70%);
+}
+
+@keyframes arch-glow-pulse {
+  0%,
+  100% {
+    opacity: 0.55;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 1;
+    transform: scale(1.04);
+  }
+}
+
+.animate-arch-glow {
+  animation: arch-glow-pulse 4.5s ease-in-out infinite;
+}
+
+@keyframes gold-glow-drift {
+  0%,
+  100% {
+    opacity: 0.7;
+  }
+  50% {
+    opacity: 1;
+  }
+}
+
+.animate-gold-glow {
+  animation: gold-glow-drift 5s ease-in-out infinite;
+}
+
+@keyframes float-soft {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-8px);
+  }
+}
+
+.animate-float {
+  animation: float-soft 6s ease-in-out infinite;
+}
+
+.login-grid-bg {
+  background-image:
+    linear-gradient(rgba(248, 180, 0, 0.03) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(248, 180, 0, 0.03) 1px, transparent 1px);
+  background-size: 40px 40px;
 }

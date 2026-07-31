@@ -1,11 +1,10 @@
 "use client";
 
+import React from "react";
 import { Controller } from "react-hook-form";
-import {
-  RadioGroup,
-  RadioGroupItem,
-} from "@travelagency/ui";
+import { SimpleRadio } from "@travelagency/ui";
 import { Label } from "@travelagency/ui";
+import { cn } from "@travelagency/utils";
 
 interface Option {
   value: string;
@@ -19,6 +18,7 @@ interface ReusableRadioGroupProps {
   options: Option[];
   className?: string;
   required?: boolean;
+  appearance?: "boxed" | "inline";
 }
 
 export const ReusableRadioGroup: React.FC<ReusableRadioGroupProps> = ({
@@ -28,35 +28,27 @@ export const ReusableRadioGroup: React.FC<ReusableRadioGroupProps> = ({
   options,
   className = "",
   required = false,
+  appearance = "boxed",
 }) => {
   return (
-    <div className={`space-y-2 ${className}`}>
-      <Label className="font-medium text-gray-800">
+    <div className={cn("space-y-2", className)}>
+      <Label className="text-sm font-medium text-[var(--ent-text-main,#F4F4F5)]">
         {label}
-        {required && <span className="text-red-500 ml-1">*</span>}
+        {required && <span className="ml-1 text-[#F8B400]">*</span>}
       </Label>
 
       <Controller
         name={name}
         control={control}
         render={({ field }) => (
-          <RadioGroup
+          <SimpleRadio
+            name={name}
             value={field.value}
-            onValueChange={field.onChange}
-            className="flex flex-col gap-2"
-          >
-            {options.map((opt) => (
-              <div key={opt.value} className="flex items-center space-x-2">
-                <RadioGroupItem value={opt.value} id={`${name}-${opt.value}`} />
-                <Label
-                  htmlFor={`${name}-${opt.value}`}
-                  className="text-sm text-gray-700 cursor-pointer"
-                >
-                  {opt.label}
-                </Label>
-              </div>
-            ))}
-          </RadioGroup>
+            onChange={field.onChange}
+            options={options}
+            appearance={appearance}
+            aria-label={label}
+          />
         )}
       />
     </div>

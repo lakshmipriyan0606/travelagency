@@ -76,6 +76,7 @@
     "test:integration": "cross-env NODE_OPTIONS=--experimental-vm-modules jest tests/integration --forceExit",
     "test:coverage": "cross-env NODE_OPTIONS=--experimental-vm-modules jest --coverage --forceExit",
     "seed": "node scripts/seed.js",
+    "clear:quotes": "node scripts/clear-quote-requests.js",
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",
     "format": "prettier --write .",

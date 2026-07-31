@@ -30,9 +30,28 @@ import { AppError } from '#shared/errors/AppError.js';
 import { sendSuccess } from '#shared/utils/response.js';
 import { notifyAgency } from '../services/notifications.service.js';
 import { logger } from '#shared/utils/logger.js';
+import {
+  buildResetUrl,
+  createPasswordResetToken,
+  hashPasswordResetToken,
+  PASSWORD_RESET_REQUEST_MESSAGE,
+  sendPasswordResetEmail,
+} from '#shared/utils/passwordReset.js';
 
 // Centralized security configurations
 const BCRYPT_SALT_ROUNDS = 12;
+const REFRESH_TTL_MS = {
+  default: 7 * 24 * 60 * 60 * 1000,
+  remember: 30 * 24 * 60 * 60 * 1000,
+};
+
+const resolveFrontendBase = (req, envKey, fallback) => {
+  const fromEnv = process.env[envKey]?.trim();
+  if (fromEnv) return fromEnv;
+  const origin = req.get('origin');
+  if (origin) return origin;
+  return fallback;
+};
 
 /**
  * Helper to compute SHA-256 hash of a string.
@@ -195,7 +214,7 @@ export const register = async (req, res, next) => {
  * @returns {Promise<void>}
  */
 export const login = async (req, res, next) => {
-  const { email, password } = req.body;
+  const { email, password, rememberMe } = req.body;
 
   try {
     // 1. Normalize input email
@@ -239,7 +258,7 @@ export const login = async (req, res, next) => {
         return next(new AppError('Account status error', 403));
     }
 
-    // 7. Generate JWT access token (15 minute expiration)
+    // 7. Generate JWT access token (1 hour expiration)
     const jwtSecret = process.env.JWT_SECRET || 'fallback-secret-key';
     const accessToken = jwt.sign(
       {
@@ -249,13 +268,14 @@ export const login = async (req, res, next) => {
         role: agencyUser.role,
       },
       jwtSecret,
-      { expiresIn: '15m' }
+      { expiresIn: '1h' }
     );
 
     // 8. Generate raw refresh token, hash it using SHA-256, and store in database
     const rawRefreshToken = crypto.randomBytes(32).toString('hex');
     const tokenHash = hashSha256(rawRefreshToken);
-    const expiresAt = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000); // 7 days
+    const refreshTtl = rememberMe ? REFRESH_TTL_MS.remember : REFRESH_TTL_MS.default;
+    const expiresAt = new Date(Date.now() + refreshTtl);
 
     await RefreshToken.create({
       userId: agencyUser._id,
@@ -272,6 +292,7 @@ export const login = async (req, res, next) => {
     return sendSuccess(res, 200, 'Logged in successfully', {
       accessToken,
       refreshToken: rawRefreshToken,
+      rememberMe: Boolean(rememberMe),
       agencyUser: {
         id: agencyUser._id,
         name: agencyUser.name,
@@ -340,7 +361,7 @@ const rotateToken = async (req, res, next, expectedScope) => {
         role,
       },
       jwtSecret,
-      { expiresIn: '15m' }
+      { expiresIn: '1h' }
     );
 
     // Generate new Refresh Token
@@ -369,7 +390,11 @@ const rotateToken = async (req, res, next, expectedScope) => {
  * Shared utility to handle Refresh Token revocation (logout).
  */
 const revokeToken = async (req, res, next, expectedScope) => {
-  const rawRefreshToken = req.cookies.refresh_token || req.body.refreshToken;
+  const rawRefreshToken =
+    req.cookies.refresh_token ||
+    req.cookies.b2b_refresh_token ||
+    req.cookies.b2b_portal_refresh_token ||
+    req.body.refreshToken;
   if (rawRefreshToken) {
     try {
       const tokenHash = hashSha256(rawRefreshToken);
@@ -379,8 +404,17 @@ const revokeToken = async (req, res, next, expectedScope) => {
     }
   }
 
-  res.clearCookie('access_token');
-  res.clearCookie('refresh_token');
+  // Clear common cookie name variants (frontend also clears its own host cookies)
+  for (const name of [
+    'access_token',
+    'refresh_token',
+    'b2b_access_token',
+    'b2b_refresh_token',
+    'b2b_portal_access_token',
+    'b2b_portal_refresh_token',
+  ]) {
+    res.clearCookie(name);
+  }
   return sendSuccess(res, 200, 'Logged out successfully');
 };
 
@@ -403,7 +437,17 @@ export const meAgency = async (req, res) => {
 };
 
 export const updateProfileAgency = async (req, res, next) => {
-  const { name, phone, designation, companyName, tradeName, officeAddress, websiteUrl, yearsInBusiness, iataNumber } = req.body;
+  const {
+    name,
+    phone,
+    designation,
+    companyName,
+    tradeName,
+    officeAddress,
+    websiteUrl,
+    yearsInBusiness,
+    iataNumber,
+  } = req.body;
 
   try {
     // 1. Update Agency User details
@@ -451,7 +495,7 @@ export const updateProfileAgency = async (req, res, next) => {
  * Handles the login authentication of an AdminUser.
  */
 export const loginAdmin = async (req, res, next) => {
-  const { email, password } = req.body;
+  const { email, password, rememberMe } = req.body;
 
   try {
     const normalizedEmail = String(email).toLowerCase().trim();
@@ -471,7 +515,7 @@ export const loginAdmin = async (req, res, next) => {
       return next(new AppError('Forbidden: Admin account is inactive', 403));
     }
 
-    // Generate JWT access token (15 minute expiration)
+    // Generate JWT access token (1 hour expiration)
     const jwtSecret = process.env.JWT_SECRET || 'fallback-secret-key';
     const accessToken = jwt.sign(
       {
@@ -480,13 +524,14 @@ export const loginAdmin = async (req, res, next) => {
         role: admin.role,
       },
       jwtSecret,
-      { expiresIn: '15m' }
+      { expiresIn: '1h' }
     );
 
     // Generate raw refresh token, hash it using SHA-256, and store in database
     const rawRefreshToken = crypto.randomBytes(32).toString('hex');
     const tokenHash = hashSha256(rawRefreshToken);
-    const expiresAt = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000); // 7 days
+    const refreshTtl = rememberMe ? REFRESH_TTL_MS.remember : REFRESH_TTL_MS.default;
+    const expiresAt = new Date(Date.now() + refreshTtl);
 
     await RefreshToken.create({
       userId: admin._id,
@@ -502,6 +547,7 @@ export const loginAdmin = async (req, res, next) => {
     return sendSuccess(res, 200, 'Logged in successfully', {
       accessToken,
       refreshToken: rawRefreshToken,
+      rememberMe: Boolean(rememberMe),
       adminUser: {
         id: admin._id,
         name: admin.name,
@@ -526,4 +572,171 @@ export const meAdmin = async (req, res) => {
       role: req.admin.role,
     },
   });
+};
+
+/**
+ * Request a B2B agency password reset email (enumeration-safe).
+ */
+export const forgotPasswordAgency = async (req, res, next) => {
+  const email = String(req.body?.email || '')
+    .toLowerCase()
+    .trim();
+
+  try {
+    if (!email) {
+      return next(new AppError('Email is required', 400));
+    }
+
+    const agencyUser = await AgencyUser.findOne({ email }).select(
+      '+passwordResetTokenHash +passwordResetExpires'
+    );
+
+    if (agencyUser?.isActive) {
+      const { rawToken, tokenHash, expiresAt } = createPasswordResetToken();
+      agencyUser.passwordResetTokenHash = tokenHash;
+      agencyUser.passwordResetExpires = expiresAt;
+      await agencyUser.save();
+
+      const baseUrl = resolveFrontendBase(req, 'B2B_PORTAL_URL', 'http://localhost:3001');
+      const resetUrl = buildResetUrl(baseUrl, '/reset-password', rawToken);
+
+      try {
+        await sendPasswordResetEmail({
+          to: email,
+          resetUrl,
+          productName: 'TravelAgency B2B Portal',
+        });
+      } catch (mailErr) {
+        agencyUser.passwordResetTokenHash = undefined;
+        agencyUser.passwordResetExpires = undefined;
+        await agencyUser.save();
+        logger.error({ err: mailErr }, 'Agency password reset email failed');
+        return next(new AppError('Unable to send reset email. Please try again later.', 503));
+      }
+    }
+
+    return sendSuccess(res, 200, PASSWORD_RESET_REQUEST_MESSAGE);
+  } catch (error) {
+    logger.error({ err: error }, 'Unexpected error during agency forgot-password');
+    return next(new AppError('Internal server error', 500));
+  }
+};
+
+/**
+ * Reset B2B agency password using a one-time token.
+ */
+export const resetPasswordAgency = async (req, res, next) => {
+  const { token, password } = req.body || {};
+
+  try {
+    if (!token || !password || String(password).length < 6) {
+      return next(new AppError('Valid token and password (min 6 characters) are required', 400));
+    }
+
+    const tokenHash = hashPasswordResetToken(token);
+    const agencyUser = await AgencyUser.findOne({
+      passwordResetTokenHash: tokenHash,
+      passwordResetExpires: { $gt: new Date() },
+    }).select('+passwordHash +passwordResetTokenHash +passwordResetExpires');
+
+    if (!agencyUser) {
+      return next(new AppError('Invalid or expired reset token', 400));
+    }
+
+    agencyUser.passwordHash = await bcrypt.hash(String(password), BCRYPT_SALT_ROUNDS);
+    agencyUser.passwordResetTokenHash = undefined;
+    agencyUser.passwordResetExpires = undefined;
+    await agencyUser.save();
+
+    // Invalidate existing refresh sessions for this user
+    await RefreshToken.deleteMany({ userId: agencyUser._id, scope: 'agency' });
+
+    return sendSuccess(res, 200, 'Password reset successfully');
+  } catch (error) {
+    logger.error({ err: error }, 'Unexpected error during agency reset-password');
+    return next(new AppError('Internal server error', 500));
+  }
+};
+
+/**
+ * Request a B2B admin password reset email (enumeration-safe).
+ */
+export const forgotPasswordAdmin = async (req, res, next) => {
+  const email = String(req.body?.email || '')
+    .toLowerCase()
+    .trim();
+
+  try {
+    if (!email) {
+      return next(new AppError('Email is required', 400));
+    }
+
+    const admin = await AdminUser.findOne({ email }).select(
+      '+passwordResetTokenHash +passwordResetExpires'
+    );
+
+    if (admin?.isActive) {
+      const { rawToken, tokenHash, expiresAt } = createPasswordResetToken();
+      admin.passwordResetTokenHash = tokenHash;
+      admin.passwordResetExpires = expiresAt;
+      await admin.save();
+
+      const baseUrl = resolveFrontendBase(req, 'ADMIN_URL', 'http://localhost:3002');
+      const resetUrl = buildResetUrl(baseUrl, '/b2b/admin/reset-password', rawToken);
+
+      try {
+        await sendPasswordResetEmail({
+          to: email,
+          resetUrl,
+          productName: 'TravelAgency B2B Admin',
+        });
+      } catch (mailErr) {
+        admin.passwordResetTokenHash = undefined;
+        admin.passwordResetExpires = undefined;
+        await admin.save();
+        logger.error({ err: mailErr }, 'Admin password reset email failed');
+        return next(new AppError('Unable to send reset email. Please try again later.', 503));
+      }
+    }
+
+    return sendSuccess(res, 200, PASSWORD_RESET_REQUEST_MESSAGE);
+  } catch (error) {
+    logger.error({ err: error }, 'Unexpected error during admin forgot-password');
+    return next(new AppError('Internal server error', 500));
+  }
+};
+
+/**
+ * Reset B2B admin password using a one-time token.
+ */
+export const resetPasswordAdmin = async (req, res, next) => {
+  const { token, password } = req.body || {};
+
+  try {
+    if (!token || !password || String(password).length < 6) {
+      return next(new AppError('Valid token and password (min 6 characters) are required', 400));
+    }
+
+    const tokenHash = hashPasswordResetToken(token);
+    const admin = await AdminUser.findOne({
+      passwordResetTokenHash: tokenHash,
+      passwordResetExpires: { $gt: new Date() },
+    }).select('+passwordHash +passwordResetTokenHash +passwordResetExpires');
+
+    if (!admin) {
+      return next(new AppError('Invalid or expired reset token', 400));
+    }
+
+    admin.passwordHash = await bcrypt.hash(String(password), BCRYPT_SALT_ROUNDS);
+    admin.passwordResetTokenHash = undefined;
+    admin.passwordResetExpires = undefined;
+    await admin.save();
+
+    await RefreshToken.deleteMany({ userId: admin._id, scope: 'admin' });
+
+    return sendSuccess(res, 200, 'Password reset successfully');
+  } catch (error) {
+    logger.error({ err: error }, 'Unexpected error during admin reset-password');
+    return next(new AppError('Internal server error', 500));
+  }
 };

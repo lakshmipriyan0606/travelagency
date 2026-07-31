@@ -6,6 +6,7 @@ import { getAccessToken } from '@travelagency/auth';
 import { AdminUser, SessionData } from "./types";
 import { ADMIN_ROLES } from '@travelagency/constants';
 import { cookies } from "next/headers";
+import { getJwtExpirySeconds } from '@travelagency/utils';
 
 export async function getCurrentAdmin(): Promise<AdminUser | null> {
   const token = await getAccessToken();
@@ -82,6 +83,7 @@ export async function getCurrentB2BAdmin(): Promise<AdminUser | null> {
       role: adminData.role,
       name: adminData.name || '',
       email: adminData.email || '',
+      exp: getJwtExpirySeconds(token) ?? undefined,
     } as AdminUser;
   } catch (error) {
     return null;

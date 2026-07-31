@@ -44,12 +44,12 @@ export function FormInput({
   const inputType = isPassword ? (showPassword ? "text" : "password") : type;
 
   return (
-    <div className={cn("space-y-2", className)}>
+    <div className={cn("space-y-1.5", className)}>
       {/* Label row */}
       <div className="flex items-center justify-between">
         <label
           htmlFor={inputId}
-          className="text-xs font-bold text-neutral-400 uppercase tracking-widest"
+          className="text-[13px] font-medium text-[#A1A1AA]"
         >
           {label}
         </label>
@@ -59,7 +59,7 @@ export function FormInput({
       {/* Input with optional icon */}
       <div className="relative">
         {Icon && (
-          <Icon className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-neutral-500 pointer-events-none" />
+          <Icon className="pointer-events-none absolute left-3 top-1/2 size-4 -translate-y-1/2 text-[#71717A]" />
         )}
         <input
           id={inputId}
@@ -67,22 +67,24 @@ export function FormInput({
           placeholder={placeholder}
           {...registration}
           className={cn(
-            "w-full bg-neutral-950 border text-white py-3 rounded-xl",
-            "focus:ring-2 focus:ring-yellow-500/50 focus:border-yellow-500 outline-none transition-all",
-            Icon ? "pl-10" : "pl-4",
-            isPassword ? "pr-10" : "pr-4",
+            "h-11 w-full rounded-xl border bg-[#121212] text-sm text-white outline-none transition-all placeholder-neutral-600",
+            "focus:border-[#F8B400]/60 focus:ring-2 focus:ring-[#F8B400]/20",
+            Icon ? "pl-10" : "pl-3",
+            isPassword ? "pr-11" : "pr-3",
             error
-              ? "border-red-500/70 focus:ring-red-500/40 focus:border-red-500"
-              : "border-neutral-800"
+              ? "border-red-500/70 focus:border-red-500 focus:ring-red-500/30"
+              : "border-white/[0.1]"
           )}
         />
         {isPassword && (
           <button
             type="button"
             onClick={() => setShowPassword(!showPassword)}
-            className="absolute right-3 top-1/2 -translate-y-1/2 text-neutral-500 hover:text-neutral-350 focus:outline-none"
+            aria-label={showPassword ? "Hide password" : "Show password"}
+            aria-pressed={showPassword}
+            className="absolute right-3 top-1/2 -translate-y-1/2 text-[#71717A] transition-colors hover:text-[#F8B400] focus:outline-none focus-visible:text-[#F8B400]"
           >
-            {showPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
+            {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
           </button>
         )}
       </div>

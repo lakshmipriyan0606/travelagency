@@ -1,16 +1,20 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { usePathname } from "next/navigation";
 import { ROUTES } from "@/lib/routes";
 import { TravelHeroSidebar } from "./TravelHeroSidebar";
 import { TravelHeroHeader } from "./TravelHeroHeader";
+import { SignOutConfirmDialog } from "@travelagency/ui";
+import { clearBrowserCookie, readBrowserCookie } from "@travelagency/utils";
+import { logoutAgent } from "@/api/auth.api";
+import type { AgencyStatus } from "./AgencyStatusBadge";
 
 export interface AppShellProps {
   children: React.ReactNode;
   agencyName?: string;
   partnerTier?: string;
-  notificationCount?: number;
+  agencyStatus?: AgencyStatus;
   onLogout?: () => void;
 }
 
@@ -20,23 +24,46 @@ function getPageTitle(pathname: string): string {
   return "Dashboard";
 }
 
+function clearPortalCookies() {
+  clearBrowserCookie("b2b_portal_access_token");
+  clearBrowserCookie("b2b_portal_refresh_token");
+  clearBrowserCookie("agency_status");
+}
+
 export default function AppShell({
   children,
   agencyName = "Apex Travel Agency",
   partnerTier = "standard",
-  notificationCount = 3,
+  agencyStatus,
   onLogout,
 }: AppShellProps) {
   const pathname = usePathname();
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-  const [searchValue, setSearchValue] = useState("");
+  const [signOutOpen, setSignOutOpen] = useState(false);
+  const [signingOut, setSigningOut] = useState(false);
+  const [cookieStatus, setCookieStatus] = useState<AgencyStatus | null>(null);
 
-  const handleLogout = () => {
-    if (onLogout) return onLogout();
-    document.cookie = "b2b_portal_access_token=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT;";
-    document.cookie = "b2b_portal_refresh_token=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT;";
-    document.cookie = "agency_status=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT;";
+  useEffect(() => {
+    setCookieStatus(readBrowserCookie("agency_status"));
+  }, []);
+
+  const resolvedAgencyStatus = agencyStatus ?? cookieStatus ?? "active";
+
+  const performLogout = async () => {
+    setSigningOut(true);
+    try {
+      const refresh = readBrowserCookie("b2b_portal_refresh_token");
+      await logoutAgent(refresh).catch(() => undefined);
+      await onLogout?.();
+    } finally {
+      clearPortalCookies();
+      window.location.href = ROUTES.login;
+    }
+  };
+
+  const handleSessionExpired = () => {
+    clearPortalCookies();
     window.location.href = ROUTES.login;
   };
 
@@ -47,7 +74,7 @@ export default function AppShell({
         partnerTier={partnerTier}
         collapsed={sidebarCollapsed}
         onToggleCollapse={() => setSidebarCollapsed((v) => !v)}
-        onLogout={handleLogout}
+        onLogout={() => setSignOutOpen(true)}
         mobileOpen={mobileMenuOpen}
         onMobileClose={() => setMobileMenuOpen(false)}
       />
@@ -56,10 +83,11 @@ export default function AppShell({
         <TravelHeroHeader
           pageTitle={getPageTitle(pathname)}
           agencyName={agencyName}
-          searchValue={searchValue}
-          onSearchChange={setSearchValue}
-          notificationCount={notificationCount}
+          agencyStatus={resolvedAgencyStatus}
           onMenuClick={() => setMobileMenuOpen(true)}
+          onLogout={() => setSignOutOpen(true)}
+          sessionCookieName="b2b_portal_access_token"
+          onSessionExpired={handleSessionExpired}
         />
 
         <main className="flex-1 overflow-y-auto">
@@ -68,6 +96,13 @@ export default function AppShell({
           </div>
         </main>
       </div>
+
+      <SignOutConfirmDialog
+        open={signOutOpen}
+        onOpenChange={setSignOutOpen}
+        onConfirm={performLogout}
+        confirming={signingOut}
+      />
     </div>
   );
 }

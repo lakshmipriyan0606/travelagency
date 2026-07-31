@@ -297,9 +297,9 @@ export default function B2BAgenciesClient() {
                       <div className="absolute -left-[21px] top-1 w-3 h-3 rounded-full bg-primary border-2 border-white"></div>
                       <div className="space-y-1">
                         <div className="flex items-center gap-2">
-                          <span className="text-xs font-bold text-neutral-500 capitalize">{log.previousStatus}</span>
+                          <span className="text-xs font-bold text-neutral-500 capitalize">{log.fromStatus}</span>
                           <span className="text-neutral-300">➔</span>
-                          <span className="text-xs font-black text-primary capitalize">{log.newStatus}</span>
+                          <span className="text-xs font-black text-primary capitalize">{log.toStatus}</span>
                         </div>
                         <p className="text-xs text-neutral-400 font-medium">
                           {new Date(log.createdAt).toLocaleString()} by {log.changedBy?.name || 'System'}

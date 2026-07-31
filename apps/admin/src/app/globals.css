@@ -42,6 +42,13 @@ body {
   -moz-osx-font-smoothing: grayscale;
 }
 
+/* Auth routes: lock document scroll on desktop — shell uses fixed + h-dvh */
+html:has([data-admin-auth]),
+body:has([data-admin-auth]) {
+  overflow: hidden;
+  height: 100%;
+}
+
 /* Admin portal surface helpers — prefer these over raw white/black */
 [data-admin-portal] {
   color: var(--ent-text-main);

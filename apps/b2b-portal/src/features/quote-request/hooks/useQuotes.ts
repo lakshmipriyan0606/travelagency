@@ -20,10 +20,15 @@ import type {
 /**
  * Hook to retrieve a list of paginated quote requests.
  */
-export function useQuoteList(page = 1, pageSize = 10, status?: QuoteStatus) {
+export function useQuoteList(
+  page = 1,
+  pageSize = 10,
+  status?: QuoteStatus,
+  search?: string
+) {
   return UseFetchAPIQuery({
-    key: QUOTE_QUERY_KEYS.list({ page, pageSize, status }),
-    queryFn: () => quoteService.getQuotes(page, pageSize, status),
+    key: QUOTE_QUERY_KEYS.list({ page, pageSize, status, search }),
+    queryFn: () => quoteService.getQuotes(page, pageSize, status, search),
     options: {
       staleTime: 1000 * 60, // 1 minute stale time for list view
     },
@@ -67,10 +72,50 @@ export function useCreateQuote() {
  * Hook to save a quote as draft.
  */
 export function useSaveDraftQuote() {
+  const queryClient = useQueryClient();
+
   return useMutationAPIQuery<{ id: string; reference: string }, Error, { id: string; dto: SaveDraftDTO }>(
     ({ id, dto }) => quoteService.saveDraft(id, dto),
     {
       showToast: false,
+      onSuccess: () => {
+        queryClient.invalidateQueries({ queryKey: QUOTE_QUERY_KEYS.all });
+      },
+    }
+  );
+}
+
+/**
+ * Hook to permanently delete a draft quote request.
+ * Invalidates list and dashboard caches on success.
+ */
+export function useDeleteQuote() {
+  const queryClient = useQueryClient();
+
+  return useMutationAPIQuery<{ id: string; reference: string }, Error, string>(
+    (id) => quoteService.deleteQuote(id),
+    {
+      showToast: true,
+      onSuccess: () => {
+        queryClient.invalidateQueries({ queryKey: QUOTE_QUERY_KEYS.all });
+      },
+    }
+  );
+}
+
+/**
+ * Resubmit a quote after admin requested changes → Pending.
+ */
+export function useResubmitQuote() {
+  const queryClient = useQueryClient();
+
+  return useMutationAPIQuery<QuoteRequest, Error, string>(
+    (id) => quoteService.resubmitQuote(id),
+    {
+      showToast: true,
+      onSuccess: () => {
+        queryClient.invalidateQueries({ queryKey: QUOTE_QUERY_KEYS.all });
+      },
     }
   );
 }

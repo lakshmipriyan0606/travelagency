@@ -27,7 +27,7 @@ export function ConversionChart({ rate = 0 }: ConversionChartProps) {
     <DashboardCard className="h-full relative">
       <div className="mb-4">
         <h2 className="text-lg font-bold text-white">Quote Conversion Rate</h2>
-        <p className="text-xs text-zinc-500 mt-1">Accepted quotes vs non-draft requests</p>
+        <p className="text-xs text-zinc-500 mt-1">Approved quotes vs non-draft requests</p>
       </div>
 
       <svg

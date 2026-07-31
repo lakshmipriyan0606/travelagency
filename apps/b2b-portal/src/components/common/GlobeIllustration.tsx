@@ -1,18 +1,35 @@
 "use client";
 
 import { motion } from "framer-motion";
+import { cn } from "@travelagency/utils";
 
-export function GlobeIllustration() {
+export interface GlobeIllustrationProps {
+  variant?: "left" | "right";
+  className?: string;
+}
+
+export function GlobeIllustration({ variant = "right", className }: GlobeIllustrationProps) {
+  const anchorClass =
+    variant === "left"
+      ? "left-0 top-1/2 -translate-y-1/2"
+      : "right-4 top-1/2 -translate-y-1/2";
+
   return (
-    <div className="relative w-full max-w-[280px] h-[180px] mx-auto lg:mx-0 lg:absolute lg:right-8 lg:top-1/2 lg:-translate-y-1/2" aria-hidden>
+    <div
+      className={cn(
+        "relative w-full h-full opacity-60",
+        className
+      )}
+      aria-hidden
+    >
       {/* Ambient glow */}
-      <div className="absolute inset-0 bg-[#F8B400]/20 rounded-full blur-3xl scale-75" />
+      <div className="absolute inset-0 bg-[#F8B400]/15 rounded-full blur-3xl scale-75" />
 
       {/* Wireframe globe */}
       <motion.div
         animate={{ rotate: 360 }}
         transition={{ duration: 60, repeat: Infinity, ease: "linear" }}
-        className="absolute right-4 top-1/2 -translate-y-1/2 w-36 h-36"
+        className={cn("absolute w-36 h-36", anchorClass)}
       >
         <svg viewBox="0 0 200 200" className="w-full h-full">
           <defs>
@@ -22,7 +39,6 @@ export function GlobeIllustration() {
             </radialGradient>
           </defs>
           <circle cx="100" cy="100" r="90" fill="url(#globeGlow)" />
-          {/* Latitude lines */}
           {[30, 50, 70, 90, 110, 130, 150, 170].map((y) => (
             <ellipse
               key={y}
@@ -36,7 +52,6 @@ export function GlobeIllustration() {
               strokeWidth="1"
             />
           ))}
-          {/* Longitude lines */}
           {[0, 30, 60, 90, 120, 150].map((angle) => {
             const rad = (angle * Math.PI) / 180;
             return (
@@ -55,7 +70,6 @@ export function GlobeIllustration() {
             );
           })}
           <circle cx="100" cy="100" r="90" fill="none" stroke="#F8B400" strokeOpacity="0.4" strokeWidth="1.5" />
-          {/* Connection nodes */}
           {[
             [60, 70],
             [130, 80],
@@ -71,7 +85,7 @@ export function GlobeIllustration() {
       <motion.div
         animate={{ rotate: 360 }}
         transition={{ duration: 8, repeat: Infinity, ease: "linear" }}
-        className="absolute right-4 top-1/2 -translate-y-1/2 w-36 h-36"
+        className={cn("absolute w-36 h-36", anchorClass)}
       >
         <div className="absolute -top-1 left-1/2 -translate-x-1/2">
           <svg width="20" height="20" viewBox="0 0 24 24" fill="#F8B400">

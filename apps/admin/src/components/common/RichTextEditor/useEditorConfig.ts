@@ -32,7 +32,7 @@ export const useEditorConfig = (content: string, onChange: (content: string) => 
     },
     editorProps: {
       attributes: {
-        class: 'prose prose-sm sm:prose lg:prose-lg xl:prose-2xl mx-auto focus:outline-none min-h-[400px] max-w-none p-4 bg-white rounded-b-xl [&_ul]:list-disc [&_ol]:list-decimal [&_h1]:text-3xl [&_h1]:font-bold [&_h2]:text-2xl [&_h2]:font-bold [&_h3]:text-xl [&_h3]:font-bold',
+        class: 'prose prose-invert prose-sm sm:prose lg:prose-lg xl:prose-2xl mx-auto focus:outline-none min-h-[360px] max-w-none p-4 bg-transparent rounded-b-xl text-white/90 [&_ul]:list-disc [&_ol]:list-decimal [&_h1]:text-3xl [&_h1]:font-bold [&_h2]:text-2xl [&_h2]:font-bold [&_h3]:text-xl [&_h3]:font-bold [&_a]:text-[#F8B400]',
       },
     },
   })

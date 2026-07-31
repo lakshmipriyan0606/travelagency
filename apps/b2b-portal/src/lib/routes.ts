@@ -10,6 +10,8 @@ export const ROUTES = {
   // ─── Authentication ───────────────────────────────────────────────────────
   login: '/login',
   register: '/register',
+  forgotPassword: '/forgot-password',
+  resetPassword: '/reset-password',
 
   // ─── Agency Status Gates ──────────────────────────────────────────────────
   pendingApproval: '/pending-approval',
@@ -25,6 +27,7 @@ export const ROUTES = {
   quotes: '/quotes',
   quoteNew: '/quotes/new',
   quoteDetail: (id: string) => `/quotes/${id}` as const,
+  quoteEdit: (id: string) => `/quotes/${id}/edit` as const,
   quoteSuccess: (reference: string) => `/quotes/${reference}/success` as const,
 } as const;
 

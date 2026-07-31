@@ -4,9 +4,19 @@ import { useMemo, useState } from "react";
 import { usePathname, useRouter } from "next/navigation";
 import { AdminUser } from "@/features/auth/types";
 import { adminNavigation } from "@/features/navigation";
-import { EnterpriseSidebar, EnterpriseHeader } from "@travelagency/ui";
+import {
+  EnterpriseSidebar,
+  EnterpriseHeader,
+  SignOutConfirmDialog,
+  type HeaderNotification,
+} from "@travelagency/ui";
+import { clearBrowserCookie } from "@travelagency/utils";
+import { AUTH_COOKIES } from "@travelagency/constants";
 import { logoutAction } from "@/features/auth/actions";
+import { logoutAPI } from "@/api/auth.api";
 import { showToast } from "@/lib/toast";
+import { ROUTES } from "@/lib/routes";
+import { useB2CEnterpriseHeaderState } from "@/hooks/useEnterpriseHeaderState";
 
 interface AdminShellProps {
   user: AdminUser;
@@ -17,18 +27,30 @@ export default function AdminShell({ user, children }: AdminShellProps) {
   const pathname = usePathname();
   const router = useRouter();
   const [searchValue, setSearchValue] = useState("");
+  const [readNotificationIds, setReadNotificationIds] = useState<Set<string>>(
+    () => new Set()
+  );
+  const [signOutOpen, setSignOutOpen] = useState(false);
+  const [signingOut, setSigningOut] = useState(false);
 
-  const handleLogout = async () => {
+  const performLogout = async () => {
+    setSigningOut(true);
     try {
-      await logoutAction();
+      await logoutAPI().catch(() => undefined);
+      await logoutAction().catch(() => undefined);
+    } finally {
+      clearBrowserCookie(AUTH_COOKIES.ACCESS_TOKEN);
+      clearBrowserCookie(AUTH_COOKIES.REFRESH_TOKEN);
       showToast({ type: "success", content: "Logged out successfully" });
-      router.push("/b2c/admin/login");
-    } catch {
-      showToast({ type: "error", content: "Logout failed." });
+      window.location.href = ROUTES.login;
     }
   };
 
-  // Flat mapping for navigation items
+  const handleSessionExpired = () => {
+    showToast({ type: "error", content: "Your session has expired. Please sign in again." });
+    router.push(ROUTES.login);
+  };
+
   const navItems = adminNavigation.flatMap((item) => {
     if (item.children) {
       return item.children.map((child) => ({
@@ -61,24 +83,41 @@ export default function AdminShell({ user, children }: AdminShellProps) {
   const activeItem = navItems.find((n) => n.href === activeHref);
   const currentTitle = activeItem ? activeItem.label : "B2C Admin Panel";
 
+  const headerState = useB2CEnterpriseHeaderState(searchValue, navItems);
+  const notifications = headerState.notifications.map((item) => ({
+    ...item,
+    isRead: readNotificationIds.has(item.id),
+  }));
+
+  const handleNotificationClick = (item: HeaderNotification) => {
+    setReadNotificationIds((prev) => new Set(prev).add(item.id));
+    if (item.href) router.push(item.href);
+  };
+
+  const handleMarkAllRead = () => {
+    setReadNotificationIds(new Set(notifications.map((item) => item.id)));
+  };
+
+  const handleSearchSubmit = (query: string) => {
+    const trimmed = query.trim();
+    if (!trimmed) return;
+    router.push(headerState.defaultSearchHref);
+  };
+
+  const handleSearchResultClick = (result: { href: string }) => {
+    router.push(result.href);
+    setSearchValue("");
+  };
+
   return (
     <div className="flex h-screen w-full ent-ambient-bg overflow-hidden text-[var(--ent-text-main,#F4F4F5)]" data-admin-portal>
-      {/* Shared Unified Enterprise Sidebar */}
       <EnterpriseSidebar
         appName="TravelHero"
         appLogoSubtitle="B2C ADMIN PORTAL"
         navItems={navItems}
-        userProfile={{
-          name: user.name,
-          email: user.email || `${user.username || 'admin'}@travelagency.com`,
-          role: user.role,
-        }}
-        onLogout={handleLogout}
       />
 
-      {/* Main Container */}
       <div className="flex-1 flex flex-col h-full overflow-hidden min-w-0">
-        {/* Shared Unified Enterprise Header */}
         <EnterpriseHeader
           pageTitle={currentTitle}
           breadcrumbs={[
@@ -87,16 +126,34 @@ export default function AdminShell({ user, children }: AdminShellProps) {
           ]}
           userProfile={{
             name: user.name,
+            role: user.role,
           }}
           searchValue={searchValue}
           onSearchChange={setSearchValue}
+          onSearchSubmit={handleSearchSubmit}
+          searchResults={headerState.searchResults}
+          isSearchLoading={headerState.isSearchLoading}
+          onSearchResultClick={handleSearchResultClick}
+          notifications={notifications}
+          onNotificationClick={handleNotificationClick}
+          onMarkAllNotificationsRead={handleMarkAllRead}
+          helpItems={headerState.helpItems}
+          sessionExpiresAt={user.exp}
+          onSessionExpired={handleSessionExpired}
+          onLogout={() => setSignOutOpen(true)}
         />
 
-        {/* Content Area */}
         <main className="flex-1 overflow-y-auto ent-scrollbar p-8 space-y-8 max-w-[1440px] w-full mx-auto">
           {children}
         </main>
       </div>
+
+      <SignOutConfirmDialog
+        open={signOutOpen}
+        onOpenChange={setSignOutOpen}
+        onConfirm={performLogout}
+        confirming={signingOut}
+      />
     </div>
   );
 }

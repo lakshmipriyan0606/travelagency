@@ -17,7 +17,17 @@
  */
 import { logger } from '#shared/utils/logger.js';
 
-export const globalErrorHandler = (err, req, res, next) => {
+export const globalErrorHandler = (err, req, res, _next) => {
+  // Mongoose schema / cast failures are client errors, not 500s
+  if (err.name === 'ValidationError') {
+    err.statusCode = 400;
+    err.isOperational = true;
+  } else if (err.name === 'CastError') {
+    err.statusCode = 400;
+    err.isOperational = true;
+    err.message = `Invalid value for ${err.path || 'field'}`;
+  }
+
   err.statusCode = err.statusCode || 500;
   err.status = err.status || 'error';
 

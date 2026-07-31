@@ -1,5 +1,7 @@
 export const ROUTES = {
   login: '/b2c/admin/login',
+  forgotPassword: '/b2c/admin/forgot-password',
+  resetPassword: '/b2c/admin/reset-password',
   dashboard: '/b2c/admin/dashboard',
   unauthorized: '/b2c/admin/unauthorized',
   packages: {
@@ -40,7 +42,19 @@ export const ROUTES = {
   b2b: {
     prefix: '/b2b/admin',
     login: '/b2b/admin/login',
+    forgotPassword: '/b2b/admin/forgot-password',
+    resetPassword: '/b2b/admin/reset-password',
     dashboard: '/b2b/admin/dashboard',
     agencyDetails: '/b2b/admin/agency-details',
+    agencyDetail: (params?: { agencyId?: string; tab?: 'quotes' | 'details' | 'log'; quoteId?: string }) => {
+      const base = '/b2b/admin/agency-details';
+      if (!params) return base;
+      const qs = new URLSearchParams();
+      if (params.agencyId) qs.set('agencyId', params.agencyId);
+      if (params.tab) qs.set('tab', params.tab);
+      if (params.quoteId) qs.set('quoteId', params.quoteId);
+      const query = qs.toString();
+      return query ? `${base}?${query}` : base;
+    },
   }
 } as const;

@@ -3,8 +3,8 @@
  */
 "use client";
 
-import React, { useState, useEffect, useTransition } from "react";
-import { useForm, FormProvider } from "react-hook-form";
+import React, { useState, useEffect, useRef } from "react";
+import { useForm, FormProvider, Controller } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { AnimatePresence, motion } from "framer-motion";
@@ -22,10 +22,17 @@ import {
   Loader2,
   Save,
 } from "lucide-react";
-import { useCreateQuote, useSaveDraftQuote } from "../hooks/useQuotes";
-import { BudgetCategory, TransferType, MealPlan, CreateQuoteDTO } from "../types/quote.types";
+import { useCreateQuote, useSaveDraftQuote, useResubmitQuote, useQuoteDetail } from "../hooks/useQuotes";
+import { BudgetCategory, TransferType, MealPlan, CreateQuoteDTO, QuoteStatus } from "../types/quote.types";
+import {
+  BUDGET_CATEGORY_OPTIONS,
+  TRANSFER_TYPE_OPTIONS,
+  MEAL_PLAN_OPTIONS,
+} from "../config/quote.config";
+import { QuoteDateField } from "./QuoteDateField";
+import { QuoteSelectField } from "./QuoteSelectField";
 import Stepper from "@/components/ui/Stepper";
-import { Button } from "@travelagency/ui";
+import { Button, SimpleCheckbox } from "@travelagency/ui";
 import { ROUTES } from "@/lib/routes";
 import Link from "next/link";
 import { cn } from "@travelagency/utils";
@@ -127,7 +134,18 @@ const fieldClass = cn(
 );
 
 const labelClass =
-  "text-[10px] font-bold uppercase tracking-widest text-zinc-400";
+  "text-[11px] font-semibold uppercase tracking-wider text-zinc-400";
+
+function formatReviewDate(value?: string) {
+  if (!value) return "—";
+  const d = new Date(`${value}T12:00:00`);
+  if (Number.isNaN(d.getTime())) return value;
+  return d.toLocaleDateString("en-GB", {
+    day: "2-digit",
+    month: "short",
+    year: "numeric",
+  });
+}
 
 const panelClass =
   "bg-[var(--ent-elevated,#1c1c22)] border border-white/[0.08] p-5 rounded-2xl space-y-3";
@@ -146,17 +164,61 @@ function FieldError({ message }: { message?: string }) {
   );
 }
 
-export default function QuoteWizard() {
+const DRAFT_SESSION_KEY = "b2b_quote_wizard_draft_id";
+
+function readStoredDraftId(): string {
+  if (typeof window === "undefined") return "new";
+  try {
+    const stored = sessionStorage.getItem(DRAFT_SESSION_KEY);
+    if (stored && stored !== "new" && stored !== "undefined") return stored;
+  } catch {
+    /* ignore */
+  }
+  return "new";
+}
+
+function persistDraftId(id: string) {
+  if (typeof window === "undefined") return;
+  try {
+    if (id && id !== "new") sessionStorage.setItem(DRAFT_SESSION_KEY, id);
+    else sessionStorage.removeItem(DRAFT_SESSION_KEY);
+  } catch {
+    /* ignore */
+  }
+}
+
+export default function QuoteWizard({ reviseId }: { reviseId?: string }) {
   const [currentStep, setCurrentStep] = useState(1);
   const [completedSteps, setCompletedSteps] = useState<number[]>([]);
   const [draftId, setDraftId] = useState<string>("new");
   const [submittedQuote, setSubmittedQuote] = useState<unknown | null>(null);
   const [saveStatus, setSaveStatus] = useState<"idle" | "saving" | "saved" | "error">("idle");
+  const [saveError, setSaveError] = useState<string | null>(null);
   const [direction, setDirection] = useState(1);
-  const [, startTransition] = useTransition();
+  /** Sync id so rapid Continues update the same draft instead of creating many. */
+  const draftIdRef = useRef<string>("new");
+  const saveChainRef = useRef<Promise<void>>(Promise.resolve());
+  /** Sync lock so rapid Submit clicks cannot start multiple POSTs before isPending re-renders. */
+  const submitLockRef = useRef(false);
+  const isReviseMode = Boolean(reviseId);
 
   const createMutation = useCreateQuote();
   const saveDraftMutation = useSaveDraftQuote();
+  const resubmitMutation = useResubmitQuote();
+  const { data: reviseQuote, isLoading: isReviseLoading } = useQuoteDetail(reviseId || "");
+
+  // Restore draft id after remounts (Strict Mode / navigation) so Continues update one row.
+  useEffect(() => {
+    if (reviseId) {
+      draftIdRef.current = reviseId;
+      setDraftId(reviseId);
+      persistDraftId(reviseId);
+      return;
+    }
+    const stored = readStoredDraftId();
+    draftIdRef.current = stored;
+    setDraftId(stored);
+  }, [reviseId]);
 
   const methods = useForm({
     resolver: zodResolver(wizardSchema),
@@ -184,12 +246,46 @@ export default function QuoteWizard() {
   });
 
   const {
+    control,
     watch,
     trigger,
     getValues,
     handleSubmit,
-    formState: { errors },
+    reset,
+    formState: { errors, isSubmitting },
   } = methods;
+
+  useEffect(() => {
+    if (!reviseQuote || !isReviseMode) return;
+    if (reviseQuote.status !== QuoteStatus.REVISION_REQUESTED) return;
+    const toDateInput = (iso?: string) => {
+      if (!iso) return "";
+      const d = new Date(iso);
+      if (Number.isNaN(d.getTime())) return "";
+      return d.toISOString().slice(0, 10);
+    };
+    reset({
+      destination: reviseQuote.destination || "",
+      travelStart: toDateInput(reviseQuote.travelStart),
+      travelEnd: toDateInput(reviseQuote.travelEnd),
+      adults: reviseQuote.adults ?? 1,
+      children: reviseQuote.children ?? 0,
+      rooms: reviseQuote.rooms ?? 1,
+      budgetCategory: reviseQuote.budgetCategory || BudgetCategory.STANDARD,
+      preferredHotels: reviseQuote.preferredHotels || "",
+      transfers: reviseQuote.transfers || TransferType.NONE,
+      meals: reviseQuote.meals || MealPlan.NONE,
+      guideRequired: reviseQuote.guideRequired ?? false,
+      specialRequirements: reviseQuote.specialRequirements || "",
+      contactPerson: {
+        name: reviseQuote.contactPerson?.name || "",
+        email: reviseQuote.contactPerson?.email || "",
+        phone: reviseQuote.contactPerson?.phone || "",
+        designation: reviseQuote.contactPerson?.designation || "",
+      },
+    });
+    setCompletedSteps([1, 2, 3, 4]);
+  }, [reviseQuote, isReviseMode, reset]);
 
   const handleSaveDraft = async () => {
     const values = getValues();
@@ -203,8 +299,6 @@ export default function QuoteWizard() {
       values.contactPerson?.name?.trim();
 
     if (!hasMeaningfulData) return;
-
-    setSaveStatus("saving");
 
     const dto = {
       destination: values.destination || undefined,
@@ -222,16 +316,46 @@ export default function QuoteWizard() {
       contactPerson: values.contactPerson,
     };
 
-    saveDraftMutation.mutate(
-      { id: draftId, dto },
-      {
-        onSuccess: (data) => {
-          if (data && data.id) setDraftId(data.id);
-          setSaveStatus("saved");
-        },
-        onError: () => setSaveStatus("error"),
+    // Chain saves so each request uses the id from the previous response (never parallel "new").
+    const run = async () => {
+      setSaveStatus("saving");
+      setSaveError(null);
+      try {
+        const requestId = draftIdRef.current && draftIdRef.current !== "new"
+          ? draftIdRef.current
+          : "new";
+        const data = await saveDraftMutation.mutateAsync({
+          id: requestId,
+          dto,
+        });
+        const returnedId = data?.id ? String(data.id) : "";
+        if (!returnedId || returnedId === "new") {
+          throw new Error("Draft save did not return a usable id");
+        }
+        draftIdRef.current = returnedId;
+        persistDraftId(returnedId);
+        setDraftId(returnedId);
+        setSaveStatus("saved");
+        setSaveError(null);
+      } catch (err: unknown) {
+        setSaveStatus("error");
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        const errorObj = err as any;
+        setSaveError(
+          errorObj?.response?.data?.error?.message ||
+            errorObj?.response?.data?.message ||
+            errorObj?.message ||
+            "Could not save draft"
+        );
       }
+    };
+
+    const queued = saveChainRef.current.then(run, run);
+    saveChainRef.current = queued.then(
+      () => undefined,
+      () => undefined
     );
+    await queued;
   };
 
   const nextStep = async () => {
@@ -258,7 +382,7 @@ export default function QuoteWizard() {
       }
       setDirection(1);
       setCurrentStep((prev) => prev + 1);
-      handleSaveDraft();
+      await handleSaveDraft();
     }
   };
 
@@ -274,12 +398,37 @@ export default function QuoteWizard() {
     }
   };
 
-  const onSubmit = (data: Record<string, unknown>) => {
-    startTransition(async () => {
-      createMutation.mutate(data as unknown as CreateQuoteDTO, {
-        onSuccess: (res) => setSubmittedQuote(res),
-      });
-    });
+  const isSubmitBusy =
+    isSubmitting || createMutation.isPending || resubmitMutation.isPending;
+
+  const onSubmit = async (data: Record<string, unknown>) => {
+    if (
+      submitLockRef.current ||
+      createMutation.isPending ||
+      resubmitMutation.isPending
+    ) {
+      return;
+    }
+    submitLockRef.current = true;
+    try {
+      if (isReviseMode && reviseId) {
+        await handleSaveDraft();
+        const res = await resubmitMutation.mutateAsync(reviseId);
+        persistDraftId("new");
+        draftIdRef.current = "new";
+        setDraftId("new");
+        setSubmittedQuote(res);
+        return;
+      }
+      const res = await createMutation.mutateAsync(data as unknown as CreateQuoteDTO);
+      persistDraftId("new");
+      draftIdRef.current = "new";
+      setDraftId("new");
+      setSubmittedQuote(res);
+    } catch {
+      /* toast from mutation — unlock so a true validation/network failure can be retried */
+      submitLockRef.current = false;
+    }
   };
 
   useEffect(() => {
@@ -304,9 +453,13 @@ export default function QuoteWizard() {
           <CheckCircle size={32} />
         </div>
         <div>
-          <h2 className="text-2xl font-black text-white">Quotation Request Submitted</h2>
+          <h2 className="text-2xl font-black text-white">
+            {isReviseMode ? "Quote Resubmitted" : "Quotation Request Submitted"}
+          </h2>
           <p className="text-zinc-400 text-sm mt-2">
-            Your request has been queued in operations under reference:
+            {isReviseMode
+              ? "Your updates are back in the Pending queue under reference:"
+              : "Your request has been queued for admin review under reference:"}
           </p>
           <div className="mt-4 p-3 bg-[var(--ent-elevated,#1c1c22)] border border-white/[0.1] rounded-xl font-mono text-sm font-bold text-[#F8B400] inline-block">
             {ref}
@@ -348,6 +501,32 @@ export default function QuoteWizard() {
     transition: stepMotion.transition,
   };
 
+  if (isReviseMode && isReviseLoading) {
+    return (
+      <div className="flex items-center justify-center gap-2 py-20 text-sm text-zinc-400">
+        <Loader2 className="animate-spin text-[#F8B400]" size={20} />
+        Loading quote for revision…
+      </div>
+    );
+  }
+
+  if (
+    isReviseMode &&
+    reviseQuote &&
+    reviseQuote.status !== QuoteStatus.REVISION_REQUESTED
+  ) {
+    return (
+      <div className="rounded-2xl border border-amber-500/30 bg-amber-500/10 p-6 text-center space-y-3">
+        <p className="text-sm text-amber-200 font-semibold">
+          This quote is not awaiting changes (status: {reviseQuote.status}).
+        </p>
+        <Link href={ROUTES.quoteDetail(reviseId!)} className="text-[#F8B400] text-sm font-bold underline">
+          Back to quote detail
+        </Link>
+      </div>
+    );
+  }
+
   return (
     <FormProvider {...methods}>
       <div className="w-full space-y-6 ent-animate-in">
@@ -355,9 +534,13 @@ export default function QuoteWizard() {
           <div className="flex items-start gap-3">
             <span className="ent-gold-bar h-11 mt-0.5 shrink-0" aria-hidden />
             <div>
-              <h1 className="text-2xl font-bold tracking-tight text-white">New Quote Request</h1>
+              <h1 className="text-2xl font-bold tracking-tight text-white">
+                {isReviseMode ? "Edit & Resubmit Quote" : "New Quote Request"}
+              </h1>
               <p className="text-xs text-zinc-400 mt-1">
-                Submit traveler parameters for customized partner quotes.
+                {isReviseMode
+                  ? "Update the fields admin flagged, then resubmit for Pending review."
+                  : "Submit traveler parameters for customized partner quotes."}
               </p>
             </div>
           </div>
@@ -375,13 +558,24 @@ export default function QuoteWizard() {
               </>
             )}
             {saveStatus === "error" && (
-              <>
-                <AlertCircle size={12} className="text-red-400" />
-                <span className="text-red-400">Autosave failed</span>
-              </>
+              <span className="flex max-w-xs items-center gap-1.5 normal-case tracking-normal font-semibold text-red-400">
+                <AlertCircle size={12} className="shrink-0" />
+                <span className="truncate" title={saveError ?? undefined}>
+                  {saveError || "Autosave failed"}
+                </span>
+              </span>
             )}
           </div>
         </div>
+
+        {isReviseMode && reviseQuote?.adminFeedback ? (
+          <div className="rounded-2xl border border-amber-500/30 bg-amber-500/10 px-4 py-3">
+            <p className="text-[10px] font-black uppercase tracking-wider text-amber-400 mb-1">
+              Admin comment
+            </p>
+            <p className="text-sm text-amber-100/90 leading-relaxed">{reviseQuote.adminFeedback}</p>
+          </div>
+        ) : null}
 
         <div className="bg-[var(--ent-card,#16161b)] border border-white/[0.08] rounded-2xl p-4 md:p-5 ent-card-shadow">
           <Stepper
@@ -489,30 +683,23 @@ export default function QuoteWizard() {
                       />
                       <FieldError message={errors.destination?.message} />
                     </div>
-                    <div className="space-y-2">
-                      <label className={labelClass}>
-                        Travel Start Date <span className="text-[#F8B400]">*</span>
-                      </label>
-                      <input
-                        type="date"
-                        min={new Date().toISOString().split("T")[0]}
-                        {...methods.register("travelStart")}
-                        className={cn(fieldClass, "[color-scheme:dark]")}
-                      />
-                      <FieldError message={errors.travelStart?.message} />
-                    </div>
-                    <div className="space-y-2">
-                      <label className={labelClass}>
-                        Travel End Date <span className="text-[#F8B400]">*</span>
-                      </label>
-                      <input
-                        type="date"
-                        min={new Date().toISOString().split("T")[0]}
-                        {...methods.register("travelEnd")}
-                        className={cn(fieldClass, "[color-scheme:dark]")}
-                      />
-                      <FieldError message={errors.travelEnd?.message} />
-                    </div>
+                    <QuoteDateField
+                      control={control}
+                      name="travelStart"
+                      label="Travel Start Date"
+                      required
+                    />
+                    <QuoteDateField
+                      control={control}
+                      name="travelEnd"
+                      label="Travel End Date"
+                      required
+                      minDate={
+                        watch("travelStart")
+                          ? new Date(`${watch("travelStart")}T12:00:00`)
+                          : undefined
+                      }
+                    />
                     <div className="space-y-2">
                       <label className={labelClass}>
                         Adult Guests <span className="text-[#F8B400]">*</span>
@@ -559,32 +746,19 @@ export default function QuoteWizard() {
                     </p>
                   </div>
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-5 lg:gap-6">
-                    <div className="space-y-2">
-                      <label className={labelClass}>
-                        Budget Class <span className="text-[#F8B400]">*</span>
-                      </label>
-                      <select
-                        {...methods.register("budgetCategory")}
-                        className={cn(fieldClass, "[color-scheme:dark]")}
-                      >
-                        <option value={BudgetCategory.ECONOMY}>Economy</option>
-                        <option value={BudgetCategory.STANDARD}>Standard</option>
-                        <option value={BudgetCategory.PREMIUM}>Premium</option>
-                        <option value={BudgetCategory.LUXURY}>Luxury</option>
-                      </select>
-                    </div>
-                    <div className="space-y-2">
-                      <label className={labelClass}>Transfers & Logistics</label>
-                      <select
-                        {...methods.register("transfers")}
-                        className={cn(fieldClass, "[color-scheme:dark]")}
-                      >
-                        <option value={TransferType.NONE}>No Transfers</option>
-                        <option value={TransferType.SHARED}>Shared Shuttle</option>
-                        <option value={TransferType.PRIVATE}>Private Vehicle</option>
-                        <option value={TransferType.LUXURY}>Luxury Limousine</option>
-                      </select>
-                    </div>
+                    <QuoteSelectField
+                      control={control}
+                      name="budgetCategory"
+                      label="Budget Class"
+                      required
+                      options={BUDGET_CATEGORY_OPTIONS}
+                    />
+                    <QuoteSelectField
+                      control={control}
+                      name="transfers"
+                      label="Transfers & Logistics"
+                      options={TRANSFER_TYPE_OPTIONS}
+                    />
                     <div className="space-y-2 md:col-span-2">
                       <label className={labelClass}>Preferred Hotels (Optional)</label>
                       <input
@@ -610,44 +784,27 @@ export default function QuoteWizard() {
                     </p>
                   </div>
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-5 lg:gap-6">
-                    <div className="space-y-2">
-                      <label className={labelClass}>Board Basis</label>
-                      <select
-                        {...methods.register("meals")}
-                        className={cn(fieldClass, "[color-scheme:dark]")}
-                      >
-                        <option value={MealPlan.NONE}>Room Only</option>
-                        <option value={MealPlan.BREAKFAST}>Bed & Breakfast</option>
-                        <option value={MealPlan.HALF_BOARD}>Half Board (2 Meals)</option>
-                        <option value={MealPlan.FULL_BOARD}>Full Board (3 Meals)</option>
-                        <option value={MealPlan.ALL_INCLUSIVE}>All Inclusive</option>
-                      </select>
-                    </div>
+                    <QuoteSelectField
+                      control={control}
+                      name="meals"
+                      label="Board Basis"
+                      options={MEAL_PLAN_OPTIONS}
+                    />
                     <div className="flex items-center gap-3 pt-6">
-                      <label
-                        htmlFor="guideRequired"
-                        className={cn(
-                          "flex items-center gap-3 w-full h-12 px-3.5 rounded-xl cursor-pointer border transition-all",
-                          watch("guideRequired")
-                            ? "bg-[#F8B400]/12 border-[#F8B400]/45"
-                            : "bg-[var(--ent-elevated,#1c1c22)] border-white/[0.12] hover:border-[#F8B400]/35"
+                      <Controller
+                        control={control}
+                        name="guideRequired"
+                        render={({ field }) => (
+                          <SimpleCheckbox
+                            id="guideRequired"
+                            checked={Boolean(field.value)}
+                            onCheckedChange={field.onChange}
+                            label="Local Tour Guide Required"
+                            appearance="boxed"
+                            className="w-full"
+                          />
                         )}
-                      >
-                        <input
-                          type="checkbox"
-                          id="guideRequired"
-                          {...methods.register("guideRequired")}
-                          className="size-4 rounded border-white/20 bg-transparent text-[#F8B400] focus:ring-[#F8B400]/30"
-                        />
-                        <span
-                          className={cn(
-                            "text-xs font-bold select-none",
-                            watch("guideRequired") ? "text-[#F8B400]" : "text-zinc-200"
-                          )}
-                        >
-                          Local Tour Guide Required
-                        </span>
-                      </label>
+                      />
                     </div>
                     <div className="space-y-2 md:col-span-2">
                       <label className={labelClass}>Special Requirements / Notes (Optional)</label>
@@ -715,11 +872,15 @@ export default function QuoteWizard() {
                         </p>
                         <p className="flex justify-between gap-3">
                           <span>Start Date:</span>{" "}
-                          <span className="text-white">{watch("travelStart")}</span>
+                          <span className="text-white">
+                            {formatReviewDate(watch("travelStart"))}
+                          </span>
                         </p>
                         <p className="flex justify-between gap-3">
                           <span>End Date:</span>{" "}
-                          <span className="text-white">{watch("travelEnd")}</span>
+                          <span className="text-white">
+                            {formatReviewDate(watch("travelEnd"))}
+                          </span>
                         </p>
                         <p className="flex justify-between gap-3">
                           <span>Adults:</span> <span className="text-white">{watch("adults")}</span>
@@ -785,7 +946,7 @@ export default function QuoteWizard() {
                 type="button"
                 variant="secondary"
                 onClick={prevStep}
-                disabled={createMutation.isPending}
+                disabled={isSubmitBusy}
                 className="font-bold"
               >
                 <ArrowLeft size={16} /> Back
@@ -801,18 +962,18 @@ export default function QuoteWizard() {
             ) : (
               <Button
                 type="submit"
-                disabled={createMutation.isPending}
+                disabled={isSubmitBusy}
                 className="font-bold min-w-[160px] flex items-center gap-2"
               >
-                {createMutation.isPending ? (
+                {isSubmitBusy ? (
                   <>
                     <Loader2 size={16} className="animate-spin" />
-                    Submitting…
+                    {isReviseMode ? "Resubmitting…" : "Submitting…"}
                   </>
                 ) : (
                   <>
                     <Send size={16} />
-                    Submit Request
+                    {isReviseMode ? "Resubmit Request" : "Submit Request"}
                   </>
                 )}
               </Button>

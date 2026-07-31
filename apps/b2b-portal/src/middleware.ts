@@ -13,7 +13,12 @@ export function middleware(request: NextRequest) {
   }
 
   // Let authentication endpoints go through if they don't have a token
-  if (path.startsWith('/login') || path.startsWith('/register')) {
+  if (
+    path.startsWith('/login') ||
+    path.startsWith('/register') ||
+    path.startsWith('/forgot-password') ||
+    path.startsWith('/reset-password')
+  ) {
     return NextResponse.next();
   }
 
@@ -64,6 +69,8 @@ export const config = {
   matcher: [
     '/login',
     '/register',
+    '/forgot-password',
+    '/reset-password',
     '/dashboard/:path*',
     '/profile/:path*',
     '/settings/:path*',

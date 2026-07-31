@@ -2,7 +2,7 @@
 
 import { cn } from "@travelagency/utils";
 
-export interface BadgeProps {
+export interface BadgeProps extends React.HTMLAttributes<HTMLSpanElement> {
   children: React.ReactNode;
   variant?: "default" | "gold" | "success" | "warning" | "info" | "muted";
   className?: string;
@@ -17,7 +17,7 @@ const variants = {
   muted: "bg-zinc-500/15 text-zinc-400 border-zinc-500/30",
 };
 
-export function Badge({ children, variant = "default", className }: BadgeProps) {
+export function Badge({ children, variant = "default", className, ...props }: BadgeProps) {
   return (
     <span
       className={cn(
@@ -25,6 +25,7 @@ export function Badge({ children, variant = "default", className }: BadgeProps) 
         variants[variant],
         className
       )}
+      {...props}
     >
       {children}
     </span>

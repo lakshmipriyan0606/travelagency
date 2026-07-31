@@ -11,9 +11,19 @@ export const create = async (req, res, next) => {
 
     logger.info({ agencyId, agencyUserId }, 'Creating B2B Quote Request');
     const quote = await quoteRequestService.createQuote(req.body, agencyId, agencyUserId);
-    
-    logger.info({ quoteId: quote._id, reference: quote.reference, agencyId }, 'B2B Quote Request Created');
-    return sendSuccess(res, 201, 'Quote request submitted successfully', quote);
+    // toObject: transactional save leaves a session on the doc; raw Document breaks JSON.stringify.
+    const plain = typeof quote?.toObject === 'function' ? quote.toObject() : quote;
+
+    logger.info(
+      { quoteId: plain._id, reference: plain.reference, agencyId },
+      'B2B Quote Request Created'
+    );
+    return sendSuccess(res, 201, 'Quote request submitted successfully', {
+      data: plain,
+      id: String(plain._id),
+      _id: String(plain._id),
+      reference: plain.reference,
+    });
   } catch (error) {
     logger.error({ err: error, agencyId: req.agency?._id }, 'Failed to create B2B Quote Request');
     next(error);
@@ -34,9 +44,25 @@ export const saveDraft = async (req, res, next) => {
 
     logger.info({ agencyId, agencyUserId, draftId }, 'Saving B2B Quote Draft');
     const quote = await quoteRequestService.saveDraft(req.body, agencyId, agencyUserId, draftId);
-    
-    logger.info({ quoteId: quote._id, reference: quote.reference, agencyId }, 'B2B Quote Draft Saved');
-    return sendSuccess(res, 200, 'Draft saved successfully', quote);
+
+    const plain = typeof quote?.toObject === 'function' ? quote.toObject() : quote;
+    const quoteId = String(plain?._id || plain?.id || '');
+    if (!quoteId) {
+      throw new AppError('Draft saved but document id is missing', 500);
+    }
+    logger.info({ quoteId, reference: plain.reference, agencyId }, 'B2B Quote Draft Saved');
+    // Flatten id onto envelope AND nest under data — clients parse either shape after sendSuccess Object.assign.
+    return sendSuccess(res, 200, 'Draft saved successfully', {
+      id: quoteId,
+      _id: quoteId,
+      reference: plain.reference,
+      status: plain.status,
+      data: {
+        id: quoteId,
+        reference: plain.reference,
+        status: plain.status,
+      },
+    });
   } catch (error) {
     logger.error({ err: error, agencyId: req.agency?._id }, 'Failed to save B2B Quote Draft');
     next(error);
@@ -81,7 +107,10 @@ export const getQuotes = async (req, res, next) => {
       hasMore,
     });
   } catch (error) {
-    logger.error({ err: error, agencyId: req.agency?._id }, 'Failed to retrieve B2B Quote Requests');
+    logger.error(
+      { err: error, agencyId: req.agency?._id },
+      'Failed to retrieve B2B Quote Requests'
+    );
     next(error);
   }
 };
@@ -98,7 +127,35 @@ export const getQuoteById = async (req, res, next) => {
     const quote = await quoteRequestService.getQuoteById(id, agencyId);
     return sendSuccess(res, 200, 'Quote retrieved successfully', quote);
   } catch (error) {
-    logger.error({ err: error, agencyId: req.agency?._id, quoteId: req.params.id }, 'Failed to retrieve B2B Quote Request by ID');
+    logger.error(
+      { err: error, agencyId: req.agency?._id, quoteId: req.params.id },
+      'Failed to retrieve B2B Quote Request by ID'
+    );
+    next(error);
+  }
+};
+
+export const deleteQuote = async (req, res, next) => {
+  try {
+    const agencyId = req.agency._id;
+    const { id } = req.params;
+
+    if (!mongoose.Types.ObjectId.isValid(id)) {
+      throw new AppError('Invalid Quote ID format', 400);
+    }
+
+    logger.info({ agencyId, quoteId: id }, 'Deleting B2B Quote Request');
+    const result = await quoteRequestService.deleteQuote(id, agencyId);
+    logger.info(
+      { agencyId, quoteId: id, reference: result.reference },
+      'B2B Quote Request Deleted'
+    );
+    return sendSuccess(res, 200, 'Quote deleted successfully', result);
+  } catch (error) {
+    logger.error(
+      { err: error, agencyId: req.agency?._id, quoteId: req.params.id },
+      'Failed to delete B2B Quote Request'
+    );
     next(error);
   }
 };
@@ -107,7 +164,7 @@ export const getDashboardSummary = async (req, res, next) => {
   try {
     const agencyId = req.agency._id;
     const summary = await quoteRequestService.getDashboardSummary(agencyId);
-    
+
     // Add agency details to response so DashboardClient doesn't crash on undefined properties
     summary.agency = {
       agencyName: req.agency.companyName,
@@ -123,7 +180,10 @@ export const getDashboardSummary = async (req, res, next) => {
       notifications: summary.notifications ?? [],
     });
   } catch (error) {
-    logger.error({ err: error, agencyId: req.agency?._id }, 'Failed to retrieve B2B Dashboard Summary');
+    logger.error(
+      { err: error, agencyId: req.agency?._id },
+      'Failed to retrieve B2B Dashboard Summary'
+    );
     next(error);
   }
 };
@@ -131,7 +191,7 @@ export const getDashboardSummary = async (req, res, next) => {
 export const updateStatus = async (req, res, next) => {
   try {
     const { id } = req.params;
-    const { status, internalNotes } = req.body;
+    const { status, internalNotes, adminFeedback } = req.body;
     const actor = req.user.name;
 
     if (!mongoose.Types.ObjectId.isValid(id)) {
@@ -141,20 +201,31 @@ export const updateStatus = async (req, res, next) => {
     const allowedStatuses = [
       quoteRequestService.B2BQuoteStatus.ACCEPTED,
       quoteRequestService.B2BQuoteStatus.REVISION_REQUESTED,
+      quoteRequestService.B2BQuoteStatus.SUBMITTED, // resubmit after admin feedback
     ];
 
     if (!allowedStatuses.includes(status)) {
-      logger.warn({ quoteId: id, status, actor }, 'Forbidden B2B Quote Request Status Update Transition');
+      logger.warn(
+        { quoteId: id, status, actor },
+        'Forbidden B2B Quote Request Status Update Transition'
+      );
       throw new AppError('Invalid status transition requested', 400);
     }
 
     logger.info({ quoteId: id, status, actor }, 'Updating B2B Quote Request Status');
-    const quote = await quoteRequestService.updateQuoteStatus(id, status, actor, internalNotes);
-    
+    const quote = await quoteRequestService.updateQuoteStatus(id, status, actor, {
+      role: 'agency',
+      internalNotes: internalNotes ?? null,
+      adminFeedback: adminFeedback ?? null,
+    });
+
     logger.info({ quoteId: id, status, actor }, 'B2B Quote Request Status Updated');
     return sendSuccess(res, 200, `Quote status updated to ${status} successfully`, quote);
   } catch (error) {
-    logger.error({ err: error, quoteId: req.params.id }, 'Failed to update B2B Quote Request status');
+    logger.error(
+      { err: error, quoteId: req.params.id },
+      'Failed to update B2B Quote Request status'
+    );
     next(error);
   }
 };
@@ -220,7 +291,10 @@ export const getAdminQuotesByAgency = async (req, res, next) => {
       hasMore: parseInt(page, 10) * parseInt(pageSize, 10) < total,
     });
   } catch (error) {
-    logger.error({ err: error, agencyId: req.params.id }, 'Failed to retrieve agency quotes for admin');
+    logger.error(
+      { err: error, agencyId: req.params.id },
+      'Failed to retrieve agency quotes for admin'
+    );
     next(error);
   }
 };
@@ -229,7 +303,7 @@ export const getAdminQuotesByAgency = async (req, res, next) => {
 export const adminUpdateQuoteStatus = async (req, res, next) => {
   try {
     const { id } = req.params;
-    const { status, notes, internalNotes } = req.body;
+    const { status, notes, internalNotes, adminFeedback } = req.body;
     const actor = req.user?.name || 'Admin';
 
     if (!mongoose.Types.ObjectId.isValid(id)) {
@@ -239,12 +313,13 @@ export const adminUpdateQuoteStatus = async (req, res, next) => {
       throw new AppError('Status is required', 400);
     }
 
-    const quote = await quoteRequestService.updateQuoteStatus(
-      id,
-      status,
-      actor,
-      notes || internalNotes
-    );
+    const feedback = adminFeedback ?? notes ?? null;
+
+    const quote = await quoteRequestService.updateQuoteStatus(id, status, actor, {
+      role: 'admin',
+      adminFeedback: feedback,
+      internalNotes: internalNotes ?? null,
+    });
     return sendSuccess(res, 200, `Quote status updated to ${status} successfully`, quote);
   } catch (error) {
     logger.error({ err: error, quoteId: req.params.id }, 'Failed to admin-update quote status');

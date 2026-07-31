@@ -10,7 +10,9 @@ const adminUserSchema = new mongoose.Schema(
       lowercase: true,
       trim: true,
     },
-    passwordHash: { type: String, required: true },
+    passwordHash: { type: String, required: true, select: false },
+    passwordResetTokenHash: { type: String, select: false },
+    passwordResetExpires: { type: Date, select: false },
     role: {
       type: String,
       enum: ['superadmin', 'ops', 'finance', 'sales'],

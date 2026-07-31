@@ -8,7 +8,13 @@ apiClient.interceptors.request.use((config) => {
     let url = config.url;
     if (url.startsWith('/')) url = url.slice(1);
 
-    const isAdminAuth = url.startsWith('admin/login') || url.startsWith('admin/register') || url.startsWith('admin/logout') || url.startsWith('admin/session');
+    const isAdminAuth =
+      url.startsWith('admin/login') ||
+      url.startsWith('admin/register') ||
+      url.startsWith('admin/logout') ||
+      url.startsWith('admin/session') ||
+      url.startsWith('admin/forgot-password') ||
+      url.startsWith('admin/reset-password');
     const isInfrastructure = url.startsWith('admin/metrics') || url.startsWith('admin/queue');
     const isAdminDirect = url.startsWith('admin/');
     const isUpload = url.startsWith('upload');
@@ -42,6 +48,11 @@ apiClient.interceptors.response.use(
   (response) => response,
   (error) => {
     if (error.response && error.response.status === 401 && typeof window !== 'undefined') {
+      const reqUrl = String(error.config?.url || '');
+      // Logout / session probes must not hard-redirect mid soft-logout flow
+      if (reqUrl.includes('logout') || reqUrl.includes('session')) {
+        return Promise.reject(error);
+      }
       const path = window.location.pathname;
       if (path.startsWith(ROUTES.b2b.prefix)) {
         window.location.href = ROUTES.b2b.login;

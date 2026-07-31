@@ -10,60 +10,86 @@ interface BlogFormFaqsProps {
   errors: FieldErrors<BlogFormValues>;
 }
 
-export const BlogFormFaqs: React.FC<BlogFormFaqsProps> = ({ fields, append, remove, register, errors }) => {
+export const BlogFormFaqs: React.FC<BlogFormFaqsProps> = ({
+  fields,
+  append,
+  remove,
+  register,
+  errors,
+}) => {
   return (
-    <div className="space-y-6 pt-8 border-t border-neutral-100">
-      <div className="flex items-center justify-between">
+    <div className="space-y-5 pt-2">
+      <div className="flex items-center justify-between gap-3">
         <div>
-          <h3 className="text-lg font-bold text-neutral-800">9. Blog FAQs (Optional)</h3>
-          <p className="text-xs text-neutral-500 mt-1">Add common questions and answers for this blog post.</p>
+          <h3 className="text-sm font-bold text-white tracking-tight">FAQs (optional)</h3>
+          <p className="text-xs text-white/40 mt-1">
+            Add common questions and answers for this blog post.
+          </p>
         </div>
         <button
           type="button"
           onClick={() => append({ question: "", answer: "" })}
-          className="flex items-center gap-2 px-4 py-2 bg-primary/10 text-primary rounded-xl font-bold text-xs hover:bg-primary/20 transition-all border border-primary/20 group"
+          className="inline-flex items-center gap-2 h-10 px-3.5 rounded-lg border border-white/[0.1] bg-white/[0.04] hover:bg-[#F8B400]/10 hover:border-[#F8B400]/30 hover:text-[#F8B400] text-[11px] font-semibold uppercase tracking-[0.14em] text-white/60 transition-all group"
         >
-          <Plus size={16} className="group-hover:rotate-90 transition-transform" />
-          ADD FAQ
+          <Plus size={14} className="group-hover:rotate-90 transition-transform" />
+          Add FAQ
         </button>
       </div>
 
       <div className="space-y-4">
         {fields.map((field, index) => (
-          <div key={field.id} className="p-5 bg-neutral-50 rounded-2xl border border-neutral-200 relative animate-in slide-in-from-right duration-300">
+          <div
+            key={field.id}
+            className="p-5 admin-surface-elevated rounded-2xl relative animate-in slide-in-from-right duration-300"
+          >
             <button
               type="button"
               onClick={() => remove(index)}
-              className="absolute top-4 right-4 text-neutral-400 hover:text-red-500 transition-colors"
+              className="absolute top-4 right-4 text-white/35 hover:text-red-400 transition-colors"
+              aria-label={`Remove FAQ ${index + 1}`}
             >
-              <Trash2 size={18} />
+              <Trash2 size={16} />
             </button>
-            <div className="grid grid-cols-1 gap-4">
-              <div className="space-y-1">
-                <label className="text-[10px] font-black text-neutral-400 uppercase tracking-widest pl-1">Question {index + 1}</label>
+            <div className="grid grid-cols-1 gap-4 pr-8">
+              <div className="space-y-1.5">
+                <label className="text-[10px] font-bold text-white/35 uppercase tracking-widest">
+                  Question {index + 1}
+                </label>
                 <input
                   {...register(`faqs.${index}.question` as const)}
-                  className="w-full px-4 py-3 rounded-xl border border-neutral-300 focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all outline-none"
-                  placeholder="Enter the question here..."
+                  className="admin-field w-full h-11 px-4 text-sm text-white placeholder:text-white/30 outline-none"
+                  placeholder="Enter the question here…"
                 />
-                {errors.faqs?.[index]?.question && <p className="text-red-500 text-[10px] mt-1">{errors.faqs[index].question?.message}</p>}
+                {errors.faqs?.[index]?.question && (
+                  <p className="text-red-400 text-[10px] font-semibold">
+                    {errors.faqs[index].question?.message}
+                  </p>
+                )}
               </div>
-              <div className="space-y-1">
-                <label className="text-[10px] font-black text-neutral-400 uppercase tracking-widest pl-1">Answer {index + 1}</label>
+              <div className="space-y-1.5">
+                <label className="text-[10px] font-bold text-white/35 uppercase tracking-widest">
+                  Answer {index + 1}
+                </label>
                 <textarea
                   {...register(`faqs.${index}.answer` as const)}
                   rows={2}
-                  className="w-full px-4 py-3 rounded-xl border border-neutral-300 focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all outline-none resize-none"
-                  placeholder="Enter the answer here..."
+                  className="admin-field w-full px-4 py-3 text-sm text-white placeholder:text-white/30 outline-none resize-none"
+                  placeholder="Enter the answer here…"
                 />
-                {errors.faqs?.[index]?.answer && <p className="text-red-500 text-[10px] mt-1">{errors.faqs[index].answer?.message}</p>}
+                {errors.faqs?.[index]?.answer && (
+                  <p className="text-red-400 text-[10px] font-semibold">
+                    {errors.faqs[index].answer?.message}
+                  </p>
+                )}
               </div>
             </div>
           </div>
         ))}
         {fields.length === 0 && (
-          <div className="text-center py-10 border-2 border-dashed border-neutral-200 rounded-2xl bg-neutral-50/50">
-            <p className="text-neutral-400 text-sm font-medium italic">No FAQs added yet. Click 'ADD FAQ' to start.</p>
+          <div className="text-center py-10 border-2 border-dashed border-white/[0.1] rounded-2xl bg-white/[0.02]">
+            <p className="text-white/35 text-sm font-medium">
+              No FAQs yet. Click Add FAQ to start.
+            </p>
           </div>
         )}
       </div>

@@ -6,55 +6,85 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { useMutation } from "@tanstack/react-query";
 import { registerAgent } from "@/api/auth.api";
-import { ArrowRight, ArrowLeft, Lock, Mail, User, Phone, Briefcase, Globe, FileText, CheckCircle, Ban, AlertTriangle, ShieldAlert } from "lucide-react";
+import {
+  ArrowRight,
+  ArrowLeft,
+  Lock,
+  Mail,
+  User,
+  Phone,
+  Briefcase,
+  Globe,
+  FileText,
+  CheckCircle,
+  Ban,
+  AlertTriangle,
+  ShieldAlert,
+  Building2,
+} from "lucide-react";
 import Link from "next/link";
 import { FormInput } from "@/components/ui/FormInput";
 import { FormButton } from "@/components/ui/FormButton";
 import { cn } from "@travelagency/utils";
 import { ROUTES } from "@/lib/routes";
 
-// Full Zod validation schema matching the backend registerSchema
-const registerSchema = z.object({
-  // Contact details
-  name: z.string().min(2, "Name must be at least 2 characters"),
-  email: z.string().email("Invalid email address"),
-  phone: z.string().min(5, "Phone number is required"),
-  designation: z.string().optional(),
-  password: z.string().min(6, "Password must be at least 6 characters"),
-
-  // Business profile details
-  companyName: z.string().min(2, "Company name is required"),
-  tradeName: z.string().optional(),
-  businessType: z.enum(["travel_agency", "tour_operator", "dmc", "freelance_agent"]),
-  registrationNumber: z.string().min(2, "Registration number is required"),
-  yearsInBusiness: z.number().int().nonnegative().optional().or(z.nan()),
-  iataNumber: z.string().optional(),
-
-  // Location / Address details
-  country: z.string().min(2, "Country is required"),
-  gstNumber: z.string().optional(),
-  officeAddress: z.object({
-    line1: z.string().min(2, "Address line 1 is required"),
-    line2: z.string().optional(),
-    city: z.string().min(2, "City is required"),
-    state: z.string().min(2, "State is required"),
-    postalCode: z.string().min(2, "Postal code is required"),
+const registerSchema = z
+  .object({
+    name: z.string().min(2, "Name must be at least 2 characters"),
+    email: z.string().email("Invalid email address"),
+    phone: z.string().min(5, "Phone number is required"),
+    designation: z.string().optional(),
+    password: z.string().min(6, "Password must be at least 6 characters"),
+    companyName: z.string().min(2, "Company name is required"),
+    tradeName: z.string().optional(),
+    businessType: z.enum([
+      "travel_agency",
+      "tour_operator",
+      "dmc",
+      "freelance_agent",
+    ]),
+    registrationNumber: z.string().min(2, "Registration number is required"),
+    yearsInBusiness: z.number().int().nonnegative().optional().or(z.nan()),
+    iataNumber: z.string().optional(),
     country: z.string().min(2, "Country is required"),
-  }),
-}).refine(
-  (data) => {
-    if (data.country?.toLowerCase() === "india" && (!data.gstNumber || data.gstNumber.trim() === "")) {
-      return false;
+    gstNumber: z.string().optional(),
+    officeAddress: z.object({
+      line1: z.string().min(2, "Address line 1 is required"),
+      line2: z.string().optional(),
+      city: z.string().min(2, "City is required"),
+      state: z.string().min(2, "State is required"),
+      postalCode: z.string().min(2, "Postal code is required"),
+      country: z.string().min(2, "Country is required"),
+    }),
+  })
+  .refine(
+    (data) => {
+      if (
+        data.country?.toLowerCase() === "india" &&
+        (!data.gstNumber || data.gstNumber.trim() === "")
+      ) {
+        return false;
+      }
+      return true;
+    },
+    {
+      message: "GST number is required for agencies based in India",
+      path: ["gstNumber"],
     }
-    return true;
-  },
-  {
-    message: "GST number is required for agencies based in India",
-    path: ["gstNumber"],
-  }
-);
+  );
 
 type RegisterValues = z.infer<typeof registerSchema>;
+
+const STEPS = [
+  { id: 1, label: "Contact" },
+  { id: 2, label: "Access" },
+  { id: 3, label: "Company" },
+  { id: 4, label: "Details" },
+  { id: 5, label: "Address" },
+] as const;
+
+const selectClass =
+  "h-11 w-full rounded-xl border border-white/[0.1] bg-[#121212] px-3 text-sm text-white outline-none transition-all focus:border-[#F8B400]/60 focus:ring-2 focus:ring-[#F8B400]/20";
 
 export default function RegisterFormClient() {
   const [step, setStep] = useState(1);
@@ -73,15 +103,12 @@ export default function RegisterFormClient() {
     defaultValues: {
       businessType: "travel_agency",
       country: "India",
-      officeAddress: {
-        country: "India"
-      }
-    }
+      officeAddress: { country: "India" },
+    },
   });
 
   const selectedCountry = watch("country");
 
-  // Keep nested address country in sync with the primary country selection
   React.useEffect(() => {
     if (selectedCountry) {
       setValue("officeAddress.country", selectedCountry);
@@ -90,9 +117,7 @@ export default function RegisterFormClient() {
 
   const mutation = useMutation({
     mutationFn: registerAgent,
-    onSuccess: () => {
-      setRegStatus("SUCCESS");
-    },
+    onSuccess: () => setRegStatus("SUCCESS"),
     onError: (err: unknown) => {
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       const errorObj = err as any;
@@ -101,185 +126,204 @@ export default function RegisterFormClient() {
       if (status === 409 && errorCode) {
         setRegStatus(errorCode);
       } else {
-        setError(errorObj?.response?.data?.error?.message || errorObj?.response?.data?.message || "Failed to register. Please try again.");
+        setError(
+          errorObj?.response?.data?.error?.message ||
+            errorObj?.response?.data?.message ||
+            "Failed to register. Please try again."
+        );
       }
-    }
+    },
   });
 
   const nextStep = async () => {
-    // Validate current step fields before letting the user proceed
     let isValid = false;
     if (step === 1) {
-      isValid = await trigger(["name", "email", "phone", "designation", "password"]);
+      isValid = await trigger(["name", "email", "phone"]);
     } else if (step === 2) {
-      isValid = await trigger(["companyName", "tradeName", "businessType", "registrationNumber", "yearsInBusiness", "iataNumber"]);
+      isValid = await trigger(["designation", "password"]);
+    } else if (step === 3) {
+      isValid = await trigger(["companyName", "tradeName", "businessType"]);
+    } else if (step === 4) {
+      isValid = await trigger([
+        "registrationNumber",
+        "yearsInBusiness",
+        "iataNumber",
+      ]);
     }
-    if (isValid) {
-      setStep((prev) => prev + 1);
-    }
+    if (isValid) setStep((prev) => prev + 1);
   };
 
-  const prevStep = () => {
-    setStep((prev) => prev - 1);
-  };
+  const prevStep = () => setStep((prev) => prev - 1);
 
   const onSubmit = (data: RegisterValues) => {
     setError(null);
-    // Sanitize nan out of yearsInBusiness
-    const payload = {
+    mutation.mutate({
       ...data,
-      yearsInBusiness: isNaN(data.yearsInBusiness as number) ? undefined : data.yearsInBusiness
-    };
-    mutation.mutate(payload);
+      yearsInBusiness: isNaN(data.yearsInBusiness as number)
+        ? undefined
+        : data.yearsInBusiness,
+    });
   };
 
-  // Render distinct screens for conflict / success states
   if (regStatus) {
     let title = "";
     let description = "";
-    let icon = <CheckCircle className="w-16 h-16 text-yellow-500 mx-auto" />;
+    let icon = <CheckCircle className="mx-auto size-14 text-[#F8B400]" />;
     let showLoginLink = true;
 
     switch (regStatus) {
       case "SUCCESS":
       case "ALREADY_PENDING":
-        title = "Application Pending";
-        description = "Your B2B partner application has been submitted successfully and is currently pending review by our administration team. We will notify you by email once your application has been verified.";
-        icon = <CheckCircle className="w-16 h-16 text-yellow-500 mx-auto" />;
+        title = "Application pending";
+        description =
+          "Your partner application is under review. We’ll email you once it’s verified.";
         showLoginLink = false;
         break;
       case "ALREADY_ACTIVE":
-        title = "Account Already Active";
-        description = "An active B2B partner account is already registered with this email address. Please sign in to access the dashboard.";
-        icon = <User className="w-16 h-16 text-emerald-500 mx-auto" />;
+        title = "Account already active";
+        description =
+          "An active partner account exists for this email. Please sign in.";
+        icon = <User className="mx-auto size-14 text-emerald-500" />;
         break;
       case "NEEDS_CORRECTION":
-        title = "Correction Required";
-        description = "Your B2B application requires updates. Please sign in to view the flagged fields and resubmit your details for approval.";
-        icon = <AlertTriangle className="w-16 h-16 text-amber-500 mx-auto" />;
+        title = "Correction required";
+        description =
+          "Your application needs updates. Sign in to review flagged fields.";
+        icon = <AlertTriangle className="mx-auto size-14 text-amber-500" />;
         break;
       case "ACCOUNT_SUSPENDED":
-        title = "Account Suspended";
-        description = "This partner account has been suspended by administration. Please contact B2B support to appeal or resolve this status.";
-        icon = <Ban className="w-16 h-16 text-red-500 mx-auto" />;
+        title = "Account suspended";
+        description = "Contact B2B support to resolve this status.";
+        icon = <Ban className="mx-auto size-14 text-red-500" />;
         showLoginLink = false;
         break;
       case "ACCOUNT_REJECTED":
-        title = "Application Rejected";
-        description = "Your previous partner application was rejected. Please sign in to re-submit your registration form.";
-        icon = <ShieldAlert className="w-16 h-16 text-rose-500 mx-auto" />;
+        title = "Application rejected";
+        description = "Sign in to re-submit your registration.";
+        icon = <ShieldAlert className="mx-auto size-14 text-rose-500" />;
         break;
     }
 
     return (
-      <div className="w-full max-w-md p-8 bg-[#121212] border border-white/5 rounded-3xl shadow-2xl text-center">
-        <div className="mb-6">{icon}</div>
-        <h2 className="text-2xl font-bold text-white tracking-tight mb-4">{title}</h2>
-        <p className="text-white/60 text-sm leading-relaxed mb-8">{description}</p>
-        {showLoginLink ? (
-          <Link
-            href={ROUTES.login}
-            className="w-full py-3.5 bg-yellow-500 hover:bg-yellow-400 text-neutral-950 font-bold rounded-xl flex items-center justify-center gap-2 transition-all"
-          >
-            Go to Login
-          </Link>
-        ) : (
-          <Link
-            href={ROUTES.login}
-            className="text-white/40 hover:text-white/60 text-sm font-medium transition-colors"
-          >
-            Back to Login
-          </Link>
-        )}
+      <div className="w-full rounded-3xl border border-white/[0.08] bg-[#171717] p-6 text-center shadow-2xl">
+        <div className="mb-4">{icon}</div>
+        <h2 className="mb-2 text-xl font-semibold text-white">{title}</h2>
+        <p className="mb-6 text-sm leading-relaxed text-[#A1A1AA]">{description}</p>
+        <Link
+          href={ROUTES.login}
+          className={cn(
+            "inline-flex h-11 w-full items-center justify-center rounded-xl text-sm font-semibold transition-all",
+            showLoginLink
+              ? "bg-gradient-to-r from-[#FFD54A] to-[#F8B400] text-black hover:-translate-y-0.5"
+              : "text-[#A1A1AA] hover:text-[#FFD54A]"
+          )}
+        >
+          {showLoginLink ? "Go to login" : "Back to login"}
+        </Link>
       </div>
     );
   }
 
   return (
-    <div className="w-full max-w-xl p-8 bg-[#121212] border border-white/5 rounded-3xl shadow-2xl relative overflow-hidden">
-      <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-yellow-500/10 via-yellow-500/50 to-yellow-500/10"></div>
-      
-      <div className="mb-8 text-center">
-        <h2 className="text-2xl font-bold text-white tracking-tight">Partner Application</h2>
-        <p className="text-white/60 text-sm mt-1">Join our B2B agency network</p>
+    <div className="relative w-full overflow-hidden rounded-3xl border border-white/[0.08] bg-[#171717] p-5 shadow-2xl sm:p-6">
+      <div className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-[#F8B400]/50 to-transparent" />
+
+      <div className="mb-5">
+        <h2 className="text-xl font-semibold tracking-tight text-white">
+          Create account
+        </h2>
+        <p className="mt-1 text-sm text-[#A1A1AA]">
+          Step {step} of {STEPS.length} — join the partner network
+        </p>
       </div>
 
-      {/* Stepper Header Component */}
-      <div className="flex items-center justify-between mb-10 px-4">
-        {[1, 2, 3].map((stepNumber) => (
-          <React.Fragment key={stepNumber}>
-            <div className="flex flex-col items-center relative z-10">
-              <div
-                className={cn(
-                  "w-10 h-10 rounded-full flex items-center justify-center font-bold text-sm border-2 transition-all duration-300",
-                  step === stepNumber
-                    ? "bg-yellow-500 border-yellow-500 text-neutral-950 shadow-lg shadow-yellow-500/20"
-                    : step > stepNumber
-                    ? "bg-emerald-600 border-emerald-500 text-white"
-                    : "bg-[#1a1a1a] border-white/10 text-white/40"
-                )}
-              >
-                {step > stepNumber ? "✓" : stepNumber}
+      {/* Compact 5-step stepper */}
+      <nav aria-label="Registration steps" className="mb-5">
+        <ol className="flex items-center gap-1">
+          {STEPS.map((s, i) => (
+            <li key={s.id} className="flex min-w-0 flex-1 items-center gap-1">
+              <div className="flex min-w-0 flex-col items-center gap-1">
+                <div
+                  aria-current={step === s.id ? "step" : undefined}
+                  className={cn(
+                    "flex size-7 items-center justify-center rounded-full text-[11px] font-semibold transition-colors",
+                    step === s.id && "bg-[#F8B400] text-black",
+                    step > s.id && "bg-[#22C55E] text-white",
+                    step < s.id &&
+                      "border border-white/[0.1] bg-[#121212] text-[#71717A]"
+                  )}
+                >
+                  {step > s.id ? "✓" : s.id}
+                </div>
+                <span
+                  className={cn(
+                    "truncate text-[10px] font-medium",
+                    step === s.id ? "text-[#F8B400]" : "text-[#71717A]"
+                  )}
+                >
+                  {s.label}
+                </span>
               </div>
-              <span className="text-[10px] uppercase tracking-widest font-black mt-2 text-white/50">
-                {stepNumber === 1 ? "Account" : stepNumber === 2 ? "Business" : "Address"}
-              </span>
-            </div>
-            {stepNumber < 3 && (
-              <div
-                className={cn(
-                  "h-[2px] flex-1 mx-4 -mt-6 transition-all duration-300",
-                  step > stepNumber ? "bg-emerald-600" : "bg-white/5"
-                )}
-              />
-            )}
-          </React.Fragment>
-        ))}
-      </div>
+              {i < STEPS.length - 1 ? (
+                <div
+                  className={cn(
+                    "mb-4 h-px flex-1",
+                    step > s.id ? "bg-[#22C55E]" : "bg-white/[0.08]"
+                  )}
+                  aria-hidden
+                />
+              ) : null}
+            </li>
+          ))}
+        </ol>
+      </nav>
 
-      {error && (
-        <div className="mb-6 p-4 bg-red-900/30 border border-red-500/50 rounded-xl text-red-400 text-sm text-center font-medium">
+      {error ? (
+        <div
+          role="alert"
+          className="mb-4 rounded-xl border border-red-500/40 bg-red-500/10 px-3 py-2 text-center text-sm text-red-400"
+        >
           {error}
         </div>
-      )}
+      ) : null}
 
-      <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
-        {/* STEP 1: Account Details */}
+      <form onSubmit={handleSubmit(onSubmit)} className="space-y-4" noValidate>
         {step === 1 && (
-          <div className="space-y-5">
+          <div className="space-y-3">
             <FormInput
               registration={register("name")}
-              label="Contact Person Name"
+              label="Full name"
               placeholder="John Doe"
               icon={User}
               error={errors.name}
             />
-
             <FormInput
               registration={register("email")}
-              label="Contact Email Address"
+              label="Work email"
               type="email"
-              placeholder="john@travelagency.com"
+              placeholder="john@agency.com"
               icon={Mail}
               error={errors.email}
             />
-
             <FormInput
               registration={register("phone")}
-              label="Phone Number"
+              label="Phone"
               placeholder="+1 234 567 890"
               icon={Phone}
               error={errors.phone}
             />
+          </div>
+        )}
 
+        {step === 2 && (
+          <div className="space-y-3">
             <FormInput
               registration={register("designation")}
-              label="Designation / Job Title"
-              placeholder="Operations Manager (Optional)"
+              label="Job title (optional)"
+              placeholder="Operations Manager"
               icon={Briefcase}
               error={errors.designation}
             />
-
             <FormInput
               registration={register("password")}
               label="Password"
@@ -291,79 +335,82 @@ export default function RegisterFormClient() {
           </div>
         )}
 
-        {/* STEP 2: Business details */}
-        {step === 2 && (
-          <div className="space-y-5">
+        {step === 3 && (
+          <div className="space-y-3">
             <FormInput
               registration={register("companyName")}
-              label="Company Legal Name"
+              label="Legal company name"
               placeholder="Apex Travel Solutions Ltd"
-              icon={Building2Icon}
+              icon={Building2}
               error={errors.companyName}
             />
-
             <FormInput
               registration={register("tradeName")}
-              label="Trade Name (DBA)"
-              placeholder="Apex Tours (Optional)"
-              icon={Building2Icon}
+              label="Trade name (optional)"
+              placeholder="Apex Tours"
+              icon={Building2}
               error={errors.tradeName}
             />
-
-            <div className="space-y-2">
-              <label className="text-xs font-bold text-neutral-400 uppercase tracking-widest">
-                Business Type
+            <div className="space-y-1.5">
+              <label
+                htmlFor="businessType"
+                className="text-[13px] font-medium text-[#A1A1AA]"
+              >
+                Business type
               </label>
               <select
+                id="businessType"
                 {...register("businessType")}
-                className="w-full bg-neutral-950 border border-neutral-800 text-white px-4 py-3 rounded-xl focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500 outline-none transition-all"
+                className={selectClass}
               >
                 <option value="travel_agency">Travel Agency</option>
                 <option value="tour_operator">Tour Operator</option>
-                <option value="dmc">Destination Management Company (DMC)</option>
-                <option value="freelance_agent">Freelance Travel Agent</option>
+                <option value="dmc">DMC</option>
+                <option value="freelance_agent">Freelance Agent</option>
               </select>
-              {errors.businessType && (
-                <p className="text-xs text-red-400 font-medium">{errors.businessType.message}</p>
-              )}
             </div>
+          </div>
+        )}
 
+        {step === 4 && (
+          <div className="space-y-3">
             <FormInput
               registration={register("registrationNumber")}
-              label="Business Registration Number"
+              label="Registration number"
               placeholder="REG-94810A2"
               icon={FileText}
               error={errors.registrationNumber}
             />
-
-            <FormInput
-              registration={register("yearsInBusiness", { valueAsNumber: true })}
-              label="Years In Business"
-              type="number"
-              placeholder="5"
-              error={errors.yearsInBusiness}
-            />
-
-            <FormInput
-              registration={register("iataNumber")}
-              label="IATA Number"
-              placeholder="IATA-840192 (Optional)"
-              error={errors.iataNumber}
-            />
+            <div className="grid grid-cols-2 gap-3">
+              <FormInput
+                registration={register("yearsInBusiness", {
+                  valueAsNumber: true,
+                })}
+                label="Years in business"
+                type="number"
+                placeholder="5"
+                error={errors.yearsInBusiness}
+              />
+              <FormInput
+                registration={register("iataNumber")}
+                label="IATA (optional)"
+                placeholder="IATA-840192"
+                error={errors.iataNumber}
+              />
+            </div>
           </div>
         )}
 
-        {/* STEP 3: Office Address */}
-        {step === 3 && (
-          <div className="space-y-5">
-            <div className="space-y-2">
-              <label className="text-xs font-bold text-neutral-400 uppercase tracking-widest">
+        {step === 5 && (
+          <div className="space-y-3">
+            <div className="space-y-1.5">
+              <label
+                htmlFor="country"
+                className="text-[13px] font-medium text-[#A1A1AA]"
+              >
                 Country
               </label>
-              <select
-                {...register("country")}
-                className="w-full bg-neutral-950 border border-neutral-800 text-white px-4 py-3 rounded-xl focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500 outline-none transition-all"
-              >
+              <select id="country" {...register("country")} className={selectClass}>
                 <option value="India">India</option>
                 <option value="United States">United States</option>
                 <option value="United Kingdom">United Kingdom</option>
@@ -372,38 +419,30 @@ export default function RegisterFormClient() {
                 <option value="Singapore">Singapore</option>
                 <option value="United Arab Emirates">United Arab Emirates</option>
               </select>
-              {errors.country && (
-                <p className="text-xs text-red-400 font-medium">{errors.country.message}</p>
-              )}
             </div>
-
-            {selectedCountry?.toLowerCase() === "india" && (
+            {selectedCountry?.toLowerCase() === "india" ? (
               <FormInput
                 registration={register("gstNumber")}
-                label="GST Number"
+                label="GST number"
                 placeholder="22AAAAA1111A1Z1"
                 icon={FileText}
                 error={errors.gstNumber}
               />
-            )}
-
+            ) : null}
             <FormInput
               registration={register("officeAddress.line1")}
-              label="Address Line 1"
-              placeholder="123 Business Park, Block B"
+              label="Address line 1"
+              placeholder="123 Business Park"
               icon={Globe}
               error={errors.officeAddress?.line1}
             />
-
             <FormInput
               registration={register("officeAddress.line2")}
-              label="Address Line 2"
-              placeholder="Suite 400 (Optional)"
-              icon={Globe}
+              label="Address line 2 (optional)"
+              placeholder="Suite 400"
               error={errors.officeAddress?.line2}
             />
-
-            <div className="grid grid-cols-2 gap-4">
+            <div className="grid grid-cols-2 gap-3">
               <FormInput
                 registration={register("officeAddress.city")}
                 label="City"
@@ -412,84 +451,61 @@ export default function RegisterFormClient() {
               />
               <FormInput
                 registration={register("officeAddress.state")}
-                label="State / Region"
+                label="State"
                 placeholder="Delhi"
                 error={errors.officeAddress?.state}
               />
             </div>
-
             <FormInput
               registration={register("officeAddress.postalCode")}
-              label="Postal / ZIP Code"
+              label="Postal code"
               placeholder="110001"
               error={errors.officeAddress?.postalCode}
             />
           </div>
         )}
 
-        {/* Wizard Controls */}
-        <div className="flex gap-4 pt-4 border-t border-neutral-800/50">
-          {step > 1 && (
+        <div className="flex gap-2 border-t border-white/[0.08] pt-4">
+          {step > 1 ? (
             <button
               type="button"
               onClick={prevStep}
-              className="flex-1 py-3.5 bg-neutral-800 hover:bg-neutral-700 text-white font-bold rounded-xl flex items-center justify-center gap-2 transition-all"
+              className="flex h-11 flex-1 items-center justify-center gap-1.5 rounded-xl border border-white/[0.1] bg-[#121212] text-sm font-semibold text-white transition-colors hover:border-[#F8B400]/40"
             >
-              <ArrowLeft size={18} />
+              <ArrowLeft size={16} aria-hidden />
               Back
             </button>
-          )}
+          ) : null}
 
-          {step < 3 ? (
+          {step < STEPS.length ? (
             <button
               type="button"
               onClick={nextStep}
-              className="flex-1 py-3.5 bg-yellow-500 hover:bg-yellow-400 text-neutral-950 font-bold rounded-xl flex items-center justify-center gap-2 transition-all"
+              className="flex h-11 flex-1 items-center justify-center gap-1.5 rounded-xl bg-gradient-to-r from-[#FFD54A] to-[#F8B400] text-sm font-semibold text-black transition-all hover:-translate-y-0.5 hover:shadow-[0_8px_24px_rgba(248,180,0,0.3)]"
             >
               Continue
-              <ArrowRight size={18} />
+              <ArrowRight size={16} aria-hidden />
             </button>
           ) : (
             <FormButton
               isLoading={isSubmitting || mutation.isPending}
-              label="Apply Now"
-              icon={<ArrowRight size={18} />}
+              label="Apply now"
+              icon={<ArrowRight size={16} aria-hidden />}
+              className="mt-0 h-11 flex-1 rounded-xl !text-sm !normal-case !tracking-normal"
             />
           )}
         </div>
       </form>
-      <div className="mt-8 text-center text-sm text-neutral-400">
+
+      <p className="mt-4 border-t border-white/[0.08] pt-4 text-center text-sm text-[#A1A1AA]">
         Already a partner?{" "}
-        <Link href={ROUTES.login} className="text-yellow-500 hover:text-yellow-400 font-medium transition-colors">
+        <Link
+          href={ROUTES.login}
+          className="font-semibold text-[#F8B400] hover:text-[#FFD54A]"
+        >
           Sign in
         </Link>
-      </div>
+      </p>
     </div>
-  );
-}
-
-// Inline fallback icon for Company name input
-function Building2Icon(props: React.SVGProps<SVGSVGElement>) {
-  return (
-    <svg
-      xmlns="http://www.w3.org/2000/svg"
-      width="24"
-      height="24"
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="2"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-      {...props}
-    >
-      <path d="M6 22V4a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v18" />
-      <path d="M6 12H4a2 2 0 0 0-2 2v6a2 2 0 0 0 2 2h2" />
-      <path d="M18 9h2a2 2 0 0 1 2 2v9a2 2 0 0 1-2 2h-2" />
-      <path d="M10 6h4" />
-      <path d="M10 10h4" />
-      <path d="M10 14h4" />
-      <path d="M10 18h4" />
-    </svg>
   );
 }

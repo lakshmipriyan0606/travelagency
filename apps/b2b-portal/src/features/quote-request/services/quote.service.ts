@@ -11,16 +11,86 @@ import type {
   QuoteRequest,
   CreateQuoteDTO,
   SaveDraftDTO,
+  QuoteTimelineEvent,
 } from '../types/quote.types';
+import { QuoteStatus } from '../types/quote.types';
+
+/** Pull draft id from any sendSuccess shape (nested data, flattened doc, double-wrap). */
+function extractDraftId(body: Record<string, unknown> | null | undefined): string | null {
+  if (!body || typeof body !== "object") return null;
+  const data = body.data as Record<string, unknown> | undefined;
+  const nestedData =
+    data?.data && typeof data.data === "object"
+      ? (data.data as Record<string, unknown>)
+      : undefined;
+  const candidates = [
+    data?.id,
+    data?._id,
+    nestedData?.id,
+    nestedData?._id,
+    body.id,
+    body._id,
+  ];
+  for (const candidate of candidates) {
+    if (candidate == null) continue;
+    const value = String(candidate);
+    if (value && value !== "undefined" && value !== "null" && value !== "new") {
+      return value;
+    }
+  }
+  return null;
+}
+
+function unwrapPayload(body: Record<string, unknown>): Record<string, unknown> {
+  const data = body?.data;
+  if (data && typeof data === "object" && !Array.isArray(data)) {
+    const nested = data as Record<string, unknown>;
+    if (nested.data && typeof nested.data === "object" && !Array.isArray(nested.data)) {
+      return nested.data as Record<string, unknown>;
+    }
+    return nested;
+  }
+  return body;
+}
+
+function normalizeQuote(raw: Record<string, unknown>): QuoteRequest {
+  const id = String(raw._id ?? raw.id ?? "");
+  const timeline = Array.isArray(raw.timeline)
+    ? (raw.timeline as QuoteTimelineEvent[])
+    : [];
+  return {
+    ...(raw as unknown as QuoteRequest),
+    id,
+    adminFeedback:
+      typeof raw.adminFeedback === "string" ? raw.adminFeedback : undefined,
+    timeline,
+  };
+}
+
+function normalizeListItem(raw: Record<string, unknown>): QuoteListItem {
+  return {
+    id: String(raw._id ?? raw.id ?? ""),
+    reference: String(raw.reference ?? ""),
+    destination: String(raw.destination ?? ""),
+    travelStart: String(raw.travelStart ?? ""),
+    travelEnd: String(raw.travelEnd ?? ""),
+    adults: Number(raw.adults ?? 1),
+    children: Number(raw.children ?? 0),
+    status: (raw.status as QuoteStatus) ?? QuoteStatus.DRAFT,
+    budgetCategory: raw.budgetCategory as QuoteListItem["budgetCategory"],
+    contactPerson: raw.contactPerson as QuoteListItem["contactPerson"],
+    adminFeedback:
+      typeof raw.adminFeedback === "string" ? raw.adminFeedback : undefined,
+    createdAt: String(raw.createdAt ?? ""),
+  };
+}
 
 export const quoteService = {
-  /**
-   * Retrieves a list of quote requests for the current partner agency.
-   */
   async getQuotes(
     page = 1,
     pageSize = 10,
-    status?: string
+    status?: string,
+    search?: string
   ): Promise<{
     data: readonly QuoteListItem[];
     total: number;
@@ -32,57 +102,69 @@ export const quoteService = {
     if (status) {
       params.status = status;
     }
+    if (search?.trim()) {
+      params.search = search.trim();
+    }
     const res = await apiClient.get(ENDPOINTS.client.quotes.list, { params });
-    // The backend standard response maps the list under `data` and paginated metadata under `meta`
+    const rows = Array.isArray(res.data?.data) ? res.data.data : [];
     return {
-      data: res.data.data,
-      total: res.data.meta?.total || res.data.data.length,
+      data: rows.map((row: Record<string, unknown>) => normalizeListItem(row)),
+      total: res.data.meta?.total || rows.length,
       page: res.data.meta?.page || page,
       pageSize: res.data.meta?.pageSize || pageSize,
       hasMore: res.data.meta?.hasMore || false,
     };
   },
 
-  /**
-   * Retrieves detail info for a single quote request by ID.
-   */
   async getQuoteById(id: string): Promise<QuoteRequest> {
     const res = await apiClient.get(ENDPOINTS.client.quotes.byId(id));
-    return res.data.data;
+    const raw = unwrapPayload(res.data ?? {});
+    return normalizeQuote(raw);
   },
 
-  /**
-   * Submits a new quote request.
-   */
   async createQuote(dto: CreateQuoteDTO): Promise<QuoteRequest> {
     const res = await apiClient.post(ENDPOINTS.client.quotes.create, dto);
-    return res.data.data;
+    const raw = unwrapPayload(res.data ?? {});
+    return normalizeQuote(raw);
   },
 
-  /**
-   * Saves progress on a quote request as draft.
-   */
   async saveDraft(id: string, dto: SaveDraftDTO): Promise<{ id: string; reference: string }> {
     const res = await apiClient.patch(ENDPOINTS.client.quotes.saveDraft(id), dto);
-    return res.data.data;
+    const body = res.data ?? {};
+    const draftId = extractDraftId(body);
+    const reference =
+      body?.data?.reference ?? body?.reference ?? body?.data?.data?.reference ?? "";
+    if (!draftId) {
+      throw new Error("Draft saved but no id was returned from the API");
+    }
+    return { id: draftId, reference: String(reference) };
   },
 
-  /**
-   * Accepts a prepared quotation.
-   */
   async acceptQuote(id: string): Promise<QuoteRequest> {
     const res = await apiClient.patch(ENDPOINTS.client.quotes.status(id), { status: 'accepted' });
-    return res.data.data;
+    const raw = unwrapPayload(res.data ?? {});
+    return normalizeQuote(raw);
   },
 
-  /**
-   * Requests revision on a prepared quotation.
-   */
   async requestRevision(id: string, internalNotes: string): Promise<QuoteRequest> {
     const res = await apiClient.patch(ENDPOINTS.client.quotes.status(id), {
       status: 'revision_requested',
       internalNotes,
     });
+    const raw = unwrapPayload(res.data ?? {});
+    return normalizeQuote(raw);
+  },
+
+  async resubmitQuote(id: string): Promise<QuoteRequest> {
+    const res = await apiClient.patch(ENDPOINTS.client.quotes.status(id), {
+      status: QuoteStatus.SUBMITTED,
+    });
+    const raw = unwrapPayload(res.data ?? {});
+    return normalizeQuote(raw);
+  },
+
+  async deleteQuote(id: string): Promise<{ id: string; reference: string }> {
+    const res = await apiClient.delete(ENDPOINTS.client.quotes.delete(id));
     return res.data.data;
   },
 };
