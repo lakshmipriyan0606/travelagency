@@ -1,10 +1,6 @@
 import express from 'express';
 import { sendSuccess } from '#shared/utils/response.js';
-import {
-  devopsIdentityChain,
-  devopsCsrf,
-  requireDevopsSession,
-} from '../middleware/devopsAuth.middleware.js';
+import { devopsIdentityChain } from '../middleware/devopsAuth.middleware.js';
 import {
   createOtpChallenge,
   hasChallengeFlag,
@@ -20,6 +16,7 @@ import {
   loadDevopsSession,
   revokeSession,
   setDevopsCookies,
+  touchSession,
 } from '../services/devopsAuth.service.js';
 import { clientIp } from '../services/devopsCrypto.service.js';
 import { writeAudit } from '../services/audit.service.js';
@@ -34,13 +31,11 @@ router.post('/bootstrap', ...devopsIdentityChain, async (req, res) => {
     ip: clientIp(req),
     result: 'ok',
   });
-  const totp = await getTotpStatus(req.user._id);
   return sendSuccess(res, 200, 'OTP challenge started', {
     data: {
       next: 'otp',
-      totpEnrolled: totp.enrolled,
-      expiresInSec: otp.expiresInSec,
-      ...(otp.devCode ? { devOtp: otp.devCode } : {}),
+      timezone: otp.timezone,
+      skewMinutes: otp.skewMinutes,
       user: { id: req.user._id, email: req.user.email, role: req.user.role },
     },
   });
@@ -59,9 +54,27 @@ router.post('/otp/verify', ...devopsIdentityChain, async (req, res) => {
     return res.status(401).json({ success: false, message: result.reason || 'OTP failed' });
   }
   await setChallengeFlag(req.user._id, 'otp');
-  const totp = await getTotpStatus(req.user._id);
+  // Two-step auth: B2C + date OTP — issue devops_session immediately (no TOTP/device gates).
+  const now = new Date();
+  const fingerprintRaw =
+    typeof req.body?.fingerprint === 'string' && req.body.fingerprint.trim()
+      ? req.body.fingerprint.trim()
+      : String(req.headers['user-agent'] || 'otp-session');
+  const issued = await issueDevopsSession({
+    userId: req.user._id,
+    fingerprintRaw,
+    req,
+    otpVerifiedAt: now,
+  });
+  setDevopsCookies(res, issued.sessionId, issued.csrfSecret);
+  await writeAudit({
+    actorUserId: req.user._id,
+    action: 'devops.auth.otp',
+    ip: clientIp(req),
+    result: 'ok',
+  });
   return sendSuccess(res, 200, 'OTP verified', {
-    data: { next: 'totp', totpEnrolled: totp.enrolled },
+    data: { next: 'done', expiresAt: issued.expiresAt },
   });
 });
 
@@ -156,11 +169,20 @@ router.post('/session', ...devopsIdentityChain, async (req, res) => {
   });
 });
 
-router.get('/session', ...devopsIdentityChain, requireDevopsSession, async (req, res) => {
+/** Probe: 200 + active false when B2C ok but no devops_session (not a hard 401). */
+router.get('/session', ...devopsIdentityChain, async (req, res) => {
+  const sessionId = req.cookies?.[DEVOPS_COOKIE];
+  const session = await loadDevopsSession(sessionId);
+  if (!session || String(session.userId) !== String(req.user._id)) {
+    return sendSuccess(res, 200, 'No DevOps session', {
+      data: { active: false },
+    });
+  }
+  await touchSession(session);
   return sendSuccess(res, 200, 'DevOps session active', {
     data: {
       active: true,
-      expiresAt: req.devopsSession.expiresAt,
+      expiresAt: session.expiresAt,
       user: { id: req.user._id, email: req.user.email, role: req.user.role },
     },
   });

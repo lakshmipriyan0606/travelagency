@@ -56,6 +56,7 @@ export const corsMiddleware = cors({
     'userId',
     'UserId',
     'x-metrics-token',
+    'x-devops-csrf',
     'Cache-Control',
     'Pragma',
   ],

@@ -11,7 +11,7 @@ import {
   persistRememberPreference,
 } from "@travelagency/forms";
 import { LoginFormData, loginSchema } from "@/ZodSchema/schema";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { useMutationAPIQuery } from "@travelagency/hooks";
 import { loginAPI } from "@/api/auth.api";
 import { setAdminUser } from "@/store/adminAuthSlice";
@@ -26,6 +26,7 @@ const REMEMBER_NS = "b2c_admin";
 
 export default function LoginPage() {
   const router = useRouter();
+  const searchParams = useSearchParams();
   const dispatch = useDispatch();
   const [loginError, setLoginError] = useState<string | null>(null);
   const [rememberMe, setRememberMe] = useState(false);
@@ -62,7 +63,10 @@ export default function LoginPage() {
           isLoggedIn: true,
         })
       );
-      router.push(ROUTES.dashboard);
+      const next = searchParams.get("next");
+      const safeNext =
+        next && next.startsWith("/") && !next.startsWith("//") ? next : null;
+      router.push(safeNext || ROUTES.dashboard);
     },
     onError(error: any) {
       const rawMessage = error?.message;

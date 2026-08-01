@@ -27,10 +27,13 @@ export const setAuthCookies = (
   { rememberMe = false } = {}
 ) => {
   const isProduction = process.env.NODE_ENV === 'production';
+  // `lax` in dev so SPA on :3002 can credential XHR/proxy to the API with cookies.
+  // Production keeps `none` + Secure for cross-site frontends.
   const cookieOptions = {
     httpOnly: true,
     secure: isProduction,
-    sameSite: isProduction ? 'none' : 'strict',
+    sameSite: isProduction ? 'none' : 'lax',
+    path: '/',
   };
 
   // Access cookie TTL must track JWT access life (~1h), not multi-day refresh TTL.

@@ -1,3 +1,8 @@
+import {
+  formatIstDateHint,
+  getTodayIstParts,
+} from '@/features/devops/dateOtp';
+
 export const ROUTES = {
   login: '/b2c/admin/login',
   forgotPassword: '/b2c/admin/forgot-password',
@@ -78,14 +83,26 @@ export const ROUTES = {
   /** Private developer ops — never add to public/product nav */
   devops: {
     root: '/devops',
-    login: '/devops/login',
+    /**
+     * Login URL is `/devops/{d-m-yyyy}/login` (today in Asia/Kolkata).
+     * Date segment must be today: D-M-YYYY or DD-MM-YYYY.
+     */
+    login: () =>
+      `/devops/${formatIstDateHint(getTodayIstParts())}/login` as const,
+    loginWithDate: (date: string) => `/devops/${date}/login` as const,
     otp: '/devops/challenge/otp',
-    totp: '/devops/challenge/totp',
-    device: '/devops/challenge/device',
     executive: '/devops',
+    capacity: '/devops/capacity',
     health: '/devops/health',
     api: '/devops/api',
     errors: '/devops/errors',
     logs: '/devops/logs',
+    business: '/devops/business',
+    traffic: '/devops/traffic',
+    security: '/devops/security',
+    queues: '/devops/queues',
+    deploy: '/devops/deploy',
+    audit: '/devops/audit',
+    alerts: '/devops/alerts',
   },
 } as const;

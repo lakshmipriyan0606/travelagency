@@ -45,7 +45,12 @@ router.get('/api/performance', ...devopsSessionChain, async (req, res) => {
 });
 
 router.get('/errors', ...devopsSessionChain, async (req, res) => {
-  const data = await listErrors(req.query);
+  const data = await listErrors({
+    status: req.query.status,
+    limit: req.query.limit,
+    severity: req.query.severity,
+    category: req.query.category,
+  });
   return sendSuccess(res, 200, 'Errors', { data });
 });
 
