@@ -14,6 +14,7 @@ export interface TravelHeroHeaderProps {
   agencyName: string;
   agencyStatus?: AgencyStatus;
   onMenuClick?: () => void;
+  mobileMenuOpen?: boolean;
   onLogout?: () => void;
   sessionCookieName?: string;
   sessionExpiresAt?: number | null;
@@ -29,37 +30,45 @@ export function TravelHeroHeader({
   agencyName,
   agencyStatus = "active",
   onMenuClick,
+  mobileMenuOpen = false,
   onLogout,
   sessionCookieName,
   sessionExpiresAt,
   onSessionExpired,
 }: TravelHeroHeaderProps) {
   return (
-    <header className="sticky top-0 z-20 flex flex-col sm:flex-row sm:items-center gap-4 h-auto sm:h-[72px] px-4 sm:px-6 lg:px-8 py-4 sm:py-0 bg-[#0A0A0C] border-b border-white/[0.08] shadow-[0_4px_24px_rgba(0,0,0,0.5)] shrink-0">
-      <div className="flex items-center gap-3 shrink-0">
-        <button
-          type="button"
-          onClick={onMenuClick}
-          className="lg:hidden flex items-center justify-center h-10 w-10 rounded-xl border border-white/[0.08] bg-[#141416] text-zinc-400 hover:text-white transition-colors"
-          aria-label="Open navigation menu"
-        >
-          <Menu className="h-5 w-5" />
-        </button>
-        <h1 className="text-lg font-bold text-white">{pageTitle}</h1>
+    <header className="sticky top-0 z-20 flex flex-col gap-3 sm:flex-row sm:items-center sm:gap-4 h-auto min-h-0 sm:min-h-[72px] px-3 sm:px-6 lg:px-8 py-3 sm:py-0 bg-[#0A0A0C] border-b border-white/[0.08] shadow-[0_4px_24px_rgba(0,0,0,0.5)] shrink-0">
+      <div className="flex items-center gap-2 sm:gap-3 shrink-0 min-w-0 flex-1 sm:flex-initial overflow-hidden">
+        {onMenuClick ? (
+          <button
+            type="button"
+            onClick={onMenuClick}
+            className="lg:hidden flex items-center justify-center h-10 w-10 rounded-xl border border-white/[0.08] bg-[#141416] text-zinc-400 hover:text-white transition-colors shrink-0"
+            aria-label="Open navigation menu"
+            aria-expanded={mobileMenuOpen}
+            aria-controls="portal-mobile-nav"
+          >
+            <Menu className="h-5 w-5" />
+          </button>
+        ) : null}
+        <h1 className="text-base sm:text-lg font-bold text-white truncate min-w-0">
+          {pageTitle}
+        </h1>
       </div>
 
-      <div className="flex-1 max-w-xl mx-auto w-full">
+      <div className="flex-1 max-w-xl mx-auto w-full min-w-0 order-3 sm:order-none">
         <Suspense fallback={<SearchFallback />}>
           <HeaderGlobalSearch />
         </Suspense>
       </div>
 
-      <div className="flex items-center gap-2 sm:gap-3 shrink-0 self-end sm:self-auto">
+      <div className="flex items-center gap-1.5 sm:gap-3 shrink-0 self-end sm:self-auto ml-auto sm:ml-0">
         {(sessionExpiresAt != null || sessionCookieName) && (
           <SessionTimer
             expiresAt={sessionExpiresAt}
             cookieName={sessionCookieName}
             onExpired={onSessionExpired}
+            className="px-2 sm:px-3"
           />
         )}
 

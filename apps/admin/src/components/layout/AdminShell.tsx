@@ -27,6 +27,7 @@ export default function AdminShell({ user, children }: AdminShellProps) {
   const pathname = usePathname();
   const router = useRouter();
   const [searchValue, setSearchValue] = useState("");
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [readNotificationIds, setReadNotificationIds] = useState<Set<string>>(
     () => new Set()
   );
@@ -115,6 +116,8 @@ export default function AdminShell({ user, children }: AdminShellProps) {
         appName="TravelHero"
         appLogoSubtitle="B2C ADMIN PORTAL"
         navItems={navItems}
+        mobileOpen={mobileMenuOpen}
+        onMobileClose={() => setMobileMenuOpen(false)}
       />
 
       <div className="flex-1 flex flex-col h-full overflow-hidden min-w-0">
@@ -141,9 +144,11 @@ export default function AdminShell({ user, children }: AdminShellProps) {
           sessionExpiresAt={user.exp}
           onSessionExpired={handleSessionExpired}
           onLogout={() => setSignOutOpen(true)}
+          onMenuClick={() => setMobileMenuOpen(true)}
+          mobileMenuOpen={mobileMenuOpen}
         />
 
-        <main className="flex-1 overflow-y-auto ent-scrollbar p-8 space-y-8 max-w-[1440px] w-full mx-auto">
+        <main className="flex-1 overflow-y-auto overflow-x-hidden ent-scrollbar p-4 sm:p-6 lg:p-8 space-y-6 sm:space-y-8 max-w-[1440px] w-full mx-auto min-w-0">
           {children}
         </main>
       </div>

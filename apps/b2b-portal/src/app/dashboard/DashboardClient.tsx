@@ -1,8 +1,8 @@
 "use client";
 
 import React, { useCallback, useState } from "react";
-import { RefreshCw } from "lucide-react";
 import { useQueryClient } from "@tanstack/react-query";
+import { AirplaneLoader } from "@travelagency/ui";
 import { AppShell } from "@/components/layout";
 import { DashboardHero } from "@/components/sections/DashboardHero";
 import { KpiGrid } from "@/components/sections/KpiGrid";
@@ -123,12 +123,12 @@ export default function DashboardClient() {
 
   if (isLoading) {
     return (
-      <div className="min-h-screen bg-[#0B0E14] flex flex-col items-center justify-center">
-        <RefreshCw className="w-8 h-8 text-[#F8B400] animate-spin" aria-hidden />
-        <p className="text-zinc-500 text-xs mt-4 font-semibold tracking-widest uppercase">
-          Loading dashboard…
-        </p>
-      </div>
+      <AirplaneLoader
+        size="lg"
+        label="Loading dashboard…"
+        fullPage
+        className="min-h-screen bg-[#0B0E14]"
+      />
     );
   }
 

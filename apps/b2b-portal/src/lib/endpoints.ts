@@ -62,5 +62,21 @@ export const ENDPOINTS = {
       /** Permanently delete a draft quote (DELETE) */
       delete: (id: string) => `/b2b/agency/quotes/${id}`,
     },
+
+    // ─── Master data (agency-scoped dropdowns) ───────────────────────────────
+    master: {
+      cities: '/b2b/agency/master/cities',
+      hotels: '/b2b/agency/master/hotels',
+      packages: '/b2b/agency/master/packages',
+    },
+
+    // ─── Custom proposals ───────────────────────────────────────────────────
+    proposals: {
+      list: '/b2b/agency/proposals',
+      create: '/b2b/agency/proposals',
+      byId: (id: string) => `/b2b/agency/proposals/${id}`,
+      update: (id: string) => `/b2b/agency/proposals/${id}`,
+      status: (id: string) => `/b2b/agency/proposals/${id}/status`,
+    },
   },
 } as const;

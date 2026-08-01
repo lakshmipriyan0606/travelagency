@@ -38,15 +38,15 @@ const ITEM_CLASS = [
   "aspect-square size-5 shrink-0 rounded-full border shadow-xs outline-none transition-all duration-150",
   "border-[#F8B400]/55 bg-[#0c0c0f]",
   "hover:border-[#F8B400]/80",
-  "focus-visible:border-[#2563EB] focus-visible:ring-[3px] focus-visible:ring-[#2563EB]/35",
-  "data-[state=checked]:border-white data-[state=checked]:bg-[#2563EB]",
+  "focus-visible:border-[#F8B400] focus-visible:ring-[3px] focus-visible:ring-[#F8B400]/30",
+  "data-[state=checked]:border-[#F8B400] data-[state=checked]:bg-[#F8B400]",
   "aria-invalid:border-destructive aria-invalid:ring-destructive/20",
   "disabled:cursor-not-allowed disabled:opacity-50",
 ].join(" ");
 
 /**
  * Opinionated single-select radio group for dark + gold enterprise chrome.
- * Selected control uses bright blue fill + white inner indicator (matches SimpleCheckbox).
+ * Selected control uses brand gold fill + dark inner indicator (matches SimpleCheckbox).
  * Options-API facade over Radix Radio Group.
  */
 function SimpleRadio({
@@ -104,7 +104,7 @@ function SimpleRadio({
             >
               <span
                 className={cn(
-                  "absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 rounded-full bg-white",
+                  "absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 rounded-full bg-[#0c0c0f]",
                   appearance === "inline" ? "size-1.5" : "size-2"
                 )}
               />

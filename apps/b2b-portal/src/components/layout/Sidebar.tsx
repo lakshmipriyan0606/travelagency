@@ -6,14 +6,23 @@
 import React from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Building2, LayoutDashboard, FileText, CheckSquare, PlusCircle, ChevronRight } from "lucide-react";
+import {
+  Building2,
+  LayoutDashboard,
+  FileText,
+  CheckSquare,
+  PlusCircle,
+  ClipboardList,
+  ChevronRight,
+} from "lucide-react";
 import { ROUTES } from "@/lib/routes";
 
 export const SIDEBAR_ITEMS = [
   { label: "Dashboard", href: ROUTES.dashboard, icon: LayoutDashboard },
   { label: "Quote Request Portal", href: ROUTES.quotes, icon: FileText },
   { label: "Accepted Packages", href: "#", icon: CheckSquare, disabled: true, comingSoon: true },
-  { label: "Create Custom Package", href: "#", icon: PlusCircle, disabled: true, comingSoon: true },
+  { label: "Create Custom Package", href: ROUTES.customPackage, icon: PlusCircle },
+  { label: "My Proposals", href: ROUTES.proposals, icon: ClipboardList },
 ] as const;
 
 interface SidebarProps {

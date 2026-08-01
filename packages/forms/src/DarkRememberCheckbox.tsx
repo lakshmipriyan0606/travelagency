@@ -1,7 +1,7 @@
 /**
  * DarkRememberCheckbox.tsx
  * Brand-aligned "Remember me" control for dark login screens.
- * Uses SimpleCheckbox (blue checked fill) so state is never browser-default.
+ * Uses SimpleCheckbox (gold checked fill) so state is never browser-default.
  */
 "use client";
 

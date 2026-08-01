@@ -11,6 +11,7 @@ import {
   Send,
   BadgeCheck,
   RotateCcw,
+  ClipboardList,
   type LucideIcon,
 } from "lucide-react";
 import { ROUTES } from "@/lib/routes";
@@ -29,7 +30,8 @@ export const PRIMARY_NAV: readonly NavLinkItem[] = [
   { label: "Dashboard", href: ROUTES.dashboard, icon: LayoutDashboard },
   { label: "Quote Request Portal", href: ROUTES.quotes, icon: FileText },
   { label: "Accepted Packages", href: "#", icon: CheckSquare, comingSoon: true },
-  { label: "Create Custom Package", href: "#", icon: PlusCircle, comingSoon: true },
+  { label: "Create Custom Package", href: ROUTES.customPackage, icon: PlusCircle },
+  { label: "My Proposals", href: ROUTES.proposals, icon: ClipboardList },
 ];
 
 // ─── KPI Sparklines ───────────────────────────────────────────────────────────

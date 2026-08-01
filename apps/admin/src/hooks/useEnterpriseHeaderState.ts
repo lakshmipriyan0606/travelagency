@@ -57,7 +57,7 @@ function filterAgencies(agencies: B2BAgency[], query: string): HeaderSearchResul
       id: `agency-${agency._id}`,
       label: agency.companyName,
       sublabel: `Agency · ${agency.status.replace(/_/g, " ")}`,
-      href: ROUTES.b2b.agencyDetail({ agencyId: agency._id, tab: "details" }),
+      href: ROUTES.b2b.agencyDetail({ agencyId: agency._id, section: "info" }),
     }));
 }
 
@@ -77,7 +77,7 @@ function filterQuotes(quotes: AdminQuoteRequest[], query: string): HeaderSearchR
       sublabel: `${quote.destination} · ${quote.agencyName ?? "Agency"}`,
       href: ROUTES.b2b.agencyDetail({
         agencyId: quote.agencyId,
-        tab: "quotes",
+        section: "quotes",
         quoteId: quote._id,
       }),
     }));
@@ -94,7 +94,7 @@ function buildB2BNotifications(
       title: "Agency pending approval",
       message: `${agency.companyName} registered and awaits review.`,
       timestamp: agency.createdAt,
-      href: ROUTES.b2b.agencyDetail({ agencyId: agency._id, tab: "details" }),
+      href: ROUTES.b2b.agencyDetail({ agencyId: agency._id, section: "info" }),
       isRead: false,
     }));
 
@@ -111,7 +111,7 @@ function buildB2BNotifications(
       timestamp: quote.updatedAt,
       href: ROUTES.b2b.agencyDetail({
         agencyId: quote.agencyId,
-        tab: "quotes",
+        section: "quotes",
         quoteId: quote._id,
       }),
       isRead: false,

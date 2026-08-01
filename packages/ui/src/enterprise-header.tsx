@@ -1,7 +1,7 @@
 "use client";
 
 import * as React from "react";
-import { Bell, Search, HelpCircle, Plus, LogOut, Loader2, ExternalLink } from "lucide-react";
+import { Bell, Search, HelpCircle, Plus, LogOut, Loader2, ExternalLink, Menu } from "lucide-react";
 import { Button } from "./button";
 import { SessionTimer } from "./session-timer";
 import {
@@ -62,6 +62,10 @@ export interface EnterpriseHeaderProps {
   sessionCookieName?: string;
   onSessionExpired?: () => void;
   onLogout?: () => void;
+  /** Opens the mobile nav drawer (shown below `lg`). */
+  onMenuClick?: () => void;
+  /** Whether the mobile nav drawer is open (for aria-expanded). */
+  mobileMenuOpen?: boolean;
 }
 
 function formatRelativeTime(iso?: string): string {
@@ -97,6 +101,8 @@ export function EnterpriseHeader({
   sessionCookieName,
   onSessionExpired,
   onLogout,
+  onMenuClick,
+  mobileMenuOpen = false,
 }: EnterpriseHeaderProps) {
   const [searchFocused, setSearchFocused] = React.useState(false);
   const [notificationsOpen, setNotificationsOpen] = React.useState(false);
@@ -119,14 +125,35 @@ export function EnterpriseHeader({
   };
 
   return (
-    <header className="sticky top-0 z-20 flex items-center justify-between h-[72px] px-8 bg-[#07070a]/90 backdrop-blur-md border-b border-white/[0.08] shadow-[0_4px_24px_rgba(0,0,0,0.55)] shrink-0 select-none">
-      <div className="flex items-center gap-6 min-w-0">
-        <div className="flex flex-col">
-          <nav className="flex items-center gap-1.5 text-xs text-zinc-300 font-medium">
+    <header className="sticky top-0 z-20 flex items-center justify-between gap-2 sm:gap-3 min-h-[64px] sm:min-h-[72px] h-auto py-2 sm:py-0 px-3 sm:px-5 lg:px-8 bg-[#07070a]/90 backdrop-blur-md border-b border-white/[0.08] shadow-[0_4px_24px_rgba(0,0,0,0.55)] shrink-0 select-none">
+      <div className="flex items-center gap-2 sm:gap-4 min-w-0 flex-1">
+        {onMenuClick && (
+          <button
+            type="button"
+            onClick={onMenuClick}
+            className="lg:hidden flex items-center justify-center h-10 w-10 rounded-xl border border-white/[0.08] bg-[#141416] text-zinc-400 hover:text-white hover:bg-white/[0.06] transition-colors shrink-0 cursor-pointer"
+            aria-label="Open navigation menu"
+            aria-expanded={mobileMenuOpen}
+            aria-controls="enterprise-mobile-nav"
+          >
+            <Menu className="h-5 w-5" />
+          </button>
+        )}
+
+        <div className="flex flex-col min-w-0 flex-1 overflow-hidden">
+          <nav className="flex items-center gap-1.5 text-xs text-zinc-300 font-medium min-w-0 overflow-hidden">
             {breadcrumbs.map((item, idx) => (
               <React.Fragment key={idx}>
-                {idx > 0 && <span className="text-zinc-500">/</span>}
-                <span className={idx === breadcrumbs.length - 1 ? "text-white font-bold" : "hover:text-white"}>
+                {idx > 0 && (
+                  <span className="text-zinc-500 shrink-0 hidden sm:inline">/</span>
+                )}
+                <span
+                  className={`truncate min-w-0 ${
+                    idx === breadcrumbs.length - 1
+                      ? "text-white font-bold max-w-[9rem] sm:max-w-[14rem] md:max-w-[18rem]"
+                      : "hover:text-white hidden md:inline max-w-[10rem]"
+                  }`}
+                >
                   {item.label}
                 </span>
               </React.Fragment>
@@ -135,7 +162,7 @@ export function EnterpriseHeader({
           <span className="sr-only">{pageTitle}</span>
         </div>
 
-        <div className="relative w-64 md:w-72 hidden sm:block">
+        <div className="relative flex-1 max-w-md hidden md:block min-w-0">
           <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-zinc-400 pointer-events-none" />
           <input
             type="search"
@@ -199,12 +226,13 @@ export function EnterpriseHeader({
         </div>
       </div>
 
-      <div className="flex items-center gap-3 shrink-0">
+      <div className="flex items-center gap-1.5 sm:gap-2.5 shrink-0">
         {(sessionExpiresAt != null || sessionCookieName) && (
           <SessionTimer
             expiresAt={sessionExpiresAt}
             cookieName={sessionCookieName}
             onExpired={onSessionExpired}
+            className="px-2 sm:px-3"
           />
         )}
 
@@ -213,7 +241,7 @@ export function EnterpriseHeader({
         {onPrimaryAction && (
           <Button
             onClick={onPrimaryAction}
-            className="h-10 px-4 rounded-full bg-[#F8B400] text-black font-bold hover:bg-[#E8A800] shadow-[0_4px_16px_rgba(248,180,0,0.35)] text-[14px]"
+            className="hidden sm:inline-flex h-10 px-4 rounded-full bg-[#F8B400] text-black font-bold hover:bg-[#E8A800] shadow-[0_4px_16px_rgba(248,180,0,0.35)] text-[14px]"
           >
             {primaryActionLabel}
           </Button>
@@ -288,7 +316,7 @@ export function EnterpriseHeader({
           <PopoverTrigger asChild>
             <button
               type="button"
-              className="flex items-center justify-center h-10 w-10 rounded-xl border border-white/[0.08] bg-[#141416] text-zinc-400 hover:text-white hover:bg-white/[0.06] transition-colors cursor-pointer"
+              className="hidden sm:flex items-center justify-center h-10 w-10 rounded-xl border border-white/[0.08] bg-[#141416] text-zinc-400 hover:text-white hover:bg-white/[0.06] transition-colors cursor-pointer"
               aria-label="Help and support"
             >
               <HelpCircle className="h-4.5 w-4.5" />
@@ -337,7 +365,7 @@ export function EnterpriseHeader({
           <DropdownMenuTrigger asChild>
             <button
               type="button"
-              className="flex items-center gap-3 pl-3 border-l border-white/[0.08] rounded-lg hover:bg-white/[0.04] transition-colors cursor-pointer outline-none focus-visible:ring-2 focus-visible:ring-[#F8B400]/50"
+              className="flex items-center gap-2 sm:gap-3 sm:pl-3 sm:border-l sm:border-white/[0.08] rounded-lg hover:bg-white/[0.04] transition-colors cursor-pointer outline-none focus-visible:ring-2 focus-visible:ring-[#F8B400]/50"
               aria-label="Open account menu"
             >
               <div className="flex flex-col text-right hidden sm:flex">

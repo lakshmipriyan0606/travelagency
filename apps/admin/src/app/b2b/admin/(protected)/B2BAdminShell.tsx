@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { usePathname, useRouter } from "next/navigation";
 import { AdminUser } from "@/features/auth/types";
-import { Building2, Users } from "lucide-react";
+import { Building2, Users, MapPin, Building, Package } from "lucide-react";
 import { b2bAdminLogout } from "@/api/b2bAdmin.api";
 import { showToast } from "@/lib/toast";
 import { ROUTES } from "@/lib/routes";
@@ -32,6 +32,7 @@ export default function B2BAdminShell({ user, children }: B2BAdminShellProps) {
   const pathname = usePathname();
   const router = useRouter();
   const [searchValue, setSearchValue] = useState("");
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [readNotificationIds, setReadNotificationIds] = useState<Set<string>>(
     () => new Set()
   );
@@ -73,11 +74,29 @@ export default function B2BAdminShell({ user, children }: B2BAdminShellProps) {
       href: ROUTES.b2b.agencyDetails,
       icon: Users,
     },
+    {
+      label: "Cities",
+      href: ROUTES.b2b.cities,
+      icon: MapPin,
+    },
+    {
+      label: "Hotels",
+      href: ROUTES.b2b.hotels,
+      icon: Building,
+    },
+    {
+      label: "Packages",
+      href: ROUTES.b2b.packages,
+      icon: Package,
+    },
   ];
 
   const pageTitleMap: Record<string, string> = {
     [ROUTES.b2b.dashboard]: "Agencies Dashboard",
     [ROUTES.b2b.agencyDetails]: "Agency Management & Details",
+    [ROUTES.b2b.cities]: "City Master",
+    [ROUTES.b2b.hotels]: "Hotel Master",
+    [ROUTES.b2b.packages]: "B2B Packages & Amounts",
   };
 
   const currentTitle = pageTitleMap[pathname] || "B2B Admin Overview";
@@ -106,6 +125,8 @@ export default function B2BAdminShell({ user, children }: B2BAdminShellProps) {
         appName="TravelHero"
         appLogoSubtitle="B2B PORTAL"
         navItems={navItems}
+        mobileOpen={mobileMenuOpen}
+        onMobileClose={() => setMobileMenuOpen(false)}
       />
 
       <div className="flex-1 flex flex-col h-full overflow-hidden min-w-0">
@@ -133,9 +154,11 @@ export default function B2BAdminShell({ user, children }: B2BAdminShellProps) {
           sessionCookieName="b2b_access_token"
           onSessionExpired={handleSessionExpired}
           onLogout={() => setSignOutOpen(true)}
+          onMenuClick={() => setMobileMenuOpen(true)}
+          mobileMenuOpen={mobileMenuOpen}
         />
 
-        <main className="mx-auto flex w-full max-w-[1440px] min-h-0 flex-1 flex-col overflow-y-auto ent-scrollbar p-6 sm:p-8">
+        <main className="mx-auto flex w-full max-w-[1440px] min-h-0 flex-1 flex-col overflow-y-auto overflow-x-hidden ent-scrollbar p-4 sm:p-6 lg:p-8">
           {children}
         </main>
       </div>

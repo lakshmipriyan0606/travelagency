@@ -20,6 +20,7 @@ import type { QuoteListItem } from "@/features/quote-request/types/quote.types";
 const QUICK_LINKS = [
   { href: ROUTES.dashboard, label: "Dashboard", icon: LayoutDashboard },
   { href: ROUTES.quotes, label: "Quotation Pipeline", icon: FileText },
+  { href: ROUTES.customPackage, label: "Create Custom Package", icon: MapPin },
   { href: ROUTES.profile, label: "Agency Profile", icon: User },
 ] as const;
 

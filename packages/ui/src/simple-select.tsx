@@ -33,23 +33,23 @@ export type SimpleSelectProps = {
   "aria-label"?: string;
   /**
    * Menu highlight color.
-   * - `blue` — bright selection highlight (filter / list chrome, matches admin screenshot)
-   * - `gold` — brand accent (forms / enterprise inputs)
+   * - `gold` — brand primary (default; B2B filters / forms)
+   * - `blue` — legacy bright selection highlight (opt-in only)
    */
   highlight?: "blue" | "gold";
   size?: "sm" | "default";
 };
 
 const ITEM_HIGHLIGHT: Record<NonNullable<SimpleSelectProps["highlight"]>, string> = {
-  blue: [
-    "data-[highlighted]:!bg-[#2563EB] data-[highlighted]:!text-white data-[highlighted]:!font-semibold",
-    "data-[state=checked]:!bg-[#2563EB]/20 data-[state=checked]:!text-[#93C5FD]",
-    "data-[state=checked]:data-[highlighted]:!bg-[#2563EB] data-[state=checked]:data-[highlighted]:!text-white",
-  ].join(" "),
   gold: [
     "data-[highlighted]:!bg-[#F8B400] data-[highlighted]:!text-black data-[highlighted]:!font-bold",
     "data-[state=checked]:!bg-[#F8B400]/18 data-[state=checked]:!text-[#F8B400]",
     "data-[state=checked]:data-[highlighted]:!bg-[#F8B400] data-[state=checked]:data-[highlighted]:!text-black",
+  ].join(" "),
+  blue: [
+    "data-[highlighted]:!bg-[#2563EB] data-[highlighted]:!text-white data-[highlighted]:!font-semibold",
+    "data-[state=checked]:!bg-[#2563EB]/20 data-[state=checked]:!text-[#93C5FD]",
+    "data-[state=checked]:data-[highlighted]:!bg-[#2563EB] data-[state=checked]:data-[highlighted]:!text-white",
   ].join(" "),
 };
 
@@ -70,7 +70,7 @@ function SimpleSelect({
   triggerClassName,
   contentClassName,
   "aria-label": ariaLabel,
-  highlight = "blue",
+  highlight = "gold",
   size = "default",
 }: SimpleSelectProps) {
   const isControlled = value !== undefined;

@@ -29,6 +29,11 @@ export const ROUTES = {
   quoteDetail: (id: string) => `/quotes/${id}` as const,
   quoteEdit: (id: string) => `/quotes/${id}/edit` as const,
   quoteSuccess: (reference: string) => `/quotes/${reference}/success` as const,
+
+  // ─── Create Custom Package (separate from Quote Request) ──────────────────
+  customPackage: '/custom-package',
+  proposals: '/proposals',
+  proposalDetail: (id: string) => `/proposals/${id}` as const,
 } as const;
 
 /**

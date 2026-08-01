@@ -164,3 +164,182 @@ export const updateAdminQuoteStatus = async (
   });
   return data?.data || data;
 };
+
+// ─── Master Data (cities / hotels / packages) ─────────────────────────────────
+
+const unwrapList = <T,>(data: unknown): T[] => {
+  const d = data as { data?: unknown };
+  if (Array.isArray(d?.data)) return d.data as T[];
+  if (d?.data && typeof d.data === "object" && Array.isArray((d.data as { data?: unknown }).data)) {
+    return (d.data as { data: T[] }).data;
+  }
+  if (Array.isArray(data)) return data as T[];
+  return [];
+};
+
+export interface B2BCity {
+  _id: string;
+  name: string;
+  countryCode: string;
+  region?: string;
+  isActive: boolean;
+}
+
+export interface B2BHotel {
+  _id: string;
+  name: string;
+  cityId: string | { _id: string; name: string; countryCode?: string };
+  starRating: 3 | 4 | 5;
+  baseNightlyRate: number;
+  currency: string;
+  notes?: string;
+  isActive: boolean;
+}
+
+export interface B2BPackageMaster {
+  _id: string;
+  name: string;
+  cityId: string | { _id: string; name: string };
+  hotelId?: string | { _id: string; name: string } | null;
+  nights: number;
+  description?: string;
+  amounts: {
+    basePrice: number;
+    perNight: number;
+    transferAddon: number;
+    activityAddon: number;
+  };
+  currency: string;
+  isActive: boolean;
+}
+
+export const getB2BCities = async (params?: { q?: string; active?: string }) => {
+  const { data } = await axiosClient.get(ENDPOINTS.client.b2b.cities, { params });
+  return unwrapList<B2BCity>(data);
+};
+
+export const createB2BCity = async (payload: Partial<B2BCity>) => {
+  const { data } = await axiosClient.post(ENDPOINTS.client.b2b.cities, payload);
+  return data?.data || data;
+};
+
+export const updateB2BCity = async (id: string, payload: Partial<B2BCity>) => {
+  const { data } = await axiosClient.patch(ENDPOINTS.client.b2b.cityById(id), payload);
+  return data?.data || data;
+};
+
+export const deleteB2BCity = async (id: string) => {
+  const { data } = await axiosClient.delete(ENDPOINTS.client.b2b.cityById(id));
+  return data;
+};
+
+export const getB2BHotels = async (params?: { cityId?: string; q?: string; active?: string }) => {
+  const { data } = await axiosClient.get(ENDPOINTS.client.b2b.hotels, { params });
+  return unwrapList<B2BHotel>(data);
+};
+
+export const createB2BHotel = async (payload: object) => {
+  const { data } = await axiosClient.post(ENDPOINTS.client.b2b.hotels, payload);
+  return data?.data || data;
+};
+
+export const updateB2BHotel = async (id: string, payload: object) => {
+  const { data } = await axiosClient.patch(ENDPOINTS.client.b2b.hotelById(id), payload);
+  return data?.data || data;
+};
+
+export const deleteB2BHotel = async (id: string) => {
+  const { data } = await axiosClient.delete(ENDPOINTS.client.b2b.hotelById(id));
+  return data;
+};
+
+export const getB2BPackagesMaster = async (params?: {
+  cityId?: string;
+  q?: string;
+  active?: string;
+}) => {
+  const { data } = await axiosClient.get(ENDPOINTS.client.b2b.packages, { params });
+  return unwrapList<B2BPackageMaster>(data);
+};
+
+export const createB2BPackageMaster = async (payload: object) => {
+  const { data } = await axiosClient.post(ENDPOINTS.client.b2b.packages, payload);
+  return data?.data || data;
+};
+
+export const updateB2BPackageMaster = async (id: string, payload: object) => {
+  const { data } = await axiosClient.patch(ENDPOINTS.client.b2b.packageById(id), payload);
+  return data?.data || data;
+};
+
+export const deleteB2BPackageMaster = async (id: string) => {
+  const { data } = await axiosClient.delete(ENDPOINTS.client.b2b.packageById(id));
+  return data;
+};
+
+// ─── Custom package proposals (admin review) ─────────────────────────────────
+
+export interface AdminCustomProposal {
+  _id: string;
+  reference: string;
+  status: string;
+  adminFeedback?: string;
+  agencyId:
+    | string
+    | {
+        _id: string;
+        companyName?: string;
+        tradeName?: string;
+        email?: string;
+        status?: string;
+      };
+  destinations: Array<{
+    cityId: string;
+    cityName: string;
+    nights: number;
+    hotelId?: string | null;
+    hotelName?: string;
+    packageId?: string | null;
+  }>;
+  tripDetails: {
+    leavingFromName?: string;
+    rooms: number;
+    adults: number;
+    children: number;
+    includeTransfers?: boolean;
+    leavingOn?: string | null;
+  };
+  pricing: {
+    currency: string;
+    subtotal: number;
+    transferTotal: number;
+    total: number;
+    breakdown?: Array<{ label: string; amount: number }>;
+  };
+  createdAt: string;
+  updatedAt: string;
+}
+
+export const getAdminProposals = async (params?: {
+  page?: number;
+  pageSize?: number;
+  status?: string;
+  agencyId?: string;
+}) => {
+  const { data } = await axiosClient.get(ENDPOINTS.client.b2b.proposals, { params });
+  return unwrapList<AdminCustomProposal>(data);
+};
+
+export const updateAdminProposalStatus = async (
+  id: string,
+  status: string,
+  notes?: string,
+) => {
+  const { data } = await axiosClient.patch(ENDPOINTS.client.b2b.proposalStatusUpdate(id), {
+    status,
+    notes,
+    adminFeedback: notes,
+  });
+  return data?.data || data;
+};
+

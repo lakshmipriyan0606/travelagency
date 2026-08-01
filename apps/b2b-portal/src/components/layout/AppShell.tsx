@@ -20,6 +20,8 @@ export interface AppShellProps {
 
 function getPageTitle(pathname: string): string {
   if (pathname.startsWith(ROUTES.quotes)) return "Quote Request Portal";
+  if (pathname.startsWith(ROUTES.customPackage)) return "Create Custom Package";
+  if (pathname.startsWith(ROUTES.proposals)) return "My Proposals";
   if (pathname.startsWith(ROUTES.profile)) return "Agency Profile";
   return "Dashboard";
 }
@@ -74,7 +76,6 @@ export default function AppShell({
         partnerTier={partnerTier}
         collapsed={sidebarCollapsed}
         onToggleCollapse={() => setSidebarCollapsed((v) => !v)}
-        onLogout={() => setSignOutOpen(true)}
         mobileOpen={mobileMenuOpen}
         onMobileClose={() => setMobileMenuOpen(false)}
       />
@@ -85,13 +86,14 @@ export default function AppShell({
           agencyName={agencyName}
           agencyStatus={resolvedAgencyStatus}
           onMenuClick={() => setMobileMenuOpen(true)}
+          mobileMenuOpen={mobileMenuOpen}
           onLogout={() => setSignOutOpen(true)}
           sessionCookieName="b2b_portal_access_token"
           onSessionExpired={handleSessionExpired}
         />
 
-        <main className="flex-1 overflow-y-auto">
-          <div className="max-w-[1440px] mx-auto px-4 sm:px-6 lg:px-8 py-6 lg:py-8">
+        <main className="flex-1 overflow-y-auto overflow-x-hidden min-w-0">
+          <div className="max-w-[1440px] mx-auto px-3 sm:px-6 lg:px-8 py-5 lg:py-8 min-w-0">
             {children}
           </div>
         </main>

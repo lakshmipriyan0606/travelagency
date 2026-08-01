@@ -240,7 +240,7 @@ export default function B2BDashboardClient() {
               {recentQuotes.map((q) => (
                 <Link
                   key={q._id}
-                  href={ROUTES.b2b.agencyDetail({ agencyId: q.agencyId, tab: 'quotes', quoteId: q._id })}
+                  href={ROUTES.b2b.agencyDetail({ agencyId: q.agencyId, section: 'quotes', quoteId: q._id })}
                   className="flex items-center gap-3 px-5 py-3 hover:bg-white/[0.03] transition-colors group"
                 >
                   <div className="w-8 h-8 rounded-xl bg-indigo-500/10 border border-indigo-500/20 flex items-center justify-center shrink-0">
@@ -392,41 +392,43 @@ export default function B2BDashboardClient() {
 
         {!isAgenciesLoading && filteredAgencies.length > 0 && (
           <>
-            <div className="grid grid-cols-[2fr_1.2fr_1fr_80px_100px_36px] gap-3 px-5 py-2.5 bg-white/[0.03] border-b border-white/[0.06] text-[10px] font-black uppercase tracking-wider text-zinc-500 -mx-6">
-              <span>Agency</span>
-              <span>Type · Country</span>
-              <span>Commission</span>
-              <span>Registered</span>
-              <span>Status</span>
-              <span />
-            </div>
-            <div className="divide-y divide-white/[0.06] -mx-6">
-              {filteredAgencies.slice(0, 12).map((agency) => (
-                <div key={agency._id} className="grid grid-cols-[2fr_1.2fr_1fr_80px_100px_36px] gap-3 px-5 py-3.5 items-center hover:bg-white/[0.03] transition-colors">
-                  <div className="min-w-0">
-                    <p className="text-sm font-black text-zinc-100 truncate">{agency.companyName}</p>
-                    {agency.tradeName && <p className="text-xs text-zinc-500 truncate">DBA: {agency.tradeName}</p>}
-                  </div>
-                  <div className="min-w-0">
-                    <p className="text-xs font-semibold text-zinc-300 truncate">{getBusinessTypeLabel(agency.businessType)}</p>
-                    <p className="text-xs text-zinc-500 truncate">{agency.country}</p>
-                  </div>
-                  <div>
-                    <span className="inline-flex items-center gap-1 text-xs font-black text-[#F8B400] bg-[#F8B400]/10 px-2 py-0.5 rounded-lg">
-                      <Percent size={9} />{agency.commissionRate ?? 0}%
-                    </span>
-                  </div>
-                  <p className="text-xs text-zinc-500 font-medium">{formatDate(agency.createdAt)}</p>
-                  <div className="flex items-center gap-1.5">
-                    <AgencyBadge status={agency.status} />
-                  </div>
-                  <div className="flex items-center gap-1">
-                    {agency.status === "pending" && (
-                      <button onClick={() => approveMutation.mutate(agency._id)} disabled={approveMutation.isPending}
-                        className="w-7 h-7 rounded-lg bg-emerald-500/15 hover:bg-emerald-500/25 text-emerald-400 flex items-center justify-center transition-colors disabled:opacity-50" title="Approve">
-                        <Check size={11} />
-                      </button>
-                    )}
+            <div className="overflow-x-auto -mx-4 sm:-mx-6">
+              <div className="min-w-[720px]">
+                <div className="grid grid-cols-[2fr_1.2fr_1fr_80px_100px_36px] gap-3 px-5 py-2.5 bg-white/[0.03] border-b border-white/[0.06] text-[10px] font-black uppercase tracking-wider text-zinc-500">
+                  <span>Agency</span>
+                  <span>Type · Country</span>
+                  <span>Commission</span>
+                  <span>Registered</span>
+                  <span>Status</span>
+                  <span />
+                </div>
+                <div className="divide-y divide-white/[0.06]">
+                  {filteredAgencies.slice(0, 12).map((agency) => (
+                    <div key={agency._id} className="grid grid-cols-[2fr_1.2fr_1fr_80px_100px_36px] gap-3 px-5 py-3.5 items-center hover:bg-white/[0.03] transition-colors">
+                      <div className="min-w-0">
+                        <p className="text-sm font-black text-zinc-100 truncate">{agency.companyName}</p>
+                        {agency.tradeName && <p className="text-xs text-zinc-500 truncate">DBA: {agency.tradeName}</p>}
+                      </div>
+                      <div className="min-w-0">
+                        <p className="text-xs font-semibold text-zinc-300 truncate">{getBusinessTypeLabel(agency.businessType)}</p>
+                        <p className="text-xs text-zinc-500 truncate">{agency.country}</p>
+                      </div>
+                      <div>
+                        <span className="inline-flex items-center gap-1 text-xs font-black text-[#F8B400] bg-[#F8B400]/10 px-2 py-0.5 rounded-lg">
+                          <Percent size={9} />{agency.commissionRate ?? 0}%
+                        </span>
+                      </div>
+                      <p className="text-xs text-zinc-500 font-medium">{formatDate(agency.createdAt)}</p>
+                      <div className="flex items-center gap-1.5">
+                        <AgencyBadge status={agency.status} />
+                      </div>
+                      <div className="flex items-center gap-1">
+                        {agency.status === "pending" && (
+                          <button onClick={() => approveMutation.mutate(agency._id)} disabled={approveMutation.isPending}
+                            className="w-7 h-7 rounded-lg bg-emerald-500/15 hover:bg-emerald-500/25 text-emerald-400 flex items-center justify-center transition-colors disabled:opacity-50" title="Approve">
+                            <Check size={11} />
+                          </button>
+                        )}
                     {agency.status === "active" && (
                       <button onClick={() => suspendMutation.mutate(agency._id)} disabled={suspendMutation.isPending}
                         className="w-7 h-7 rounded-lg bg-red-500/15 hover:bg-red-500/25 text-red-400 flex items-center justify-center transition-colors disabled:opacity-50" title="Suspend">
@@ -443,11 +445,13 @@ export default function B2BDashboardClient() {
                       className="w-7 h-7 rounded-lg border border-white/[0.1] hover:bg-white/[0.06] flex items-center justify-center text-zinc-500 hover:text-zinc-200 transition-colors">
                       <ChevronRight size={12} />
                     </Link>
-                  </div>
+                      </div>
+                    </div>
+                  ))}
                 </div>
-              ))}
+              </div>
             </div>
-            <div className="flex items-center justify-between px-5 py-3 border-t border-white/[0.06] bg-white/[0.02] -mx-6 -mb-6">
+            <div className="flex items-center justify-between px-4 sm:px-5 py-3 border-t border-white/[0.06] bg-white/[0.02] -mx-4 sm:-mx-6 -mb-6">
               <p className="text-xs text-zinc-500 font-semibold">
                 Showing {Math.min(filteredAgencies.length, 12)} of {filteredAgencies.length} agencies
               </p>

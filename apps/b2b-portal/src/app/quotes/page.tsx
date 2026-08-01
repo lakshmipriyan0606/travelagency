@@ -209,7 +209,7 @@ export default function QuotesListPage() {
             <Select value={status ?? "all"} onValueChange={handleStatusChange}>
               <SelectTrigger
                 size="sm"
-                className="w-[220px] text-xs rounded-xl"
+                className="w-full sm:w-[220px] max-w-full text-xs rounded-xl"
               >
                 <SelectValue placeholder="All Statuses" />
               </SelectTrigger>
@@ -286,7 +286,7 @@ export default function QuotesListPage() {
         ) : (
           <div className="bg-[var(--ent-card,#16161b)] border border-[var(--ent-border,#2e2e36)] rounded-3xl overflow-hidden ent-card-shadow relative before:absolute before:inset-x-0 before:top-0 before:h-px before:bg-gradient-to-r before:from-transparent before:via-[#F8B400]/40 before:to-transparent">
             <div className="overflow-x-auto">
-              <table className="w-full text-left border-collapse text-xs">
+              <table className="w-full min-w-[720px] text-left border-collapse text-xs">
                 <thead>
                   <tr className="border-b border-white/[0.08] bg-[var(--ent-surface,#101014)] text-[var(--ent-text-subtle,#71717A)] uppercase tracking-widest text-[10px] font-bold">
                     <th className="p-4 font-semibold">Reference</th>

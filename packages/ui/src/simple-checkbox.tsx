@@ -33,16 +33,16 @@ const CONTROL_CLASS = [
   "peer size-5 shrink-0 rounded-[6px] border shadow-xs outline-none transition-all duration-150",
   "border-[#F8B400]/55 bg-[#0c0c0f]",
   "hover:border-[#F8B400]/80",
-  "focus-visible:border-[#2563EB] focus-visible:ring-[3px] focus-visible:ring-[#2563EB]/35",
-  "data-[state=checked]:border-white data-[state=checked]:bg-[#2563EB] data-[state=checked]:text-white",
-  "data-[state=indeterminate]:border-white data-[state=indeterminate]:bg-[#2563EB] data-[state=indeterminate]:text-white",
+  "focus-visible:border-[#F8B400] focus-visible:ring-[3px] focus-visible:ring-[#F8B400]/30",
+  "data-[state=checked]:border-[#F8B400] data-[state=checked]:bg-[#F8B400] data-[state=checked]:text-[#0c0c0f]",
+  "data-[state=indeterminate]:border-[#F8B400] data-[state=indeterminate]:bg-[#F8B400] data-[state=indeterminate]:text-[#0c0c0f]",
   "aria-invalid:border-destructive aria-invalid:ring-destructive/20",
   "disabled:cursor-not-allowed disabled:opacity-50",
 ].join(" ");
 
 /**
  * Opinionated checkbox for dark + gold enterprise chrome.
- * Checked control uses bright blue fill + white check (screenshot).
+ * Checked control uses brand gold fill + dark check (matches password focus / CTAs).
  * Built on Radix Checkbox for keyboard / form accessibility.
  */
 function SimpleCheckbox({

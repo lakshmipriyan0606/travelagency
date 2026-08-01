@@ -4,7 +4,7 @@ import { AirplaneLoader } from "@travelagency/ui";
 
 export const metadata = {
   title: "Agency Details | B2B Admin",
-  description: "Full profile, quote requests, contact info, and activity log for each B2B travel agency partner.",
+  description: "Browse partner agencies as cards, then open a full page for profile, quotes, custom packages, and activity.",
 };
 
 export default function AgencyDetailsPage() {

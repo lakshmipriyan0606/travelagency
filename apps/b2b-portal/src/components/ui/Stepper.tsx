@@ -68,10 +68,13 @@ export default function Stepper({
       {/* Desktop */}
       <div className="hidden lg:flex items-center w-full relative select-none px-1">
         {steps.map((step, idx) => {
-          const isCompleted = completedSteps.includes(step.id);
+          // Only mark complete when the user has actually passed this step.
+          // completedSteps alone can still include the current step after going back.
           const isActive = step.id === currentStep;
+          const isCompleted = step.id < currentStep;
+          const isVisited = completedSteps.includes(step.id);
           const hasError = validationErrors[step.id];
-          const stepClickable = (isCompleted || step.id < currentStep) && onStepClick;
+          const stepClickable = (isVisited || step.id < currentStep) && onStepClick;
 
           return (
             <React.Fragment key={step.id}>

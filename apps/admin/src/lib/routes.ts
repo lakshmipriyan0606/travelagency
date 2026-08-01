@@ -46,12 +46,30 @@ export const ROUTES = {
     resetPassword: '/b2b/admin/reset-password',
     dashboard: '/b2b/admin/dashboard',
     agencyDetails: '/b2b/admin/agency-details',
-    agencyDetail: (params?: { agencyId?: string; tab?: 'quotes' | 'details' | 'log'; quoteId?: string }) => {
+    cities: '/b2b/admin/cities',
+    hotels: '/b2b/admin/hotels',
+    packages: '/b2b/admin/packages',
+    proposals: '/b2b/admin/proposals',
+    agencyDetail: (params?: {
+      agencyId?: string;
+      /** Preferred deep-link section on the agency detail page */
+      section?: 'info' | 'quotes' | 'packages' | 'activity';
+      /** @deprecated Use `section` — still accepted for older call sites */
+      tab?: 'quotes' | 'packages' | 'details' | 'log' | 'info' | 'activity';
+      quoteId?: string;
+    }) => {
       const base = '/b2b/admin/agency-details';
       if (!params) return base;
       const qs = new URLSearchParams();
       if (params.agencyId) qs.set('agencyId', params.agencyId);
-      if (params.tab) qs.set('tab', params.tab);
+      const section =
+        params.section ??
+        (params.tab === 'details'
+          ? 'info'
+          : params.tab === 'log'
+            ? 'activity'
+            : params.tab);
+      if (section && section !== 'info') qs.set('section', section);
       if (params.quoteId) qs.set('quoteId', params.quoteId);
       const query = qs.toString();
       return query ? `${base}?${query}` : base;
