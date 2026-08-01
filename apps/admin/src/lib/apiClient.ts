@@ -54,7 +54,9 @@ apiClient.interceptors.response.use(
         return Promise.reject(error);
       }
       const path = window.location.pathname;
-      if (path.startsWith(ROUTES.b2b.prefix)) {
+      if (path.startsWith('/devops') || reqUrl.includes('devops')) {
+        window.location.href = ROUTES.devops.login;
+      } else if (path.startsWith(ROUTES.b2b.prefix)) {
         window.location.href = ROUTES.b2b.login;
       } else {
         window.location.href = ROUTES.login;

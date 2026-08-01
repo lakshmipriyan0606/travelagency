@@ -74,5 +74,18 @@ export const ROUTES = {
       const query = qs.toString();
       return query ? `${base}?${query}` : base;
     },
-  }
+  },
+  /** Private developer ops — never add to public/product nav */
+  devops: {
+    root: '/devops',
+    login: '/devops/login',
+    otp: '/devops/challenge/otp',
+    totp: '/devops/challenge/totp',
+    device: '/devops/challenge/device',
+    executive: '/devops',
+    health: '/devops/health',
+    api: '/devops/api',
+    errors: '/devops/errors',
+    logs: '/devops/logs',
+  },
 } as const;

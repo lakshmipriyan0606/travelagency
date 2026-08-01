@@ -23,6 +23,21 @@ export function middleware(request: NextRequest) {
     return NextResponse.next();
   }
 
+  // DevOps: require B2C access_token; step-up handled in-app. Hardening headers.
+  if (pathname.startsWith('/devops')) {
+    const token = request.cookies.get(AUTH_COOKIES.ACCESS_TOKEN)?.value;
+    if (!token) {
+      const login = new URL('/b2c/admin/login', request.url);
+      login.searchParams.set('next', pathname);
+      return NextResponse.redirect(login);
+    }
+    const res = NextResponse.next();
+    res.headers.set('Cache-Control', 'no-store, no-cache, must-revalidate, private');
+    res.headers.set('X-Frame-Options', 'DENY');
+    res.headers.set('X-Robots-Tag', 'noindex, nofollow');
+    return res;
+  }
+
   // Redirect root path to dashboard
   if (pathname === '/') {
     return NextResponse.redirect(new URL('/b2c/admin/dashboard', request.url));

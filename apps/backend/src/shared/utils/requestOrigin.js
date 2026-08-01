@@ -86,12 +86,14 @@ export function getFullPath(req) {
 }
 
 export function isAnalyticsApiPath(path) {
-  return path.startsWith('/api/analytics');
+  // Legacy mount + current versioned gateways
+  return (
+    path.startsWith('/api/analytics') ||
+    path.startsWith('/api/v1/b2c/analytics') ||
+    path.startsWith('/api/v1/b2c-admin/analytics') ||
+    /\/analytics(\/|$)/.test(path)
+  );
 }
-
-export const EXCLUDE_ANALYTICS_ROUTE = {
-  route: { $not: { $regex: '^/api/analytics' } },
-};
 
 /**
  * Filters out internal, admin, and local traffic to identify requests
@@ -108,7 +110,8 @@ export function isPublicApiRequest(req) {
     fullPath.startsWith('/api/admin/metrics') ||
     fullPath.startsWith('/api/admin/queue');
 
-  const isAdminApi = fullPath.startsWith('/api/admin');
+  // Legacy `/api/admin` + current `/api/v1/b2c-admin`
+  const isAdminApi = fullPath.startsWith('/api/admin') || fullPath.startsWith('/api/v1/b2c-admin');
   const isAnalyticsApi = isAnalyticsApiPath(fullPath);
 
   const isLocalDev =

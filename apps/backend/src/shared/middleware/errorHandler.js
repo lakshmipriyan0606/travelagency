@@ -16,8 +16,11 @@
  * ============================================================================
  */
 import { logger } from '#shared/utils/logger.js';
+import { writeErrorEvent } from '#devops/writers/errorEventWriter.js';
 
 export const globalErrorHandler = (err, req, res, _next) => {
+  writeErrorEvent(err, req);
+
   // Mongoose schema / cast failures are client errors, not 500s
   if (err.name === 'ValidationError') {
     err.statusCode = 400;

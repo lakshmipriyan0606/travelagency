@@ -25,10 +25,12 @@ import {
 import ApiHit from '#b2c/analytics/apiHit.model.js';
 import { getFullPath, getUtcDateString, isPublicApiRequest } from '#shared/utils/requestOrigin.js';
 import { logger } from '#shared/utils/logger.js';
+import { writeRequestLogSample } from '#devops/writers/requestLogWriter.js';
 
 export const prometheusMiddleware = (req, res, next) => {
   httpRequestsActive.inc({ method: req.method });
   const end = httpRequestDuration.startTimer();
+  const started = process.hrtime.bigint();
 
   res.on('finish', () => {
     httpRequestsActive.dec({ method: req.method });
@@ -39,7 +41,11 @@ export const prometheusMiddleware = (req, res, next) => {
     httpRequestCounter.inc(labels);
     end(labels);
 
-    if (isPublicApiRequest(req)) {
+    const durationMs = Number(process.hrtime.bigint() - started) / 1e6;
+    writeRequestLogSample(req, res, durationMs);
+
+    // Skip CORS preflight — it inflates route charts without signal.
+    if (isPublicApiRequest(req) && req.method !== 'OPTIONS') {
       publicHttpRequestCounter.inc(labels);
 
       const date = getUtcDateString();

@@ -27,6 +27,7 @@ import queueRoutes from '#monitoring/queue.routes.js';
 import b2cGateway from './gateways/b2c.gateway.js';
 import b2cAdminGateway from './gateways/b2c-admin.gateway.js';
 import b2bRouter from '#b2b/b2b.routes.js';
+import devopsGateway from '#devops/devops.gateway.js';
 
 export const registerRoutes = (app) => {
   // ============================================================================
@@ -57,4 +58,7 @@ export const registerRoutes = (app) => {
   // Aggressively rate-limited globally across all admin routes to prevent brute
   // force attacks against administrative endpoints.
   app.use('/api/v1/b2c-admin', authLimiter, b2cAdminGateway);
+
+  // Private Developer Operations Center (superadmin + step-up session)
+  app.use('/api/v1/devops', devopsGateway);
 };
