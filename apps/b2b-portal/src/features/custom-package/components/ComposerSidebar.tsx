@@ -108,6 +108,12 @@ export function ComposerSidebar({
             <p className="text-sm text-zinc-500">
               Build itinerary to calculate live pricing from masters.
             </p>
+          ) : proposal.pricing.total <= 0 &&
+            !(proposal.pricing.breakdown || []).length ? (
+            <p className="text-sm text-zinc-500">
+              Total is $0 until you choose a hotel or package (or add
+              activities). Nothing is added by default.
+            </p>
           ) : (
             <>
               <div className="flex justify-between items-baseline gap-3 border-b border-white/[0.06] pb-2">
@@ -226,6 +232,15 @@ export function ComposerSidebar({
               label="Transfers"
               value={includeTransfers ? "Included" : "Not included"}
             />
+            {proposal?.activities && proposal.activities.length > 0 ? (
+              <SummaryRow
+                icon={MapPin}
+                label="Activities"
+                value={`${proposal.activities.length} package activit${
+                  proposal.activities.length === 1 ? "y" : "ies"
+                }`}
+              />
+            ) : null}
           </div>
         </div>
       </div>

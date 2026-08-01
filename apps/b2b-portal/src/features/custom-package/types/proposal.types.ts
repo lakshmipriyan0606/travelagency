@@ -54,6 +54,22 @@ export interface DestinationStop {
   packageId?: string | null;
 }
 
+export type ActivitySlot = "Morning" | "Afternoon" | "Evening";
+
+/** Day-slot activity selected from a B2B package master. */
+export interface ProposalActivityInput {
+  dayNum: number;
+  slot: ActivitySlot;
+  cityId: string;
+  packageId: string;
+}
+
+export interface ProposalActivity extends ProposalActivityInput {
+  packageName: string;
+  amount: number;
+  currency: string;
+}
+
 export interface TripDetailsInput {
   leavingFromCityId?: string;
   nationalityCode?: string;
@@ -103,9 +119,12 @@ export interface CustomProposal {
   id: string;
   _id?: string;
   reference: string;
+  /** Display name for drafts / My Proposals (same label shown at composer top). */
+  name?: string;
   status: ProposalStatus;
   adminFeedback?: string;
   destinations: ProposalDestination[];
+  activities?: ProposalActivity[];
   tripDetails: ProposalTripDetails;
   pricing: ProposalPricing;
   createdAt: string;
@@ -115,5 +134,8 @@ export interface CustomProposal {
 export interface PriceProposalDTO {
   destinations: DestinationStop[];
   tripDetails: TripDetailsInput;
+  activities?: ProposalActivityInput[];
+  /** Optional override; server auto-names from cities if omitted. */
+  name?: string;
   save?: boolean;
 }

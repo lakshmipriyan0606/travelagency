@@ -18,6 +18,7 @@ import { cn } from "@travelagency/utils";
 import { ROUTES } from "@/lib/routes";
 import { useProposalList, useResubmitProposal } from "../hooks/useProposals";
 import { PROPOSAL_STATUS_META } from "../config/proposal.config";
+import { ItineraryPdfActions } from "./ItineraryPdfPreviewModal";
 
 function formatMoney(amount: number, currency: string) {
   try {
@@ -58,7 +59,8 @@ export default function ProposalsListClient() {
             My Proposals
           </h1>
           <p className="text-sm text-zinc-400 mt-1">
-            Saved packages go to B2B Admin for review (Pending → Approved).
+            Drafts auto-save with a name. Save as Proposal sends them for admin
+            review (Pending → Approved).
           </p>
         </div>
         <div className="flex flex-wrap gap-2">
@@ -116,9 +118,10 @@ export default function ProposalsListClient() {
       ) : (
         <div className="overflow-x-auto rounded-2xl border border-white/[0.08] bg-[var(--ent-card,#16161b)]">
           <p className="sr-only">Table scrolls horizontally on small screens</p>
-          <table className="w-full min-w-[780px] text-left text-sm">
+          <table className="w-full min-w-[1100px] text-left text-sm">
             <thead>
               <tr className="border-b border-white/[0.08] text-[11px] uppercase tracking-wider text-zinc-500">
+                <th className="px-4 py-3 font-semibold">Name</th>
                 <th className="px-4 py-3 font-semibold">Reference</th>
                 <th className="px-4 py-3 font-semibold">Destinations</th>
                 <th className="px-4 py-3 font-semibold">Travelers</th>
@@ -136,11 +139,23 @@ export default function ProposalsListClient() {
                   .map((d) => `${d.cityName} (${d.nights}n)`)
                   .join(" → ");
                 const needsChanges = p.status === "revision_requested";
+                const isDraft =
+                  p.status === "draft" || p.status === "priced";
+                const displayName =
+                  p.name?.trim() ||
+                  destLabel ||
+                  p.reference ||
+                  "Untitled draft";
                 return (
                   <tr
                     key={p.id}
                     className="border-b border-white/[0.05] hover:bg-white/[0.02]"
                   >
+                    <td className="px-4 py-3 max-w-[220px]">
+                      <p className="font-semibold text-white truncate">
+                        {displayName}
+                      </p>
+                    </td>
                     <td className="px-4 py-3 font-medium text-[#FFD54A]">
                       {p.reference}
                     </td>
@@ -175,20 +190,35 @@ export default function ProposalsListClient() {
                       {formatDate(p.createdAt)}
                     </td>
                     <td className="px-4 py-3">
-                      {needsChanges ? (
-                        <Button
-                          type="button"
-                          variant="outline"
-                          className="border-[#F8B400]/35 text-[#FFD54A] h-8 text-xs px-2.5"
-                          disabled={resubmitMutation.isPending}
-                          onClick={() => resubmitMutation.mutate(p.id)}
-                        >
-                          <RotateCcw size={14} className="mr-1.5" />
-                          Resubmit
-                        </Button>
-                      ) : (
-                        <span className="text-zinc-600 text-xs">—</span>
-                      )}
+                      <div className="flex flex-wrap items-center gap-2">
+                        <ItineraryPdfActions
+                          proposal={p}
+                          enabled={Boolean(p.destinations?.length)}
+                          size="sm"
+                        />
+                        {isDraft ? (
+                          <Button
+                            asChild
+                            variant="outline"
+                            className="border-[#F8B400]/35 text-[#FFD54A] h-8 text-xs px-2.5"
+                          >
+                            <Link href={ROUTES.customPackageDraft(p.id)}>
+                              Continue
+                            </Link>
+                          </Button>
+                        ) : needsChanges ? (
+                          <Button
+                            type="button"
+                            variant="outline"
+                            className="border-[#F8B400]/35 text-[#FFD54A] h-8 text-xs px-2.5"
+                            disabled={resubmitMutation.isPending}
+                            onClick={() => resubmitMutation.mutate(p.id)}
+                          >
+                            <RotateCcw size={14} className="mr-1.5" />
+                            Resubmit
+                          </Button>
+                        ) : null}
+                      </div>
                     </td>
                   </tr>
                 );

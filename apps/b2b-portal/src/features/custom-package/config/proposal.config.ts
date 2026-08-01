@@ -11,6 +11,13 @@ export const STAR_RATING_OPTIONS = [
   { value: "5", label: "5★ only" },
 ] as const;
 
+/**
+ * Debounce before auto-saving a custom-package draft (ms).
+ * Change this single value to tune how often drafts persist after edits.
+ * Default: 15 seconds.
+ */
+export const AUTO_DRAFT_SAVE_INTERVAL_MS = 15_000;
+
 /** Portal pills — same meaning as quotes (submitted = Pending, under_review = Approved). */
 export const PROPOSAL_STATUS_META: Record<
   string,

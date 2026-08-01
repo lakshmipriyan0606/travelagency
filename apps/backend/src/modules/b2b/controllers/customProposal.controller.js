@@ -28,6 +28,28 @@ const nextReference = async () => {
   return `CP-${year}-${String(count + 1).padStart(6, '0')}`;
 };
 
+/** Readable draft/proposal name from destinations + leave date. */
+export const buildProposalName = (destinations, leavingOn) => {
+  const parts = (destinations || []).map((d) => d.cityName).filter(Boolean);
+  const nights = (destinations || []).reduce((s, d) => s + (Number(d.nights) || 0), 0);
+  let dateStr = '';
+  if (leavingOn) {
+    const d = leavingOn instanceof Date ? leavingOn : new Date(leavingOn);
+    if (!Number.isNaN(d.getTime())) {
+      dateStr = d.toLocaleDateString('en-GB', {
+        day: '2-digit',
+        month: 'short',
+        year: 'numeric',
+      });
+    }
+  }
+  if (parts.length === 0) return 'Untitled draft';
+  const cities =
+    parts.length <= 2 ? parts.join(' → ') : `${parts[0]} → … → ${parts[parts.length - 1]}`;
+  const base = nights > 0 ? `${cities} (${nights}n)` : cities;
+  return dateStr ? `${base} · ${dateStr}` : base;
+};
+
 const packageLineAmount = (pkg, nights, includeTransfers, breakdown) => {
   const currency = pkg.currency || 'USD';
   const base = Number(pkg.amounts?.basePrice) || 0;
@@ -44,12 +66,21 @@ const packageLineAmount = (pkg, nights, includeTransfers, breakdown) => {
   return { line, label, currency, transferTotal };
 };
 
+/** Activity day-slot price: prefer activityAddon, else basePrice (package used as activity). */
+export const activityAmountFromPackage = (pkg) => {
+  const addon = Number(pkg.amounts?.activityAddon) || 0;
+  if (addon > 0) return addon;
+  return Number(pkg.amounts?.basePrice) || 0;
+};
+
 /**
  * Price a custom package from master hotels / packages.
  * No dummy amounts — all figures come from DB masters.
- * If a selected hotel has $0 nightly rate, fall back to city/hotel packages so totals are real.
+ * Stay pricing only when the agency explicitly picks packageId or hotelId
+ * (no silent “cheapest package” default — that confused users).
+ * Day activities add package-based amounts only when user adds them.
  */
-export const calculatePricing = async (destinations, includeTransfers) => {
+export const calculatePricing = async (destinations, includeTransfers, activities = []) => {
   const breakdown = [];
   let subtotal = 0;
   let transferTotal = 0;
@@ -73,54 +104,37 @@ export const calculatePricing = async (destinations, includeTransfers) => {
       const hotel = await B2BHotel.findById(stop.hotelId).lean();
       if (hotel) {
         const rate = Number(hotel.baseNightlyRate) || 0;
+        currency = hotel.currency || currency;
         if (rate > 0) {
-          currency = hotel.currency || currency;
           line = rate * nights;
           label = `${hotel.name} × ${nights}n`;
-        } else {
-          // Hotel selected but master rate is 0 — use package amounts when present
-          const pkg =
-            (await B2BPackage.findOne({
-              cityId: stop.cityId,
-              hotelId: stop.hotelId,
-              isActive: true,
-            })
-              .sort({ 'amounts.basePrice': 1 })
-              .lean()) ||
-            (await B2BPackage.findOne({
-              cityId: stop.cityId,
-              isActive: true,
-            })
-              .sort({ 'amounts.basePrice': 1 })
-              .lean());
-          if (pkg) {
-            const priced = packageLineAmount(pkg, nights, includeTransfers, breakdown);
-            currency = priced.currency || currency;
-            line = priced.line;
-            label = priced.label;
-            transferTotal += priced.transferTotal;
-          }
         }
-      }
-    } else {
-      // City only: cheapest active package for city
-      const pkg = await B2BPackage.findOne({
-        cityId: stop.cityId,
-        isActive: true,
-      })
-        .sort({ 'amounts.basePrice': 1 })
-        .lean();
-      if (pkg) {
-        const priced = packageLineAmount(pkg, nights, includeTransfers, breakdown);
-        currency = priced.currency || currency;
-        line = priced.line;
-        label = priced.label;
-        transferTotal += priced.transferTotal;
+        // Hotel with $0 rate: do not auto-attach a package — user must pick one
       }
     }
+    // City only / no selection: $0 for stay (suggestion shown in UI)
 
     subtotal += line;
     if (line > 0) breakdown.push({ label, amount: line });
+  }
+
+  for (const act of activities || []) {
+    if (!act?.packageId) continue;
+    const pkg = await B2BPackage.findById(act.packageId).lean();
+    if (!pkg || !pkg.isActive) continue;
+    if (act.cityId && String(pkg.cityId) !== String(act.cityId)) continue;
+
+    const amount = activityAmountFromPackage(pkg);
+    currency = pkg.currency || currency;
+    if (amount > 0) {
+      subtotal += amount;
+      const slot = act.slot || 'Activity';
+      const dayLabel = act.dayNum ? `Day ${act.dayNum} ${slot}` : slot;
+      breakdown.push({
+        label: `${pkg.name} — ${dayLabel}`,
+        amount,
+      });
+    }
   }
 
   return {
@@ -158,13 +172,14 @@ export const getProposal = async (req, res, next) => {
 
 export const createOrPriceProposal = async (req, res, next) => {
   try {
-    const { destinations, tripDetails, save } = req.body;
+    const { destinations, tripDetails, activities, save, name: nameInput } = req.body;
     if (!Array.isArray(destinations) || destinations.length === 0) {
       throw new AppError('At least one destination city is required', 400);
     }
 
     const agencyId = req.agency._id;
     const normalized = [];
+    const cityIdSet = new Set();
 
     for (const stop of destinations) {
       if (!stop.cityId) throw new AppError('Each stop needs cityId', 400);
@@ -175,6 +190,7 @@ export const createOrPriceProposal = async (req, res, next) => {
       if (!city) {
         throw new AppError('City not found or inactive', 400);
       }
+      cityIdSet.add(String(city._id));
       let hotelName = '';
       if (stop.hotelId) {
         const hotel = await B2BHotel.findById(stop.hotelId).lean();
@@ -193,8 +209,37 @@ export const createOrPriceProposal = async (req, res, next) => {
       });
     }
 
+    const SLOTS = new Set(['Morning', 'Afternoon', 'Evening']);
+    const normalizedActivities = [];
+    for (const act of Array.isArray(activities) ? activities : []) {
+      if (!act?.packageId || !act?.cityId || !act?.dayNum || !act?.slot) continue;
+      if (!SLOTS.has(act.slot)) {
+        throw new AppError('Invalid activity slot', 400);
+      }
+      if (!cityIdSet.has(String(act.cityId))) {
+        throw new AppError('Activity city must match a destination', 400);
+      }
+      const pkg = await B2BPackage.findOne({
+        _id: act.packageId,
+        cityId: act.cityId,
+        isActive: true,
+      }).lean();
+      if (!pkg) {
+        throw new AppError('Activity package not found for city', 400);
+      }
+      normalizedActivities.push({
+        dayNum: Math.max(1, Number(act.dayNum) || 1),
+        slot: act.slot,
+        cityId: pkg.cityId,
+        packageId: pkg._id,
+        packageName: pkg.name,
+        amount: activityAmountFromPackage(pkg),
+        currency: pkg.currency || 'USD',
+      });
+    }
+
     const includeTransfers = tripDetails?.includeTransfers !== false;
-    const pricing = await calculatePricing(normalized, includeTransfers);
+    const pricing = await calculatePricing(normalized, includeTransfers, normalizedActivities);
 
     let leavingFromName = '';
     if (tripDetails?.leavingFromCityId) {
@@ -214,6 +259,10 @@ export const createOrPriceProposal = async (req, res, next) => {
       includeTransfers,
     };
 
+    const autoName = buildProposalName(normalized, tripPayload.leavingOn);
+    const resolvedName =
+      typeof nameInput === 'string' && nameInput.trim() ? nameInput.trim().slice(0, 160) : autoName;
+
     if (req.params.id) {
       const existing = await CustomProposal.findOne({
         _id: req.params.id,
@@ -222,18 +271,34 @@ export const createOrPriceProposal = async (req, res, next) => {
       if (!existing) throw new AppError('Proposal not found', 404);
 
       existing.destinations = normalized;
+      existing.activities = normalizedActivities;
       existing.tripDetails = tripPayload;
       existing.pricing = pricing;
+      // Keep a stable recognizable name: client override, else refresh from itinerary while draft
+      if (typeof nameInput === 'string' && nameInput.trim()) {
+        existing.name = nameInput.trim().slice(0, 160);
+      } else if (
+        !existing.name ||
+        existing.status === ProposalStatus.DRAFT ||
+        existing.status === ProposalStatus.PRICED
+      ) {
+        existing.name = autoName;
+      }
 
       if (save) {
         // Submit / resubmit for admin review (quote vocabulary: submitted = Pending)
         existing.status = ProposalStatus.SUBMITTED;
         existing.adminFeedback = '';
+      } else if (
+        existing.status === ProposalStatus.DRAFT ||
+        existing.status === ProposalStatus.PRICED
+      ) {
+        existing.status = ProposalStatus.DRAFT;
       }
-      // Price-only: keep existing status (do not demote approved/pending)
+      // Submitted / approved: keep status (do not demote)
 
       await existing.save();
-      return sendSuccess(res, 200, save ? 'Proposal submitted for review' : 'Proposal updated', {
+      return sendSuccess(res, 200, save ? 'Proposal submitted for review' : 'Draft saved', {
         data: existing.toObject(),
       });
     }
@@ -242,14 +307,16 @@ export const createOrPriceProposal = async (req, res, next) => {
     const created = await CustomProposal.create({
       agencyId,
       createdBy: req.user._id,
+      name: resolvedName,
       destinations: normalized,
+      activities: normalizedActivities,
       tripDetails: tripPayload,
       pricing,
       reference,
       status: save ? ProposalStatus.SUBMITTED : ProposalStatus.DRAFT,
       adminFeedback: '',
     });
-    return sendSuccess(res, 201, save ? 'Proposal submitted for review' : 'Proposal priced', {
+    return sendSuccess(res, 201, save ? 'Proposal submitted for review' : 'Draft saved', {
       data: created.toObject(),
     });
   } catch (err) {

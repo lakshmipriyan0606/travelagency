@@ -145,6 +145,7 @@ export default function AgencyCustomPackagesTab({ agencyId }: { agencyId: string
             : "Changes requested — agency will see your comment.",
       });
       qc.invalidateQueries({ queryKey: ["agencyCustomProposals", agencyId] });
+      qc.invalidateQueries({ queryKey: ["adminCustomProposals"] });
       qc.invalidateQueries({ queryKey: ["admin-custom-proposals"] });
       setCommentId(null);
       setCommentText("");

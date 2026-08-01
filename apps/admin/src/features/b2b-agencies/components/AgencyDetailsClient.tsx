@@ -46,7 +46,8 @@ import AgencyCustomPackagesTab from "./AgencyCustomPackagesTab";
 /* ── Types ────────────────────────────────────────────────────── */
 type AgencySection = "info" | "quotes" | "packages" | "activity";
 
-const SECTION_KEYS: AgencySection[] = ["info", "quotes", "packages", "activity"];
+/** Custom Packages before Quotes — packages are the primary B2B feature. */
+const SECTION_KEYS: AgencySection[] = ["info", "packages", "quotes", "activity"];
 
 function parseSection(raw: string | null): AgencySection | null {
   if (!raw) return null;
@@ -734,8 +735,8 @@ function AgencyDetailPage({
 
   const sections = [
     { key: "info" as const, label: "Info", icon: Info },
+    { key: "packages" as const, label: "Custom Packages", icon: Package },
     { key: "quotes" as const, label: "Quotes", icon: FileText },
-    { key: "packages" as const, label: "Package", icon: Package },
     { key: "activity" as const, label: "Activity", icon: Clock },
   ];
 
@@ -932,7 +933,7 @@ function AgencyListView({
           <Building2 className="text-[#F8B400]" /> Agency Details
         </h1>
         <p className="text-sm text-zinc-400 mt-1">
-          Browse partner agencies, then open a full profile with info, quotes, packages &amp; activity.
+          Browse partner agencies, then open a full profile with info, custom packages, quotes &amp; activity.
         </p>
       </div>
 

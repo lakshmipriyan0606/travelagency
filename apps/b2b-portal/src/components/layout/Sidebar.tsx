@@ -10,7 +10,6 @@ import {
   Building2,
   LayoutDashboard,
   FileText,
-  CheckSquare,
   PlusCircle,
   ClipboardList,
   ChevronRight,
@@ -20,7 +19,6 @@ import { ROUTES } from "@/lib/routes";
 export const SIDEBAR_ITEMS = [
   { label: "Dashboard", href: ROUTES.dashboard, icon: LayoutDashboard },
   { label: "Quote Request Portal", href: ROUTES.quotes, icon: FileText },
-  { label: "Accepted Packages", href: "#", icon: CheckSquare, disabled: true, comingSoon: true },
   { label: "Create Custom Package", href: ROUTES.customPackage, icon: PlusCircle },
   { label: "My Proposals", href: ROUTES.proposals, icon: ClipboardList },
 ] as const;

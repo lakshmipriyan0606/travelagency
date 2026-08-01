@@ -1,8 +1,9 @@
 /**
  * B2B Portal — Create Custom Package page (single-page premium composer).
  */
-import React from "react";
+import React, { Suspense } from "react";
 import { AppShell } from "@/components/layout";
+import { AirplaneLoader } from "@travelagency/ui";
 import CustomPackageWizard from "@/features/custom-package/components/CustomPackageWizard";
 
 export const metadata = {
@@ -14,7 +15,13 @@ export const metadata = {
 export default function CustomPackagePage() {
   return (
     <AppShell>
-      <CustomPackageWizard />
+      <Suspense
+        fallback={
+          <AirplaneLoader size="md" label="Loading composer…" className="py-16" />
+        }
+      >
+        <CustomPackageWizard />
+      </Suspense>
     </AppShell>
   );
 }

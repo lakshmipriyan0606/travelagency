@@ -21,6 +21,8 @@ export type LocalStop = {
   cityId: string;
   nights: number;
   hotelId: string;
+  /** Explicit stay package — never auto-filled; user must choose. */
+  packageId?: string;
 };
 
 export function formatMoney(amount: number, currency: string) {
@@ -33,6 +35,18 @@ export function formatMoney(amount: number, currency: string) {
   } catch {
     return `${currency} ${amount.toFixed(0)}`;
   }
+}
+
+/** Prefer activityAddon; fall back to basePrice when using package as day activity. */
+export function activityAmountFromPackage(pkg: {
+  amounts?: {
+    basePrice?: number;
+    activityAddon?: number;
+  };
+}): number {
+  const addon = Number(pkg.amounts?.activityAddon) || 0;
+  if (addon > 0) return addon;
+  return Number(pkg.amounts?.basePrice) || 0;
 }
 
 export function formatDate(value?: string | null) {

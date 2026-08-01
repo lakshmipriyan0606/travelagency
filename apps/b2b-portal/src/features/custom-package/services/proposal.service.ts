@@ -45,10 +45,14 @@ function normalizeProposal(raw: Record<string, unknown>): CustomProposal {
     id,
     _id: id,
     reference: String(raw.reference ?? ""),
+    name: String(raw.name ?? ""),
     status: (raw.status as CustomProposal["status"]) ?? "draft",
     adminFeedback: String(raw.adminFeedback ?? ""),
     destinations: Array.isArray(raw.destinations)
       ? (raw.destinations as CustomProposal["destinations"])
+      : [],
+    activities: Array.isArray(raw.activities)
+      ? (raw.activities as CustomProposal["activities"])
       : [],
     tripDetails: (raw.tripDetails as CustomProposal["tripDetails"]) ?? {
       rooms: 1,
@@ -108,6 +112,8 @@ export const proposalService = {
     const body = {
       destinations: dto.destinations,
       tripDetails: dto.tripDetails,
+      activities: dto.activities ?? [],
+      name: dto.name,
       save: Boolean(dto.save),
     };
     const res = existingId

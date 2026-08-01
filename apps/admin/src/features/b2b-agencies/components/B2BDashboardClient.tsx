@@ -4,14 +4,17 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import {
   getB2BAgencies,
   getAdminQuotes,
+  getAdminProposals,
   approveB2BAgency,
   suspendB2BAgency,
   reactivateB2BAgency,
   B2BAgency,
   AdminQuoteRequest,
+  AdminCustomProposal,
 } from "@/api/b2bAdmin.api";
 import { useState } from "react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { ROUTES } from "@/lib/routes";
 import { showToast } from "@/lib/toast";
 import {
@@ -32,6 +35,7 @@ import {
   Send,
   AlertCircle,
   Package,
+  ClipboardList,
 } from "lucide-react";
 import {
   StatCard,
@@ -41,6 +45,35 @@ import {
   LoadingSpinner,
   EmptyState,
 } from "@/components/dashboard";
+
+/** Matches AgencyCustomPackagesTab / proposal model review vocabulary. */
+function isPendingProposalReview(status: string) {
+  return ["submitted", "priced", "saved"].includes(status);
+}
+
+function ProposalBadge({ status }: { status: string }) {
+  const friendly: Record<string, string> = {
+    draft: "Draft",
+    priced: "Pending",
+    saved: "Pending",
+    submitted: "Pending",
+    under_review: "Approved",
+    revision_requested: "Needs Changes",
+  };
+  const m: Record<string, string> = {
+    draft: "admin-badge-muted",
+    priced: "admin-badge-info",
+    saved: "admin-badge-info",
+    submitted: "admin-badge-info",
+    under_review: "bg-emerald-500/15 text-emerald-300",
+    revision_requested: "bg-red-500/15 text-red-300",
+  };
+  return (
+    <span className={`inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-black uppercase tracking-wider ${m[status] ?? m.draft}`}>
+      {friendly[status] ?? status.replace(/_/g, " ")}
+    </span>
+  );
+}
 
 function getBusinessTypeLabel(type: string) {
   switch (type) {
@@ -92,6 +125,7 @@ function QuoteBadge({ status }: { status: string }) {
 
 export default function B2BDashboardClient() {
   const queryClient = useQueryClient();
+  const router = useRouter();
   const [agencyFilter, setAgencyFilter] = useState<string>("all");
   const [lastRefresh, setLastRefresh] = useState(new Date());
 
@@ -100,9 +134,18 @@ export default function B2BDashboardClient() {
     queryFn: getB2BAgencies,
   });
 
-  const { data: quotes = [], isLoading: isQuotesLoading } = useQuery<AdminQuoteRequest[]>({
+  const { data: quotes = [], isLoading: isQuotesLoading, refetch: refetchQuotes } = useQuery<AdminQuoteRequest[]>({
     queryKey: ["adminQuotes"],
     queryFn: () => getAdminQuotes({ pageSize: 50 }),
+  });
+
+  const {
+    data: proposals = [],
+    isLoading: isProposalsLoading,
+    refetch: refetchProposals,
+  } = useQuery<AdminCustomProposal[]>({
+    queryKey: ["adminCustomProposals"],
+    queryFn: () => getAdminProposals({ pageSize: 100 }),
   });
 
   const approveMutation = useMutation({
@@ -134,6 +177,13 @@ export default function B2BDashboardClient() {
   const revisionNeeded  = quotes.filter((q) => q.status === "revision_requested").length;
   const accepted        = quotes.filter((q) => q.status === "accepted").length;
 
+  // Custom package proposal counts — same mapping as AgencyCustomPackagesTab
+  const totalPackages      = proposals.length;
+  const draftPackages      = proposals.filter((p) => p.status === "draft").length;
+  const pendingPackages    = proposals.filter((p) => isPendingProposalReview(p.status)).length;
+  const approvedPackages   = proposals.filter((p) => p.status === "under_review").length;
+  const needsChangesPkgs   = proposals.filter((p) => p.status === "revision_requested").length;
+
   const filteredAgencies = agencyFilter === "all"
     ? agencies
     : agencies.filter((a) => a.status === agencyFilter);
@@ -142,8 +192,20 @@ export default function B2BDashboardClient() {
     .sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())
     .slice(0, 8);
 
+  const recentProposals = [...proposals]
+    .sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())
+    .slice(0, 8);
+
+  const goToAgencyPackages = () => {
+    router.push(ROUTES.b2b.agencyDetails);
+  };
+
+  const goToAgencyQuotes = () => {
+    router.push(ROUTES.b2b.agencyDetails);
+  };
+
   const handleRefresh = async () => {
-    await refetch();
+    await Promise.all([refetch(), refetchQuotes(), refetchProposals()]);
     setLastRefresh(new Date());
   };
 
@@ -152,15 +214,15 @@ export default function B2BDashboardClient() {
       <DashboardPageHeader
         icon={Building2}
         title="B2B Admin Dashboard"
-        subtitle="All agencies, quote requests & custom packages at a glance."
+        subtitle="Custom packages first, then quote requests & partner agencies."
         lastRefresh={lastRefresh}
-        isRefreshing={isAgenciesLoading}
+        isRefreshing={isAgenciesLoading || isProposalsLoading || isQuotesLoading}
         onRefresh={handleRefresh}
       />
 
       {/* Agency Overview */}
       <div>
-        <SectionHeader icon={Building2} title="Agency Overview" />
+        <SectionHeader icon={Building2} title="Agency Overview" subtitle="Partner agency accounts by registration status." />
         <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3">
           <StatCard label="Total Agencies" value={total}     icon={Building2}    accent="#f8b400" sub="All partners" onClick={() => setAgencyFilter("all")} />
           <StatCard label="Active"         value={active}    icon={CheckCircle2} accent="#22c55e" sub="Live accounts" onClick={() => setAgencyFilter("active")} />
@@ -170,16 +232,75 @@ export default function B2BDashboardClient() {
         </div>
       </div>
 
+      {/* Custom Package Overview — primary feature, before Quotes */}
+      <div>
+        <SectionHeader
+          icon={Package}
+          title="Custom Package Overview"
+          subtitle="Agency-built itineraries (Create Custom Package proposals). Not the same as Quote Requests."
+          accent="#14b8a6"
+          className="mb-3"
+        />
+        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3">
+          <StatCard
+            label="Total Packages"
+            value={isProposalsLoading ? "…" : totalPackages}
+            icon={ClipboardList}
+            accent="#14b8a6"
+            sub="All proposals"
+            onClick={goToAgencyPackages}
+          />
+          <StatCard
+            label="Draft"
+            value={isProposalsLoading ? "…" : draftPackages}
+            icon={FileText}
+            accent="#a1a1aa"
+            sub="status: draft"
+            onClick={goToAgencyPackages}
+          />
+          <StatCard
+            label="Pending"
+            value={isProposalsLoading ? "…" : pendingPackages}
+            icon={Send}
+            accent="#3b82f6"
+            sub="submitted · need review"
+            onClick={goToAgencyPackages}
+          />
+          <StatCard
+            label="Approved"
+            value={isProposalsLoading ? "…" : approvedPackages}
+            icon={CheckCircle2}
+            accent="#22c55e"
+            sub="under_review"
+            onClick={goToAgencyPackages}
+          />
+          <StatCard
+            label="Needs Changes"
+            value={isProposalsLoading ? "…" : needsChangesPkgs}
+            icon={AlertCircle}
+            accent="#f97316"
+            sub="revision_requested"
+            onClick={goToAgencyPackages}
+          />
+        </div>
+      </div>
+
       {/* Quote Request Overview */}
       <div>
-        <SectionHeader icon={FileText} title="Quote Request Overview" />
+        <SectionHeader
+          icon={FileText}
+          title="Quote Request Overview"
+          subtitle="Partner quote requests from the Quotes flow — separate from Custom Package proposals."
+          accent="#6366f1"
+          className="mb-3"
+        />
         <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3">
-          <StatCard label="Total Quotes"    value={totalQuotes}    icon={FileText}    accent="#6366f1" sub="All requests" />
-          <StatCard label="New / Submitted" value={newQuotes}      icon={Send}        accent="#3b82f6" sub="Need review" />
-          <StatCard label="In Progress"     value={underReview}    icon={Eye}         accent="#8b5cf6" sub="Active work" />
-          <StatCard label="Ready"           value={quotesReady}    icon={CheckCircle2} accent="#22c55e" sub="Awaiting agency" />
-          <StatCard label="Revision Needed" value={revisionNeeded} icon={AlertCircle} accent="#f8b400" sub="Agency feedback" />
-          <StatCard label="Accepted"        value={accepted}       icon={TrendingUp}  accent="#059669" sub="Closed" />
+          <StatCard label="Total Quotes"    value={totalQuotes}    icon={FileText}    accent="#6366f1" sub="All quote requests" onClick={goToAgencyQuotes} />
+          <StatCard label="New / Submitted" value={newQuotes}      icon={Send}        accent="#3b82f6" sub="Need review" onClick={goToAgencyQuotes} />
+          <StatCard label="In Progress"     value={underReview}    icon={Eye}         accent="#8b5cf6" sub="Active work" onClick={goToAgencyQuotes} />
+          <StatCard label="Ready"           value={quotesReady}    icon={CheckCircle2} accent="#22c55e" sub="Awaiting agency" onClick={goToAgencyQuotes} />
+          <StatCard label="Revision Needed" value={revisionNeeded} icon={AlertCircle} accent="#f8b400" sub="Agency feedback" onClick={goToAgencyQuotes} />
+          <StatCard label="Accepted"        value={accepted}       icon={TrendingUp}  accent="#059669" sub="Closed" onClick={goToAgencyQuotes} />
         </div>
       </div>
 
@@ -220,50 +341,73 @@ export default function B2BDashboardClient() {
         </div>
       )}
 
-      {/* Two-column split */}
+      {/* Two-column split — Custom Packages first, then Quotes */}
       <div className="grid grid-cols-1 xl:grid-cols-2 gap-6">
         <PanelCard
-          icon={FileText}
-          title="Recent Quote Requests"
+          icon={Package}
+          title="Recent Custom Packages"
           viewAllHref={ROUTES.b2b.agencyDetails}
         >
-          {isQuotesLoading && <LoadingSpinner className="py-10" />}
-          {!isQuotesLoading && recentQuotes.length === 0 && (
+          {isProposalsLoading && <LoadingSpinner className="py-10" />}
+          {!isProposalsLoading && recentProposals.length === 0 && (
             <EmptyState
-              icon={FileText}
-              title="No quote requests yet"
-              description="Quote requests from partner agencies will appear here"
+              icon={Package}
+              title="No custom packages yet"
+              description="Agency Create Custom Package proposals will appear here"
             />
           )}
-          {!isQuotesLoading && recentQuotes.length > 0 && (
+          {!isProposalsLoading && recentProposals.length > 0 && (
             <div className="divide-y divide-white/[0.06] -mx-6 -my-6">
-              {recentQuotes.map((q) => (
-                <Link
-                  key={q._id}
-                  href={ROUTES.b2b.agencyDetail({ agencyId: q.agencyId, section: 'quotes', quoteId: q._id })}
-                  className="flex items-center gap-3 px-5 py-3 hover:bg-white/[0.03] transition-colors group"
-                >
-                  <div className="w-8 h-8 rounded-xl bg-indigo-500/10 border border-indigo-500/20 flex items-center justify-center shrink-0">
-                    <Building2 size={13} className="text-[#F8B400]" />
-                  </div>
-                  <div className="flex-1 min-w-0">
-                    <p className="text-sm font-black text-zinc-100 truncate group-hover:text-[#F8B400] transition-colors">
-                      {q.agencyName ?? 'Agency'}
-                      {q.agencyTradeName && q.agencyTradeName !== q.agencyName && (
-                        <span className="text-zinc-500 font-semibold"> · {q.agencyTradeName}</span>
-                      )}
-                    </p>
-                    <p className="text-xs text-zinc-400 font-medium truncate">
-                      {q.destination} · {q.reference}
-                    </p>
-                    <p className="text-[10px] text-zinc-500 font-medium truncate mt-0.5">
-                      {q.adults}A {q.children > 0 ? `${q.children}C` : ''} · {formatDate(q.travelStart)} – {formatDate(q.travelEnd)}
-                    </p>
-                  </div>
-                  <QuoteBadge status={q.status} />
-                  <ChevronRight size={14} className="text-zinc-600 group-hover:text-[#F8B400] shrink-0 transition-colors" />
-                </Link>
-              ))}
+              {recentProposals.map((p) => {
+                const agency =
+                  typeof p.agencyId === "object" && p.agencyId
+                    ? p.agencyId
+                    : null;
+                const agencyId =
+                  typeof p.agencyId === "string"
+                    ? p.agencyId
+                    : agency?._id ?? "";
+                const agencyName = agency?.companyName ?? "Agency";
+                const destLabel = (p.destinations || [])
+                  .map((d) => d.cityName)
+                  .filter(Boolean)
+                  .slice(0, 3)
+                  .join(" → ");
+                return (
+                  <Link
+                    key={p._id}
+                    href={ROUTES.b2b.agencyDetail({
+                      agencyId: agencyId || undefined,
+                      section: "packages",
+                    })}
+                    className="flex items-center gap-3 px-5 py-3 hover:bg-white/[0.03] transition-colors group"
+                  >
+                    <div className="w-8 h-8 rounded-xl bg-teal-500/10 border border-teal-500/20 flex items-center justify-center shrink-0">
+                      <Package size={13} className="text-teal-400" />
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <p className="text-sm font-black text-zinc-100 truncate group-hover:text-teal-300 transition-colors">
+                        {agencyName}
+                        {agency?.tradeName && agency.tradeName !== agencyName && (
+                          <span className="text-zinc-500 font-semibold"> · {agency.tradeName}</span>
+                        )}
+                      </p>
+                      <p className="text-xs text-zinc-400 font-medium truncate">
+                        {destLabel || "Custom package"} · {p.reference}
+                      </p>
+                      <p className="text-[10px] text-zinc-500 font-medium truncate mt-0.5">
+                        {p.tripDetails?.adults ?? 0}A{" "}
+                        {(p.tripDetails?.children ?? 0) > 0
+                          ? `${p.tripDetails.children}C `
+                          : ""}
+                        · {formatDate(p.createdAt)}
+                      </p>
+                    </div>
+                    <ProposalBadge status={p.status} />
+                    <ChevronRight size={14} className="text-zinc-600 group-hover:text-teal-400 shrink-0 transition-colors" />
+                  </Link>
+                );
+              })}
             </div>
           )}
         </PanelCard>
@@ -316,16 +460,15 @@ export default function B2BDashboardClient() {
 
           <div className="admin-surface p-5">
             <div className="flex items-center gap-2 mb-4">
-              <Package size={16} className="text-[#F8B400]" />
-              <h2 className="font-black text-zinc-100 text-sm">Quote Pipeline Summary</h2>
+              <Package size={16} className="text-teal-400" />
+              <h2 className="font-black text-zinc-100 text-sm">Custom Package Pipeline</h2>
             </div>
             <div className="space-y-2.5">
               {[
-                { label: "New Submissions",   count: newQuotes,      color: "bg-blue-500",    bg: "bg-blue-500/10" },
-                { label: "In Progress",        count: underReview,    color: "bg-purple-500",  bg: "bg-purple-500/10" },
-                { label: "Quotation Ready",    count: quotesReady,    color: "bg-emerald-500", bg: "bg-emerald-500/10" },
-                { label: "Revision Requested", count: revisionNeeded, color: "bg-[#F8B400]",   bg: "bg-[#F8B400]/10" },
-                { label: "Accepted",           count: accepted,       color: "bg-green-500",   bg: "bg-green-500/10" },
+                { label: "Draft",          count: draftPackages,    color: "bg-zinc-500",    bg: "bg-zinc-500/10" },
+                { label: "Pending Review", count: pendingPackages,  color: "bg-blue-500",    bg: "bg-blue-500/10" },
+                { label: "Approved",       count: approvedPackages, color: "bg-emerald-500", bg: "bg-emerald-500/10" },
+                { label: "Needs Changes",  count: needsChangesPkgs, color: "bg-orange-500",  bg: "bg-orange-500/10" },
               ].map((row) => (
                 <div key={row.label} className="flex items-center gap-3">
                   <div className={`w-8 h-8 rounded-lg flex items-center justify-center shrink-0 ${row.bg}`}>
@@ -339,19 +482,66 @@ export default function B2BDashboardClient() {
                     <div className="h-1 bg-white/[0.06] rounded-full overflow-hidden">
                       <div
                         className={`h-full ${row.color} rounded-full transition-all duration-500`}
-                        style={{ width: totalQuotes > 0 ? `${(row.count / totalQuotes) * 100}%` : "0%" }}
+                        style={{ width: totalPackages > 0 ? `${(row.count / totalPackages) * 100}%` : "0%" }}
                       />
                     </div>
                   </div>
                 </div>
               ))}
-              {totalQuotes === 0 && (
-                <p className="text-xs text-zinc-500 text-center py-2">No quote data available yet</p>
+              {totalPackages === 0 && (
+                <p className="text-xs text-zinc-500 text-center py-2">No custom package data available yet</p>
               )}
             </div>
           </div>
         </div>
       </div>
+
+      {/* Recent Quote Requests — secondary to Custom Packages */}
+      <PanelCard
+        icon={FileText}
+        title="Recent Quote Requests"
+        viewAllHref={ROUTES.b2b.agencyDetails}
+      >
+        {isQuotesLoading && <LoadingSpinner className="py-10" />}
+        {!isQuotesLoading && recentQuotes.length === 0 && (
+          <EmptyState
+            icon={FileText}
+            title="No quote requests yet"
+            description="Quote requests from partner agencies will appear here"
+          />
+        )}
+        {!isQuotesLoading && recentQuotes.length > 0 && (
+          <div className="divide-y divide-white/[0.06] -mx-6 -my-6">
+            {recentQuotes.map((q) => (
+              <Link
+                key={q._id}
+                href={ROUTES.b2b.agencyDetail({ agencyId: q.agencyId, section: 'quotes', quoteId: q._id })}
+                className="flex items-center gap-3 px-5 py-3 hover:bg-white/[0.03] transition-colors group"
+              >
+                <div className="w-8 h-8 rounded-xl bg-indigo-500/10 border border-indigo-500/20 flex items-center justify-center shrink-0">
+                  <FileText size={13} className="text-indigo-400" />
+                </div>
+                <div className="flex-1 min-w-0">
+                  <p className="text-sm font-black text-zinc-100 truncate group-hover:text-indigo-300 transition-colors">
+                    {q.agencyName ?? 'Agency'}
+                    {q.agencyTradeName && q.agencyTradeName !== q.agencyName && (
+                      <span className="text-zinc-500 font-semibold"> · {q.agencyTradeName}</span>
+                    )}
+                  </p>
+                  <p className="text-xs text-zinc-400 font-medium truncate">
+                    {q.destination} · {q.reference}
+                  </p>
+                  <p className="text-[10px] text-zinc-500 font-medium truncate mt-0.5">
+                    {q.adults}A {q.children > 0 ? `${q.children}C` : ''} · {formatDate(q.travelStart)} – {formatDate(q.travelEnd)}
+                  </p>
+                </div>
+                <QuoteBadge status={q.status} />
+                <ChevronRight size={14} className="text-zinc-600 group-hover:text-indigo-400 shrink-0 transition-colors" />
+              </Link>
+            ))}
+          </div>
+        )}
+      </PanelCard>
 
       {/* Full Agency List */}
       <PanelCard icon={Users} title="All Partner Agencies">

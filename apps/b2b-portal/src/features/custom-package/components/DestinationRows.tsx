@@ -29,7 +29,7 @@ export function DestinationRows({
   disabled,
 }: DestinationRowsProps) {
   return (
-    <section className={cardClass}>
+    <section className={cardClass} data-composer-field="destinations">
       <div className="flex items-start justify-between gap-3 px-5 sm:px-6 pt-5 pb-4 border-b border-white/[0.06]">
         <div>
           <p className="text-[10px] font-bold uppercase tracking-[0.16em] text-[#F8B400] bg-[#F8B400]/10 inline-block px-2 py-0.5 rounded">

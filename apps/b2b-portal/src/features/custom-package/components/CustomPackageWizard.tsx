@@ -7,30 +7,33 @@
 "use client";
 
 import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { Button, AirplaneLoader } from "@travelagency/ui";
 import { cn } from "@travelagency/utils";
-import { Loader2, Save } from "lucide-react";
+import { FileText, Loader2, Save } from "lucide-react";
 import { ROUTES } from "@/lib/routes";
-import { STAR_RATING_OPTIONS } from "../config/proposal.config";
 import {
+  AUTO_DRAFT_SAVE_INTERVAL_MS,
+  STAR_RATING_OPTIONS,
+} from "../config/proposal.config";
+import {
+  useAutoSaveDraft,
   useMasterCities,
   usePriceProposal,
+  useProposalDetail,
   useSaveProposal,
 } from "../hooks/useProposals";
-import type {
-  CustomProposal,
-  DestinationStop,
-  TripDetailsInput,
-} from "../types/proposal.types";
+import type { CustomProposal } from "../types/proposal.types";
 import { DestinationRows } from "./DestinationRows";
 import { TripDetailsCard } from "./TripDetailsCard";
 import { AccommodationCards } from "./AccommodationCards";
 import {
   ItineraryDayCards,
   buildDayTimeline,
+  type LocalDayActivity,
 } from "./ItineraryDayCards";
 import { ComposerSidebar } from "./ComposerSidebar";
+import { ItineraryPdfActions } from "./ItineraryPdfPreviewModal";
 import {
   formatDate,
   formatMoney,
@@ -38,12 +41,27 @@ import {
   type LocalStop,
 } from "./composerShared";
 
+type ComposerErrorField =
+  | "destinations"
+  | "leavingFrom"
+  | "nationality"
+  | "leavingOn"
+  | "adults"
+  | "rooms";
+
 export default function CustomPackageWizard() {
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const draftParam = searchParams.get("draft") || "";
+
   const { data: cities = [], isLoading: citiesLoading, isError: citiesError } =
     useMasterCities();
+  const { data: draftDetail, isLoading: draftLoading } =
+    useProposalDetail(draftParam);
+
   const priceMutation = usePriceProposal();
   const saveMutation = useSaveProposal();
+  const autoSaveMutation = useAutoSaveDraft();
 
   const [stops, setStops] = useState<LocalStop[]>([
     { key: newStopKey(), cityId: "", nights: 2, hotelId: "" },
@@ -56,16 +74,121 @@ export default function CustomPackageWizard() {
   const [children, setChildren] = useState(0);
   const [starRating, setStarRating] = useState(0);
   const [includeTransfers, setIncludeTransfers] = useState(true);
+  const [activities, setActivities] = useState<LocalDayActivity[]>([]);
 
   const [proposal, setProposal] = useState<CustomProposal | null>(null);
   const [itineraryBuilt, setItineraryBuilt] = useState(false);
   const [formError, setFormError] = useState<string | null>(null);
+  const [errorFocusField, setErrorFocusField] =
+    useState<ComposerErrorField | null>(null);
+  const [errorScrollKey, setErrorScrollKey] = useState(0);
   const [hotelNameById, setHotelNameById] = useState<Map<string, string>>(
     () => new Map()
   );
+  const [lastAutoSavedAt, setLastAutoSavedAt] = useState<Date | null>(null);
+  const [draftHydrated, setDraftHydrated] = useState(false);
 
+  const formErrorBannerRef = useRef<HTMLDivElement>(null);
   const recalcTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const autoSaveTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const skipNextRecalc = useRef(false);
+  const skipNextAutoSave = useRef(false);
+  const proposalIdRef = useRef<string | undefined>(undefined);
+
+  const showFormError = useCallback(
+    (message: string, field?: ComposerErrorField) => {
+      setFormError(message);
+      setErrorFocusField(field ?? null);
+      setErrorScrollKey((k) => k + 1);
+    },
+    []
+  );
+
+  const clearFormError = useCallback(() => {
+    setFormError(null);
+    setErrorFocusField(null);
+  }, []);
+
+  // After validation/API errors, scroll banner or invalid field into view
+  useEffect(() => {
+    if (!formError) return;
+    const fieldEl = errorFocusField
+      ? document.querySelector<HTMLElement>(
+          `[data-composer-field="${errorFocusField}"]`
+        )
+      : null;
+    const target = fieldEl ?? formErrorBannerRef.current;
+    if (!target) return;
+    target.scrollIntoView({ behavior: "smooth", block: "center" });
+    if (fieldEl) {
+      const control = fieldEl.querySelector<HTMLElement>(
+        'button:not([disabled]), input:not([disabled]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"])'
+      );
+      control?.focus({ preventScroll: true });
+    } else {
+      formErrorBannerRef.current?.focus({ preventScroll: true });
+    }
+  }, [formError, errorFocusField, errorScrollKey]);
+
+  useEffect(() => {
+    proposalIdRef.current = proposal?.id;
+  }, [proposal?.id]);
+
+  // Hydrate composer from ?draft=id (same proposal continue)
+  useEffect(() => {
+    if (!draftParam || !draftDetail || draftHydrated) return;
+    const p = draftDetail;
+    setProposal(p);
+    setStops(
+      (p.destinations || []).length > 0
+        ? p.destinations.map((d) => ({
+            key: newStopKey(),
+            cityId: String(d.cityId),
+            nights: d.nights || 1,
+            hotelId: d.hotelId ? String(d.hotelId) : "",
+            packageId: d.packageId ? String(d.packageId) : "",
+          }))
+        : [{ key: newStopKey(), cityId: "", nights: 2, hotelId: "" }]
+    );
+    const hotelMap = new Map<string, string>();
+    for (const d of p.destinations || []) {
+      if (d.hotelId && d.hotelName) hotelMap.set(String(d.hotelId), d.hotelName);
+    }
+    setHotelNameById(hotelMap);
+    setLeavingFromCityId(
+      p.tripDetails?.leavingFromCityId
+        ? String(p.tripDetails.leavingFromCityId)
+        : ""
+    );
+    setNationalityCode(p.tripDetails?.nationalityCode || "");
+    setLeavingOn(
+      p.tripDetails?.leavingOn
+        ? String(p.tripDetails.leavingOn).slice(0, 10)
+        : ""
+    );
+    setRooms(p.tripDetails?.rooms || 1);
+    setAdults(p.tripDetails?.adults || 2);
+    setChildren(p.tripDetails?.children || 0);
+    setStarRating((p.tripDetails?.starRating as 0 | 3 | 4 | 5) || 0);
+    setIncludeTransfers(p.tripDetails?.includeTransfers !== false);
+    setActivities(
+      (p.activities || []).map((a) => ({
+        key: newStopKey(),
+        dayNum: a.dayNum,
+        slot: a.slot,
+        cityId: String(a.cityId),
+        packageId: String(a.packageId),
+        packageName: a.packageName || "Activity",
+        amount: a.amount || 0,
+        currency: a.currency || "USD",
+      }))
+    );
+    setItineraryBuilt(
+      Boolean(p.destinations?.length) && Boolean(p.tripDetails?.leavingOn)
+    );
+    skipNextAutoSave.current = true;
+    setDraftHydrated(true);
+  }, [draftParam, draftDetail, draftHydrated]);
 
   const cityOptions = useMemo(
     () => cities.map((c) => ({ value: c._id, label: c.name })),
@@ -113,22 +236,28 @@ export default function CustomPackageWizard() {
 
   const validateDestinations = () => {
     if (stops.length === 0) {
-      setFormError("Add at least one destination city.");
+      showFormError("Add at least one destination city.", "destinations");
       return false;
     }
     for (const s of stops) {
       if (!s.cityId) {
-        setFormError("Each stop needs a city from the master list.");
+        showFormError(
+          "Each stop needs a city from the master list.",
+          "destinations"
+        );
         return false;
       }
       if (!s.nights || s.nights < 1) {
-        setFormError("Nights must be at least 1.");
+        showFormError("Nights must be at least 1.", "destinations");
         return false;
       }
     }
     const ids = stops.map((s) => s.cityId);
     if (new Set(ids).size !== ids.length) {
-      setFormError("Each destination city can only appear once.");
+      showFormError(
+        "Each destination city can only appear once.",
+        "destinations"
+      );
       return false;
     }
     return true;
@@ -136,45 +265,42 @@ export default function CustomPackageWizard() {
 
   const validateTripDetails = () => {
     if (!leavingFromCityId) {
-      setFormError("Select leaving-from city.");
+      showFormError("Select leaving-from city.", "leavingFrom");
       return false;
     }
     if (!nationalityCode) {
-      setFormError("Select nationality.");
+      showFormError("Select nationality.", "nationality");
       return false;
     }
     if (!leavingOn) {
-      setFormError("Select leaving-on date.");
+      showFormError("Select leaving-on date.", "leavingOn");
       return false;
     }
     const d = new Date(`${leavingOn}T12:00:00`);
     const today = new Date();
     today.setHours(0, 0, 0, 0);
     if (d < today) {
-      setFormError("Leaving-on date cannot be in the past.");
+      showFormError("Leaving-on date cannot be in the past.", "leavingOn");
       return false;
     }
     if (adults < 1) {
-      setFormError("At least one adult is required.");
+      showFormError("At least one adult is required.", "adults");
       return false;
     }
     if (rooms < 1) {
-      setFormError("At least one room is required.");
+      showFormError("At least one room is required.", "rooms");
       return false;
     }
     return true;
   };
 
   const buildDto = useCallback(
-    (save = false): {
-      destinations: DestinationStop[];
-      tripDetails: TripDetailsInput;
-      save: boolean;
-    } => ({
+    (save = false) => ({
       destinations: stops.map((s) => ({
         cityId: s.cityId,
         nights: Math.max(1, Number(s.nights) || 1),
         hotelId: s.hotelId || undefined,
+        packageId: s.packageId || undefined,
       })),
       tripDetails: {
         leavingFromCityId,
@@ -186,6 +312,12 @@ export default function CustomPackageWizard() {
         starRating: starRating as 0 | 3 | 4 | 5,
         includeTransfers,
       },
+      activities: activities.map((a) => ({
+        dayNum: a.dayNum,
+        slot: a.slot,
+        cityId: a.cityId,
+        packageId: a.packageId,
+      })),
       save,
     }),
     [
@@ -198,6 +330,7 @@ export default function CustomPackageWizard() {
       children,
       starRating,
       includeTransfers,
+      activities,
     ]
   );
 
@@ -211,26 +344,35 @@ export default function CustomPackageWizard() {
     });
   };
 
+  const applyProposalResult = (result: CustomProposal) => {
+    setProposal(result);
+    mergeHotelNames(result);
+    if (result.id && searchParams.get("draft") !== result.id) {
+      router.replace(ROUTES.customPackageDraft(result.id), { scroll: false });
+    }
+  };
+
   const runPrice = async (existingId?: string) => {
     const result = await priceMutation.mutateAsync({
       dto: buildDto(false),
-      existingId: existingId ?? proposal?.id,
+      existingId: existingId ?? proposalIdRef.current,
     });
-    setProposal(result);
-    mergeHotelNames(result);
+    applyProposalResult(result);
+    skipNextAutoSave.current = true;
+    setLastAutoSavedAt(new Date());
     return result;
   };
 
   const handleBuildItinerary = async () => {
     if (!validateDestinations()) return;
     if (!validateTripDetails()) return;
-    setFormError(null);
+    clearFormError();
     try {
       skipNextRecalc.current = true;
       await runPrice();
       setItineraryBuilt(true);
     } catch (err) {
-      setFormError(
+      showFormError(
         err instanceof Error ? err.message : "Could not build itinerary"
       );
     }
@@ -238,17 +380,17 @@ export default function CustomPackageWizard() {
 
   const handleRecalculate = useCallback(async () => {
     if (!itineraryBuilt) return;
-    setFormError(null);
+    clearFormError();
     try {
       skipNextRecalc.current = true;
       await runPrice(proposal?.id);
     } catch (err) {
-      setFormError(
+      showFormError(
         err instanceof Error ? err.message : "Could not recalculate pricing"
       );
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps -- runPrice uses latest buildDto/proposal via closure
-  }, [itineraryBuilt, proposal?.id, buildDto]);
+  }, [itineraryBuilt, proposal?.id, buildDto, clearFormError, showFormError]);
 
   // Debounced recalc when hotels / transfers change after build
   useEffect(() => {
@@ -265,8 +407,9 @@ export default function CustomPackageWizard() {
             dto: buildDto(false),
             existingId: proposal.id,
           });
-          setProposal(result);
-          mergeHotelNames(result);
+          applyProposalResult(result);
+          skipNextAutoSave.current = true;
+          setLastAutoSavedAt(new Date());
         } catch {
           /* toast from mutation */
         }
@@ -277,17 +420,74 @@ export default function CustomPackageWizard() {
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [
-    stops.map((s) => `${s.hotelId}:${s.nights}:${s.cityId}`).join("|"),
+    stops.map((s) => `${s.hotelId}:${s.packageId || ""}:${s.nights}:${s.cityId}`).join("|"),
     includeTransfers,
+    activities.map((a) => `${a.key}:${a.packageId}`).join("|"),
     itineraryBuilt,
+  ]);
+
+  // Drop activities that no longer match the day timeline / cities
+  useEffect(() => {
+    if (!itineraryBuilt) return;
+    const valid = new Set(
+      dayTimeline.map((d) => `${d.dayNum}:${d.cityId}`)
+    );
+    setActivities((prev) => {
+      const next = prev.filter((a) => valid.has(`${a.dayNum}:${a.cityId}`));
+      return next.length === prev.length ? prev : next;
+    });
+  }, [dayTimeline, itineraryBuilt]);
+
+  // Auto-save draft on same proposal id once at least one city is chosen
+  useEffect(() => {
+    const hasCity = stops.some((s) => s.cityId);
+    if (!hasCity) return;
+    if (draftParam && !draftHydrated) return;
+    if (skipNextAutoSave.current) {
+      skipNextAutoSave.current = false;
+      return;
+    }
+    if (autoSaveTimer.current) clearTimeout(autoSaveTimer.current);
+    autoSaveTimer.current = setTimeout(() => {
+      void (async () => {
+        try {
+          const result = await autoSaveMutation.mutateAsync({
+            dto: buildDto(false),
+            existingId: proposalIdRef.current,
+          });
+          applyProposalResult(result);
+          setLastAutoSavedAt(new Date());
+        } catch {
+          /* silent */
+        }
+      })();
+    }, AUTO_DRAFT_SAVE_INTERVAL_MS);
+    return () => {
+      if (autoSaveTimer.current) clearTimeout(autoSaveTimer.current);
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [
+    stops.map((s) => `${s.cityId}:${s.nights}:${s.hotelId}:${s.packageId || ""}`).join("|"),
+    leavingFromCityId,
+    nationalityCode,
+    leavingOn,
+    rooms,
+    adults,
+    children,
+    starRating,
+    includeTransfers,
+    activities.map((a) => `${a.key}:${a.packageId}`).join("|"),
+    draftHydrated,
   ]);
 
   const handleSave = async () => {
     if (!proposal?.id) {
-      setFormError("Build itinerary before saving.");
+      showFormError("Build itinerary before saving.");
       return;
     }
-    setFormError(null);
+    if (!validateDestinations()) return;
+    if (!validateTripDetails()) return;
+    clearFormError();
     try {
       await saveMutation.mutateAsync({
         dto: buildDto(true),
@@ -295,7 +495,9 @@ export default function CustomPackageWizard() {
       });
       router.push(ROUTES.proposals);
     } catch (err) {
-      setFormError(err instanceof Error ? err.message : "Could not save proposal");
+      showFormError(
+        err instanceof Error ? err.message : "Could not save proposal"
+      );
     }
   };
 
@@ -331,11 +533,84 @@ export default function CustomPackageWizard() {
     });
   };
 
-  const busy = priceMutation.isPending || saveMutation.isPending;
+  const busy =
+    priceMutation.isPending ||
+    saveMutation.isPending ||
+    autoSaveMutation.isPending;
 
-  if (citiesLoading) {
+  const draftName =
+    proposal?.name?.trim() ||
+    (summaryDestinations.length
+      ? summaryDestinations.map((d) => d.cityName).join(" → ")
+      : "");
+
+  /** Live snapshot so PDF reflects composer stays/activities, not only last priced payload. */
+  const pdfProposal = useMemo((): CustomProposal | null => {
+    if (!proposal?.id || !itineraryBuilt) return null;
+    const destinations = stops
+      .filter((s) => s.cityId)
+      .map((s) => {
+        const prior = proposal.destinations?.find(
+          (d) => String(d.cityId) === s.cityId
+        );
+        return {
+          cityId: s.cityId,
+          cityName: cityNameById.get(s.cityId) || prior?.cityName || "City",
+          nights: s.nights,
+          hotelId: s.hotelId || null,
+          hotelName: s.hotelId
+            ? hotelNameById.get(s.hotelId) || prior?.hotelName
+            : undefined,
+          packageId: s.packageId || null,
+        };
+      });
+    return {
+      ...proposal,
+      name: draftName || proposal.name,
+      destinations,
+      activities: activities.map((a) => ({
+        dayNum: a.dayNum,
+        slot: a.slot,
+        cityId: a.cityId,
+        packageId: a.packageId,
+        packageName: a.packageName,
+        amount: a.amount,
+        currency: a.currency,
+      })),
+      tripDetails: {
+        ...proposal.tripDetails,
+        leavingFromCityId: leavingFromCityId || null,
+        leavingFromName: cityNameById.get(leavingFromCityId) || undefined,
+        nationalityCode: nationalityCode || proposal.tripDetails?.nationalityCode,
+        leavingOn: leavingOn || null,
+        rooms,
+        adults,
+        children,
+        starRating,
+        includeTransfers,
+      },
+    };
+  }, [
+    proposal,
+    itineraryBuilt,
+    stops,
+    cityNameById,
+    hotelNameById,
+    activities,
+    draftName,
+    leavingFromCityId,
+    nationalityCode,
+    leavingOn,
+    rooms,
+    adults,
+    children,
+    starRating,
+    includeTransfers,
+  ]);
+
+  if (citiesLoading || (draftParam && draftLoading && !draftHydrated)) {
     return (
-      <AirplaneLoader size="md" label="Loading cities…" className="py-16" />
+      <AirplaneLoader size="md" label="Loading…" className="py-16" />
     );
   }
 
@@ -359,7 +634,7 @@ export default function CustomPackageWizard() {
   return (
     <div className="w-full space-y-6">
       <div className="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
-        <div>
+        <div className="min-w-0">
           <p className="text-[11px] font-bold uppercase tracking-[0.2em] text-[#F8B400]">
             TravelHero · Proposal Composer
           </p>
@@ -367,8 +642,8 @@ export default function CustomPackageWizard() {
             Create Custom Package
           </h1>
           <p className="text-sm text-zinc-400 mt-1 max-w-xl">
-            Single-page builder — destinations, trip details, hotels, and live
-            pricing from masters. Save submits for admin review.
+            Drafts auto-save as you build. Save as Proposal submits for admin
+            review.
           </p>
         </div>
         <div className="flex flex-wrap gap-2">
@@ -380,6 +655,10 @@ export default function CustomPackageWizard() {
           >
             My Proposals
           </Button>
+          <ItineraryPdfActions
+            proposal={pdfProposal}
+            enabled={Boolean(itineraryBuilt && proposal?.id)}
+          />
           <Button
             type="button"
             className="bg-[#F8B400] text-black hover:bg-[#FFD54A] font-semibold"
@@ -391,8 +670,51 @@ export default function CustomPackageWizard() {
         </div>
       </div>
 
+      {/* Same draft name at top — matches My Proposals for easy recognition */}
+      {proposal?.id ? (
+        <div className="rounded-xl border border-[#F8B400]/30 bg-[#F8B400]/[0.08] px-4 py-3 flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-4">
+          <div className="flex items-start gap-2.5 min-w-0 flex-1">
+            <div className="mt-0.5 flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-[#F8B400]/20 text-[#F8B400]">
+              <FileText size={16} />
+            </div>
+            <div className="min-w-0">
+              <p className="text-[10px] font-bold uppercase tracking-wider text-[#F8B400]">
+                {proposal.status === "draft" || proposal.status === "priced"
+                  ? "Draft"
+                  : "Proposal"}{" "}
+                · {proposal.reference}
+              </p>
+              <p className="text-sm sm:text-base font-semibold text-white truncate">
+                {draftName || "Untitled draft"}
+              </p>
+            </div>
+          </div>
+          <p className="text-[11px] text-zinc-500 sm:text-right shrink-0">
+            {autoSaveMutation.isPending
+              ? "Saving draft…"
+              : lastAutoSavedAt
+                ? `Auto-saved ${lastAutoSavedAt.toLocaleTimeString([], {
+                    hour: "2-digit",
+                    minute: "2-digit",
+                  })}`
+                : "Draft will auto-save"}
+          </p>
+        </div>
+      ) : stops.some((s) => s.cityId) ? (
+        <div className="rounded-xl border border-white/[0.08] bg-black/20 px-4 py-2.5 text-xs text-zinc-500">
+          {autoSaveMutation.isPending
+            ? "Creating draft…"
+            : "Add a city — draft auto-saves with a name you can find in My Proposals."}
+        </div>
+      ) : null}
+
       {formError && (
-        <div className="rounded-xl border border-red-500/30 bg-red-500/10 px-4 py-3 text-sm text-red-300">
+        <div
+          ref={formErrorBannerRef}
+          role="alert"
+          tabIndex={-1}
+          className="rounded-xl border border-red-500/30 bg-red-500/10 px-4 py-3 text-sm text-red-300 outline-none"
+        >
           {formError}
         </div>
       )}
@@ -438,7 +760,10 @@ export default function CustomPackageWizard() {
                 cityNameById={cityNameById}
                 starFilter={starRating}
                 onHotelChange={(key, hotelId, hotelName) => {
-                  updateStop(key, { hotelId });
+                  updateStop(key, {
+                    hotelId,
+                    packageId: hotelId ? "" : undefined,
+                  });
                   if (hotelId && hotelName) {
                     setHotelNameById((prev) => {
                       const next = new Map(prev);
@@ -447,10 +772,23 @@ export default function CustomPackageWizard() {
                     });
                   }
                 }}
+                onPackageChange={(key, packageId) => {
+                  updateStop(key, {
+                    packageId,
+                    hotelId: packageId ? "" : undefined,
+                  });
+                }}
               />
               <ItineraryDayCards
                 days={dayTimeline}
                 includeTransfers={includeTransfers}
+                activities={activities}
+                onAddActivity={(activity) => {
+                  setActivities((prev) => [...prev, activity]);
+                }}
+                onRemoveActivity={(key) => {
+                  setActivities((prev) => prev.filter((a) => a.key !== key));
+                }}
               />
             </>
           )}

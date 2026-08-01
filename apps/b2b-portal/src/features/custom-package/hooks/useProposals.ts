@@ -10,6 +10,7 @@ import type {
   CustomProposal,
   MasterCity,
   MasterHotel,
+  MasterPackage,
   PriceProposalDTO,
 } from "../types/proposal.types";
 
@@ -28,6 +29,28 @@ export function useMasterHotels(cityId: string) {
     options: {
       enabled: Boolean(cityId),
       staleTime: 1000 * 60 * 2,
+    },
+  });
+}
+
+export function useMasterPackages(cityId: string) {
+  return UseFetchAPIQuery<MasterPackage[]>({
+    key: PROPOSAL_QUERY_KEYS.packages(cityId),
+    queryFn: () => proposalService.getPackages(cityId),
+    options: {
+      enabled: Boolean(cityId),
+      staleTime: 1000 * 60 * 2,
+    },
+  });
+}
+
+export function useProposalDetail(id: string) {
+  return UseFetchAPIQuery<CustomProposal>({
+    key: PROPOSAL_QUERY_KEYS.detail(id),
+    queryFn: () => proposalService.getProposal(id),
+    options: {
+      enabled: Boolean(id),
+      staleTime: 1000 * 30,
     },
   });
 }
@@ -53,6 +76,26 @@ export function usePriceProposal() {
       queryClient.invalidateQueries({ queryKey: PROPOSAL_QUERY_KEYS.all });
     },
   });
+}
+
+/** Silent draft auto-save (same proposal id) — no toast spam. */
+export function useAutoSaveDraft() {
+  const queryClient = useQueryClient();
+
+  return useMutationAPIQuery<
+    CustomProposal,
+    Error,
+    { dto: PriceProposalDTO; existingId?: string }
+  >(
+    ({ dto, existingId }) =>
+      proposalService.priceProposal({ ...dto, save: false }, existingId),
+    {
+      showToast: false,
+      onSuccess: () => {
+        queryClient.invalidateQueries({ queryKey: PROPOSAL_QUERY_KEYS.list() });
+      },
+    }
+  );
 }
 
 export function useSaveProposal() {

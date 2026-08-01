@@ -17,11 +17,27 @@ const cityStopSchema = new mongoose.Schema(
   { _id: false }
 );
 
+/** Day-slot activity picked from a B2B package master (Add Activity flow). */
+const activitySchema = new mongoose.Schema(
+  {
+    dayNum: { type: Number, required: true, min: 1 },
+    slot: { type: String, enum: ['Morning', 'Afternoon', 'Evening'], required: true },
+    cityId: { type: mongoose.Schema.Types.ObjectId, ref: 'B2BCity', required: true },
+    packageId: { type: mongoose.Schema.Types.ObjectId, ref: 'B2BPackage', required: true },
+    packageName: { type: String, default: '' },
+    amount: { type: Number, default: 0, min: 0 },
+    currency: { type: String, default: 'USD' },
+  },
+  { _id: false }
+);
+
 const customProposalSchema = new mongoose.Schema(
   {
     agencyId: { type: mongoose.Schema.Types.ObjectId, ref: 'Agency', required: true, index: true },
     createdBy: { type: mongoose.Schema.Types.ObjectId, ref: 'AgencyUser', required: true },
     reference: { type: String, required: true, unique: true },
+    /** Human-readable label for drafts / My Proposals (auto from cities or client). */
+    name: { type: String, default: '', trim: true },
     status: {
       type: String,
       enum: [
@@ -38,6 +54,7 @@ const customProposalSchema = new mongoose.Schema(
     /** Admin feedback visible to the agency when changes are requested. */
     adminFeedback: { type: String, default: '' },
     destinations: { type: [cityStopSchema], default: [] },
+    activities: { type: [activitySchema], default: [] },
     tripDetails: {
       leavingFromCityId: { type: mongoose.Schema.Types.ObjectId, ref: 'B2BCity', default: null },
       leavingFromName: { type: String, default: '' },

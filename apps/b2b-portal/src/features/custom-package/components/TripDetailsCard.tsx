@@ -68,7 +68,7 @@ export function TripDetailsCard({
 
       <div className="p-5 sm:p-6 space-y-5">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <div className="space-y-1.5">
+          <div className="space-y-1.5" data-composer-field="leavingFrom">
             <label className={labelClass}>
               Leaving from <span className="text-red-400">*</span>
             </label>
@@ -81,7 +81,7 @@ export function TripDetailsCard({
               aria-label="Leaving from city"
             />
           </div>
-          <div className="space-y-1.5">
+          <div className="space-y-1.5" data-composer-field="nationality">
             <label className={labelClass}>
               Nationality <span className="text-red-400">*</span>
             </label>
@@ -92,13 +92,15 @@ export function TripDetailsCard({
               highlight="gold"
             />
           </div>
-          <PackageDateField
-            label="Leaving on"
-            value={leavingOn}
-            onChange={onLeavingOn}
-            required
-            aria-label="Leaving on date"
-          />
+          <div data-composer-field="leavingOn">
+            <PackageDateField
+              label="Leaving on"
+              value={leavingOn}
+              onChange={onLeavingOn}
+              required
+              aria-label="Leaving on date"
+            />
+          </div>
           <div className="space-y-1.5">
             <label className={labelClass}>Star preference</label>
             <SimpleSelect
@@ -109,7 +111,7 @@ export function TripDetailsCard({
               aria-label="Star rating preference"
             />
           </div>
-          <div className="space-y-1.5">
+          <div className="space-y-1.5" data-composer-field="rooms">
             <label className={labelClass}>Rooms</label>
             <input
               type="number"
@@ -121,7 +123,7 @@ export function TripDetailsCard({
             />
           </div>
           <div className="grid grid-cols-2 gap-3">
-            <div className="space-y-1.5">
+            <div className="space-y-1.5" data-composer-field="adults">
               <label className={labelClass}>
                 Adults <span className="text-red-400">*</span>
               </label>

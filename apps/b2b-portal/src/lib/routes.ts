@@ -32,6 +32,7 @@ export const ROUTES = {
 
   // ─── Create Custom Package (separate from Quote Request) ──────────────────
   customPackage: '/custom-package',
+  customPackageDraft: (id: string) => `/custom-package?draft=${id}` as const,
   proposals: '/proposals',
   proposalDetail: (id: string) => `/proposals/${id}` as const,
 } as const;
