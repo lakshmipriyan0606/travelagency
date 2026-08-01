@@ -6,19 +6,19 @@ interface VisitorDistributionBarProps {
   totalVisitors: number;
 }
 
-export function VisitorDistributionBar({ visitorStats, totalVisitors }: VisitorDistributionBarProps) {
+export function VisitorDistributionBar({ visitorStats }: VisitorDistributionBarProps) {
   const recentWeek = visitorStats.slice(-7);
   const weekTotal = recentWeek.reduce((sum, v) => sum + v.count, 0);
 
   if (weekTotal === 0) return null;
 
   return (
-    <div className="bg-white border border-neutral-200 rounded-2xl p-5 shadow-sm">
+    <div className="relative bg-[var(--ent-card,#16161b)] border border-white/[0.08] rounded-[20px] p-5 shadow-[0_8px_28px_rgba(0,0,0,0.45)] overflow-hidden before:pointer-events-none before:absolute before:inset-x-0 before:top-0 before:h-px before:bg-gradient-to-r before:from-transparent before:via-[#F8B400]/30 before:to-transparent">
       <div className="flex items-center justify-between mb-3">
-        <p className="text-xs font-black uppercase tracking-wider text-neutral-500 flex items-center gap-2">
+        <p className="text-xs font-black uppercase tracking-wider text-zinc-400 flex items-center gap-2">
           <Users size={12} /> Visitor Trend (Last 7 Days)
         </p>
-        <p className="text-xs text-neutral-400">{weekTotal} visitors this week</p>
+        <p className="text-xs text-zinc-500">{weekTotal} visitors this week</p>
       </div>
       <div className="flex h-2.5 rounded-full overflow-hidden gap-0.5">
         {recentWeek.map((day) => (
@@ -39,9 +39,9 @@ export function VisitorDistributionBar({ visitorStats, totalVisitors }: VisitorD
         {recentWeek.map((day) => (
           <div key={day._id} className="flex items-center gap-1.5">
             <span className="w-2 h-2 rounded-full bg-blue-500" />
-            <span className="text-xs font-semibold text-neutral-500">
+            <span className="text-xs font-semibold text-zinc-400">
               {day._id.slice(5)}{" "}
-              <strong className="text-neutral-800">({day.count})</strong>
+              <strong className="text-white">({day.count})</strong>
             </span>
           </div>
         ))}

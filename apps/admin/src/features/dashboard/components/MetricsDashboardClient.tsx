@@ -1,10 +1,27 @@
 "use client";
 
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import axiosClient from "@/lib/apiClient";
 import { ENDPOINTS } from "@/lib/endpoints";
-import { Activity, Globe, Users, TrendingUp, Server, BarChart3, Zap, AlertCircle } from "lucide-react";
-import { VisitorData, ApiRouteStat, ApiRouteDetail, ApiUsageData } from "../types";
+import {
+  Activity,
+  Users,
+  TrendingUp,
+  BarChart3,
+  CalendarDays,
+  RotateCcw,
+  Eye,
+  AlertCircle,
+  UserCheck,
+} from "lucide-react";
+import {
+  VisitorData,
+  VisitorDetail,
+  VisitorOverview,
+  VisitorDistribution,
+  RecentVisitorsResponse,
+  unwrapAnalyticsPayload,
+} from "../types";
 import {
   StatCard,
   SectionHeader,
@@ -12,65 +29,101 @@ import {
   LoadingSpinner,
 } from "@/components/dashboard";
 import { VisitorChart } from "./VisitorChart";
-import { ApiUsageChart } from "./ApiUsageChart";
-import { ApiPipelineSummary } from "./ApiPipelineSummary";
 import { VisitorDistributionBar } from "./VisitorDistributionBar";
+import { VisitorBreakdownCharts } from "./VisitorBreakdownCharts";
+import { VisitorTable } from "./VisitorTable";
+import { VisitorProfileDrawer } from "./VisitorProfileDrawer";
 import { showToast } from "@/lib/toast";
 import { Button } from "@travelagency/ui";
-
-const parseDevice = (ua: string | undefined = "") => {
-  if (!ua || ua === "Unknown") return { label: "Unknown Device", isMobile: false };
-  const isMobile = /Mobile|Android|iPhone|iPad/i.test(ua);
-  const os = /Windows/i.test(ua)
-    ? "Windows"
-    : /Mac OS/i.test(ua)
-      ? "Mac"
-      : /Linux/i.test(ua)
-        ? "Linux"
-        : /Android/i.test(ua)
-          ? "Android"
-          : /iOS|iPhone|iPad/i.test(ua)
-            ? "iOS"
-            : "Unknown OS";
-  const browser = /Edg/i.test(ua)
-    ? "Edge"
-    : /Chrome/i.test(ua)
-      ? "Chrome"
-      : /Firefox/i.test(ua)
-        ? "Firefox"
-        : /Safari/i.test(ua)
-          ? "Safari"
-          : "Unknown Browser";
-  return { label: `${os} · ${browser}`, isMobile };
-};
 
 const getUtcToday = () => new Date().toISOString().split("T")[0];
 
 export default function MetricsDashboardClient() {
-  const [totalRequests, setTotalRequests] = useState(0);
   const [visitorStats, setVisitorStats] = useState<VisitorData[]>([]);
-  const [apiStats, setApiStats] = useState<ApiRouteStat[]>([]);
-  const [apiRouteDetails, setApiRouteDetails] = useState<ApiRouteDetail[]>([]);
+  const [overview, setOverview] = useState<VisitorOverview | null>(null);
+  const [distribution, setDistribution] = useState<VisitorDistribution | null>(null);
+  const [recent, setRecent] = useState<RecentVisitorsResponse | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [isRefreshing, setIsRefreshing] = useState(false);
+  const [tableLoading, setTableLoading] = useState(false);
+  const [distLoading, setDistLoading] = useState(false);
   const [loadError, setLoadError] = useState<string | null>(null);
   const [selectedDay, setSelectedDay] = useState<VisitorData | null>(null);
-  const [selectedRoute, setSelectedRoute] = useState<ApiRouteDetail | null>(null);
+  const [detailLoading, setDetailLoading] = useState(false);
+  const [profile, setProfile] = useState<VisitorDetail | null>(null);
+  const [profileLoading, setProfileLoading] = useState(false);
   const [lastRefresh, setLastRefresh] = useState(new Date());
+  const [search, setSearch] = useState("");
+  const [debouncedSearch, setDebouncedSearch] = useState("");
+  const [deviceFilter, setDeviceFilter] = useState("");
+  const [page, setPage] = useState(1);
+  const recentAbortRef = useRef<AbortController | null>(null);
+
+  useEffect(() => {
+    const t = setTimeout(() => {
+      setDebouncedSearch(search);
+      setPage(1);
+    }, 300);
+    return () => clearTimeout(t);
+  }, [search]);
+
+  const loadRecent = useCallback(async (opts?: { page?: number; search?: string; device?: string }) => {
+    recentAbortRef.current?.abort();
+    const controller = new AbortController();
+    recentAbortRef.current = controller;
+
+    setTableLoading(true);
+    try {
+      const params = new URLSearchParams({
+        page: String(opts?.page ?? page),
+        limit: "10",
+        days: "30",
+      });
+      const q = opts?.search ?? debouncedSearch;
+      const device = opts?.device ?? deviceFilter;
+      if (q) params.set("search", q);
+      if (device) params.set("deviceType", device);
+      const res = await axiosClient.get(`${ENDPOINTS.client.analytics.visitors}?${params}`, {
+        signal: controller.signal,
+      });
+      if (controller.signal.aborted) return;
+      const data = unwrapAnalyticsPayload<RecentVisitorsResponse>(res.data);
+      setRecent(data);
+    } catch (error: unknown) {
+      const aborted =
+        controller.signal.aborted ||
+        (typeof error === "object" &&
+          error !== null &&
+          "code" in error &&
+          (error as { code?: string }).code === "ERR_CANCELED");
+      if (aborted) return;
+      console.error("Failed to load recent visitors", error);
+    } finally {
+      if (!controller.signal.aborted) setTableLoading(false);
+    }
+  }, [page, debouncedSearch, deviceFilter]);
 
   const loadDashboardData = useCallback(async (opts?: { silent?: boolean }) => {
     const silent = opts?.silent ?? false;
     if (!silent) setIsRefreshing(true);
+    setDistLoading(true);
     try {
-      const [visitorRes, apiUsageRes] = await Promise.all([
-        axiosClient.get(ENDPOINTS.client.analytics.daily),
-        axiosClient.get(ENDPOINTS.client.analytics.apiUsage),
+      const visitorRes = await axiosClient.get(ENDPOINTS.client.analytics.daily);
+      const visits = unwrapAnalyticsPayload<VisitorData[]>(visitorRes.data);
+      setVisitorStats(Array.isArray(visits) ? visits : []);
+
+      const [overviewSettled, distSettled] = await Promise.allSettled([
+        axiosClient.get(ENDPOINTS.client.analytics.overview),
+        axiosClient.get(`${ENDPOINTS.client.analytics.distribution}?days=30`),
       ]);
-      setVisitorStats(visitorRes.data.data || []);
-      const apiUsage: ApiUsageData = apiUsageRes.data;
-      setTotalRequests(apiUsage.todayTotal || 0);
-      setApiStats(apiUsage.topRoutes || []);
-      setApiRouteDetails(apiUsage.routeDetails || []);
+
+      if (overviewSettled.status === "fulfilled") {
+        setOverview(unwrapAnalyticsPayload<VisitorOverview>(overviewSettled.value.data));
+      }
+      if (distSettled.status === "fulfilled") {
+        setDistribution(unwrapAnalyticsPayload<VisitorDistribution>(distSettled.value.data));
+      }
+
       setLastRefresh(new Date());
       setLoadError(null);
     } catch (error: unknown) {
@@ -95,6 +148,43 @@ export default function MetricsDashboardClient() {
     } finally {
       setIsLoading(false);
       setIsRefreshing(false);
+      setDistLoading(false);
+    }
+  }, []);
+
+  const openVisitorDay = useCallback(async (day: VisitorData) => {
+    setSelectedDay({ ...day, details: day.details });
+    setDetailLoading(true);
+    try {
+      const res = await axiosClient.get(ENDPOINTS.client.analytics.dailyDetail(day._id));
+      const detail = unwrapAnalyticsPayload<VisitorData>(res.data);
+      if (detail) setSelectedDay(detail);
+    } catch (error) {
+      console.error("Failed to load visitor details", error);
+      showToast({ type: "error", content: "Could not load visitor details for that day." });
+    } finally {
+      setDetailLoading(false);
+    }
+  }, []);
+
+  const openProfile = useCallback(async (visitor: VisitorDetail) => {
+    if (!visitor.visitorId) {
+      setProfile(visitor);
+      return;
+    }
+    setProfile(visitor);
+    setProfileLoading(true);
+    try {
+      const res = await axiosClient.get(
+        ENDPOINTS.client.analytics.visitorProfile(visitor.visitorId, visitor.date)
+      );
+      const full = unwrapAnalyticsPayload<VisitorDetail>(res.data);
+      if (full) setProfile(full);
+    } catch (error) {
+      console.error("Failed to load visitor profile", error);
+      // Keep the sample already shown from the day list / table
+    } finally {
+      setProfileLoading(false);
     }
   }, []);
 
@@ -104,31 +194,40 @@ export default function MetricsDashboardClient() {
     return () => clearInterval(interval);
   }, [loadDashboardData]);
 
+  useEffect(() => {
+    void loadRecent({ page, search: debouncedSearch, device: deviceFilter });
+    return () => {
+      recentAbortRef.current?.abort();
+    };
+  }, [page, debouncedSearch, deviceFilter, loadRecent]);
+
   if (isLoading) {
     return <LoadingSpinner size="lg" className="h-[60vh]" />;
   }
 
   const todayString = getUtcToday();
-  const todayVisitors = visitorStats.find((v) => v._id === todayString)?.count || 0;
-  const totalVisitors = visitorStats.reduce((sum, v) => sum + v.count, 0);
-  const avgDailyVisitors =
-    visitorStats.length > 0 ? Math.round(totalVisitors / visitorStats.length) : 0;
-  const peakDay = visitorStats.reduce(
-    (max, v) => (v.count > max.count ? v : max),
-    { _id: "", count: 0 }
-  );
-  const activeRoutes = apiStats.length;
-  const topRouteHits = apiStats[0]?.count || 0;
+  const todayVisitors =
+    overview?.today ?? visitorStats.find((v) => v._id === todayString)?.count ?? 0;
+  const yesterday = overview?.yesterday ?? 0;
+  const last7 = overview?.last7d ?? visitorStats.slice(-7).reduce((s, v) => s + v.count, 0);
+  const last30 =
+    overview?.last30d ?? visitorStats.reduce((sum, v) => sum + v.count, 0);
+  const totalUnique = overview?.totalUnique ?? last30;
+  const returning = overview?.returning ?? 0;
+  const pageViews = overview?.pageViews ?? last30;
 
   return (
     <div className="space-y-8 ent-animate-in">
       <DashboardPageHeader
         icon={Activity}
         title="B2C Admin Dashboard"
-        subtitle="Traffic, API usage & system health at a glance."
+        subtitle="Visitor traffic, profiles & distribution at a glance."
         lastRefresh={lastRefresh}
         isRefreshing={isRefreshing}
-        onRefresh={() => loadDashboardData()}
+        onRefresh={() => {
+          void loadDashboardData();
+          void loadRecent();
+        }}
       />
 
       {loadError && (
@@ -146,105 +245,113 @@ export default function MetricsDashboardClient() {
         </div>
       )}
 
-      {/* Traffic Overview */}
       <div>
         <SectionHeader icon={Users} title="Traffic Overview" />
-        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3">
+        <div className="grid grid-cols-2 sm:grid-cols-3 xl:grid-cols-4 gap-3">
           <StatCard
-            label="Visitors Today"
+            label="Today"
             value={todayVisitors}
             icon={Users}
-            accent="#3b82f6"
+            accent="#F8B400"
             sub="Unique visitors"
+            trend={overview?.trends.todayVsYesterday}
           />
           <StatCard
-            label="Total (30d)"
-            value={totalVisitors}
-            icon={TrendingUp}
-            accent="#6366f1"
-            sub="Last 30 days"
-          />
-          <StatCard
-            label="Daily Average"
-            value={avgDailyVisitors}
-            icon={BarChart3}
-            accent="#8b5cf6"
-            sub="Per day avg"
-          />
-          <StatCard
-            label="Peak Day"
-            value={peakDay.count}
-            icon={Zap}
-            accent="#f59e0b"
-            sub={peakDay._id || "No data"}
-          />
-          <StatCard
-            label="API Requests"
-            value={totalRequests}
-            icon={Globe}
-            accent="#10b981"
-            sub="Today (tracked)"
-          />
-        </div>
-      </div>
-
-      {/* API Overview */}
-      <div>
-        <SectionHeader icon={Server} title="API Overview" />
-        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3">
-          <StatCard
-            label="Active Routes"
-            value={activeRoutes}
-            icon={Server}
-            accent="#6366f1"
-            sub="Top endpoints"
-          />
-          <StatCard
-            label="Top Route Hits"
-            value={topRouteHits}
-            icon={Globe}
+            label="Yesterday"
+            value={yesterday}
+            icon={CalendarDays}
             accent="#3b82f6"
-            sub={apiStats[0]?.route || "No data"}
+            sub="UTC day"
           />
           <StatCard
-            label="Total Requests"
-            value={totalRequests}
-            icon={Activity}
-            accent="#10b981"
-            sub="Today"
+            label="Last 7 days"
+            value={last7}
+            icon={TrendingUp}
+            accent="#22c55e"
+            sub="Unique visitors"
+            trend={overview?.trends.last7d}
           />
           <StatCard
-            label="Route Details"
-            value={apiRouteDetails.length}
+            label="Last 30 days"
+            value={last30}
             icon={BarChart3}
-            accent="#8b5cf6"
-            sub="Tracked routes"
+            accent="#a855f7"
+            sub="Unique visitors"
+            trend={overview?.trends.last30d}
+          />
+          <StatCard
+            label="Total unique"
+            value={totalUnique}
+            icon={UserCheck}
+            accent="#06b6d4"
+            sub="Distinct passports"
+          />
+          <StatCard
+            label="Returning"
+            value={returning}
+            icon={RotateCcw}
+            accent="#f97316"
+            sub="Same ID, multi-visit"
+          />
+          <StatCard
+            label="Page views"
+            value={pageViews}
+            icon={Eye}
+            accent="#e11d48"
+            sub="Tracked page views (30d)"
           />
         </div>
       </div>
 
       {visitorStats.length > 0 && (
-        <VisitorDistributionBar visitorStats={visitorStats} totalVisitors={totalVisitors} />
+        <VisitorDistributionBar visitorStats={visitorStats} totalVisitors={last30} />
       )}
 
-      <div className="grid grid-cols-1 xl:grid-cols-2 gap-6">
-        <VisitorChart
-          visitorStats={visitorStats}
-          selectedDay={selectedDay}
-          setSelectedDay={setSelectedDay}
-          parseDevice={parseDevice}
-        />
-        <div className="space-y-4">
-          <ApiPipelineSummary apiStats={apiStats} totalRequests={totalRequests} />
-          <ApiUsageChart
-            apiStats={apiStats}
-            selectedRoute={selectedRoute}
-            setSelectedRoute={setSelectedRoute}
-            apiRouteDetails={apiRouteDetails}
-            compact
-          />
-        </div>
+      <div>
+        <SectionHeader icon={BarChart3} title="Distribution" />
+        <VisitorBreakdownCharts distribution={distribution} loading={distLoading} />
       </div>
+
+      <VisitorChart
+        visitorStats={visitorStats}
+        selectedDay={selectedDay}
+        onSelectDay={openVisitorDay}
+        onCloseDay={() => setSelectedDay(null)}
+        onViewProfile={(v) => {
+          void openProfile({ ...v, date: selectedDay?._id });
+        }}
+        detailLoading={detailLoading && !!selectedDay}
+      />
+
+      <VisitorTable
+        items={recent?.items || []}
+        total={recent?.total || 0}
+        page={recent?.page || page}
+        totalPages={recent?.totalPages || 1}
+        loading={tableLoading}
+        search={search}
+        deviceFilter={deviceFilter}
+        onSearchChange={setSearch}
+        onDeviceFilterChange={(v) => {
+          setDeviceFilter(v);
+          setPage(1);
+        }}
+        onPageChange={setPage}
+        onViewProfile={(v) => {
+          void openProfile(v);
+        }}
+      />
+
+      {(profile || profileLoading) && (
+        <VisitorProfileDrawer
+          visitor={profile}
+          loading={profileLoading}
+          onClose={() => {
+            setProfile(null);
+            setProfileLoading(false);
+          }}
+        />
+      )}
     </div>
   );
 }

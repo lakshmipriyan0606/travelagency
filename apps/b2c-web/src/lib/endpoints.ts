@@ -78,5 +78,8 @@ export const ENDPOINTS = {
 
     // Newsletter
     newsletterSubscribe: 'newsletter/subscribe',    // POST
+
+    // Visitor analytics beacon
+    analyticsVisit: 'analytics/visit',              // POST
   },
 } as const;

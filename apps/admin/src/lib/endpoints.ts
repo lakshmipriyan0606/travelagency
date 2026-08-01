@@ -44,7 +44,12 @@ export const ENDPOINTS = {
     },
     analytics: {
       daily: '/analytics/daily',
-      apiUsage: '/analytics/api-usage',
+      dailyDetail: (date: string) => `/analytics/daily/${date}`,
+      overview: '/analytics/overview',
+      distribution: '/analytics/distribution',
+      visitors: '/analytics/visitors',
+      visitorProfile: (visitorId: string, date?: string) =>
+        `/analytics/visitors/${encodeURIComponent(visitorId)}${date ? `?date=${date}` : ''}`,
     },
     bookings: {
       // Rewrites via apiClient to v1/b2c/bookings/all (b2c gateway)

@@ -1,14 +1,9 @@
 import express from 'express';
-import {
-  recordVisit,
-  getDailyVisits,
-  getApiUsage,
-  cleanupLocalhostVisits,
-} from './analytics.controller.js';
-import { protectRoute, superAdminOnly } from '#b2c/middleware/auth.middleware.js';
+import { recordVisit } from './analytics.controller.js';
 
 const router = express.Router();
 
+/** Public visit beacon — no auth. Local/dev traffic is skipped in the service. */
 router.post('/visit', recordVisit);
 
 export default router;

@@ -1,4 +1,5 @@
-import analyticsRoutes from './analytics.routes.js';
+import analyticsAdminRoutes from './analytics.admin.routes.js';
+import analyticsB2cRoutes from './analytics.b2c.routes.js';
 import * as analyticsController from './analytics.controller.js';
 import * as analyticsService from './analytics.service.js';
 import * as analyticsRepository from './analytics.repository.js';
@@ -8,7 +9,8 @@ import { ApiHit } from './apiHit.model.js';
 import { Visitor } from './visitor.model.js';
 
 export {
-  analyticsRoutes,
+  analyticsAdminRoutes,
+  analyticsB2cRoutes,
   analyticsController,
   analyticsService,
   analyticsRepository,
@@ -18,4 +20,4 @@ export {
   Visitor,
 };
 
-export default analyticsRoutes;
+export default analyticsAdminRoutes;

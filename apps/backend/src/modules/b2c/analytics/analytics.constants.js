@@ -7,7 +7,3 @@ export const LOCALHOST_IP_MATCH = {
     { ip: { $regex: /^172\.(1[6-9]|2\d|3[01])\.\d{1,3}\.\d{1,3}$/ } },
   ],
 };
-
-export const EXCLUDE_ANALYTICS_ROUTE = {
-  route: { $not: { $regex: '^/api/analytics' } },
-};

@@ -8,14 +8,15 @@
  *
  * Responsibility:
  * Exposes endpoints for tracking frontend visits and fetching aggregated
- * dashboard usage data for admins.
+ * visitor / traffic data for admins. List endpoints stay lean; detail endpoints
+ * load samples on demand.
  *
  * Called By:
- * src/modules/analytics/analytics.b2c.routes.js
- * src/modules/analytics/analytics.admin.routes.js
+ * src/modules/b2c/analytics/analytics.b2c.routes.js
+ * src/modules/b2c/analytics/analytics.admin.routes.js
  *
  * Depends On:
- * src/modules/analytics/analytics.service.js
+ * src/modules/b2c/analytics/analytics.service.js
  * ============================================================================
  */
 import * as analyticsService from './analytics.service.js';
@@ -24,15 +25,19 @@ import { sendSuccess } from '#shared/utils/response.js';
 export const recordVisit = async (req, res, next) => {
   try {
     const result = await analyticsService.recordVisitService(req);
-    if (result.skipped || result.duplicate) {
+    if (result.skipped) {
       return sendSuccess(res, 200, result.message);
     }
-    return sendSuccess(res, 201, result.message);
+    if (result.duplicate && !result.success) {
+      return sendSuccess(res, 200, result.message);
+    }
+    return sendSuccess(res, result.duplicate ? 200 : 201, result.message);
   } catch (error) {
     next(error);
   }
 };
 
+/** List: daily visitor counts (30d). */
 export const getDailyVisits = async (req, res, next) => {
   try {
     const data = await analyticsService.getDailyVisitsService();
@@ -42,10 +47,54 @@ export const getDailyVisits = async (req, res, next) => {
   }
 };
 
-export const getApiUsage = async (req, res, next) => {
+/** Detail: visitor samples for one UTC date. */
+export const getDailyVisitDetails = async (req, res, next) => {
   try {
-    const usage = await analyticsService.getApiUsageService();
-    return sendSuccess(res, 200, 'API usage fetched', usage);
+    const data = await analyticsService.getDailyVisitDetailsService(req.params.date);
+    return sendSuccess(res, 200, 'Daily visit details fetched', { data });
+  } catch (error) {
+    next(error);
+  }
+};
+
+/** Overview cards for Traffic Overview. */
+export const getVisitorOverview = async (req, res, next) => {
+  try {
+    const data = await analyticsService.getVisitorOverviewService();
+    return sendSuccess(res, 200, 'Visitor overview fetched', { data });
+  } catch (error) {
+    next(error);
+  }
+};
+
+/** Device / browser / OS / country distributions. */
+export const getVisitorDistribution = async (req, res, next) => {
+  try {
+    const data = await analyticsService.getVisitorDistributionService(req.query.days);
+    return sendSuccess(res, 200, 'Visitor distribution fetched', { data });
+  } catch (error) {
+    next(error);
+  }
+};
+
+/** Paginated recent visitors table. */
+export const getRecentVisitors = async (req, res, next) => {
+  try {
+    const data = await analyticsService.getRecentVisitorsService(req.query);
+    return sendSuccess(res, 200, 'Recent visitors fetched', { data });
+  } catch (error) {
+    next(error);
+  }
+};
+
+/** Full visitor profile. */
+export const getVisitorProfile = async (req, res, next) => {
+  try {
+    const data = await analyticsService.getVisitorProfileService(
+      req.params.visitorId,
+      req.query.date
+    );
+    return sendSuccess(res, 200, 'Visitor profile fetched', { data });
   } catch (error) {
     next(error);
   }
