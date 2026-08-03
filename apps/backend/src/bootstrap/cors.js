@@ -22,8 +22,12 @@ const productionOrigins = [
   'https://travelagency-1-odma.onrender.com',
   'https://travelagency-pearl.vercel.app',
   'https://travelagency-tawny.vercel.app',
+  'https://travelagency-b2c-web.vercel.app',
   'https://www.sastikaatravel.com',
   'https://sastikaatravel.com',
+  'https://staging.sastikaatravel.com',
+  'https://b2b-staging.sastikaatravel.com',
+  'https://admin-staging.sastikaatravel.com',
   process.env.CORS_ORIGIN,
 ]
   .filter(Boolean)
@@ -32,6 +36,7 @@ const productionOrigins = [
 // Allows any localhost port (3000, 3001, 3002, 5173, etc.) during development.
 // Matches: http://localhost:<port> and http://127.0.0.1:<port>
 const LOCALHOST_ORIGIN = /^https?:\/\/(localhost|127\.0\.0\.1)(:\d+)?$/;
+const VERCEL_ORIGIN = /^https:\/\/[a-zA-Z0-9-]+\.vercel\.app$/;
 
 export const corsMiddleware = cors({
   origin: function (origin, callback) {
@@ -42,7 +47,11 @@ export const corsMiddleware = cors({
 
     const normalized = origin.replace(/\/$/, '');
 
-    if (LOCALHOST_ORIGIN.test(normalized) || productionOrigins.includes(normalized)) {
+    if (
+      LOCALHOST_ORIGIN.test(normalized) ||
+      VERCEL_ORIGIN.test(normalized) ||
+      productionOrigins.includes(normalized)
+    ) {
       callback(null, true);
     } else {
       callback(new Error('CORS Not Allowed'));
