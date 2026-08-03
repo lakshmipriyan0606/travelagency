@@ -6,11 +6,30 @@ const apiClient = axios.create({
   withCredentials: true,
 });
 
+function getCookie(name: string): string | null {
+  if (typeof document === 'undefined') return null;
+  const match = document.cookie.match(
+    new RegExp('(?:^|; )' + name.replace(/([\.$?*|{}\(\)\[\]\\\/\+^])/g, '\\$1') + '=([^;]*)')
+  );
+  return match ? decodeURIComponent(match[1]) : null;
+}
+
 apiClient.interceptors.request.use((config) => {
   if (typeof window !== 'undefined') {
     const userId = localStorage.getItem("userId");
     if (userId) {
       config.headers.userId = userId;
+    }
+
+    const token =
+      getCookie("b2b_portal_access_token") ||
+      getCookie("access_token") ||
+      getCookie("admin_token") ||
+      localStorage.getItem("accessToken") ||
+      localStorage.getItem("token");
+
+    if (token && !config.headers.Authorization && !config.headers.authorization) {
+      config.headers.Authorization = `Bearer ${token}`;
     }
   }
   return config;
