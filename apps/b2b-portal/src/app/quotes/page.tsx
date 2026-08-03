@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useCallback, useMemo, useState } from "react";
+import React, { Suspense, useCallback, useMemo, useState } from "react";
 import { useSearchParams } from "next/navigation";
 import { useQueryClient } from "@tanstack/react-query";
 import { useQuoteList, useDeleteQuote } from "@/features/quote-request/hooks/useQuotes";
@@ -115,7 +115,7 @@ function resolveQuoteId(q: QuoteListItem): string {
   return q.id || (q as { _id?: string })._id || "";
 }
 
-export default function QuotesListPage() {
+function QuotesListContent() {
   const searchParams = useSearchParams();
   const searchQuery = (searchParams.get("search") ?? "").trim();
   const isQuoteRefSearch = /^QR-/i.test(searchQuery);
@@ -459,5 +459,19 @@ export default function QuotesListPage() {
         </AlertDialogContent>
       </AlertDialog>
     </AppShell>
+  );
+}
+
+export default function QuotesListPage() {
+  return (
+    <Suspense
+      fallback={
+        <AppShell>
+          <AirplaneLoader size="md" label="Loading quotes…" className="py-16" />
+        </AppShell>
+      }
+    >
+      <QuotesListContent />
+    </Suspense>
   );
 }
