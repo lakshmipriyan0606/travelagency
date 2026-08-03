@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { Suspense, useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import {
@@ -24,7 +24,7 @@ import { AdminAuthCard } from "@/components/layout/AdminAuthCard";
 
 const REMEMBER_NS = "b2c_admin";
 
-export default function LoginPage() {
+function LoginPageContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const dispatch = useDispatch();
@@ -147,5 +147,21 @@ export default function LoginPage() {
         </form>
       </AdminAuthCard>
     </AdminAuthShell>
+  );
+}
+
+export default function LoginPage() {
+  return (
+    <Suspense
+      fallback={
+        <AdminAuthShell variant="b2c">
+          <AdminAuthCard>
+            <p className="text-center text-sm text-[#B4B4B4]">Loading…</p>
+          </AdminAuthCard>
+        </AdminAuthShell>
+      }
+    >
+      <LoginPageContent />
+    </Suspense>
   );
 }
