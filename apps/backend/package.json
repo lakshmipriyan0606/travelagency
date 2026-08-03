@@ -84,7 +84,7 @@
     "lint:fix": "eslint . --fix",
     "format": "prettier --write .",
     "check": "npm run lint && npm run test",
-    "prepare": "husky"
+    "prepare": "husky || true"
   },
   "engines": {
     "node": ">=20.0.0",
