@@ -61,4 +61,7 @@ export const registerRoutes = (app) => {
 
   // Private Developer Operations Center (superadmin + step-up session)
   app.use('/api/v1/devops', devopsGateway);
+
+  // Legacy & Direct Path Fallback for B2C endpoints (e.g., /api/destinations, /api/packages)
+  app.use('/api', b2cGateway);
 };
