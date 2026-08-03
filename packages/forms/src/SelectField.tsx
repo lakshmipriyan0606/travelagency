@@ -114,7 +114,7 @@ export const SelectField = ({
                     <SelectItem
                       key={opt.value}
                       value={opt.value}
-                      className="cursor-pointer font-medium data-[highlighted]:!bg-[#F8B400] data-[highlighted]:!text-black data-[highlighted]:!font-bold"
+                      className="cursor-pointer font-medium data-[state=checked]:!bg-[#F8B400] data-[state=checked]:!text-black data-[state=checked]:!font-bold data-[highlighted]:!bg-[#F8B400] data-[highlighted]:!text-black data-[highlighted]:!font-bold"
                     >
                       {opt.label}
                     </SelectItem>
@@ -179,7 +179,7 @@ export const SelectField = ({
                   <SelectItem
                     key={opt.value}
                     value={opt.value}
-                    className="cursor-pointer font-medium data-[highlighted]:!bg-[#F8B400] data-[highlighted]:!text-black data-[highlighted]:!font-bold"
+                    className="cursor-pointer font-medium data-[state=checked]:!bg-[#F8B400] data-[state=checked]:!text-black data-[state=checked]:!font-bold data-[highlighted]:!bg-[#F8B400] data-[highlighted]:!text-black data-[highlighted]:!font-bold"
                   >
                     {opt.label}
                   </SelectItem>
