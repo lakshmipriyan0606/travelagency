@@ -11,6 +11,9 @@ coverage
 out/
 build
 
+# turborepo local cache (never commit — multi‑GB)
+.turbo/
+
 # misc
 .DS_Store
 *.pem
