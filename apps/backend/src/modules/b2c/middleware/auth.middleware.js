@@ -20,6 +20,7 @@
  */
 import jwt from 'jsonwebtoken';
 import User from '../users/user.model.js';
+import { isAdminRole, isSuperAdmin } from '@travelagency/constants';
 
 /**
  * Ensures the requester has a valid JWT token.
@@ -44,12 +45,11 @@ export const protectRoute = async (req, res, next) => {
 };
 
 /**
- * RBAC Guard: Allows only 'admin' and 'superadmin' roles.
+ * RBAC Guard: Allows administrative roles ('superadmin', 'admin', 'ops', 'finance', 'sales').
  * Must be executed AFTER protectRoute.
  */
 export const adminOnly = (req, res, next) => {
-  if (req.user?.role !== 'admin' && req.user?.role !== 'superadmin')
-    return res.status(403).json({ message: 'Access denied' });
+  if (!isAdminRole(req.user?.role)) return res.status(403).json({ message: 'Access denied' });
 
   next();
 };
@@ -59,7 +59,7 @@ export const adminOnly = (req, res, next) => {
  * Must be executed AFTER protectRoute.
  */
 export const superAdminOnly = (req, res, next) => {
-  if (req.user?.role !== 'superadmin') return res.status(403).json({ message: 'Access denied' });
+  if (!isSuperAdmin(req.user?.role)) return res.status(403).json({ message: 'Access denied' });
 
   next();
 };

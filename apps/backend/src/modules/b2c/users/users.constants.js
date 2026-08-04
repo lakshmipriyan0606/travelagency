@@ -1,8 +1,10 @@
+import { ROLES } from '@travelagency/constants';
+
 export const USER_ROLES = {
-  USER: 'user',
-  AGENT: 'agent',
-  ADMIN: 'admin',
-  SUPERADMIN: 'superadmin',
+  USER: ROLES.USER,
+  AGENT: ROLES.AGENT,
+  ADMIN: ROLES.ADMIN,
+  SUPERADMIN: ROLES.SUPERADMIN,
 };
 
 export const USER_STATUSES = {

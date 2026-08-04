@@ -21,11 +21,17 @@
 import User from './user.model.js';
 
 export const findById = async (userId) => {
-  return await User.findOne({ _id: userId, isDeleted: false }).select('-password').lean();
+  return await User.findOne({ _id: userId, isDeleted: { $ne: true } })
+    .select('-password')
+    .lean();
 };
 
 export const findByEmail = async (email) => {
-  return await User.findOne({ email, isDeleted: false }).lean();
+  const normalizedEmail = String(email || '').trim();
+  return await User.findOne({
+    email: { $regex: new RegExp(`^${normalizedEmail}$`, 'i') },
+    isDeleted: { $ne: true },
+  }).lean();
 };
 
 export const findAll = async (query = {}, options = {}) => {

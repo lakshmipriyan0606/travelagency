@@ -4,7 +4,7 @@ import { ENDPOINTS } from '@/lib/endpoints';
 import { redirect } from "next/navigation";
 import { getAccessToken } from '@travelagency/auth';
 import { AdminUser, SessionData } from "./types";
-import { ADMIN_ROLES } from '@travelagency/constants';
+import { ADMIN_ROLES, isAdminRole, canAccessDevops } from '@travelagency/constants';
 import { cookies } from "next/headers";
 import { getJwtExpirySeconds } from '@travelagency/utils';
 
@@ -92,8 +92,12 @@ export async function getCurrentB2BAdmin(): Promise<AdminUser | null> {
 
 export async function isAdmin(user: AdminUser | null): Promise<boolean> {
   if (!user || !user.role) return false;
-  const normalizedRole = user.role.toUpperCase().replace('SUPERADMIN', 'SUPER_ADMIN');
-  return ADMIN_ROLES.includes(normalizedRole as any) || ADMIN_ROLES.includes(user.role as any) || ['OPS', 'SUPERADMIN'].includes(normalizedRole);
+  return isAdminRole(user.role);
+}
+
+export async function isSuperAdminUser(user: AdminUser | null): Promise<boolean> {
+  if (!user || !user.role) return false;
+  return canAccessDevops(user.role);
 }
 
 export async function requireAdmin(): Promise<AdminUser> {
@@ -113,6 +117,17 @@ export async function requireB2BAdmin(): Promise<AdminUser> {
   
   if (!valid) {
     redirect(ROUTES.b2b.login);
+  }
+
+  return admin!;
+}
+
+export async function requireDevopsAdmin(): Promise<AdminUser> {
+  const admin = await getCurrentAdmin();
+  const valid = await isSuperAdminUser(admin);
+  
+  if (!valid) {
+    redirect(ROUTES.login);
   }
 
   return admin!;
