@@ -5,7 +5,7 @@
     "@agendajs/mongo-backend": "^4.0.0",
     "@sentry/node": "^10.67.0",
     "@sentry/profiling-node": "^10.67.0",
-    "@travelagency/constants": "workspace:*",
+    "@travelagency/constants": "file:../../packages/constants",
     "agenda": "^6.2.3",
     "bcrypt": "^6.0.0",
     "bullmq": "^5.80.10",
