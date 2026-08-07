@@ -4,5 +4,5 @@
  * Shared constants across the platform.
  */
 
-export * from "./auth";
-export * from "./roles";
+export * from "./auth.ts";
+export * from "./roles.ts";
