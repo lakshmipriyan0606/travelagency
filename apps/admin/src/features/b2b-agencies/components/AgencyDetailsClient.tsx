@@ -6,6 +6,10 @@ import {
   getB2BAgencyStatusLog,
   getAdminQuotesByAgency,
   updateAdminQuoteStatus,
+  approveB2BAgency,
+  rejectB2BAgency,
+  suspendB2BAgency,
+  reactivateB2BAgency,
   B2BAgency,
   StatusLogEntry,
   AdminQuoteRequest,
@@ -40,14 +44,16 @@ import {
   ArrowLeft,
   Info,
   Package,
+  ShieldAlert,
+  RotateCcw,
 } from "lucide-react";
 import AgencyCustomPackagesTab from "./AgencyCustomPackagesTab";
 
 /* ── Types ────────────────────────────────────────────────────── */
-type AgencySection = "info" | "quotes" | "packages" | "activity";
+type AgencySection = "info" | "quotes" | "packages" | "activity" | "status";
 
 /** Custom Packages before Quotes — packages are the primary B2B feature. */
-const SECTION_KEYS: AgencySection[] = ["info", "packages", "quotes", "activity"];
+const SECTION_KEYS: AgencySection[] = ["info", "packages", "quotes", "activity", "status"];
 
 function parseSection(raw: string | null): AgencySection | null {
   if (!raw) return null;
@@ -717,6 +723,197 @@ function AgencyActivitySection({ agencyId }: { agencyId: string }) {
   );
 }
 
+/* ── Status section ───────────────────────────────────────────── */
+function AgencyStatusSection({ agency }: { agency: B2BAgency }) {
+  const queryClient = useQueryClient();
+  const prefersReducedMotion = useReducedMotion();
+  const [rejectMode, setRejectMode] = useState(false);
+  const [reasonText, setReasonText] = useState("");
+
+  const approveMutation = useMutation({
+    mutationFn: approveB2BAgency,
+    onSuccess: () => {
+      showToast({ type: "success", content: "Agency approved successfully!" });
+      queryClient.invalidateQueries({ queryKey: ["b2bAgencies"] });
+    },
+    onError: (err: any) => {
+      showToast({ type: "error", content: err?.message || "Failed to approve agency." });
+    }
+  });
+
+  const rejectMutation = useMutation({
+    mutationFn: rejectB2BAgency,
+    onSuccess: () => {
+      showToast({ type: "success", content: "Agency rejected successfully!" });
+      setRejectMode(false);
+      setReasonText("");
+      queryClient.invalidateQueries({ queryKey: ["b2bAgencies"] });
+    },
+    onError: (err: any) => {
+      showToast({ type: "error", content: err?.message || "Failed to reject agency." });
+    }
+  });
+
+  const suspendMutation = useMutation({
+    mutationFn: suspendB2BAgency,
+    onSuccess: () => {
+      showToast({ type: "success", content: "Agency suspended successfully!" });
+      queryClient.invalidateQueries({ queryKey: ["b2bAgencies"] });
+    },
+    onError: (err: any) => {
+      showToast({ type: "error", content: err?.message || "Failed to suspend agency." });
+    }
+  });
+
+  const reactivateMutation = useMutation({
+    mutationFn: reactivateB2BAgency,
+    onSuccess: () => {
+      showToast({ type: "success", content: "Agency reactivated successfully!" });
+      queryClient.invalidateQueries({ queryKey: ["b2bAgencies"] });
+    },
+    onError: (err: any) => {
+      showToast({ type: "error", content: err?.message || "Failed to reactivate agency." });
+    }
+  });
+
+  const staggerContainer: Variants = {
+    hidden: {},
+    visible: {
+      transition: {
+        staggerChildren: prefersReducedMotion ? 0 : 0.055,
+        delayChildren: prefersReducedMotion ? 0 : 0.04,
+      },
+    },
+  };
+  const staggerItem: Variants = prefersReducedMotion
+    ? { hidden: { opacity: 0 }, visible: { opacity: 1 } }
+    : {
+        hidden: { opacity: 0, y: 12 },
+        visible: {
+          opacity: 1,
+          y: 0,
+          transition: { duration: 0.3, ease: [0.25, 0.46, 0.45, 0.94] },
+        },
+      };
+
+  return (
+    <motion.div variants={staggerContainer} initial="hidden" animate="visible" className="space-y-6">
+      <motion.div variants={staggerItem}>
+        <SectionCard title="Current Account Status" icon={ShieldAlert}>
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 p-2">
+            <div>
+              <div className="flex items-center gap-3">
+                <span className="text-white/40 text-xs font-semibold">Account Status:</span>
+                <StatusBadge status={agency.status} />
+              </div>
+              <p className="text-xs text-white/45 mt-2">
+                Last status update: {agency.statusChangedAt ? new Date(agency.statusChangedAt).toLocaleString() : "N/A"}
+              </p>
+              {agency.status === "rejected" && agency.rejectionReason && (
+                <div className="mt-3 p-3 bg-red-500/10 border border-red-500/20 rounded-xl max-w-xl">
+                  <p className="text-[10px] font-black uppercase tracking-wider text-red-400">Rejection Reason</p>
+                  <p className="text-xs text-red-300 font-medium mt-1">{agency.rejectionReason}</p>
+                </div>
+              )}
+            </div>
+
+            <div className="flex flex-wrap gap-2">
+              {agency.status === "pending" && !rejectMode && (
+                <>
+                  <button
+                    type="button"
+                    disabled={approveMutation.isPending}
+                    onClick={() => approveMutation.mutate(agency._id)}
+                    className="h-9 px-4 rounded-xl bg-gradient-to-r from-emerald-500 to-teal-600 text-xs font-black uppercase tracking-wider text-white hover:from-emerald-400 hover:to-teal-500 transition-all shadow-md shadow-emerald-950/20 flex items-center gap-1.5"
+                  >
+                    {approveMutation.isPending && <Loader2 size={12} className="animate-spin" />}
+                    <Check size={14} /> Approve Agency
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setRejectMode(true)}
+                    className="h-9 px-4 rounded-xl bg-red-500/10 hover:bg-red-500/20 border border-red-500/25 text-xs font-black uppercase tracking-wider text-red-400 transition-all flex items-center gap-1.5"
+                  >
+                    <X size={14} /> Reject Agency
+                  </button>
+                </>
+              )}
+
+              {agency.status === "active" && (
+                <button
+                  type="button"
+                  disabled={suspendMutation.isPending}
+                  onClick={() => suspendMutation.mutate(agency._id)}
+                  className="h-9 px-4 rounded-xl bg-red-500/10 hover:bg-red-500/20 border border-red-500/25 text-xs font-black uppercase tracking-wider text-red-400 transition-all flex items-center gap-1.5"
+                >
+                  {suspendMutation.isPending && <Loader2 size={12} className="animate-spin" />}
+                  <ShieldAlert size={14} /> Suspend Agency
+                </button>
+              )}
+
+              {(agency.status === "suspended" || agency.status === "rejected") && (
+                <button
+                  type="button"
+                  disabled={reactivateMutation.isPending}
+                  onClick={() => reactivateMutation.mutate(agency._id)}
+                  className="h-9 px-4 rounded-xl bg-[#F8B400]/10 hover:bg-[#F8B400]/20 border border-[#F8B400]/25 text-xs font-black uppercase tracking-wider text-[#FFD54A] transition-all flex items-center gap-1.5"
+                >
+                  {reactivateMutation.isPending && <Loader2 size={12} className="animate-spin" />}
+                  <RotateCcw size={14} /> Reactivate Agency
+                </button>
+              )}
+            </div>
+          </div>
+        </SectionCard>
+      </motion.div>
+
+      {rejectMode && (
+        <motion.div variants={staggerItem}>
+          <SectionCard title="Provide Rejection Reason" icon={MessageSquareWarning}>
+            <div className="space-y-4 max-w-2xl">
+              <p className="text-xs text-white/50">
+                Please enter a descriptive reason. This will be recorded in the status log and visible to team admins.
+              </p>
+              <textarea
+                value={reasonText}
+                onChange={(e) => setReasonText(e.target.value)}
+                rows={4}
+                placeholder="Enter rejection reason..."
+                className="w-full rounded-xl border border-white/[0.1] bg-[#121212] p-3 text-sm text-white placeholder:text-white/30 outline-none focus:border-[#F8B400]/50"
+              />
+              <div className="flex gap-2">
+                <button
+                  type="button"
+                  disabled={rejectMutation.isPending || !reasonText.trim()}
+                  onClick={() => rejectMutation.mutate({ id: agency._id, reason: reasonText })}
+                  className="h-9 px-4 rounded-xl bg-gradient-to-r from-red-500 to-orange-600 text-xs font-black uppercase tracking-wider text-white hover:from-red-400 hover:to-orange-500 transition-all shadow-md flex items-center gap-1.5"
+                >
+                  {rejectMutation.isPending && <Loader2 size={12} className="animate-spin" />}
+                  Confirm Rejection
+                </button>
+                <button
+                  type="button"
+                  onClick={() => {
+                    setRejectMode(false);
+                    setReasonText("");
+                  }}
+                  className="h-9 px-4 rounded-xl border border-white/[0.1] hover:bg-white/[0.06] text-xs font-bold text-white/70 transition-all"
+                >
+                  Cancel
+                </button>
+              </div>
+            </div>
+          </SectionCard>
+        </motion.div>
+      )}
+
+      <motion.div variants={staggerItem}>
+        <AgencyActivitySection agencyId={agency._id} />
+      </motion.div>
+    </motion.div>
+  );
+}
+
 /* ── Full agency detail page ──────────────────────────────────── */
 function AgencyDetailPage({
   agency,
@@ -738,6 +935,7 @@ function AgencyDetailPage({
     { key: "packages" as const, label: "Custom Packages", icon: Package },
     { key: "quotes" as const, label: "Quotes", icon: FileText },
     { key: "activity" as const, label: "Activity", icon: Clock },
+    { key: "status" as const, label: "Account Status", icon: ShieldAlert },
   ];
 
   const sectionVariants: Variants = prefersReducedMotion
@@ -885,6 +1083,17 @@ function AgencyDetailPage({
                 exit="exit"
               >
                 <AgencyActivitySection agencyId={agency._id} />
+              </motion.div>
+            )}
+            {section === "status" && (
+              <motion.div
+                key="status"
+                variants={sectionVariants}
+                initial="hidden"
+                animate="visible"
+                exit="exit"
+              >
+                <AgencyStatusSection agency={agency} />
               </motion.div>
             )}
           </AnimatePresence>

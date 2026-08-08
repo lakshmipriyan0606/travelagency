@@ -22,6 +22,7 @@ export interface B2BAgency {
   iataNumber?: string;
   status: 'pending' | 'active' | 'rejected' | 'suspended';
   rejectionReason?: string;
+  statusChangedAt?: string;
   commissionRate: number;
   createdAt: string;
   updatedAt: string;

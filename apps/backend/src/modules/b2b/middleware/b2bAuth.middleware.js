@@ -43,7 +43,22 @@ export const requireAgencyAuth = async (req, res, next) => {
     }
 
     if (agency.status !== 'active') {
-      return next(new AppError(`Forbidden: Agency account is ${agency.status}`, 403));
+      const allowedPaths = [
+        '/agency/me',
+        '/agency/me/',
+        '/agency/me/rejection-reason',
+        '/agency/me/rejection-reason/',
+        '/agency/me/reapply',
+        '/agency/me/reapply/',
+        '/agency/me/resubmit',
+        '/agency/me/resubmit/',
+        '/agency/me/issues',
+        '/agency/me/issues/',
+      ];
+      const isAllowed = allowedPaths.includes(req.path);
+      if (!isAllowed) {
+        return next(new AppError(`Forbidden: Agency account is ${agency.status}`, 403));
+      }
     }
 
     // Attach entities to request object

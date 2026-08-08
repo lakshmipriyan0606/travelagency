@@ -21,6 +21,8 @@ router.post('/agency/refresh', b2bAuth.refreshAgency);
 router.post('/agency/logout', b2bAuth.logoutAgency);
 router.get('/agency/me', requireAgencyAuth, b2bAuth.meAgency);
 router.patch('/agency/me', requireAgencyAuth, b2bAuth.updateProfileAgency);
+router.get('/agency/me/rejection-reason', requireAgencyAuth, b2bAuth.getRejectionReason);
+router.patch('/agency/me/reapply', requireAgencyAuth, b2bAuth.reapplyAgency);
 
 // --- Agency Quote Request Routes ---
 router.post(

@@ -1,13 +1,16 @@
-import { Metadata } from "next";
+"use client";
+
 import { CheckCircle } from "lucide-react";
-import Link from "next/link";
 import { ROUTES } from "@/lib/routes";
 
-export const metadata: Metadata = {
-  title: "Application Pending | B2B Portal",
-};
-
 export default function PendingApprovalPage() {
+  const handleBackToLogin = () => {
+    document.cookie = "b2b_portal_access_token=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT;";
+    document.cookie = "b2b_portal_refresh_token=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT;";
+    document.cookie = "agency_status=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT;";
+    window.location.href = ROUTES.login;
+  };
+
   return (
     <main className="min-h-screen flex items-center justify-center bg-[#050505] p-6 text-center">
       <div className="w-full max-w-md p-8 bg-[#121212] border border-white/5 rounded-3xl shadow-2xl">
@@ -19,12 +22,12 @@ export default function PendingApprovalPage() {
           Your B2B partner application is currently pending review by our administration team. 
           We will notify you by email once your application has been verified.
         </p>
-        <Link
-          href={ROUTES.login}
+        <button
+          onClick={handleBackToLogin}
           className="w-full py-3.5 bg-neutral-800 hover:bg-neutral-700 text-white font-bold rounded-xl flex items-center justify-center transition-all"
         >
           Back to Login
-        </Link>
+        </button>
       </div>
     </main>
   );

@@ -1,17 +1,17 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import {
   DarkFormInput,
   DarkFormButton,
   DarkRememberCheckbox,
-  cookieMaxAges,
   loadRememberedEmail,
   persistRememberPreference,
 } from "@travelagency/forms";
-import { getJwtExpirySeconds, maxAgeSecondsFromJwt } from "@travelagency/utils";
+import { getJwtExpirySeconds } from "@travelagency/utils";
 import { LoginFormData, loginSchema } from "@/ZodSchema/schema";
 import { useMutationAPIQuery } from "@travelagency/hooks";
 import { b2bAdminLogin } from "@/api/b2bAdmin.api";
@@ -26,6 +26,7 @@ import { AdminAuthCard } from "@/components/layout/AdminAuthCard";
 const REMEMBER_NS = "b2b_admin";
 
 export default function B2BLoginPage() {
+  const router = useRouter();
   const dispatch = useDispatch();
   const [loginError, setLoginError] = useState<string | null>(null);
   const [rememberMe, setRememberMe] = useState(false);
@@ -51,28 +52,20 @@ export default function B2BLoginPage() {
 
   const { mutate, isPending } = useMutationAPIQuery(b2bAdminLogin, {
     onSuccess(data: any, variables: any) {
-      const { accessMaxAge: accessFallback, refreshMaxAge: refreshFallback } =
-        cookieMaxAges(rememberMe);
-      const accessMaxAge = maxAgeSecondsFromJwt(data.accessToken, accessFallback);
-      const refreshMaxAge = maxAgeSecondsFromJwt(data.refreshToken, refreshFallback);
       persistRememberPreference(REMEMBER_NS, rememberMe, variables?.email || "");
-
-      document.cookie = `b2b_access_token=${data.accessToken}; path=/; max-age=${accessMaxAge};`;
-      document.cookie = `b2b_refresh_token=${data.refreshToken}; path=/; max-age=${refreshMaxAge};`;
-
       dispatch(
         setAdminUser({
-          id: data.adminUser.id,
+          id: data?.adminUser?.id || data?.adminUser?._id || "",
           user: {
-            name: data.adminUser.name,
-            email: data.adminUser.email,
-            exp: getJwtExpirySeconds(data.accessToken) ?? undefined,
+            name: data?.adminUser?.name || "",
+            email: data?.adminUser?.email || "",
+            exp: getJwtExpirySeconds(data?.accessToken) ?? 0,
           },
-          role: data.adminUser.role,
+          role: data?.adminUser?.role || "",
           isLoggedIn: true,
         })
       );
-      window.location.href = ROUTES.b2b.dashboard;
+      router.push(ROUTES.b2b.dashboard);
     },
     onError(error: any) {
       const rawMessage = error?.message;

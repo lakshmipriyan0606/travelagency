@@ -544,6 +544,26 @@ export const loginAdmin = async (req, res, next) => {
     admin.lastLoginAt = new Date();
     await admin.save();
 
+    // Set HttpOnly cookies so the Next.js proxy forwards them to the browser on the same origin.
+    // This mirrors how B2C sets `access_token` via setAuthCookies.
+    const isProduction = process.env.NODE_ENV === 'production';
+    const cookieOptions = {
+      httpOnly: true,
+      secure: isProduction,
+      sameSite: isProduction ? 'none' : 'lax',
+      path: '/',
+    };
+
+    res.cookie('b2b_access_token', accessToken, {
+      ...cookieOptions,
+      maxAge: 60 * 60 * 1000, // 1 hour (matches JWT expiry)
+    });
+
+    res.cookie('b2b_refresh_token', rawRefreshToken, {
+      ...cookieOptions,
+      maxAge: rememberMe ? 30 * 24 * 60 * 60 * 1000 : 7 * 24 * 60 * 60 * 1000,
+    });
+
     return sendSuccess(res, 200, 'Logged in successfully', {
       accessToken,
       refreshToken: rawRefreshToken,
@@ -738,5 +758,95 @@ export const resetPasswordAdmin = async (req, res, next) => {
   } catch (error) {
     logger.error({ err: error }, 'Unexpected error during admin reset-password');
     return next(new AppError('Internal server error', 500));
+  }
+};
+
+export const getRejectionReason = async (req, res, next) => {
+  try {
+    return sendSuccess(res, 200, 'Rejection reason retrieved', {
+      rejectionReason: req.agency.rejectionReason || 'No reason specified',
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+export const reapplyAgency = async (req, res, next) => {
+  const {
+    name,
+    phone,
+    designation,
+    companyName,
+    tradeName,
+    businessType,
+    registrationNumber,
+    country,
+    gstNumber,
+    websiteUrl,
+    yearsInBusiness,
+    iataNumber,
+    officeAddress,
+  } = req.body;
+
+  try {
+    // 1. Update Agency User details
+    if (name) req.user.name = name;
+    if (phone) req.user.phone = phone;
+    if (designation !== undefined) req.user.designation = designation;
+    await req.user.save();
+
+    // 2. Update Agency details
+    if (companyName) req.agency.companyName = companyName;
+    if (tradeName !== undefined) req.agency.tradeName = tradeName;
+    if (businessType) req.agency.businessType = businessType;
+    if (registrationNumber) req.agency.registrationNumber = registrationNumber;
+    if (country) req.agency.country = country;
+    if (gstNumber !== undefined) req.agency.gstNumber = gstNumber;
+    if (websiteUrl !== undefined) req.agency.websiteUrl = websiteUrl;
+    if (yearsInBusiness !== undefined) req.agency.yearsInBusiness = yearsInBusiness;
+    if (iataNumber !== undefined) req.agency.iataNumber = iataNumber;
+
+    if (officeAddress) {
+      req.agency.officeAddress = {
+        ...req.agency.officeAddress.toObject(),
+        ...officeAddress,
+      };
+    }
+
+    // Reset status to pending upon reapplication
+    const oldStatus = req.agency.status;
+    req.agency.status = 'pending';
+    req.agency.rejectionReason = undefined; // clear previous reason
+
+    await req.agency.save();
+
+    // Log the transition in status history
+    try {
+      const { AgencyStatusLog } = await import('../models/agencyStatusLog.model.js');
+      await AgencyStatusLog.create({
+        agencyId: req.agency._id,
+        fromStatus: oldStatus,
+        toStatus: 'pending',
+        changedBy: req.user._id, // fallback to System in UI
+        reason: 'Partner resubmitted updated registration details for approval.',
+      });
+    } catch (err) {
+      logger.error({ err }, 'Failed to create status log for agency reapplication');
+    }
+
+    return sendSuccess(res, 200, 'Reapplied successfully', {
+      agency: req.agency,
+      agencyUser: {
+        id: req.user._id,
+        name: req.user.name,
+        email: req.user.email,
+        phone: req.user.phone,
+        designation: req.user.designation,
+        role: req.user.role,
+      },
+    });
+  } catch (error) {
+    logger.error({ err: error }, 'Error during B2B agency reapplication');
+    return next(new AppError('Error during B2B agency reapplication', 500));
   }
 };

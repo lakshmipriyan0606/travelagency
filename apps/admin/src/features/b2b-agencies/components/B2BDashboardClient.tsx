@@ -6,6 +6,7 @@ import {
   getAdminQuotes,
   getAdminProposals,
   approveB2BAgency,
+  rejectB2BAgency,
   suspendB2BAgency,
   reactivateB2BAgency,
   B2BAgency,
@@ -152,6 +153,11 @@ export default function B2BDashboardClient() {
     mutationFn: approveB2BAgency,
     onSuccess: () => { showToast({ type: "success", content: "Agency approved!" }); queryClient.invalidateQueries({ queryKey: ["b2bAgencies"] }); },
     onError: (e: any) => showToast({ type: "error", content: e?.message || "Failed to approve." }),
+  });
+  const rejectMutation = useMutation({
+    mutationFn: rejectB2BAgency,
+    onSuccess: () => { showToast({ type: "success", content: "Agency rejected successfully!" }); queryClient.invalidateQueries({ queryKey: ["b2bAgencies"] }); },
+    onError: (e: any) => showToast({ type: "error", content: e?.message || "Failed to reject." }),
   });
   const suspendMutation = useMutation({
     mutationFn: suspendB2BAgency,
@@ -614,10 +620,21 @@ export default function B2BDashboardClient() {
                       </div>
                       <div className="flex items-center gap-1">
                         {agency.status === "pending" && (
-                          <button onClick={() => approveMutation.mutate(agency._id)} disabled={approveMutation.isPending}
-                            className="w-7 h-7 rounded-lg bg-emerald-500/15 hover:bg-emerald-500/25 text-emerald-400 flex items-center justify-center transition-colors disabled:opacity-50" title="Approve">
-                            <Check size={11} />
-                          </button>
+                          <>
+                            <button onClick={() => approveMutation.mutate(agency._id)} disabled={approveMutation.isPending}
+                              className="w-7 h-7 rounded-lg bg-emerald-500/15 hover:bg-emerald-500/25 text-emerald-400 flex items-center justify-center transition-colors disabled:opacity-50" title="Approve">
+                              <Check size={11} />
+                            </button>
+                            <button onClick={() => {
+                              const reason = window.prompt("Enter rejection reason:");
+                              if (reason && reason.trim()) {
+                                rejectMutation.mutate({ id: agency._id, reason });
+                              }
+                            }} disabled={rejectMutation.isPending}
+                              className="w-7 h-7 rounded-lg bg-red-500/15 hover:bg-red-500/25 text-red-400 flex items-center justify-center transition-colors disabled:opacity-50" title="Reject">
+                              <XCircle size={11} />
+                            </button>
+                          </>
                         )}
                     {agency.status === "active" && (
                       <button onClick={() => suspendMutation.mutate(agency._id)} disabled={suspendMutation.isPending}

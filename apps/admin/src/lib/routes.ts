@@ -58,9 +58,9 @@ export const ROUTES = {
     agencyDetail: (params?: {
       agencyId?: string;
       /** Preferred deep-link section on the agency detail page */
-      section?: 'info' | 'quotes' | 'packages' | 'activity';
+      section?: 'info' | 'quotes' | 'packages' | 'activity' | 'status';
       /** @deprecated Use `section` — still accepted for older call sites */
-      tab?: 'quotes' | 'packages' | 'details' | 'log' | 'info' | 'activity';
+      tab?: 'quotes' | 'packages' | 'details' | 'log' | 'info' | 'activity' | 'status';
       quoteId?: string;
     }) => {
       const base = '/b2b/admin/agency-details';

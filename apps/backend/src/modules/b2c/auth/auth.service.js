@@ -230,7 +230,7 @@ export const getSessionData = async (token) => {
         exp: decoded.exp,
       },
     };
-  } catch {
+  } catch (error) {
     return { isLoggedIn: false };
   }
 };

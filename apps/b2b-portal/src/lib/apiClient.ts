@@ -16,6 +16,15 @@ apiClient.interceptors.response.use(
       document.cookie = "agency_status=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT;";
       window.location.href = ROUTES.login;
     }
+    if (error.response && error.response.status === 403 && typeof window !== 'undefined') {
+      const message = error.response.data?.error?.message || error.response.data?.message || "";
+      const match = /Forbidden: Agency account is (pending|rejected|suspended|needs_correction)/i.exec(message);
+      if (match) {
+        const newStatus = match[1].toLowerCase();
+        document.cookie = `agency_status=${newStatus}; path=/; max-age=86400;`;
+        window.location.reload();
+      }
+    }
     return Promise.reject(error);
   }
 );
